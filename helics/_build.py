@@ -22,7 +22,7 @@ for file in files:
         data = "".join([line for line in f if not line.startswith("#")])
         data = data.replace("HELICS_EXPORT", "")
         data = data.replace("HELICS_DEPRECATED_EXPORT", "")
-        ffi.embedding_api(data)
+        ffi.cdef(data)
 
 # ffi.set_source(
 #     "_py_helics",
