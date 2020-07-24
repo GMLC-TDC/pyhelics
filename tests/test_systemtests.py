@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import time
 import helics as h
+import pytest
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
@@ -17,13 +18,14 @@ import os
 
 def rm(filename, force=True):
     if os.path.exists(filename):
-        os.remove("demofile.txt")
+        os.remove(filename)
 
 
 def isfile(filename):
     return os.path.exists(filename)
 
 
+@pytest.mark.skip
 def test_system_test_core_creation():
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
 
@@ -42,6 +44,7 @@ def test_system_test_core_creation():
     assert h.helicsBrokerIsConnected(brk) is False
 
 
+@pytest.mark.skip
 def test_system_test_broker_creation():
 
     argv = ["", "--name=gbrokerc", "--timeout=2000", "--root"]
@@ -101,6 +104,7 @@ def test_system_test_core_global_value():
     assert h.helicsBrokerIsConnected(brk) is False
 
 
+@pytest.mark.skip
 def test_system_test_federate_global_value():
 
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")

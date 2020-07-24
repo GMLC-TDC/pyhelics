@@ -17,10 +17,10 @@ def test_broker():
     broker = createBroker(1)
     initstring = "--broker="
     identifier = h.helicsBrokerGetIdentifier(broker)
-    initstring = initstring * identifier
-    initstring = initstring * " --broker_address "
+    initstring = initstring + identifier
+    initstring = initstring + " --broker_address "
     address = h.helicsBrokerGetAddress(broker)
-    initstring = initstring * address
+    initstring = initstring + address
     assert initstring == "--broker=mainbroker --broker_address tcp://127.0.0.1:23404"
     destroyBroker(broker)
 

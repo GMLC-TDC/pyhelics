@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import time
 import helics as h
+import pytest
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
@@ -156,6 +157,7 @@ def test_messagefederate_send_receive_2fed_multisend():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_messagefederate_message_object_tests():
 
     broker = createBroker(1)

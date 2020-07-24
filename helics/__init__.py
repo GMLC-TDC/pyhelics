@@ -290,7 +290,7 @@ def helicsCreateCoreFromArgs(type: str, name: str, arguments: List[str]) -> Heli
     argc = len(arguments)
     argv = ffi.new(f"char*[{argc}]")
     for i, s in enumerate(arguments):
-        argv[i] = s
+        argv[i] = cstring(s)
     err = helicsErrorInitialize()
     result = f(cstring(type), cstring(name), argc, argv, err)
     if err.error_code != 0:
@@ -379,7 +379,7 @@ def helicsCreateBrokerFromArgs(type: str, name: str, arguments: List[str]) -> He
     argc = len(arguments)
     argv = ffi.new(f"char*[{argc}]")
     for i, s in enumerate(arguments):
-        argv[i] = s
+        argv[i] = cstring(s)
     err = helicsErrorInitialize()
     result = f(cstring(type), cstring(name), argc, argv, err)
     if err.error_code != 0:
@@ -1028,7 +1028,7 @@ def helicsFederateInfoLoadFromArgs(fi: HelicsFederateInfo, arguments: List[str])
     argc = len(arguments)
     argv = ffi.new(f"char*[{argc}]")
     for i, s in enumerate(arguments):
-        argv[i] = s
+        argv[i] = cstring(s)
     f(fi, argc, argv, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
@@ -2509,7 +2509,7 @@ def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: s
 def helicsFederateGetEndpoint(fed: HelicsFederate, name: str) -> HelicsEndpoint:
     f = loadSym("helicsFederateGetEndpoint")
     err = helicsErrorInitialize()
-    result = f(fed, name, err)
+    result = f(fed, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
     else:
@@ -2604,7 +2604,7 @@ def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: str)
     f = loadSym("helicsEndpointSendMessageRaw")
     err = helicsErrorInitialize()
     inputDataLength = len(data)
-    f(endpoint, cstring(dest), data, inputDataLength, err)
+    f(endpoint, cstring(dest), cstring(data), inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
 
@@ -2630,11 +2630,12 @@ def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: str)
 # * @endforcpponly
 #
 def helicsEndpointSendEventRaw(
-    endpoint: HelicsEndpoint, dest: str, data: pointer, inputDataLength: int, time: HelicsTime,
+    endpoint: HelicsEndpoint, dest: str, data: str, time: HelicsTime,
 ):
     f = loadSym("helicsEndpointSendEventRaw")
     err = helicsErrorInitialize()
-    f(endpoint, cstring(dest), data, inputDataLength, time, err)
+    inputDataLength = len(data)
+    f(endpoint, cstring(dest), cstring(data), inputDataLength, time, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
 
@@ -3355,9 +3356,10 @@ def helicsMessageSetString(message: HelicsMessageObject, str: str):
 # * @param[in,out] err An error object to fill out in case of an error.
 # * @endforcpponly
 #
-def helicsMessageSetData(message: HelicsMessageObject, data: pointer, inputDataLength: int):
+def helicsMessageSetData(message: HelicsMessageObject, data: str):
     f = loadSym("helicsMessageSetData")
     err = helicsErrorInitialize()
+    inputDataLength = len(data)
     f(message, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
@@ -4693,7 +4695,7 @@ def helicsInputGetChar(ipt: HelicsInput) -> str:
         raise HelicsException(ffi.string(err.message).decode())
     else:
         # TODO: this is a char, will ffi.string conversion work?
-        return ffi.string(result).decode()
+        return result.decode()
 
 
 # *
@@ -4830,10 +4832,11 @@ def helicsInputGetNamedPoint(ipt: HelicsInput):
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsInputSetDefaultRaw(ipt: HelicsInput, data: pointer, inputDataLength: int):
+def helicsInputSetDefaultRaw(ipt: HelicsInput, data: str):
     f = loadSym("helicsInputSetDefaultRaw")
     err = helicsErrorInitialize()
-    f(ipt, data, inputDataLength, err)
+    inputDataLength = len(data)
+    f(ipt, cstring(data), inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
 
@@ -5157,7 +5160,7 @@ def helicsInputGetInfo(inp: HelicsInput) -> str:
 def helicsInputSetInfo(inp: HelicsInput, info: str):
     f = loadSym("helicsInputSetInfo")
     err = helicsErrorInitialize()
-    f(inp, info, err)
+    f(inp, cstring(info), err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
 
