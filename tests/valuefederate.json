@@ -1,0 +1,60 @@
+{
+  "coreinit": "--autobroker",
+  "corename": "the name of the core",
+  "coretype": "inproc",
+  "globals": [
+    [
+      "global1",
+      "this is a global1 value"
+    ],
+    [
+      "global2",
+      "this is another global value"
+    ]
+  ],
+  "input_delay": 0,
+  "inputs": [
+    {
+      "key": "ipt2",
+      "required": true,
+      "target": "pub1",
+      "type": "double"
+    }
+  ],
+  "max_iterations": 10,
+  "name": "valueFed",
+  "observer": false,
+  "offset": 0.0,
+  "only_transmit_on_change": false,
+  "only_update_on_change": false,
+  "output_delay": 0,
+  "period": 1.0,
+  "publications": [
+    {
+      "global": true,
+      "info": "this is an information string for use by the application",
+      "key": "pub1",
+      "type": "double",
+      "unit": "m"
+    },
+    {
+      "key": "pub2",
+      "type": "double"
+    }
+  ],
+  "rollback": false,
+  "source_only": false,
+  "subscriptions": [
+    {
+      "key": "pub1",
+      "required": true
+    },
+    {
+      "info": "this is an information string for use by the application",
+      "key": "fedName/pub2",
+      "shortcut": "pubshortcut"
+    }
+  ],
+  "time_delta": 0.0,
+  "uninterruptible": false
+}

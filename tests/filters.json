@@ -1,0 +1,73 @@
+{
+  "coreinit": "--autobroker",
+  "corename": "the name of the core",
+  "coretype": "inproc",
+  "endpoints": [
+    {
+      "global": true,
+      "name": "ept1",
+      "type": "genmessage"
+    },
+    {
+      "global": true,
+      "name": "clonedest"
+    },
+    {
+      "knownDestinations": "ept1",
+      "name": "ept2",
+      "subscriptions": "fed2/sub1",
+      "type": "message2"
+    }
+  ],
+  "filters": [
+    {
+      "info": "this is an information string for use by the application",
+      "name": "filtername",
+      "operation": "delay",
+      "properties": {
+        "name": "delay",
+        "value": 0.2
+      },
+      "sourcetargets": "ept1"
+    },
+    {
+      "name": "filtername2",
+      "operation": "reroute",
+      "properties": {
+        "name": "newdestination",
+        "value": "ept1"
+      },
+      "sourcetargets": [
+        "filterFed/ept2"
+      ]
+    },
+    {
+      "cloning": true,
+      "delivery": "ept2",
+      "name": "filterClone",
+      "properties": [
+        {
+          "name": "destination",
+          "value": "ept1"
+        },
+        {
+          "name": "source",
+          "value": "ept1"
+        }
+      ]
+    }
+  ],
+  "input_delay": 0,
+  "max_iterations": 10,
+  "name": "filterFed",
+  "observer": false,
+  "offset": 0.0,
+  "only_transmit_on_change": false,
+  "only_update_on_change": false,
+  "output_delay": 0,
+  "period": 1.0,
+  "rollback": false,
+  "source_only": false,
+  "time_delta": 0.0,
+  "uninterruptible": false
+}
