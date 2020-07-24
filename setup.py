@@ -18,9 +18,7 @@ from setuptools.command.build_ext import build_ext
 
 
 def read(*names, **kwargs):
-    with io.open(
-        join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")
-    ) as fh:
+    with io.open(join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")) as fh:
         return fh.read()
 
 
@@ -61,7 +59,7 @@ setup(
     keywords=["helics", "co-simulation"],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     install_requires=["cffi>=1.0.0"],
-    cffi_modules=["_build.py:ffi"],
+    # cffi_modules=["_build.py:ffi"],
     extras_require={},
     # We only require CFFI when compiling.
     # pyproject.toml does not support requirements only for some build actions,

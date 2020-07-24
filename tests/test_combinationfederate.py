@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
+
+CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(CURRENT_DIRECTORY)
+sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
+
 import helics as h
 import os
 
-from .init import createBroker, createValueFederate, destroyFederate, destroyBroker
+from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 

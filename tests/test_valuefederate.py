@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
+
+CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(CURRENT_DIRECTORY)
+sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
+
 import time
 import helics as h
 import os
 
-from .init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
+from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -595,7 +603,7 @@ def test_valuefederate_test_info_filed():
 
 def test_valuefederate_test_file_load():
 
-    filename = os.join.path(CURRENT_DIRECTORY, "valuefederate.json")
+    filename = os.path.join(CURRENT_DIRECTORY, "valuefederate.json")
     vFed = h.helicsCreateValueFederateFromConfig(filename)
 
     name = h.helicsFederateGetName(vFed)

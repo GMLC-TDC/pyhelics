@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
+
+CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(CURRENT_DIRECTORY)
+sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
+
 import time
 import helics as h
 
