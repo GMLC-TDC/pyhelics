@@ -1570,6 +1570,8 @@ def helicsFederateEnterExecutingModeIterative(fed: HelicsFederate, iterate: Heli
     result = f(fed, iterate, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1608,6 +1610,8 @@ def helicsFederateEnterExecutingModeIterativeComplete(fed: HelicsFederate,) -> H
     result = f(fed, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1626,6 +1630,8 @@ def helicsFederateGetState(fed: HelicsFederate) -> HelicsFederateState:
     result = f(fed, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1644,6 +1650,8 @@ def helicsFederateGetCoreObject(fed: HelicsFederate) -> HelicsCore:
     result = f(fed, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1663,6 +1671,8 @@ def helicsFederateRequestTime(fed: HelicsFederate, requestTime: HelicsTime) -> H
     result = f(fed, requestTime, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1682,6 +1692,8 @@ def helicsFederateRequestTimeAdvance(fed: HelicsFederate, timeDelta: HelicsTime)
     result = f(fed, timeDelta, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1703,6 +1715,8 @@ def helicsFederateRequestNextStep(fed: HelicsFederate) -> HelicsTime:
     result = f(fed, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1734,6 +1748,8 @@ def helicsFederateRequestTimeIterative(
     result = f(fed, requestTime, iterate, outIteration, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1771,6 +1787,8 @@ def helicsFederateRequestTimeComplete(fed: HelicsFederate) -> HelicsTime:
     result = f(fed, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1814,6 +1832,8 @@ def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate, outIterate: 
     result = f(fed, outIterate, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1918,6 +1938,8 @@ def helicsFederateGetTimeProperty(fed: HelicsFederate, timeProperty: int) -> Hel
     result = f(fed, timeProperty.cint, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1958,6 +1980,8 @@ def helicsFederateGetIntegerProperty(fed: HelicsFederate, intProperty: int) -> i
     result = f(fed, intProperty.cint, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -1976,6 +2000,8 @@ def helicsFederateGetCurrentTime(fed: HelicsFederate) -> HelicsTime:
     result = f(fed, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -2201,7 +2227,8 @@ def helicsBrokerSetLogFile(broker: HelicsBroker, logFileName: str):
 #
 def helicsCreateQuery(target: str, query: str) -> HelicsQuery:
     f = loadSym("helicsCreateQuery")
-    return f(cstring(target), cstring(query))
+    result = f(cstring(target), cstring(query))
+    return result
 
 
 # *
@@ -2423,6 +2450,8 @@ def helicsFederateRegisterEndpoint(fed: HelicsFederate, name: str, type: str) ->
     result = f(fed, cstring(name), cstring(type), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -2449,6 +2478,8 @@ def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: s
     result = f(fed, cstring(name), cstring(type), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -2471,6 +2502,8 @@ def helicsFederateGetEndpoint(fed: HelicsFederate, name: str) -> HelicsEndpoint:
     result = f(fed, name, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -2493,6 +2526,8 @@ def helicsFederateGetEndpointByIndex(fed: HelicsFederate, index: int) -> HelicsE
     result = f(fed, index.cint, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -2753,6 +2788,8 @@ def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage
     result = f(endpoint, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -2769,7 +2806,8 @@ def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage
 #
 def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
     f = loadSym("helicsFederateGetMessage")
-    return f(fed)
+    result = f(fed)
+    return result
 
 
 # *
@@ -2783,7 +2821,8 @@ def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
 #
 def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessageObject:
     f = loadSym("helicsFederateGetMessageObject")
-    return f(fed)
+    result = f(fed)
+    return result
 
 
 # *
@@ -2804,6 +2843,8 @@ def helicsFederateCreateMessageObject(fed: HelicsFederate) -> HelicsMessageObjec
     result = f(fed, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3361,6 +3402,8 @@ def helicsMessageClone(message: HelicsMessageObject) -> HelicsMessageObject:
     result = f(message, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3407,6 +3450,8 @@ def helicsFederateRegisterFilter(fed: HelicsFederate, type: HelicsFilterType, na
     result = f(fed, type, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3430,6 +3475,8 @@ def helicsFederateRegisterGlobalFilter(fed: HelicsFederate, type: HelicsFilterTy
     result = f(fed, type, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3452,6 +3499,8 @@ def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> Helic
     result = f(fed, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3474,6 +3523,8 @@ def helicsFederateRegisterGlobalCloningFilter(fed: HelicsFederate, name: str) ->
     result = f(fed, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3497,6 +3548,8 @@ def helicsCoreRegisterFilter(core: HelicsCore, type: HelicsFilterType, name: str
     result = f(core, type, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3519,6 +3572,8 @@ def helicsCoreRegisterCloningFilter(core: HelicsCore, name: str) -> HelicsFilter
     result = f(core, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3552,6 +3607,8 @@ def helicsFederateGetFilter(fed: HelicsFederate, name: str) -> HelicsFilter:
     result = f(fed, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3571,6 +3628,8 @@ def helicsFederateGetFilterByIndex(fed: HelicsFederate, index: int) -> HelicsFil
     result = f(fed, index.cint, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3830,6 +3889,8 @@ def helicsFederateRegisterSubscription(fed: HelicsFederate, key: str, units: str
     result = f(fed, cstring(key), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3854,6 +3915,8 @@ def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: Helic
     result = f(fed, cstring(key), type, cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3878,6 +3941,8 @@ def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: s
     result = f(fed, cstring(key), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3902,6 +3967,8 @@ def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type:
     result = f(fed, cstring(key), type, cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3926,6 +3993,8 @@ def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, t
     result = f(fed, cstring(key), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3950,6 +4019,8 @@ def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataT
     result = f(fed, cstring(key), type, cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3974,6 +4045,8 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, un
     result = f(fed, cstring(key), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -3998,6 +4071,8 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: Helic
     result = f(fed, cstring(key), type, cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4022,6 +4097,8 @@ def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: s
     result = f(fed, cstring(key), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4042,6 +4119,8 @@ def helicsFederateGetPublication(fed: HelicsFederate, key: str) -> HelicsPublica
     result = f(fed, cstring(key), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4061,6 +4140,8 @@ def helicsFederateGetPublicationByIndex(fed: HelicsFederate, index: int) -> Heli
     result = f(fed, index.cint, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4081,6 +4162,8 @@ def helicsFederateGetInput(fed: HelicsFederate, key: str) -> HelicsInput:
     result = f(fed, cstring(key), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4100,6 +4183,8 @@ def helicsFederateGetInputByIndex(fed: HelicsFederate, index: int) -> HelicsInpu
     result = f(fed, index.cint, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4120,6 +4205,8 @@ def helicsFederateGetSubscription(fed: HelicsFederate, key: str) -> HelicsInput:
     result = f(fed, cstring(key), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4500,6 +4587,8 @@ def helicsInputGetInteger(ipt: HelicsInput) -> int:
     result = f(ipt, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4538,6 +4627,8 @@ def helicsInputGetDouble(ipt: HelicsInput) -> float:
     result = f(ipt, err).float
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4556,6 +4647,8 @@ def helicsInputGetTime(ipt: HelicsInput) -> HelicsTime:
     result = f(ipt, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -4598,6 +4691,8 @@ def helicsInputGetComplexObject(ipt: HelicsInput) -> HelicsComplex:
     result = f(ipt, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
