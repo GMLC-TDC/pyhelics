@@ -164,6 +164,11 @@ class HelicsException(Exception):
     pass
 
 
+def cstring(s: str) -> str:
+    """Convert python string to cstring"""
+    return ffi.new("char[]", s.decode())
+
+
 def loadSym(s):
     return getattr(lib, s)
 
@@ -224,7 +229,7 @@ def helicsErrorClear(err: HelicsError):
 #
 def helicsIsCoreTypeAvailable(type: str) -> HelicsBool:
     f = loadSym("helicsIsCoreTypeAvailable")
-    result = f(ffi.new("char[]", type.encode()))
+    result = f(cstring(type))
     return result == 1
 
 
@@ -247,10 +252,7 @@ def helicsIsCoreTypeAvailable(type: str) -> HelicsBool:
 def helicsCreateCore(type: str, name: str, initString: str) -> HelicsCore:
     f = loadSym("helicsCreateCore")
     err = lib.helicsErrorInitialize()
-    type = ffi.new("char[]", type.encode())
-    name = ffi.new("char[]", name.encode())
-    initString = ffi.new("char[]", initString.encode())
-    result = f(type, name, initString, err)
+    result = f(cstring(type), cstring(name), cstring(initString), err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message))
     else:
@@ -276,13 +278,11 @@ def helicsCreateCore(type: str, name: str, initString: str) -> HelicsCore:
 def helicsCreateCoreFromArgs(type: str, name: str, arguments: List[str]) -> HelicsCore:
     f = loadSym("helicsCreateCoreFromArgs")
     argc = len(arguments)
-    argv = ffi.new("char*[10]")
+    argv = ffi.new(f"char*[{argc}]")
     for i, s in enumerate(arguments):
         argv[i] = s
     err = lib.helicsErrorInitialize()
-    type = ffi.new("char[]", type.encode())
-    name = ffi.new("char[]", name.encode())
-    result = f(type, name, argc, argv, err)
+    result = f(cstring(type), cstring(name), argc, argv, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
     else:
@@ -342,10 +342,7 @@ def helicsCoreIsValid(core: HelicsCore) -> HelicsBool:
 def helicsCreateBroker(type: str, name: str, initString: str) -> HelicsBroker:
     f = loadSym("helicsCreateBroker")
     err = lib.helicsErrorInitialize()
-    type = ffi.new("char[]", type.decode())
-    name = ffi.new("char[]", name.decode())
-    initString = ffi.new("char[]", initString.decode())
-    result = f(type, name, initString, err)
+    result = f(cstring(type), cstring(name), cstring(initString), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
     else:
@@ -367,18 +364,18 @@ def helicsCreateBroker(type: str, name: str, initString: str) -> HelicsBroker:
 # *
 # * @return A helics_core object.
 #
-def helicsCreateBrokerFromArgs(
-    type: str, name: str, arguments: List[str]
-) -> HelicsBroker:
+def helicsCreateBrokerFromArgs(type: str, name: str, arguments: List[str]) -> HelicsBroker:
     f = loadSym("helicsCreateBrokerFromArgs")
-    argc = arguments.len
-    argv = allocCStringArray([])
-    for i, s in arguments.pairs():
+    argc = len(arguments)
+    argv = ffi.new(f"char*[{argc}]")
+    for i, s in enumerate(arguments):
         argv[i] = s
     err = lib.helicsErrorInitialize()
-    result = f(type, name.cstring, argc.cint, argv, err)
+    result = f(cstring(type), cstring(name), argc, argv, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -399,6 +396,8 @@ def helicsBrokerClone(broker: HelicsBroker) -> HelicsBroker:
     result = f(broker, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -438,7 +437,7 @@ def helicsBrokerIsConnected(broker: HelicsBroker) -> HelicsBool:
 def helicsBrokerDataLink(broker: HelicsBroker, source: str, target: str):
     f = loadSym("helicsBrokerDataLink")
     err = lib.helicsErrorInitialize()
-    f(broker, source.cstring, target.cstring, err)
+    f(broker, cstring(source), cstring(target), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -453,12 +452,10 @@ def helicsBrokerDataLink(broker: HelicsBroker, source: str, target: str):
 # * @param[in,out] err A helics_error object, can be NULL if the errors are to be ignored.
 # * @endforcpponly
 #
-def helicsBrokerAddSourceFilterToEndpoint(
-    broker: HelicsBroker, filter: str, endpoint: str
-):
+def helicsBrokerAddSourceFilterToEndpoint(broker: HelicsBroker, filter: str, endpoint: str):
     f = loadSym("helicsBrokerAddSourceFilterToEndpoint")
     err = lib.helicsErrorInitialize()
-    f(broker, filter.cstring, endpoint.cstring, err)
+    f(broker, cstring(filter), cstring(endpoint), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -473,12 +470,10 @@ def helicsBrokerAddSourceFilterToEndpoint(
 # * @param[in,out] err A helics_error object, can be NULL if the errors are to be ignored.
 # * @endforcpponly
 #
-def helicsBrokerAddDestinationFilterToEndpoint(
-    broker: HelicsBroker, filter: str, endpoint: str
-):
+def helicsBrokerAddDestinationFilterToEndpoint(broker: HelicsBroker, filter: str, endpoint: str):
     f = loadSym("helicsBrokerAddDestinationFilterToEndpoint")
     err = lib.helicsErrorInitialize()
-    f(broker, filter.cstring, endpoint.cstring, err)
+    f(broker, cstring(filter), cstring(endpoint), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -495,7 +490,7 @@ def helicsBrokerAddDestinationFilterToEndpoint(
 def helicsBrokerMakeConnections(broker: HelicsBroker, file: str):
     f = loadSym("helicsBrokerMakeConnections")
     err = lib.helicsErrorInitialize()
-    f(broker, file.cstring, err)
+    f(broker, cstring(file), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -568,7 +563,7 @@ def helicsCoreIsConnected(core: HelicsCore) -> HelicsBool:
 def helicsCoreDataLink(core: HelicsCore, source: str, target: str):
     f = loadSym("helicsCoreDataLink")
     err = lib.helicsErrorInitialize()
-    f(core, source.cstring, target.cstring, err)
+    f(core, cstring(source), cstring(target), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -586,7 +581,7 @@ def helicsCoreDataLink(core: HelicsCore, source: str, target: str):
 def helicsCoreAddSourceFilterToEndpoint(core: HelicsCore, filter: str, endpoint: str):
     f = loadSym("helicsCoreAddSourceFilterToEndpoint")
     err = lib.helicsErrorInitialize()
-    f(core, filter.cstring, endpoint.cstring, err)
+    f(core, cstring(filter), cstring(endpoint), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -601,12 +596,10 @@ def helicsCoreAddSourceFilterToEndpoint(core: HelicsCore, filter: str, endpoint:
 # * @param[in,out] err A helics_error object, can be NULL if the errors are to be ignored.
 # * @endforcpponly
 #
-def helicsCoreAddDestinationFilterToEndpoint(
-    core: HelicsCore, filter: str, endpoint: str
-):
+def helicsCoreAddDestinationFilterToEndpoint(core: HelicsCore, filter: str, endpoint: str):
     f = loadSym("helicsCoreAddDestinationFilterToEndpoint")
     err = lib.helicsErrorInitialize()
-    f(core, filter.cstring, endpoint.cstring, err)
+    f(core, cstring(filter), cstring(endpoint), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -623,7 +616,7 @@ def helicsCoreAddDestinationFilterToEndpoint(
 def helicsCoreMakeConnections(core: HelicsCore, file: str):
     f = loadSym("helicsCoreMakeConnections")
     err = lib.helicsErrorInitialize()
-    f(core, file.cstring, err)
+    f(core, cstring(file), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -751,7 +744,7 @@ def helicsCoreDisconnect(core: HelicsCore):
 def helicsGetFederateByName(fedName: str) -> HelicsFederate:
     f = loadSym("helicsGetFederateByName")
     err = lib.helicsErrorInitialize()
-    result = f(fedName.cstring, err)
+    result = f(cstring(fedName), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -831,7 +824,7 @@ def helicsBrokerFree(broker: HelicsBroker):
 def helicsCreateValueFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsFederate:
     f = loadSym("helicsCreateValueFederate")
     err = lib.helicsErrorInitialize()
-    result = f(fedName.cstring, fi, err)
+    result = f(cstring(fedName), fi, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -851,7 +844,7 @@ def helicsCreateValueFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsFed
 def helicsCreateValueFederateFromConfig(configFile: str) -> HelicsFederate:
     f = loadSym("helicsCreateValueFederateFromConfig")
     err = lib.helicsErrorInitialize()
-    result = f(configFile.cstring, err)
+    result = f(cstring(configFile), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -894,7 +887,7 @@ def helicsCreateMessageFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsF
 def helicsCreateMessageFederateFromConfig(configFile: str) -> HelicsFederate:
     f = loadSym("helicsCreateMessageFederateFromConfig")
     err = lib.helicsErrorInitialize()
-    result = f(configFile.cstring, err)
+    result = f(cstring(configFile), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -913,12 +906,10 @@ def helicsCreateMessageFederateFromConfig(configFile: str) -> HelicsFederate:
 # *
 # * @return An opaque value federate object nullptr if the object creation failed.
 #
-def helicsCreateCombinationFederate(
-    fedName: str, fi: HelicsFederateInfo
-) -> HelicsFederate:
+def helicsCreateCombinationFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsFederate:
     f = loadSym("helicsCreateCombinationFederate")
     err = lib.helicsErrorInitialize()
-    result = f(fedName.cstring, fi, err)
+    result = f(cstring(fedName), fi, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -939,7 +930,7 @@ def helicsCreateCombinationFederate(
 def helicsCreateCombinationFederateFromConfig(configFile: str) -> HelicsFederate:
     f = loadSym("helicsCreateCombinationFederateFromConfig")
     err = lib.helicsErrorInitialize()
-    result = f(configFile.cstring, err)
+    result = f(cstring(configFile), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1045,7 +1036,7 @@ def helicsFederateIsValid(fed: HelicsFederate) -> HelicsBool:
 def helicsFederateInfoSetCoreName(fi: HelicsFederateInfo, corename: str):
     f = loadSym("helicsFederateInfoSetCoreName")
     err = lib.helicsErrorInitialize()
-    f(fi, corename.cstring, err)
+    f(fi, cstring(corename), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1062,7 +1053,7 @@ def helicsFederateInfoSetCoreName(fi: HelicsFederateInfo, corename: str):
 def helicsFederateInfoSetCoreInitString(fi: HelicsFederateInfo, coreInit: str):
     f = loadSym("helicsFederateInfoSetCoreInitString")
     err = lib.helicsErrorInitialize()
-    f(fi, coreInit.cstring, err)
+    f(fi, cstring(coreInit), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1079,7 +1070,7 @@ def helicsFederateInfoSetCoreInitString(fi: HelicsFederateInfo, coreInit: str):
 def helicsFederateInfoSetBrokerInitString(fi: HelicsFederateInfo, brokerInit: str):
     f = loadSym("helicsFederateInfoSetBrokerInitString")
     err = lib.helicsErrorInitialize()
-    f(fi, brokerInit.cstring, err)
+    f(fi, cstring(brokerInit), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1114,7 +1105,7 @@ def helicsFederateInfoSetCoreType(fi: HelicsFederateInfo, coretype: int):
 def helicsFederateInfoSetCoreTypeFromString(fi: HelicsFederateInfo, coretype: str):
     f = loadSym("helicsFederateInfoSetCoreTypeFromString")
     err = lib.helicsErrorInitialize()
-    f(fi, coretype.cstring, err)
+    f(fi, cstring(coretype), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1132,7 +1123,7 @@ def helicsFederateInfoSetCoreTypeFromString(fi: HelicsFederateInfo, coretype: st
 def helicsFederateInfoSetBroker(fi: HelicsFederateInfo, broker: str):
     f = loadSym("helicsFederateInfoSetBroker")
     err = lib.helicsErrorInitialize()
-    f(fi, broker.cstring, err)
+    f(fi, cstring(broker), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1150,7 +1141,7 @@ def helicsFederateInfoSetBroker(fi: HelicsFederateInfo, broker: str):
 def helicsFederateInfoSetBrokerKey(fi: HelicsFederateInfo, brokerkey: str):
     f = loadSym("helicsFederateInfoSetBrokerKey")
     err = lib.helicsErrorInitialize()
-    f(fi, brokerkey.cstring, err)
+    f(fi, cstring(brokerkey), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1187,7 +1178,7 @@ def helicsFederateInfoSetBrokerPort(fi: HelicsFederateInfo, brokerPort: int):
 def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, localPort: str):
     f = loadSym("helicsFederateInfoSetLocalPort")
     err = lib.helicsErrorInitialize()
-    f(fi, localPort.cstring, err)
+    f(fi, cstring(localPort), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1200,7 +1191,7 @@ def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, localPort: str):
 #
 def helicsGetPropertyIndex(val: str) -> int:
     f = loadSym("helicsGetPropertyIndex")
-    f(val.cstring)
+    f(cstring(val))
 
 
 # *
@@ -1210,7 +1201,7 @@ def helicsGetPropertyIndex(val: str) -> int:
 #
 def helicsGetFlagIndex(val: str) -> int:
     f = loadSym("helicsGetFlagIndex")
-    f(val.cstring)
+    f(cstring(val))
 
 
 # *
@@ -1223,7 +1214,7 @@ def helicsGetFlagIndex(val: str) -> int:
 #
 def helicsGetOptionIndex(val: str) -> int:
     f = loadSym("helicsGetOptionIndex")
-    f(val.cstring)
+    f(cstring(val))
 
 
 # *
@@ -1236,7 +1227,7 @@ def helicsGetOptionIndex(val: str) -> int:
 #
 def helicsGetOptionValue(val: str) -> int:
     f = loadSym("helicsGetOptionValue")
-    f(val.cstring)
+    f(cstring(val))
 
 
 # *
@@ -1250,9 +1241,7 @@ def helicsGetOptionValue(val: str) -> int:
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsFederateInfoSetFlagOption(
-    fi: HelicsFederateInfo, flag: int, value: HelicsBool
-):
+def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: int, value: HelicsBool):
     f = loadSym("helicsFederateInfoSetFlagOption")
     err = lib.helicsErrorInitialize()
     f(fi, flag.cint, value, err)
@@ -1289,9 +1278,7 @@ def helicsFederateInfoSetSeparator(fi: HelicsFederateInfo, separator: str):
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsFederateInfoSetTimeProperty(
-    fi: HelicsFederateInfo, timeProperty: int, propertyValue: HelicsTime
-):
+def helicsFederateInfoSetTimeProperty(fi: HelicsFederateInfo, timeProperty: int, propertyValue: HelicsTime):
     f = loadSym("helicsFederateInfoSetTimeProperty")
     err = lib.helicsErrorInitialize()
     f(fi, timeProperty.cint, propertyValue, err)
@@ -1311,9 +1298,7 @@ def helicsFederateInfoSetTimeProperty(
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsFederateInfoSetIntegerProperty(
-    fi: HelicsFederateInfo, intProperty: int, propertyValue: int
-):
+def helicsFederateInfoSetIntegerProperty(fi: HelicsFederateInfo, intProperty: int, propertyValue: int):
     f = loadSym("helicsFederateInfoSetIntegerProperty")
     err = lib.helicsErrorInitialize()
     f(fi, intProperty.cint, propertyValue.cint, err)
@@ -1333,7 +1318,7 @@ def helicsFederateInfoSetIntegerProperty(
 def helicsFederateRegisterInterfaces(fed: HelicsFederate, file: str):
     f = loadSym("helicsFederateRegisterInterfaces")
     err = lib.helicsErrorInitialize()
-    f(fed, file.cstring, err)
+    f(fed, cstring(file), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1349,7 +1334,7 @@ def helicsFederateRegisterInterfaces(fed: HelicsFederate, file: str):
 #
 def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string: str):
     f = loadSym("helicsFederateGlobalError")
-    f(fed, error_code.cint, error_string.cstring)
+    f(fed, error_code.cint, cstring(error_string))
 
 
 # *
@@ -1363,7 +1348,7 @@ def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string
 #
 def helicsFederateLocalError(fed: HelicsFederate, error_code: int, error_string: str):
     f = loadSym("helicsFederateLocalError")
-    f(fed, error_code.cint, error_string.cstring)
+    f(fed, error_code.cint, cstring(error_string))
 
 
 # *
@@ -1560,9 +1545,7 @@ def helicsFederateEnterExecutingModeComplete(fed: HelicsFederate):
 # *
 # * @return An iteration structure with field containing the time and iteration status.
 #
-def helicsFederateEnterExecutingModeIterative(
-    fed: HelicsFederate, iterate: HelicsIterationRequest
-) -> HelicsIterationResult:
+def helicsFederateEnterExecutingModeIterative(fed: HelicsFederate, iterate: HelicsIterationRequest) -> HelicsIterationResult:
     f = loadSym("helicsFederateEnterExecutingModeIterative")
     err = lib.helicsErrorInitialize()
     result = f(fed, iterate, err)
@@ -1582,9 +1565,7 @@ def helicsFederateEnterExecutingModeIterative(
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsFederateEnterExecutingModeIterativeAsync(
-    fed: HelicsFederate, iterate: HelicsIterationRequest
-):
+def helicsFederateEnterExecutingModeIterativeAsync(fed: HelicsFederate, iterate: HelicsIterationRequest):
     f = loadSym("helicsFederateEnterExecutingModeIterativeAsync")
     err = lib.helicsErrorInitialize()
     f(fed, iterate, err)
@@ -1602,9 +1583,7 @@ def helicsFederateEnterExecutingModeIterativeAsync(
 # *
 # * @return An iteration object containing the iteration time and iteration_status.
 #
-def helicsFederateEnterExecutingModeIterativeComplete(
-    fed: HelicsFederate,
-) -> HelicsIterationResult:
+def helicsFederateEnterExecutingModeIterativeComplete(fed: HelicsFederate,) -> HelicsIterationResult:
     f = loadSym("helicsFederateEnterExecutingModeIterativeComplete")
     err = lib.helicsErrorInitialize()
     result = f(fed, err)
@@ -1659,9 +1638,7 @@ def helicsFederateGetCoreObject(fed: HelicsFederate) -> HelicsCore:
 # *
 # * @return The time granted to the federate, will return helics_time_maxtime if the simulation has terminated or is invalid.
 #
-def helicsFederateRequestTime(
-    fed: HelicsFederate, requestTime: HelicsTime
-) -> HelicsTime:
+def helicsFederateRequestTime(fed: HelicsFederate, requestTime: HelicsTime) -> HelicsTime:
     f = loadSym("helicsFederateRequestTime")
     err = lib.helicsErrorInitialize()
     result = f(fed, requestTime, err)
@@ -1680,9 +1657,7 @@ def helicsFederateRequestTime(
 # *
 # * @return The time granted to the federate, will return helics_time_maxtime if the simulation has terminated or is invalid
 #
-def helicsFederateRequestTimeAdvance(
-    fed: HelicsFederate, timeDelta: HelicsTime
-) -> HelicsTime:
+def helicsFederateRequestTimeAdvance(fed: HelicsFederate, timeDelta: HelicsTime) -> HelicsTime:
     f = loadSym("helicsFederateRequestTimeAdvance")
     err = lib.helicsErrorInitialize()
     result = f(fed, timeDelta, err)
@@ -1733,10 +1708,7 @@ def helicsFederateRequestNextStep(fed: HelicsFederate) -> HelicsTime:
 # * @endPythonOnly
 #
 def helicsFederateRequestTimeIterative(
-    fed: HelicsFederate,
-    requestTime: HelicsTime,
-    iterate: HelicsIterationRequest,
-    outIteration: HelicsIterationResult,
+    fed: HelicsFederate, requestTime: HelicsTime, iterate: HelicsIterationRequest, outIteration: HelicsIterationResult,
 ) -> HelicsTime:
     f = loadSym("helicsFederateRequestTimeIterative")
     err = lib.helicsErrorInitialize()
@@ -1795,9 +1767,7 @@ def helicsFederateRequestTimeComplete(fed: HelicsFederate) -> HelicsTime:
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsFederateRequestTimeIterativeAsync(
-    fed: HelicsFederate, requestTime: HelicsTime, iterate: HelicsIterationRequest
-):
+def helicsFederateRequestTimeIterativeAsync(fed: HelicsFederate, requestTime: HelicsTime, iterate: HelicsIterationRequest):
     f = loadSym("helicsFederateRequestTimeIterativeAsync")
     err = lib.helicsErrorInitialize()
     f(fed, requestTime, iterate, err)
@@ -1819,9 +1789,7 @@ def helicsFederateRequestTimeIterativeAsync(
 # * This function also returns the iteration specification of the result.
 # * @endPythonOnly
 #
-def helicsFederateRequestTimeIterativeComplete(
-    fed: HelicsFederate, outIterate: HelicsIterationResult
-) -> HelicsTime:
+def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate, outIterate: HelicsIterationResult) -> HelicsTime:
     f = loadSym("helicsFederateRequestTimeIterativeComplete")
     err = lib.helicsErrorInitialize()
     result = f(fed, outIterate, err)
@@ -1852,9 +1820,7 @@ def helicsFederateGetName(fed: HelicsFederate) -> str:
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsFederateSetTimeProperty(
-    fed: HelicsFederate, timeProperty: int, time: HelicsTime
-):
+def helicsFederateSetTimeProperty(fed: HelicsFederate, timeProperty: int, time: HelicsTime):
     f = loadSym("helicsFederateSetTimeProperty")
     err = lib.helicsErrorInitialize()
     f(fed, timeProperty.cint, time, err)
@@ -1910,9 +1876,7 @@ def helicsFederateSetSeparator(fed: HelicsFederate, separator: str):
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsFederateSetIntegerProperty(
-    fed: HelicsFederate, intProperty: int, propertyVal: int
-):
+def helicsFederateSetIntegerProperty(fed: HelicsFederate, intProperty: int, propertyVal: int):
     f = loadSym("helicsFederateSetIntegerProperty")
     err = lib.helicsErrorInitialize()
     f(fed, intProperty.cint, propertyVal.cint, err)
@@ -2009,7 +1973,7 @@ def helicsFederateGetCurrentTime(fed: HelicsFederate) -> HelicsTime:
 def helicsFederateSetGlobal(fed: HelicsFederate, valueName: str, value: str):
     f = loadSym("helicsFederateSetGlobal")
     err = lib.helicsErrorInitialize()
-    f(fed, valueName.cstring, value.cstring, err)
+    f(fed, cstring(valueName), cstring(value), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2026,7 +1990,7 @@ def helicsFederateSetGlobal(fed: HelicsFederate, valueName: str, value: str):
 def helicsFederateAddDependency(fed: HelicsFederate, fedName: str):
     f = loadSym("helicsFederateAddDependency")
     err = lib.helicsErrorInitialize()
-    f(fed, fedName.cstring, err)
+    f(fed, cstring(fedName), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2043,7 +2007,7 @@ def helicsFederateAddDependency(fed: HelicsFederate, fedName: str):
 def helicsFederateSetLogFile(fed: HelicsFederate, logFile: str):
     f = loadSym("helicsFederateSetLogFile")
     err = lib.helicsErrorInitialize()
-    f(fed, logFile.cstring, err)
+    f(fed, cstring(logFile), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2060,7 +2024,7 @@ def helicsFederateSetLogFile(fed: HelicsFederate, logFile: str):
 def helicsFederateLogErrorMessage(fed: HelicsFederate, logmessage: str):
     f = loadSym("helicsFederateLogErrorMessage")
     err = lib.helicsErrorInitialize()
-    f(fed, logmessage.cstring, err)
+    f(fed, cstring(logmessage), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2077,7 +2041,7 @@ def helicsFederateLogErrorMessage(fed: HelicsFederate, logmessage: str):
 def helicsFederateLogWarningMessage(fed: HelicsFederate, logmessage: str):
     f = loadSym("helicsFederateLogWarningMessage")
     err = lib.helicsErrorInitialize()
-    f(fed, logmessage.cstring, err)
+    f(fed, cstring(logmessage), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2094,7 +2058,7 @@ def helicsFederateLogWarningMessage(fed: HelicsFederate, logmessage: str):
 def helicsFederateLogInfoMessage(fed: HelicsFederate, logmessage: str):
     f = loadSym("helicsFederateLogInfoMessage")
     err = lib.helicsErrorInitialize()
-    f(fed, logmessage.cstring, err)
+    f(fed, cstring(logmessage), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2111,7 +2075,7 @@ def helicsFederateLogInfoMessage(fed: HelicsFederate, logmessage: str):
 def helicsFederateLogDebugMessage(fed: HelicsFederate, logmessage: str):
     f = loadSym("helicsFederateLogDebugMessage")
     err = lib.helicsErrorInitialize()
-    f(fed, logmessage.cstring, err)
+    f(fed, cstring(logmessage), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2129,7 +2093,7 @@ def helicsFederateLogDebugMessage(fed: HelicsFederate, logmessage: str):
 def helicsFederateLogLevelMessage(fed: HelicsFederate, loglevel: int, logmessage: str):
     f = loadSym("helicsFederateLogLevelMessage")
     err = lib.helicsErrorInitialize()
-    f(fed, loglevel.cint, logmessage.cstring, err)
+    f(fed, loglevel.cint, cstring(logmessage), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2149,7 +2113,7 @@ def helicsFederateLogLevelMessage(fed: HelicsFederate, loglevel: int, logmessage
 def helicsCoreSetGlobal(core: HelicsCore, valueName: str, value: str):
     f = loadSym("helicsCoreSetGlobal")
     err = lib.helicsErrorInitialize()
-    f(core, valueName.cstring, value.cstring, err)
+    f(core, cstring(valueName), cstring(value), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2169,7 +2133,7 @@ def helicsCoreSetGlobal(core: HelicsCore, valueName: str, value: str):
 def helicsBrokerSetGlobal(broker: HelicsBroker, valueName: str, value: str):
     f = loadSym("helicsBrokerSetGlobal")
     err = lib.helicsErrorInitialize()
-    f(broker, valueName.cstring, value.cstring, err)
+    f(broker, cstring(valueName), cstring(value), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2186,7 +2150,7 @@ def helicsBrokerSetGlobal(broker: HelicsBroker, valueName: str, value: str):
 def helicsCoreSetLogFile(core: HelicsCore, logFileName: str):
     f = loadSym("helicsCoreSetLogFile")
     err = lib.helicsErrorInitialize()
-    f(core, logFileName.cstring, err)
+    f(core, cstring(logFileName), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2203,7 +2167,7 @@ def helicsCoreSetLogFile(core: HelicsCore, logFileName: str):
 def helicsBrokerSetLogFile(broker: HelicsBroker, logFileName: str):
     f = loadSym("helicsBrokerSetLogFile")
     err = lib.helicsErrorInitialize()
-    f(broker, logFileName.cstring, err)
+    f(broker, cstring(logFileName), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2218,7 +2182,7 @@ def helicsBrokerSetLogFile(broker: HelicsBroker, logFileName: str):
 #
 def helicsCreateQuery(target: str, query: str) -> HelicsQuery:
     f = loadSym("helicsCreateQuery")
-    f(target.cstring, query.cstring)
+    f(cstring(target), cstring(query))
 
 
 # *
@@ -2374,7 +2338,7 @@ def helicsQueryIsCompleted(query: HelicsQuery) -> HelicsBool:
 def helicsQuerySetTarget(query: HelicsQuery, target: str):
     f = loadSym("helicsQuerySetTarget")
     err = lib.helicsErrorInitialize()
-    f(query, target.cstring, err)
+    f(query, cstring(target), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2391,7 +2355,7 @@ def helicsQuerySetTarget(query: HelicsQuery, target: str):
 def helicsQuerySetQueryString(query: HelicsQuery, queryString: str):
     f = loadSym("helicsQuerySetQueryString")
     err = lib.helicsErrorInitialize()
-    f(query, queryString.cstring, err)
+    f(query, cstring(queryString), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2434,12 +2398,10 @@ def helicsCleanupLibrary():
 # *         nullptr on failure.
 # * @endforcpponly
 #
-def helicsFederateRegisterEndpoint(
-    fed: HelicsFederate, name: str, type: str
-) -> HelicsEndpoint:
+def helicsFederateRegisterEndpoint(fed: HelicsFederate, name: str, type: str) -> HelicsEndpoint:
     f = loadSym("helicsFederateRegisterEndpoint")
     err = lib.helicsErrorInitialize()
-    result = f(fed, name.cstring, type.cstring, err)
+    result = f(fed, cstring(name), cstring(type), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2462,12 +2424,10 @@ def helicsFederateRegisterEndpoint(
 # *         nullptr on failure.
 # * @endforcpponly
 #
-def helicsFederateRegisterGlobalEndpoint(
-    fed: HelicsFederate, name: str, type: str
-) -> HelicsEndpoint:
+def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: str) -> HelicsEndpoint:
     f = loadSym("helicsFederateRegisterGlobalEndpoint")
     err = lib.helicsErrorInitialize()
-    result = f(fed, name.cstring, type.cstring, err)
+    result = f(fed, cstring(name), cstring(type), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2541,7 +2501,7 @@ def helicsEndpointIsValid(endpoint: HelicsEndpoint) -> HelicsBool:
 def helicsEndpointSetDefaultDestination(endpoint: HelicsEndpoint, dest: str):
     f = loadSym("helicsEndpointSetDefaultDestination")
     err = lib.helicsErrorInitialize()
-    f(endpoint, dest.cstring, err)
+    f(endpoint, cstring(dest), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2576,12 +2536,10 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
 # * @param[in,out] err A pointer to an error object for catching errors.
 # * @endforcpponly
 #
-def helicsEndpointSendMessageRaw(
-    endpoint: HelicsEndpoint, dest: str, data: pointer, inputDataLength: int
-):
+def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: pointer, inputDataLength: int):
     f = loadSym("helicsEndpointSendMessageRaw")
     err = lib.helicsErrorInitialize()
-    f(endpoint, dest.cstring, data, inputDataLength.cint, err)
+    f(endpoint, cstring(dest), data, inputDataLength.cint, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2607,15 +2565,11 @@ def helicsEndpointSendMessageRaw(
 # * @endforcpponly
 #
 def helicsEndpointSendEventRaw(
-    endpoint: HelicsEndpoint,
-    dest: str,
-    data: pointer,
-    inputDataLength: int,
-    time: HelicsTime,
+    endpoint: HelicsEndpoint, dest: str, data: pointer, inputDataLength: int, time: HelicsTime,
 ):
     f = loadSym("helicsEndpointSendEventRaw")
     err = lib.helicsErrorInitialize()
-    f(endpoint, dest.cstring, data, inputDataLength.cint, time, err)
+    f(endpoint, cstring(dest), data, inputDataLength.cint, time, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -2646,9 +2600,7 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
 # * @param[in,out] err A pointer to an error object for catching errors.
 # * @endforcpponly
 #
-def helicsEndpointSendMessageObject(
-    endpoint: HelicsEndpoint, message: HelicsMessageObject
-):
+def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMessageObject):
     f = loadSym("helicsEndpointSendMessageObject")
     err = lib.helicsErrorInitialize()
     f(endpoint, message, err)
@@ -2666,9 +2618,7 @@ def helicsEndpointSendMessageObject(
 # * @param[in,out] err A pointer to an error object for catching errors.
 # * @endforcpponly
 #
-def helicsEndpointSendMessageObjectZeroCopy(
-    endpoint: HelicsEndpoint, message: HelicsMessageObject
-):
+def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: HelicsMessageObject):
     f = loadSym("helicsEndpointSendMessageObjectZeroCopy")
     err = lib.helicsErrorInitialize()
     f(endpoint, message, err)
@@ -2926,7 +2876,7 @@ def helicsEndpointGetInfo(endpoint: HelicsEndpoint) -> str:
 def helicsEndpointSetInfo(endpoint: HelicsEndpoint, info: str):
     f = loadSym("helicsEndpointSetInfo")
     err = lib.helicsErrorInitialize()
-    f(endpoint, info.cstring, err)
+    f(endpoint, cstring(info), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3097,11 +3047,7 @@ def helicsMessageGetRawDataSize(message: HelicsMessageObject) -> int:
 # * @endPythonOnly
 #
 def helicsMessageGetRawData(
-    message: HelicsMessageObject,
-    data: pointer,
-    maxMessagelen: int,
-    actualSize: int,
-    err: HelicsError,
+    message: HelicsMessageObject, data: pointer, maxMessagelen: int, actualSize: int, err: HelicsError,
 ):
     f = loadSym("helicsMessageGetRawData")
     err = lib.helicsErrorInitialize()
@@ -3147,7 +3093,7 @@ def helicsMessageIsValid(message: HelicsMessageObject) -> HelicsBool:
 def helicsMessageSetSource(message: HelicsMessageObject, src: str):
     f = loadSym("helicsMessageSetSource")
     err = lib.helicsErrorInitialize()
-    f(message, src.cstring, err)
+    f(message, cstring(src), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3164,7 +3110,7 @@ def helicsMessageSetSource(message: HelicsMessageObject, src: str):
 def helicsMessageSetDestination(message: HelicsMessageObject, dest: str):
     f = loadSym("helicsMessageSetDestination")
     err = lib.helicsErrorInitialize()
-    f(message, dest.cstring, err)
+    f(message, cstring(dest), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3181,7 +3127,7 @@ def helicsMessageSetDestination(message: HelicsMessageObject, dest: str):
 def helicsMessageSetOriginalSource(message: HelicsMessageObject, src: str):
     f = loadSym("helicsMessageSetOriginalSource")
     err = lib.helicsErrorInitialize()
-    f(message, src.cstring, err)
+    f(message, cstring(src), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3198,7 +3144,7 @@ def helicsMessageSetOriginalSource(message: HelicsMessageObject, src: str):
 def helicsMessageSetOriginalDestination(message: HelicsMessageObject, dest: str):
     f = loadSym("helicsMessageSetOriginalDestination")
     err = lib.helicsErrorInitialize()
-    f(message, dest.cstring, err)
+    f(message, cstring(dest), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3298,9 +3244,7 @@ def helicsMessageClearFlags(message: HelicsMessageObject):
 # * @param[in,out] err An error object to fill out in case of an error.
 # * @endforcpponly
 #
-def helicsMessageSetFlagOption(
-    message: HelicsMessageObject, flag: int, flagValue: HelicsBool
-):
+def helicsMessageSetFlagOption(message: HelicsMessageObject, flag: int, flagValue: HelicsBool):
     f = loadSym("helicsMessageSetFlagOption")
     err = lib.helicsErrorInitialize()
     f(message, flag.cint, flagValue, err)
@@ -3320,7 +3264,7 @@ def helicsMessageSetFlagOption(
 def helicsMessageSetString(message: HelicsMessageObject, str: str):
     f = loadSym("helicsMessageSetString")
     err = lib.helicsErrorInitialize()
-    f(message, str.cstring, err)
+    f(message, cstring(str), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3335,9 +3279,7 @@ def helicsMessageSetString(message: HelicsMessageObject, str: str):
 # * @param[in,out] err An error object to fill out in case of an error.
 # * @endforcpponly
 #
-def helicsMessageSetData(
-    message: HelicsMessageObject, data: pointer, inputDataLength: int
-):
+def helicsMessageSetData(message: HelicsMessageObject, data: pointer, inputDataLength: int):
     f = loadSym("helicsMessageSetData")
     err = lib.helicsErrorInitialize()
     f(message, data, inputDataLength.cint, err)
@@ -3355,9 +3297,7 @@ def helicsMessageSetData(
 # * @param[in,out] err An error object to fill out in case of an error.
 # * @endforcpponly
 #
-def helicsMessageAppendData(
-    message: HelicsMessageObject, data: pointer, inputDataLength: int
-):
+def helicsMessageAppendData(message: HelicsMessageObject, data: pointer, inputDataLength: int):
     f = loadSym("helicsMessageAppendData")
     err = lib.helicsErrorInitialize()
     f(message, data, inputDataLength.cint, err)
@@ -3374,9 +3314,7 @@ def helicsMessageAppendData(
 # * @param[in,out] err An error object to fill out in case of an error.
 # * @endforcpponly
 #
-def helicsMessageCopy(
-    source_message: HelicsMessageObject, dest_message: HelicsMessageObject
-):
+def helicsMessageCopy(source_message: HelicsMessageObject, dest_message: HelicsMessageObject):
     f = loadSym("helicsMessageCopy")
     err = lib.helicsErrorInitialize()
     f(source_message, dest_message, err)
@@ -3438,12 +3376,10 @@ def helicsMessageFree(message: HelicsMessageObject):
 # *
 # * @return A helics_filter object.
 #
-def helicsFederateRegisterFilter(
-    fed: HelicsFederate, type: HelicsFilterType, name: str
-) -> HelicsFilter:
+def helicsFederateRegisterFilter(fed: HelicsFederate, type: HelicsFilterType, name: str) -> HelicsFilter:
     f = loadSym("helicsFederateRegisterFilter")
     err = lib.helicsErrorInitialize()
-    result = f(fed, type, name.cstring, err)
+    result = f(fed, type, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3463,12 +3399,10 @@ def helicsFederateRegisterFilter(
 # *
 # * @return A helics_filter object.
 #
-def helicsFederateRegisterGlobalFilter(
-    fed: HelicsFederate, type: HelicsFilterType, name: str
-) -> HelicsFilter:
+def helicsFederateRegisterGlobalFilter(fed: HelicsFederate, type: HelicsFilterType, name: str) -> HelicsFilter:
     f = loadSym("helicsFederateRegisterGlobalFilter")
     err = lib.helicsErrorInitialize()
-    result = f(fed, type, name.cstring, err)
+    result = f(fed, type, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3490,7 +3424,7 @@ def helicsFederateRegisterGlobalFilter(
 def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> HelicsFilter:
     f = loadSym("helicsFederateRegisterCloningFilter")
     err = lib.helicsErrorInitialize()
-    result = f(fed, name.cstring, err)
+    result = f(fed, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3509,12 +3443,10 @@ def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> Helic
 # *
 # * @return A helics_filter object.
 #
-def helicsFederateRegisterGlobalCloningFilter(
-    fed: HelicsFederate, name: str
-) -> HelicsFilter:
+def helicsFederateRegisterGlobalCloningFilter(fed: HelicsFederate, name: str) -> HelicsFilter:
     f = loadSym("helicsFederateRegisterGlobalCloningFilter")
     err = lib.helicsErrorInitialize()
-    result = f(fed, name.cstring, err)
+    result = f(fed, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3534,12 +3466,10 @@ def helicsFederateRegisterGlobalCloningFilter(
 # *
 # * @return A helics_filter object.
 #
-def helicsCoreRegisterFilter(
-    core: HelicsCore, type: HelicsFilterType, name: str
-) -> HelicsFilter:
+def helicsCoreRegisterFilter(core: HelicsCore, type: HelicsFilterType, name: str) -> HelicsFilter:
     f = loadSym("helicsCoreRegisterFilter")
     err = lib.helicsErrorInitialize()
-    result = f(core, type, name.cstring, err)
+    result = f(core, type, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3561,7 +3491,7 @@ def helicsCoreRegisterFilter(
 def helicsCoreRegisterCloningFilter(core: HelicsCore, name: str) -> HelicsFilter:
     f = loadSym("helicsCoreRegisterCloningFilter")
     err = lib.helicsErrorInitialize()
-    result = f(core, name.cstring, err)
+    result = f(core, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3593,7 +3523,7 @@ def helicsFederateGetFilterCount(fed: HelicsFederate) -> int:
 def helicsFederateGetFilter(fed: HelicsFederate, name: str) -> HelicsFilter:
     f = loadSym("helicsFederateGetFilter")
     err = lib.helicsErrorInitialize()
-    result = f(fed, name.cstring, err)
+    result = f(fed, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3656,7 +3586,7 @@ def helicsFilterGetName(filt: HelicsFilter) -> str:
 def helicsFilterSet(filt: HelicsFilter, prop: str, val: float):
     f = loadSym("helicsFilterSet")
     err = lib.helicsErrorInitialize()
-    f(filt, prop.cstring, val.cdouble, err)
+    f(filt, cstring(prop), val.cdouble, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3674,7 +3604,7 @@ def helicsFilterSet(filt: HelicsFilter, prop: str, val: float):
 def helicsFilterSetString(filt: HelicsFilter, prop: str, val: str):
     f = loadSym("helicsFilterSetString")
     err = lib.helicsErrorInitialize()
-    f(filt, prop.cstring, val.cstring, err)
+    f(filt, cstring(prop), cstring(val), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3692,7 +3622,7 @@ def helicsFilterSetString(filt: HelicsFilter, prop: str, val: str):
 def helicsFilterAddDestinationTarget(filt: HelicsFilter, dest: str):
     f = loadSym("helicsFilterAddDestinationTarget")
     err = lib.helicsErrorInitialize()
-    f(filt, dest.cstring, err)
+    f(filt, cstring(dest), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3711,7 +3641,7 @@ def helicsFilterAddDestinationTarget(filt: HelicsFilter, dest: str):
 def helicsFilterAddSourceTarget(filt: HelicsFilter, source: str):
     f = loadSym("helicsFilterAddSourceTarget")
     err = lib.helicsErrorInitialize()
-    f(filt, source.cstring, err)
+    f(filt, cstring(source), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3735,7 +3665,7 @@ def helicsFilterAddSourceTarget(filt: HelicsFilter, source: str):
 def helicsFilterAddDeliveryEndpoint(filt: HelicsFilter, deliveryEndpoint: str):
     f = loadSym("helicsFilterAddDeliveryEndpoint")
     err = lib.helicsErrorInitialize()
-    f(filt, deliveryEndpoint.cstring, err)
+    f(filt, cstring(deliveryEndpoint), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3753,7 +3683,7 @@ def helicsFilterAddDeliveryEndpoint(filt: HelicsFilter, deliveryEndpoint: str):
 def helicsFilterRemoveTarget(filt: HelicsFilter, target: str):
     f = loadSym("helicsFilterRemoveTarget")
     err = lib.helicsErrorInitialize()
-    f(filt, target.cstring, err)
+    f(filt, cstring(target), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3770,7 +3700,7 @@ def helicsFilterRemoveTarget(filt: HelicsFilter, target: str):
 def helicsFilterRemoveDeliveryEndpoint(filt: HelicsFilter, deliveryEndpoint: str):
     f = loadSym("helicsFilterRemoveDeliveryEndpoint")
     err = lib.helicsErrorInitialize()
-    f(filt, deliveryEndpoint.cstring, err)
+    f(filt, cstring(deliveryEndpoint), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3800,7 +3730,7 @@ def helicsFilterGetInfo(filt: HelicsFilter) -> str:
 def helicsFilterSetInfo(filt: HelicsFilter, info: str):
     f = loadSym("helicsFilterSetInfo")
     err = lib.helicsErrorInitialize()
-    f(filt, info.cstring, err)
+    f(filt, cstring(info), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3867,12 +3797,10 @@ def helicsFilterGetOption(filt: HelicsFilter, option: int) -> int:
 # *
 # * @return An object containing the subscription.
 #
-def helicsFederateRegisterSubscription(
-    fed: HelicsFederate, key: str, units: str
-) -> HelicsInput:
+def helicsFederateRegisterSubscription(fed: HelicsFederate, key: str, units: str) -> HelicsInput:
     f = loadSym("helicsFederateRegisterSubscription")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, units.cstring, err)
+    result = f(fed, cstring(key), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3893,12 +3821,10 @@ def helicsFederateRegisterSubscription(
 # *
 # * @return An object containing the publication.
 #
-def helicsFederateRegisterPublication(
-    fed: HelicsFederate, key: str, type: HelicsDataType, units: str
-) -> HelicsPublication:
+def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsPublication:
     f = loadSym("helicsFederateRegisterPublication")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, type, units.cstring, err)
+    result = f(fed, cstring(key), type, cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3919,12 +3845,10 @@ def helicsFederateRegisterPublication(
 # *
 # * @return An object containing the publication.
 #
-def helicsFederateRegisterTypePublication(
-    fed: HelicsFederate, key: str, type: str, units: str
-) -> HelicsPublication:
+def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsPublication:
     f = loadSym("helicsFederateRegisterTypePublication")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, type.cstring, units.cstring, err)
+    result = f(fed, cstring(key), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3945,12 +3869,10 @@ def helicsFederateRegisterTypePublication(
 # *
 # * @return An object containing the publication.
 #
-def helicsFederateRegisterGlobalPublication(
-    fed: HelicsFederate, key: str, type: HelicsDataType, units: str
-) -> HelicsPublication:
+def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsPublication:
     f = loadSym("helicsFederateRegisterGlobalPublication")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, type, units.cstring, err)
+    result = f(fed, cstring(key), type, cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3971,12 +3893,10 @@ def helicsFederateRegisterGlobalPublication(
 # *
 # * @return An object containing the publication.
 #
-def helicsFederateRegisterGlobalTypePublication(
-    fed: HelicsFederate, key: str, type: str, units: str, err: HelicsError
-) -> HelicsPublication:
+def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, type: str, units: str, err: HelicsError) -> HelicsPublication:
     f = loadSym("helicsFederateRegisterGlobalTypePublication")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, type.cstring, units.cstring, err)
+    result = f(fed, cstring(key), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3997,12 +3917,10 @@ def helicsFederateRegisterGlobalTypePublication(
 # *
 # * @return An object containing the input.
 #
-def helicsFederateRegisterInput(
-    fed: HelicsFederate, key: str, type: HelicsDataType, units: str
-) -> HelicsInput:
+def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsInput:
     f = loadSym("helicsFederateRegisterInput")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, type, units.cstring, err)
+    result = f(fed, cstring(key), type, cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4023,12 +3941,10 @@ def helicsFederateRegisterInput(
 # *
 # * @return An object containing the publication.
 #
-def helicsFederateRegisterTypeInput(
-    fed: HelicsFederate, key: str, type: str, units: str
-) -> HelicsInput:
+def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsInput:
     f = loadSym("helicsFederateRegisterTypeInput")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, type.cstring, units.cstring, err)
+    result = f(fed, cstring(key), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4049,12 +3965,10 @@ def helicsFederateRegisterTypeInput(
 # *
 # * @return An object containing the publication.
 #
-def helicsFederateRegisterGlobalInput(
-    fed: HelicsFederate, key: str, type: HelicsDataType, units: str
-) -> HelicsPublication:
+def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsPublication:
     f = loadSym("helicsFederateRegisterGlobalInput")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, type, units.cstring, err)
+    result = f(fed, cstring(key), type, cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4075,12 +3989,10 @@ def helicsFederateRegisterGlobalInput(
 # *
 # * @return An object containing the publication.
 #
-def helicsFederateRegisterGlobalTypeInput(
-    fed: HelicsFederate, key: str, type: str, units: str
-) -> HelicsPublication:
+def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsPublication:
     f = loadSym("helicsFederateRegisterGlobalTypeInput")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, type.cstring, units.cstring, err)
+    result = f(fed, cstring(key), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4100,7 +4012,7 @@ def helicsFederateRegisterGlobalTypeInput(
 def helicsFederateGetPublication(fed: HelicsFederate, key: str) -> HelicsPublication:
     f = loadSym("helicsFederateGetPublication")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, err)
+    result = f(fed, cstring(key), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4116,9 +4028,7 @@ def helicsFederateGetPublication(fed: HelicsFederate, key: str) -> HelicsPublica
 # *
 # * @return A helics_publication.
 #
-def helicsFederateGetPublicationByIndex(
-    fed: HelicsFederate, index: int
-) -> HelicsPublication:
+def helicsFederateGetPublicationByIndex(fed: HelicsFederate, index: int) -> HelicsPublication:
     f = loadSym("helicsFederateGetPublicationByIndex")
     err = lib.helicsErrorInitialize()
     result = f(fed, index.cint, err)
@@ -4141,7 +4051,7 @@ def helicsFederateGetPublicationByIndex(
 def helicsFederateGetInput(fed: HelicsFederate, key: str) -> HelicsInput:
     f = loadSym("helicsFederateGetInput")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, err)
+    result = f(fed, cstring(key), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4180,7 +4090,7 @@ def helicsFederateGetInputByIndex(fed: HelicsFederate, index: int) -> HelicsInpu
 def helicsFederateGetSubscription(fed: HelicsFederate, key: str) -> HelicsInput:
     f = loadSym("helicsFederateGetSubscription")
     err = lib.helicsErrorInitialize()
-    result = f(fed, key.cstring, err)
+    result = f(fed, cstring(key), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4209,7 +4119,7 @@ def helicsFederateClearUpdates(fed: HelicsFederate):
 def helicsFederateRegisterFromPublicationJSON(fed: HelicsFederate, json: str):
     f = loadSym("helicsFederateRegisterFromPublicationJSON")
     err = lib.helicsErrorInitialize()
-    f(fed, json.cstring, err)
+    f(fed, cstring(json), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4226,7 +4136,7 @@ def helicsFederateRegisterFromPublicationJSON(fed: HelicsFederate, json: str):
 def helicsFederatePublishJSON(fed: HelicsFederate, json: str):
     f = loadSym("helicsFederatePublishJSON")
     err = lib.helicsErrorInitialize()
-    f(fed, json.cstring, err)
+    f(fed, cstring(json), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4261,9 +4171,7 @@ def helicsPublicationIsValid(pub: HelicsPublication) -> HelicsBool:
 # * @param[in,out] err A pointer to an error object for catching errors.
 # * @endforcpponly
 #
-def helicsPublicationPublishRaw(
-    pub: HelicsPublication, data: pointer, inputDataLength: int
-):
+def helicsPublicationPublishRaw(pub: HelicsPublication, data: pointer, inputDataLength: int):
     f = loadSym("helicsPublicationPublishRaw")
     err = lib.helicsErrorInitialize()
     f(pub, data, inputDataLength.cint, err)
@@ -4283,7 +4191,7 @@ def helicsPublicationPublishRaw(
 def helicsPublicationPublishString(pub: HelicsPublication, str: str):
     f = loadSym("helicsPublicationPublishString")
     err = lib.helicsErrorInitialize()
-    f(pub, str.cstring, err)
+    f(pub, cstring(str), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4401,9 +4309,7 @@ def helicsPublicationPublishComplex(pub: HelicsPublication, real: float, imag: f
 # * @param[in,out] err A pointer to an error object for catching errors.
 # * @endforcpponly
 #
-def helicsPublicationPublishVector(
-    pub: HelicsPublication, vectorInput: float, vectorLength: int
-):
+def helicsPublicationPublishVector(pub: HelicsPublication, vectorInput: float, vectorLength: int):
     f = loadSym("helicsPublicationPublishVector")
     err = lib.helicsErrorInitialize()
     f(pub, vectorInput, vectorLength.cint, err)
@@ -4424,7 +4330,7 @@ def helicsPublicationPublishVector(
 def helicsPublicationPublishNamedPoint(pub: HelicsPublication, str: str, val: float):
     f = loadSym("helicsPublicationPublishNamedPoint")
     err = lib.helicsErrorInitialize()
-    f(pub, str.cstring, val.cdouble, err)
+    f(pub, cstring(str), val.cdouble, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4441,7 +4347,7 @@ def helicsPublicationPublishNamedPoint(pub: HelicsPublication, str: str, val: fl
 def helicsPublicationAddTarget(pub: HelicsPublication, target: str):
     f = loadSym("helicsPublicationAddTarget")
     err = lib.helicsErrorInitialize()
-    f(pub, target.cstring, err)
+    f(pub, cstring(target), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4471,7 +4377,7 @@ def helicsInputIsValid(ipt: HelicsInput) -> HelicsBool:
 def helicsInputAddTarget(ipt: HelicsInput, target: str):
     f = loadSym("helicsInputAddTarget")
     err = lib.helicsErrorInitialize()
-    f(ipt, target.cstring, err)
+    f(ipt, cstring(target), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4508,9 +4414,7 @@ def helicsInputGetRawValueSize(ipt: HelicsInput) -> int:
 # * @return Raw string data.
 # * @endPythonOnly
 #
-def helicsInputGetRawValue(
-    ipt: HelicsInput, data: pointer, maxDatalen: int, actualSize: int
-):
+def helicsInputGetRawValue(ipt: HelicsInput, data: pointer, maxDatalen: int, actualSize: int):
     f = loadSym("helicsInputGetRawValue")
     err = lib.helicsErrorInitialize()
     f(ipt, data, maxDatalen.cint, actualSize, err)
@@ -4543,9 +4447,7 @@ def helicsInputGetStringSize(ipt: HelicsInput) -> int:
 # * @return A string data
 # * @endPythonOnly
 #
-def helicsInputGetString(
-    ipt: HelicsInput, outputString: str, maxStringLen: int, actualLength: int
-):
+def helicsInputGetString(ipt: HelicsInput, outputString: str, maxStringLen: int, actualLength: int):
     f = loadSym("helicsInputGetString")
     err = lib.helicsErrorInitialize()
     f(ipt, outputString, maxStringLen.cint, actualLength, err)
@@ -4743,15 +4645,11 @@ def helicsInputGetVectorSize(ipt: HelicsInput) -> int:
 # * @endPythonOnly
 #
 def helicsInputGetNamedPoint(
-    ipt: HelicsInput,
-    outputString: str,
-    maxStringLen: int,
-    actualLength: int,
-    val: float,
+    ipt: HelicsInput, outputString: str, maxStringLen: int, actualLength: int, val: float,
 ):
     f = loadSym("helicsInputGetNamedPoint")
     err = lib.helicsErrorInitialize()
-    f(ipt, outputString.cstring, maxStringLen.cint, actualLength, val, err)
+    f(ipt, cstring(outputString), maxStringLen.cint, actualLength, val, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4792,7 +4690,7 @@ def helicsInputSetDefaultRaw(ipt: HelicsInput, data: pointer, inputDataLength: i
 def helicsInputSetDefaultString(ipt: HelicsInput, str: str):
     f = loadSym("helicsInputSetDefaultString")
     err = lib.helicsErrorInitialize()
-    f(ipt, str.cstring, err)
+    f(ipt, cstring(str), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4910,9 +4808,7 @@ def helicsInputSetDefaultComplex(ipt: HelicsInput, real: float, imag: float):
 # * @param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 # * @endforcpponly
 #
-def helicsInputSetDefaultVector(
-    ipt: HelicsInput, vectorInput: float, vectorLength: int
-):
+def helicsInputSetDefaultVector(ipt: HelicsInput, vectorInput: float, vectorLength: int):
     f = loadSym("helicsInputSetDefaultVector")
     err = lib.helicsErrorInitialize()
     f(ipt, vectorInput, vectorLength.cint, err)
@@ -4933,7 +4829,7 @@ def helicsInputSetDefaultVector(
 def helicsInputSetDefaultNamedPoint(ipt: HelicsInput, str: str, val: float):
     f = loadSym("helicsInputSetDefaultNamedPoint")
     err = lib.helicsErrorInitialize()
-    f(ipt, str.cstring, val.cdouble, err)
+    f(ipt, cstring(str), val.cdouble, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -5130,7 +5026,7 @@ def helicsPublicationGetInfo(pub: HelicsPublication) -> str:
 def helicsPublicationSetInfo(pub: HelicsPublication, info: str):
     f = loadSym("helicsPublicationSetInfo")
     err = lib.helicsErrorInitialize()
-    f(pub, info.cstring, err)
+    f(pub, cstring(info), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
