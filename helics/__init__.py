@@ -4,6 +4,7 @@ from typing import List
 from . import _build
 
 lib = _build.lib
+ffi = _build.ffi
 
 HELICS_CORE_TYPE_DEFAULT = 0  # HelicsCoreType
 HELICS_CORE_TYPE_ZMQ = 1  # HelicsCoreType
@@ -170,6 +171,7 @@ def loadSym(s):
 def helicsGetVersion() -> str:
     f = loadSym("helicsGetVersion")
     result = f()
+    return ffi.string(result).decode()
 
 
 # *
@@ -178,6 +180,7 @@ def helicsGetVersion() -> str:
 def helicsGetBuildFlags() -> str:
     f = loadSym("helicsGetBuildFlags")
     result = f()
+    return ffi.string(result).decode()
 
 
 # *
@@ -186,6 +189,7 @@ def helicsGetBuildFlags() -> str:
 def helicsGetCompilerVersion() -> str:
     f = loadSym("helicsGetCompilerVersion")
     result = f()
+    return ffi.string(result).decode()
 
 
 # *
@@ -602,6 +606,7 @@ def helicsCoreMakeConnections(core: HelicsCore, file: str):
 def helicsBrokerGetIdentifier(broker: HelicsBroker) -> str:
     f = loadSym("helicsBrokerGetIdentifier")
     result = f(broker)
+    return ffi.string(result).decode()
 
 
 # *
@@ -614,6 +619,7 @@ def helicsBrokerGetIdentifier(broker: HelicsBroker) -> str:
 def helicsCoreGetIdentifier(core: HelicsCore) -> str:
     f = loadSym("helicsCoreGetIdentifier")
     result = f(core)
+    return ffi.string(result).decode()
 
 
 # *
@@ -626,6 +632,7 @@ def helicsCoreGetIdentifier(core: HelicsCore) -> str:
 def helicsBrokerGetAddress(broker: HelicsBroker) -> str:
     f = loadSym("helicsBrokerGetAddress")
     result = f(broker)
+    return ffi.string(result).decode()
 
 
 # *
@@ -638,6 +645,7 @@ def helicsBrokerGetAddress(broker: HelicsBroker) -> str:
 def helicsCoreGetAddress(core: HelicsCore) -> str:
     f = loadSym("helicsCoreGetAddress")
     result = f(core)
+    return ffi.string(result).decode()
 
 
 # *
@@ -1794,6 +1802,7 @@ def helicsFederateRequestTimeIterativeComplete(
 def helicsFederateGetName(fed: HelicsFederate) -> str:
     f = loadSym("helicsFederateGetName")
     result = f(fed)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2196,6 +2205,8 @@ def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> str:
     result = f(query, fed, err)
     if err.error_code != 0:
         raise newException(HelicsException, err.message)
+    else:
+        return ffi.string(result).decode()
 
 
 # *
@@ -2221,6 +2232,8 @@ def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> str:
     result = f(query, core, err)
     if err.error_code != 0:
         raise newException(HelicsException, err.message)
+    else:
+        return ffi.string(result).decode()
 
 
 # *
@@ -2246,6 +2259,8 @@ def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> str:
     result = f(query, broker, err)
     if err.error_code != 0:
         raise newException(HelicsException, err.message)
+    else:
+        return ffi.string(result).decode()
 
 
 # *
@@ -2287,6 +2302,8 @@ def helicsQueryExecuteComplete(query: HelicsQuery) -> str:
     result = f(query, err)
     if err.error_code != 0:
         raise newException(HelicsException, err.message)
+    else:
+        return ffi.string(result).decode()
 
 
 # *
@@ -2498,6 +2515,7 @@ def helicsEndpointSetDefaultDestination(endpoint: HelicsEndpoint, dest: str):
 def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
     f = loadSym("helicsEndpointGetDefaultDestination")
     result = f(endpoint)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2812,6 +2830,7 @@ def helicsEndpointClearMessages(endpoint: HelicsEndpoint):
 def helicsEndpointGetType(endpoint: HelicsEndpoint) -> str:
     f = loadSym("helicsEndpointGetType")
     result = f(endpoint)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2824,6 +2843,7 @@ def helicsEndpointGetType(endpoint: HelicsEndpoint) -> str:
 def helicsEndpointGetName(endpoint: HelicsEndpoint) -> str:
     f = loadSym("helicsEndpointGetName")
     result = f(endpoint)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2848,6 +2868,7 @@ def helicsFederateGetEndpointCount(fed: HelicsFederate) -> int:
 def helicsEndpointGetInfo(endpoint: HelicsEndpoint) -> str:
     f = loadSym("helicsEndpointGetInfo")
     result = f(endpoint)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2912,6 +2933,7 @@ def helicsEndpointGetOption(endpoint: HelicsEndpoint, option: int) -> int:
 def helicsMessageGetSource(message: HelicsMessageObject) -> str:
     f = loadSym("helicsMessageGetSource")
     result = f(message)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2924,6 +2946,7 @@ def helicsMessageGetSource(message: HelicsMessageObject) -> str:
 def helicsMessageGetDestination(message: HelicsMessageObject) -> str:
     f = loadSym("helicsMessageGetDestination")
     result = f(message)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2936,6 +2959,7 @@ def helicsMessageGetDestination(message: HelicsMessageObject) -> str:
 def helicsMessageGetOriginalSource(message: HelicsMessageObject) -> str:
     f = loadSym("helicsMessageGetOriginalSource")
     result = f(message)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2948,6 +2972,7 @@ def helicsMessageGetOriginalSource(message: HelicsMessageObject) -> str:
 def helicsMessageGetOriginalDestination(message: HelicsMessageObject) -> str:
     f = loadSym("helicsMessageGetOriginalDestination")
     result = f(message)
+    return ffi.string(result).decode()
 
 
 # *
@@ -2972,6 +2997,7 @@ def helicsMessageGetTime(message: HelicsMessageObject) -> HelicsTime:
 def helicsMessageGetString(message: HelicsMessageObject) -> str:
     f = loadSym("helicsMessageGetString")
     result = f(message)
+    return ffi.string(result).decode()
 
 
 # *
@@ -3568,6 +3594,7 @@ def helicsFilterIsValid(filt: HelicsFilter) -> HelicsBool:
 def helicsFilterGetName(filt: HelicsFilter) -> str:
     f = loadSym("helicsFilterGetName")
     result = f(filt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -3712,6 +3739,7 @@ def helicsFilterRemoveDeliveryEndpoint(filt: HelicsFilter, deliveryEndpoint: str
 def helicsFilterGetInfo(filt: HelicsFilter) -> str:
     f = loadSym("helicsFilterGetInfo")
     result = f(filt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4568,6 +4596,8 @@ def helicsInputGetChar(ipt: HelicsInput) -> str:
     result = f(ipt, err).char
     if err.error_code != 0:
         raise newException(HelicsException, err.message)
+    else:
+        return ffi.string(result).decode()
 
 
 # *
@@ -4873,6 +4903,7 @@ def helicsInputSetDefaultNamedPoint(ipt: HelicsInput, str: str, val: float):
 def helicsInputGetType(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetType")
     result = f(ipt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4885,6 +4916,7 @@ def helicsInputGetType(ipt: HelicsInput) -> str:
 def helicsInputGetPublicationType(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetPublicationType")
     result = f(ipt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4897,6 +4929,7 @@ def helicsInputGetPublicationType(ipt: HelicsInput) -> str:
 def helicsPublicationGetType(pub: HelicsPublication) -> str:
     f = loadSym("helicsPublicationGetType")
     result = f(pub)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4909,6 +4942,7 @@ def helicsPublicationGetType(pub: HelicsPublication) -> str:
 def helicsInputGetKey(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetKey")
     result = f(ipt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4919,6 +4953,7 @@ def helicsInputGetKey(ipt: HelicsInput) -> str:
 def helicsSubscriptionGetKey(ipt: HelicsInput) -> str:
     f = loadSym("helicsSubscriptionGetKey")
     result = f(ipt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4933,6 +4968,7 @@ def helicsSubscriptionGetKey(ipt: HelicsInput) -> str:
 def helicsPublicationGetKey(pub: HelicsPublication) -> str:
     f = loadSym("helicsPublicationGetKey")
     result = f(pub)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4945,6 +4981,7 @@ def helicsPublicationGetKey(pub: HelicsPublication) -> str:
 def helicsInputGetUnits(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetUnits")
     result = f(ipt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4957,6 +4994,7 @@ def helicsInputGetUnits(ipt: HelicsInput) -> str:
 def helicsInputGetInjectionUnits(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetInjectionUnits")
     result = f(ipt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4971,6 +5009,7 @@ def helicsInputGetInjectionUnits(ipt: HelicsInput) -> str:
 def helicsInputGetExtractionUnits(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetExtractionUnits")
     result = f(ipt)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4983,6 +5022,7 @@ def helicsInputGetExtractionUnits(ipt: HelicsInput) -> str:
 def helicsPublicationGetUnits(pub: HelicsPublication) -> str:
     f = loadSym("helicsPublicationGetUnits")
     result = f(pub)
+    return ffi.string(result).decode()
 
 
 # *
@@ -4995,6 +5035,7 @@ def helicsPublicationGetUnits(pub: HelicsPublication) -> str:
 def helicsInputGetInfo(inp: HelicsInput) -> str:
     f = loadSym("helicsInputGetInfo")
     result = f(inp)
+    return ffi.string(result).decode()
 
 
 # *
@@ -5024,6 +5065,7 @@ def helicsInputSetInfo(inp: HelicsInput, info: str):
 def helicsPublicationGetInfo(pub: HelicsPublication) -> str:
     f = loadSym("helicsPublicationGetInfo")
     result = f(pub)
+    return ffi.string(result).decode()
 
 
 # *
