@@ -113,8 +113,8 @@ def test_bad_input_type_publication_2_tests():
 
     h.helicsFederateRequestNextStep(vFed1)
     str = h.helicsInputGetString(subid)
-    assert str[1] == "2"
-    assert str[2] == "7"
+    assert str[0] == "2"
+    assert str[1] == "7"
     h.helicsFederateClearUpdates(vFed1)
 
     h.helicsFederateFinalize(vFed1)
