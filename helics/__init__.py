@@ -342,9 +342,14 @@ def helicsCoreIsValid(core: HelicsCore) -> HelicsBool:
 def helicsCreateBroker(type: str, name: str, initString: str) -> HelicsBroker:
     f = loadSym("helicsCreateBroker")
     err = lib.helicsErrorInitialize()
-    result = f(type, name.cstring, initString.cstring, err)
+    type = ffi.new("char[]", type.decode())
+    name = ffi.new("char[]", name.decode())
+    initString = ffi.new("char[]", initString.decode())
+    result = f(type, name, initString, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
