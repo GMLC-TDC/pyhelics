@@ -1835,14 +1835,15 @@ def helicsFederateRequestTimeIterativeAsync(fed: HelicsFederate, requestTime: He
 # * This function also returns the iteration specification of the result.
 # * @endPythonOnly
 #
-def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate, outIterate: HelicsIterationResult) -> HelicsTime:
+def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> HelicsTime:
     f = loadSym("helicsFederateRequestTimeIterativeComplete")
     err = helicsErrorInitialize()
+    outIterate = ffi.new("helics_iteration_result *")
     result = f(fed, outIterate, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
     else:
-        return result
+        return result, outIterate
 
 
 # *
@@ -3970,7 +3971,7 @@ def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: s
 # *
 # * @return An object containing the publication.
 #
-def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsPublication:
+def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type: HelicsDataType, units: str = "") -> HelicsPublication:
     f = loadSym("helicsFederateRegisterGlobalPublication")
     err = helicsErrorInitialize()
     result = f(fed, cstring(key), type, cstring(units), err)

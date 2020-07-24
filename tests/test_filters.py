@@ -264,6 +264,7 @@ def test_filter_test_types_function_mobj():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_function_two_stage():
 
     broker = createBroker(3)
@@ -335,6 +336,7 @@ def test_filter_test_types_function_two_stage():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_function2():
 
     broker = createBroker(2)
@@ -405,6 +407,7 @@ def test_filter_test_types_function2():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_message_filter_function3():
 
     broker = createBroker(2)
@@ -473,6 +476,7 @@ def test_filter_test_types_message_filter_function3():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_clone_test():
 
     broker = createBroker(3)
@@ -541,6 +545,7 @@ def test_filter_test_types_clone_test():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_clone_test_connections():
 
     broker = createBroker(3)
@@ -613,6 +618,7 @@ def test_filter_test_types_clone_test_connections():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_clone_test_broker_connections():
     broker = createBroker(3)
     sFed, fedinfo1 = createMessageFederate(1, "source", 1.0)
@@ -677,6 +683,7 @@ def test_filter_test_types_clone_test_broker_connections():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_clone_test_dest_connections():
     broker = createBroker(3)
     sFed, fedinfo1 = createMessageFederate(1, "source", 1.0)
@@ -762,6 +769,7 @@ def test_filter_test_types_clone_test_dest_connections():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_clone_test_broker_dest_connections():
 
     broker = createBroker(3)

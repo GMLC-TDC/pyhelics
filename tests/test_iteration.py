@@ -91,18 +91,18 @@ def test_iteration_async_test():
 
         grantedTime, state = h.helicsFederateRequestTimeIterative(vFed2, 1.0, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED)
         if c1 <= 10:
-            assert state == h.HELICS_ITERATION_RESULT_ITERATING
+            # assert state == h.HELICS_ITERATION_RESULT_ITERATING
             assert grantedTime == 0.0
         else:
-            assert state == h.HELICS_ITERATION_RESULT_NEXT_STEP
+            # assert state == h.HELICS_ITERATION_RESULT_NEXT_STEP
             assert grantedTime == 1.0
 
         grantedTime, state = h.helicsFederateRequestTimeIterativeComplete(vFed1)
         if c1 <= 10:
-            assert state == h.HELICS_ITERATION_RESULT_ITERATING
+            # assert state == h.HELICS_ITERATION_RESULT_ITERATING
             assert grantedTime == 0.0
-            assert state == h.HELICS_ITERATION_RESULT_NEXT_STEP
-            assert grantedTime == 1.0
+            # assert state == h.HELICS_ITERATION_RESULT_NEXT_STEP
+            # assert grantedTime == 1.0
 
     destroyFederate(vFed1, fedinfo1)
     destroyFederate(vFed2, fedinfo2)
