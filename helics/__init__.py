@@ -169,6 +169,16 @@ def cstring(s: str) -> str:
     return ffi.new("char[]", s.decode())
 
 
+def cdouble(d: float) -> float:
+    """Convert python float to cfloat"""
+    return d
+
+
+def cchar(c: str) -> str:
+    """Convert python str to cchar"""
+    return c
+
+
 def loadSym(s):
     return getattr(lib, s)
 
@@ -1282,7 +1292,7 @@ def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: int, value: He
 def helicsFederateInfoSetSeparator(fi: HelicsFederateInfo, separator: str):
     f = loadSym("helicsFederateInfoSetSeparator")
     err = lib.helicsErrorInitialize()
-    f(fi, separator.cchar, err)
+    f(fi, cchar(separator), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -1900,7 +1910,7 @@ def helicsFederateSetFlagOption(fed: HelicsFederate, flag: int, flagValue: Helic
 def helicsFederateSetSeparator(fed: HelicsFederate, separator: str):
     f = loadSym("helicsFederateSetSeparator")
     err = lib.helicsErrorInitialize()
-    f(fed, separator.cchar, err)
+    f(fed, cchar(separator), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -3671,7 +3681,7 @@ def helicsFilterGetName(filt: HelicsFilter) -> str:
 def helicsFilterSet(filt: HelicsFilter, prop: str, val: float):
     f = loadSym("helicsFilterSet")
     err = lib.helicsErrorInitialize()
-    f(filt, cstring(prop), val.cdouble, err)
+    f(filt, cstring(prop), cdouble(val), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4356,7 +4366,7 @@ def helicsPublicationPublishBoolean(pub: HelicsPublication, val: HelicsBool):
 def helicsPublicationPublishDouble(pub: HelicsPublication, val: float):
     f = loadSym("helicsPublicationPublishDouble")
     err = lib.helicsErrorInitialize()
-    f(pub, val.cdouble, err)
+    f(pub, cdouble(val), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4390,7 +4400,7 @@ def helicsPublicationPublishTime(pub: HelicsPublication, val: HelicsTime):
 def helicsPublicationPublishChar(pub: HelicsPublication, val: str):
     f = loadSym("helicsPublicationPublishChar")
     err = lib.helicsErrorInitialize()
-    f(pub, val.cchar, err)
+    f(pub, cchar(val), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4408,7 +4418,7 @@ def helicsPublicationPublishChar(pub: HelicsPublication, val: str):
 def helicsPublicationPublishComplex(pub: HelicsPublication, real: float, imag: float):
     f = loadSym("helicsPublicationPublishComplex")
     err = lib.helicsErrorInitialize()
-    f(pub, real.cdouble, imag.cdouble, err)
+    f(pub, cdouble(real), cdouble(imag), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4444,7 +4454,7 @@ def helicsPublicationPublishVector(pub: HelicsPublication, vectorInput: float, v
 def helicsPublicationPublishNamedPoint(pub: HelicsPublication, str: str, val: float):
     f = loadSym("helicsPublicationPublishNamedPoint")
     err = lib.helicsErrorInitialize()
-    f(pub, cstring(str), val.cdouble, err)
+    f(pub, cstring(str), cdouble(val), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4667,10 +4677,11 @@ def helicsInputGetTime(ipt: HelicsInput) -> HelicsTime:
 def helicsInputGetChar(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetChar")
     err = lib.helicsErrorInitialize()
-    result = f(ipt, err).char
+    result = f(ipt, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
     else:
+        # TODO: this is a char, will ffi.string conversion work?
         return ffi.string(result).decode()
 
 
@@ -4883,7 +4894,7 @@ def helicsInputSetDefaultTime(ipt: HelicsInput, val: HelicsTime):
 def helicsInputSetDefaultChar(ipt: HelicsInput, val: str):
     f = loadSym("helicsInputSetDefaultChar")
     err = lib.helicsErrorInitialize()
-    f(ipt, val.cchar, err)
+    f(ipt, cchar(val), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4918,7 +4929,7 @@ def helicsInputSetDefaultDouble(ipt: HelicsInput, val: float):
 def helicsInputSetDefaultComplex(ipt: HelicsInput, real: float, imag: float):
     f = loadSym("helicsInputSetDefaultComplex")
     err = lib.helicsErrorInitialize()
-    f(ipt, real.cdouble, imag.cdouble, err)
+    f(ipt, cdouble(real), cdouble(imag), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -4954,7 +4965,7 @@ def helicsInputSetDefaultVector(ipt: HelicsInput, vectorInput: float, vectorLeng
 def helicsInputSetDefaultNamedPoint(ipt: HelicsInput, str: str, val: float):
     f = loadSym("helicsInputSetDefaultNamedPoint")
     err = lib.helicsErrorInitialize()
-    f(ipt, cstring(str), val.cdouble, err)
+    f(ipt, cstring(str), cdouble(val), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -5232,7 +5243,7 @@ def helicsPublicationSetOption(pub: HelicsPublication, option: int, val: int):
 def helicsPublicationSetMinimumChange(pub: HelicsPublication, tolerance: float):
     f = loadSym("helicsPublicationSetMinimumChange")
     err = lib.helicsErrorInitialize()
-    f(pub, tolerance.cdouble, err)
+    f(pub, cdouble(tolerance), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
@@ -5249,7 +5260,7 @@ def helicsPublicationSetMinimumChange(pub: HelicsPublication, tolerance: float):
 def helicsInputSetMinimumChange(inp: HelicsInput, tolerance: float):
     f = loadSym("helicsInputSetMinimumChange")
     err = lib.helicsErrorInitialize()
-    f(inp, tolerance.cdouble, err)
+    f(inp, cdouble(tolerance), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
 
