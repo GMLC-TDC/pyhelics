@@ -747,6 +747,8 @@ def helicsGetFederateByName(fedName: str) -> HelicsFederate:
     result = f(cstring(fedName), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -827,6 +829,8 @@ def helicsCreateValueFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsFed
     result = f(cstring(fedName), fi, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -847,6 +851,8 @@ def helicsCreateValueFederateFromConfig(configFile: str) -> HelicsFederate:
     result = f(cstring(configFile), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -869,6 +875,8 @@ def helicsCreateMessageFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsF
     result = f(fedName, fi, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -890,6 +898,8 @@ def helicsCreateMessageFederateFromConfig(configFile: str) -> HelicsFederate:
     result = f(cstring(configFile), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -912,6 +922,8 @@ def helicsCreateCombinationFederate(fedName: str, fi: HelicsFederateInfo) -> Hel
     result = f(cstring(fedName), fi, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -933,6 +945,8 @@ def helicsCreateCombinationFederateFromConfig(configFile: str) -> HelicsFederate
     result = f(cstring(configFile), err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -953,6 +967,8 @@ def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
     result = f(fed, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -963,6 +979,7 @@ def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
 def helicsCreateFederateInfo() -> HelicsFederateInfo:
     f = loadSym("helicsCreateFederateInfo")
     result = f()
+    return result
 
 
 # *
@@ -981,6 +998,8 @@ def helicsFederateInfoClone(fi: HelicsFederateInfo) -> HelicsFederateInfo:
     result = f(fi, err)
     if err.error_code != 0:
         raise HelicsException(err.message)
+    else:
+        return result
 
 
 # *
@@ -996,9 +1015,9 @@ def helicsFederateInfoClone(fi: HelicsFederateInfo) -> HelicsFederateInfo:
 def helicsFederateInfoLoadFromArgs(fi: HelicsFederateInfo, arguments: List[str]):
     f = loadSym("helicsFederateInfoLoadFromArgs")
     err = lib.helicsErrorInitialize()
-    argc = arguments.len
-    argv = allocCStringArray([])
-    for i, s in arguments.pairs():
+    argc = len(arguments)
+    argv = ffi.new(f"char*[{argc}]")
+    for i, s in enumerate(arguments):
         argv[i] = s
     f(fi, argc.cint, argv, err)
     if err.error_code != 0:
@@ -1191,7 +1210,7 @@ def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, localPort: str):
 #
 def helicsGetPropertyIndex(val: str) -> int:
     f = loadSym("helicsGetPropertyIndex")
-    f(cstring(val))
+    return f(cstring(val))
 
 
 # *
@@ -1201,7 +1220,7 @@ def helicsGetPropertyIndex(val: str) -> int:
 #
 def helicsGetFlagIndex(val: str) -> int:
     f = loadSym("helicsGetFlagIndex")
-    f(cstring(val))
+    return f(cstring(val))
 
 
 # *
@@ -1214,7 +1233,7 @@ def helicsGetFlagIndex(val: str) -> int:
 #
 def helicsGetOptionIndex(val: str) -> int:
     f = loadSym("helicsGetOptionIndex")
-    f(cstring(val))
+    return f(cstring(val))
 
 
 # *
@@ -1227,7 +1246,7 @@ def helicsGetOptionIndex(val: str) -> int:
 #
 def helicsGetOptionValue(val: str) -> int:
     f = loadSym("helicsGetOptionValue")
-    f(cstring(val))
+    return f(cstring(val))
 
 
 # *
@@ -2182,7 +2201,7 @@ def helicsBrokerSetLogFile(broker: HelicsBroker, logFileName: str):
 #
 def helicsCreateQuery(target: str, query: str) -> HelicsQuery:
     f = loadSym("helicsCreateQuery")
-    f(cstring(target), cstring(query))
+    return f(cstring(target), cstring(query))
 
 
 # *
@@ -2652,7 +2671,7 @@ def helicsEndpointSubscribe(endpoint: HelicsEndpoint, key: str):
 #
 def helicsFederateHasMessage(fed: HelicsFederate) -> HelicsBool:
     f = loadSym("helicsFederateHasMessage")
-    f(fed)
+    result = f(fed)
     return result == 1
 
 
@@ -2665,7 +2684,7 @@ def helicsFederateHasMessage(fed: HelicsFederate) -> HelicsBool:
 #
 def helicsEndpointHasMessage(endpoint: HelicsEndpoint) -> HelicsBool:
     f = loadSym("helicsEndpointHasMessage")
-    f(endpoint)
+    result = f(endpoint)
     return result == 1
 
 
@@ -2676,7 +2695,7 @@ def helicsEndpointHasMessage(endpoint: HelicsEndpoint) -> HelicsBool:
 #
 def helicsFederatePendingMessages(fed: HelicsFederate) -> int:
     f = loadSym("helicsFederatePendingMessages")
-    f(fed)
+    return f(fed)
 
 
 # *
@@ -2686,7 +2705,7 @@ def helicsFederatePendingMessages(fed: HelicsFederate) -> int:
 #
 def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
     f = loadSym("helicsEndpointPendingMessages")
-    f(endpoint)
+    return f(endpoint)
 
 
 # *
@@ -2701,7 +2720,7 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
 #
 def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
     f = loadSym("helicsEndpointGetMessage")
-    f(endpoint)
+    return f(endpoint)
 
 
 # *
@@ -2713,7 +2732,7 @@ def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 #
 def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessageObject:
     f = loadSym("helicsEndpointGetMessageObject")
-    f(endpoint)
+    return f(endpoint)
 
 
 # *
@@ -2750,7 +2769,7 @@ def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage
 #
 def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
     f = loadSym("helicsFederateGetMessage")
-    f(fed)
+    return f(fed)
 
 
 # *
@@ -2764,7 +2783,7 @@ def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
 #
 def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessageObject:
     f = loadSym("helicsFederateGetMessageObject")
-    f(fed)
+    return f(fed)
 
 
 # *
@@ -2849,6 +2868,7 @@ def helicsEndpointGetName(endpoint: HelicsEndpoint) -> str:
 def helicsFederateGetEndpointCount(fed: HelicsFederate) -> int:
     f = loadSym("helicsFederateGetEndpointCount")
     result = f(fed).int
+    return result
 
 
 # *
@@ -2909,6 +2929,7 @@ def helicsEndpointSetOption(endpoint: HelicsEndpoint, option: int, value: int):
 def helicsEndpointGetOption(endpoint: HelicsEndpoint, option: int) -> int:
     f = loadSym("helicsEndpointGetOption")
     result = f(endpoint, option.cint).int
+    return result
 
 
 # *
@@ -2978,6 +2999,7 @@ def helicsMessageGetOriginalDestination(message: HelicsMessageObject) -> str:
 def helicsMessageGetTime(message: HelicsMessageObject) -> HelicsTime:
     f = loadSym("helicsMessageGetTime")
     result = f(message)
+    return result
 
 
 # *
@@ -3003,6 +3025,7 @@ def helicsMessageGetString(message: HelicsMessageObject) -> str:
 def helicsMessageGetMessageID(message: HelicsMessageObject) -> int:
     f = loadSym("helicsMessageGetMessageID")
     result = f(message).int
+    return result
 
 
 # *
@@ -3029,6 +3052,7 @@ def helicsMessageCheckFlag(message: HelicsMessageObject, flag: int) -> HelicsBoo
 def helicsMessageGetRawDataSize(message: HelicsMessageObject) -> int:
     f = loadSym("helicsMessageGetRawDataSize")
     result = f(message).int
+    return result
 
 
 # *
@@ -3066,6 +3090,7 @@ def helicsMessageGetRawData(
 def helicsMessageGetRawDataPointer(message: HelicsMessageObject) -> pointer:
     f = loadSym("helicsMessageGetRawDataPointer")
     result = f(message)
+    return result
 
 
 # *
@@ -3505,7 +3530,8 @@ def helicsCoreRegisterCloningFilter(core: HelicsCore, name: str) -> HelicsFilter
 #
 def helicsFederateGetFilterCount(fed: HelicsFederate) -> int:
     f = loadSym("helicsFederateGetFilterCount")
-    f(fed)
+    result = f(fed)
+    return result
 
 
 # *
@@ -3762,6 +3788,7 @@ def helicsFilterSetOption(filt: HelicsFilter, option: int, value: int):
 def helicsFilterGetOption(filt: HelicsFilter, option: int) -> int:
     f = loadSym("helicsFilterGetOption")
     result = f(filt, option.cint).int
+    return result
 
 
 # *
@@ -4397,6 +4424,7 @@ def helicsInputAddTarget(ipt: HelicsInput, target: str):
 def helicsInputGetRawValueSize(ipt: HelicsInput) -> int:
     f = loadSym("helicsInputGetRawValueSize")
     result = f(ipt).int
+    return result
 
 
 # *
@@ -4430,6 +4458,7 @@ def helicsInputGetRawValue(ipt: HelicsInput, data: pointer, maxDatalen: int, act
 def helicsInputGetStringSize(ipt: HelicsInput) -> int:
     f = loadSym("helicsInputGetStringSize")
     result = f(ipt).int
+    return result
 
 
 # *
@@ -4601,7 +4630,8 @@ def helicsInputGetComplex(ipt: HelicsInput, real: float, imag: float):
 #
 def helicsInputGetVectorSize(ipt: HelicsInput) -> int:
     f = loadSym("helicsInputGetVectorSize")
-    f(ipt)
+    result = f(ipt)
+    return result
 
 
 # *
@@ -5042,6 +5072,7 @@ def helicsPublicationSetInfo(pub: HelicsPublication, info: str):
 def helicsInputGetOption(inp: HelicsInput, option: int) -> int:
     f = loadSym("helicsInputGetOption")
     result = f(inp, option.cint).int
+    return result
 
 
 # *
@@ -5073,6 +5104,7 @@ def helicsInputSetOption(inp: HelicsInput, option: int, value: int):
 def helicsPublicationGetOption(pub: HelicsPublication, option: int) -> int:
     f = loadSym("helicsPublicationGetOption")
     result = f(pub, option.cint).int
+    return result
 
 
 # *
@@ -5145,6 +5177,7 @@ def helicsInputIsUpdated(ipt: HelicsInput) -> HelicsBool:
 def helicsInputLastUpdateTime(ipt: HelicsInput) -> HelicsTime:
     f = loadSym("helicsInputLastUpdateTime")
     result = f(ipt)
+    return result
 
 
 # *
@@ -5163,6 +5196,7 @@ def helicsInputClearUpdate(ipt: HelicsInput):
 def helicsFederateGetPublicationCount(fed: HelicsFederate) -> int:
     f = loadSym("helicsFederateGetPublicationCount")
     result = f(fed).int
+    return result
 
 
 # *
@@ -5173,3 +5207,4 @@ def helicsFederateGetPublicationCount(fed: HelicsFederate) -> int:
 def helicsFederateGetInputCount(fed: HelicsFederate) -> int:
     f = loadSym("helicsFederateGetInputCount")
     result = f(fed).int
+    return result
