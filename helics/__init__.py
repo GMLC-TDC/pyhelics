@@ -176,7 +176,7 @@ def cdouble(d: float) -> float:
 
 def cchar(c: str) -> str:
     """Convert python str to cchar"""
-    return c
+    return c.encode()
 
 
 def loadSym(s):
@@ -1750,16 +1750,15 @@ def helicsFederateRequestNextStep(fed: HelicsFederate) -> HelicsTime:
 # * This function also returns the iteration specification of the result.
 # * @endPythonOnly
 #
-def helicsFederateRequestTimeIterative(
-    fed: HelicsFederate, requestTime: HelicsTime, iterate: HelicsIterationRequest, outIteration: HelicsIterationResult,
-) -> HelicsTime:
+def helicsFederateRequestTimeIterative(fed: HelicsFederate, requestTime: HelicsTime, iterate: HelicsIterationRequest) -> HelicsTime:
     f = loadSym("helicsFederateRequestTimeIterative")
     err = helicsErrorInitialize()
+    outIteration = ffi.new("helics_iteration_result *")
     result = f(fed, requestTime, iterate, outIteration, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
     else:
-        return result
+        return result, outIteration
 
 
 # *
@@ -2600,9 +2599,10 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
 # * @param[in,out] err A pointer to an error object for catching errors.
 # * @endforcpponly
 #
-def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: pointer, inputDataLength: int):
+def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: str):
     f = loadSym("helicsEndpointSendMessageRaw")
     err = helicsErrorInitialize()
+    inputDataLength = len(data)
     f(endpoint, cstring(dest), data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
@@ -3122,9 +3122,7 @@ def helicsMessageGetRawDataSize(message: HelicsMessageObject) -> int:
 # * @return Raw string data.
 # * @endPythonOnly
 #
-def helicsMessageGetRawData(
-    message: HelicsMessageObject, data: pointer, maxMessagelen: int, actualSize: int
-):
+def helicsMessageGetRawData(message: HelicsMessageObject, data: pointer, maxMessagelen: int, actualSize: int):
     f = loadSym("helicsMessageGetRawData")
     err = helicsErrorInitialize()
     f(message, data, maxMessagelen, actualSize, err)
@@ -4708,14 +4706,14 @@ def helicsInputGetChar(ipt: HelicsInput) -> str:
 # *
 # * @return A helics_complex structure with the value.
 #
-def helicsInputGetComplexObject(ipt: HelicsInput) -> HelicsComplex:
+def helicsInputGetComplexObject(ipt: HelicsInput) -> complex:
     f = loadSym("helicsInputGetComplexObject")
     err = helicsErrorInitialize()
     result = f(ipt, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
     else:
-        return result
+        return complex(result.real, result.imag)
 
 
 # *
@@ -4782,6 +4780,7 @@ def helicsInputGetVector(ipt: HelicsInput) -> List[float]:
     else:
         return [x for x in data]
 
+
 # Declaration 'ipt' skipped
 
 # *
@@ -4800,9 +4799,7 @@ def helicsInputGetVector(ipt: HelicsInput) -> List[float]:
 # * @return a string and a double value for the named point
 # * @endPythonOnly
 #
-def helicsInputGetNamedPoint(
-    ipt: HelicsInput
-):
+def helicsInputGetNamedPoint(ipt: HelicsInput):
     f = loadSym("helicsInputGetNamedPoint")
     err = helicsErrorInitialize()
     outputString = ffi.new("char[500]")

@@ -10,6 +10,8 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 import helics as h
 import os
 
+import pytest
+
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -138,6 +140,7 @@ def test_filter_types_tests_core_fitler_registration():
     h.helicsCloseLibrary()
 
 
+@pytest.mark.skip
 def test_filter_type_tests_message_filter_function():
 
     broker = createBroker(2)
@@ -197,6 +200,7 @@ def test_filter_type_tests_message_filter_function():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_types_function_mobj():
 
     broker = createBroker(2)
@@ -833,6 +837,7 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_filter_test_file_load():
 
     filename = os.path.join(CURRENT_DIRECTORY, "filters.json")
