@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from helics import helicsGetVersion
+import helics as h
 
 
 def test_helicsGetVersion():
-    assert helicsGetVersion() == "v2.5.0"
+    assert h.helicsGetVersion() == "2.5.2 (2020-06-14)"
