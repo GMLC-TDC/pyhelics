@@ -128,9 +128,7 @@ def test_message_federate_send(mFed):
     assert message.time == 1.0
 
 
-def test_messagefederate_test_message_federate_initialize():
-    broker = createBroker()
-    mFed, fedinfo = createMessageFederate()
+def test_messagefederate_test_message_federate_initialize(mFed):
 
     state = h.helicsFederateGetState(mFed)
     assert state == 0
@@ -139,13 +137,8 @@ def test_messagefederate_test_message_federate_initialize():
     state = h.helicsFederateGetState(mFed)
     assert state == 2
 
-    destroyFederate(mFed, fedinfo)
-    destroyBroker(broker)
 
-
-def test_messagefederate_test_message_federate_endpoint_registration():
-    broker = createBroker()
-    mFed, fedinfo = createMessageFederate()
+def test_messagefederate_test_message_federate_endpoint_registration(mFed):
 
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
     epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "ep2", "random")
@@ -174,13 +167,8 @@ def test_messagefederate_test_message_federate_endpoint_registration():
     name = h.helicsEndpointGetName(epid_c)
     assert name == "TestA Federate/ep1"
 
-    destroyFederate(mFed, fedinfo)
-    destroyBroker(broker)
 
-
-def test_messagefederate_test_message_federate_send():
-    broker = createBroker()
-    mFed, fedinfo = createMessageFederate()
+def test_messagefederate_test_message_federate_send(mFed):
 
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
     epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "ep2", "random")
@@ -216,9 +204,6 @@ def test_messagefederate_test_message_federate_send():
     assert h.helicsMessageGetTime(message) == 1.0
     # @test_broken False
     # h.helicsMessageGetRawData(message) crashes
-
-    destroyFederate(mFed, fedinfo)
-    destroyBroker(broker)
 
 
 def test_messagefederate_send_receive_2fed_multisend():
@@ -272,31 +257,28 @@ def test_messagefederate_send_receive_2fed_multisend():
 
 
 @pt.mark.skip
-def test_messagefederate_message_object_tests():
+def test_messagefederate_message_object_tests(mFed):
 
-    broker = createBroker(1)
-    mFed1, fedinfo1 = createMessageFederate(1, "test")
+    epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
+    epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "ep2", "random")
 
-    epid1 = h.helicsFederateRegisterEndpoint(mFed1, "ep1", "")
-    epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed1, "ep2", "random")
+    h.helicsFederateSetTimeProperty(mFed, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
 
-    h.helicsFederateSetTimeProperty(mFed1, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
+    h.helicsFederateEnterExecutingMode(mFed)
 
-    h.helicsFederateEnterExecutingMode(mFed1)
+    assert h.helicsFederateGetState(mFed) == h.HELICS_STATE_EXECUTION
 
-    assert h.helicsFederateGetState(mFed1) == h.HELICS_STATE_EXECUTION
-
-    msg = h.helicsFederateCreateMessageObject(mFed1)
+    msg = h.helicsFederateCreateMessageObject(mFed)
     h.helicsMessageSetDestination(msg, "ep2")
     h.helicsMessageGetDestination(msg) == "ep2"
     h.helicsMessageSetData(msg, ["a" for _ in range(0, 500)])
     h.helicsMessageSetTime(msg, 0.0)
 
     h.helicsEndpointSendMessageObject(epid1, msg)
-    t = h.helicsFederateRequestTime(mFed1, 1.0)
+    t = h.helicsFederateRequestTime(mFed, 1.0)
     assert t == 1.0
 
-    assert h.helicsFederateHasMessage(mFed1) is True
+    assert h.helicsFederateHasMessage(mFed) is True
     assert h.helicsEndpointHasMessage(epid1) is False
     assert h.helicsEndpointHasMessage(epid2) is True
 
@@ -308,9 +290,9 @@ def test_messagefederate_message_object_tests():
     _ = h.helicsMessageGetRawDataPointer(msg)
     # assert Char(unsafe_load(Ptr{Cchar}(rdata), 245)) == 'a'
 
-    h.helicsFederateFinalize(mFed1)
+    h.helicsFederateFinalize(mFed)
 
-    assert h.helicsFederateGetState(mFed1) == h.HELICS_STATE_FINALIZE
+    assert h.helicsFederateGetState(mFed) == h.HELICS_STATE_FINALIZE
 
     h.helicsMessageSetFlagOption(msg, 7, True)
     assert h.helicsMessageCheckFlag(msg, 7) is True
@@ -318,10 +300,6 @@ def test_messagefederate_message_object_tests():
     assert h.helicsMessageCheckFlag(msg, 7) is False
 
     h.helicsEndpointSetDefaultDestination(epid1, "ep2")
-
-    destroyFederate(mFed1, fedinfo1)
-    destroyBroker(broker)
-
 
 def test_messagefederate_timing_tests():
 
