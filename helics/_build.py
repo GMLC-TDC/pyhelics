@@ -4,9 +4,7 @@ import os
 
 ffi = cffi.FFI()
 
-HELICS_INSTALL = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "install"
-)
+PYHELICS_INSTALL = os.path.join(os.path.dirname(os.path.abspath(__file__)), "install")
 
 files = [
     "helics_enums.h",
@@ -18,7 +16,7 @@ files = [
     "shared_api_library/ValueFederate.h",
 ]
 for file in files:
-    with open(os.path.join(HELICS_INSTALL, "include/helics", file)) as f:
+    with open(os.path.join(PYHELICS_INSTALL, "include/helics", file)) as f:
         data = "".join([line for line in f if not line.startswith("#")])
         data = data.replace("HELICS_EXPORT", "")
         data = data.replace("HELICS_DEPRECATED_EXPORT", "")
@@ -28,7 +26,7 @@ for file in files:
 #     "_py_helics",
 #     f"""#include "{CHELICS}" """,
 #     libraries=["helicsSharedLib"],
-#     library_dirs=[os.path.join(HELICS_INSTALL, "lib")],
+#     library_dirs=[os.path.join(PYHELICS_INSTALL, "lib")],
 # )
 
-lib = ffi.dlopen(os.path.join(HELICS_INSTALL, "lib/libhelicsSharedLib.dylib"))
+lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib/libhelicsSharedLib.dylib"))
