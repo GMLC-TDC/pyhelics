@@ -3124,10 +3124,13 @@ def helicsMessageGetRawDataSize(message: HelicsMessageObject) -> int:
 # * @return Raw string data.
 # * @endPythonOnly
 #
-def helicsMessageGetRawData(message: HelicsMessageObject, data: pointer, maxMessagelen: int, actualSize: int):
+def helicsMessageGetRawData(message: HelicsMessageObject):
     f = loadSym("helicsMessageGetRawData")
     err = helicsErrorInitialize()
-    f(message, data, maxMessagelen, actualSize, err)
+    data = ffi.new("char *")
+    maxMessageLen = helicsMessageGetRawDataSize(message)
+    actualSize = ffi.new("int *")
+    f(message, data, maxMessageLen, actualSize, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
 
