@@ -199,7 +199,6 @@ def test_filter_type_tests_message_filter_function():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_function_mobj():
 
     broker = createBroker(2)
@@ -223,7 +222,7 @@ def test_filter_test_types_function_mobj():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
 
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "port2", data)
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
@@ -263,7 +262,6 @@ def test_filter_test_types_function_mobj():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_function_two_stage():
 
     broker = createBroker(3)
@@ -290,7 +288,7 @@ def test_filter_test_types_function_two_stage():
 
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "port2", data)
 
     h.helicsFederateRequestTimeAsync(mFed, 0.0)
@@ -335,7 +333,6 @@ def test_filter_test_types_function_two_stage():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_function2():
 
     broker = createBroker(2)
@@ -362,7 +359,7 @@ def test_filter_test_types_function2():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
 
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "port2", data)
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
@@ -406,7 +403,6 @@ def test_filter_test_types_function2():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_message_filter_function3():
 
     broker = createBroker(2)
@@ -434,7 +430,7 @@ def test_filter_test_types_message_filter_function3():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
 
-    data = "hello world"
+    data = "hello world".encode()
     h.helicsEndpointSendMessageRaw(p1, "port2", data)
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
@@ -475,7 +471,6 @@ def test_filter_test_types_message_filter_function3():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_clone_test():
 
     broker = createBroker(3)
@@ -504,7 +499,7 @@ def test_filter_test_types_clone_test():
     state = h.helicsFederateGetState(dFed)
     assert state == h.HELICS_STATE_EXECUTION
 
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "dest", data)
 
     h.helicsFederateRequestTimeAsync(sFed, 1.0)
@@ -577,7 +572,7 @@ def test_filter_test_types_clone_test_connections():
 
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "dest", data)
 
     h.helicsFederateRequestTimeAsync(sFed, 1.0)
@@ -617,7 +612,6 @@ def test_filter_test_types_clone_test_connections():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_clone_test_broker_connections():
     broker = createBroker(3)
     sFed, fedinfo1 = createMessageFederate(1, "source", 1.0)
@@ -642,7 +636,7 @@ def test_filter_test_types_clone_test_broker_connections():
 
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "dest", data)
 
     h.helicsFederateRequestTimeAsync(sFed, 1.0)
@@ -682,7 +676,6 @@ def test_filter_test_types_clone_test_broker_connections():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_clone_test_dest_connections():
     broker = createBroker(3)
     sFed, fedinfo1 = createMessageFederate(1, "source", 1.0)
@@ -717,7 +710,7 @@ def test_filter_test_types_clone_test_dest_connections():
 
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "dest", data)
 
     h.helicsFederateFinalize(sFed)
@@ -768,7 +761,6 @@ def test_filter_test_types_clone_test_dest_connections():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_clone_test_broker_dest_connections():
 
     broker = createBroker(3)
@@ -794,7 +786,7 @@ def test_filter_test_types_clone_test_broker_dest_connections():
 
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "dest", data)
 
     h.helicsFederateRequestTimeAsync(sFed, 1.0)
@@ -855,4 +847,3 @@ def test_filter_test_file_load():
 
     assert h.helicsFederateGetEndpointCount(mFed) == 3
     h.helicsFederateFinalize(mFed)
-    h.helicsFederateFree(mFed)
