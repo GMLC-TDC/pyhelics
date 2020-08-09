@@ -836,7 +836,6 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_file_load():
 
     filename = os.path.join(CURRENT_DIRECTORY, "filters.json")
@@ -847,3 +846,4 @@ def test_filter_test_file_load():
 
     assert h.helicsFederateGetEndpointCount(mFed) == 3
     h.helicsFederateFinalize(mFed)
+    h.helicsCloseLibrary()
