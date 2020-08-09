@@ -43,6 +43,7 @@ def test_system_broker_global_value():
     assert h.helicsBrokerIsConnected(brk) is False
     h.helicsBrokerFree(brk)
 
+
 def test_system_test_core_global_value1():
 
     brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
@@ -64,7 +65,6 @@ def test_system_test_core_global_value1():
     h.helicsBrokerDisconnect(brk)
 
     assert h.helicsBrokerIsConnected(brk) is False
-
 
 
 def test_system_test_core_global_value2():
@@ -93,41 +93,6 @@ def test_system_test_core_global_value2():
     assert h.helicsBrokerIsConnected(brk) == False
 
 
-@pytest.mark.skip
-def test_system_test_core_creation():
-    brk = h.helicsCreateBroker("ipc", "gbrokerc", "--root")
-
-    argv = ["test", "--name=gcore", "--timeout=2000", "--broker=gbrokerc"]
-
-    cr = h.helicsCreateCoreFromArgs("inproc", "", argv)
-    assert h.helicsCoreGetIdentifier(cr) == "gcore"
-
-    argv = ["--name=gcore2", "--log-level=what_logs?"]
-
-    # @test_throws h.HELICSErrorInvalidArgument cr2 = h.helicsCreateCoreFromArgs("inproc", "", argv)
-
-    h.helicsBrokerDisconnect(brk)
-    h.helicsCoreDisconnect(cr)
-
-    assert h.helicsBrokerIsConnected(brk) is False
-
-
-@pytest.mark.skip
-def test_system_test_broker_creation():
-
-    argv = ["", "--name=gbrokerc", "--timeout=2000", "--root"]
-
-    brk = h.helicsCreateBrokerFromArgs("inproc", "", argv)
-    assert h.helicsBrokerGetIdentifier(brk) == "gbrokerc"
-
-    argv[2] = "--name=gbrokerc2"
-    argv[3] = "--log-level=what_logs?"
-
-    # @test_throws h.HELICSErrorInvalidArgument brk2 = h.helicsCreateBrokerFromArgs("inproc", "", argv)
-
-    h.helicsBrokerDisconnect(brk)
-
-
 def test_system_test_broker_global_value():
 
     brk = h.helicsCreateBroker("inproc", "gbroker", "--root")
@@ -149,24 +114,19 @@ def test_system_test_broker_global_value():
     assert h.helicsBrokerIsConnected(brk) is False
 
 
-@pytest.mark.skip
 def test_system_test_federate_global_value():
 
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
     cr = h.helicsCreateCore("inproc", "gcore", "--broker=gbrokerc")
 
-    # test creation of federateInfo from command line arguments
-    argv = ["" "--corename=gcore" "--type=inproc" "--period=1.0"]
+    argv = ["", "--corename=gcore", "--type=inproc"]
 
     fi = h.helicsCreateFederateInfo()
     h.helicsFederateInfoLoadFromArgs(fi, argv)
 
     fed = h.helicsCreateValueFederate("fed0", fi)
 
-    argv[3] = "--period=frogs"  # this is meant to generate an error in command line processing
-
     fi2 = h.helicsFederateInfoClone(fi)
-    # @test_throws h.HELICSErrorInvalidArgument h.helicsFederateInfoLoadFromArgs(fi2, argv)
 
     h.helicsFederateInfoFree(fi2)
     h.helicsFederateInfoFree(fi)
@@ -191,7 +151,7 @@ def test_system_test_federate_global_value():
     while h.helicsQueryIsCompleted(q2) is False:
         time.sleep(0.20)
     res = h.helicsQueryExecuteComplete(q2)
-    assert res == "False"
+    assert res == "false"
 
     h.helicsFederateFinalize(fed)
 
