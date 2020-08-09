@@ -25,9 +25,28 @@ def isfile(filename):
     return os.path.exists(filename)
 
 
+def test_system_broker_global_value():
+    brk = h.helicsCreateBroker("ipc", "gbrokerc", "--root")
+    globalVal = "this is a string constant that functions as a global"
+    globalVal2 = "this is a second string constant that functions as a global"
+    h.helicsBrokerSetGlobal(brk, "testglobal", globalVal)
+    q = h.helicsCreateQuery("global", "testglobal")
+    res = h.helicsQueryBrokerExecute(q, brk)
+    assert res == globalVal
+    h.helicsBrokerSetGlobal(brk, "testglobal2", globalVal2)
+    h.helicsQueryFree(q)
+    q = h.helicsCreateQuery("global", "testglobal2")
+    res = h.helicsQueryBrokerExecute(q, brk)
+    assert res == globalVal2
+    h.helicsBrokerDisconnect(brk)
+    h.helicsQueryFree(q)
+    assert h.helicsBrokerIsConnected(brk) is False
+    h.helicsBrokerFree(brk)
+
+
 @pytest.mark.skip
 def test_system_test_core_creation():
-    brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
+    brk = h.helicsCreateBroker("ipc", "gbrokerc", "--root")
 
     argv = ["", "--name=gcore", "--timeout=2000", "--broker=gbrokerc"]
 
