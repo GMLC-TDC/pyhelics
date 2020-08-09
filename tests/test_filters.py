@@ -140,7 +140,6 @@ def test_filter_types_tests_core_fitler_registration():
     h.helicsCloseLibrary()
 
 
-@pytest.mark.skip
 def test_filter_type_tests_message_filter_function():
 
     broker = createBroker(2)
@@ -161,7 +160,7 @@ def test_filter_type_tests_message_filter_function():
 
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
-    data = ["a" for _ in range(0, 500)]
+    data = "".join(["a" for _ in range(0, 500)]).encode()
     h.helicsEndpointSendMessageRaw(p1, "port2", data)
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)

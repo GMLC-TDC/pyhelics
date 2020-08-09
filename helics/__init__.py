@@ -2600,11 +2600,11 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
 # * @param[in,out] err A pointer to an error object for catching errors.
 # * @endforcpponly
 #
-def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: str):
+def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
     f = loadSym("helicsEndpointSendMessageRaw")
     err = helicsErrorInitialize()
     inputDataLength = len(data)
-    f(endpoint, cstring(dest), cstring(data), inputDataLength, err)
+    f(endpoint, cstring(dest), data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException(ffi.string(err.message).decode())
 
