@@ -43,12 +43,61 @@ def test_system_broker_global_value():
     assert h.helicsBrokerIsConnected(brk) is False
     h.helicsBrokerFree(brk)
 
+def test_system_test_core_global_value1():
+
+    brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
+    cr = h.helicsCreateCore("zmq", "gcore", "--broker=gbrokerc")
+
+    globalVal = "this is a string constant that functions as a global"
+    _ = "this is a second string constant that functions as a global"
+
+    h.helicsCoreSetGlobal(cr, "testglobal", globalVal)
+
+    # q = h.helicsCreateQuery("global", "testglobal")
+    # TODO: This hangs on core execute
+    # res = h.helicsQueryCoreExecute(q, cr)
+    # assert res == globalVal
+    # h.helicsQueryFree(q)
+    # @test_broken False
+
+    h.helicsCoreDisconnect(cr)
+    h.helicsBrokerDisconnect(brk)
+
+    assert h.helicsBrokerIsConnected(brk) is False
+
+
+
+def test_system_test_core_global_value2():
+    h.helicsCloseLibrary()
+    brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
+
+    cr = h.helicsCreateCore("zmq", "gcore", "--broker=gbrokerc")
+    connected = h.helicsCoreConnect(cr)
+    assert connected == True
+    assert h.helicsCoreIsConnected(cr) == True
+    globalVal = "this is a string constant that functions as a global"
+    globalVal2 = "this is a second string constant that functions as a global"
+    h.helicsCoreSetGlobal(cr, "testglobal", globalVal)
+    q = h.helicsCreateQuery("global", "testglobal")
+    res = h.helicsQueryCoreExecute(q, cr)
+    assert res == globalVal
+    h.helicsCoreSetGlobal(cr, "testglobal2", globalVal2)
+    h.helicsQueryFree(q)
+    q = h.helicsCreateQuery("global", "testglobal2")
+    res = h.helicsQueryCoreExecute(q, cr)
+    assert res == globalVal2
+    h.helicsBrokerDisconnect(brk)
+    h.helicsCoreDisconnect(cr)
+
+    h.helicsQueryFree(q)
+    assert h.helicsBrokerIsConnected(brk) == False
+
 
 @pytest.mark.skip
 def test_system_test_core_creation():
     brk = h.helicsCreateBroker("ipc", "gbrokerc", "--root")
 
-    argv = ["", "--name=gcore", "--timeout=2000", "--broker=gbrokerc"]
+    argv = ["test", "--name=gcore", "--timeout=2000", "--broker=gbrokerc"]
 
     cr = h.helicsCreateCoreFromArgs("inproc", "", argv)
     assert h.helicsCoreGetIdentifier(cr) == "gcore"
@@ -97,29 +146,6 @@ def test_system_test_broker_global_value():
 
     h.helicsBrokerDisconnect(brk)
     h.helicsQueryFree(q)
-    assert h.helicsBrokerIsConnected(brk) is False
-
-
-def test_system_test_core_global_value():
-
-    brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
-    cr = h.helicsCreateCore("zmq", "gcore", "--broker=gbrokerc")
-
-    globalVal = "this is a string constant that functions as a global"
-    _ = "this is a second string constant that functions as a global"
-
-    h.helicsCoreSetGlobal(cr, "testglobal", globalVal)
-
-    # q = h.helicsCreateQuery("global", "testglobal")
-    # TODO: This hangs on core execute
-    # res = h.helicsQueryCoreExecute(q, cr)
-    # assert res == globalVal
-    # h.helicsQueryFree(q)
-    # @test_broken False
-
-    h.helicsCoreDisconnect(cr)
-    h.helicsBrokerDisconnect(brk)
-
     assert h.helicsBrokerIsConnected(brk) is False
 
 
