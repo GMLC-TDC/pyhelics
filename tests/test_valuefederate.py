@@ -602,7 +602,6 @@ def test_valuefederate_test_info_filed():
     destroyBroker(broker)
 
 
-@pt.mark.skip(reason="This test hangs on running")
 def test_valuefederate_test_file_load():
 
     filename = os.path.join(CURRENT_DIRECTORY, "valuefederate.json")
@@ -616,3 +615,4 @@ def test_valuefederate_test_file_load():
 
     h.helicsFederateFinalize(vFed)
     h.helicsFederateFree(vFed)
+    h.helicsCloseLibrary()
