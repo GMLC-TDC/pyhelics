@@ -16,7 +16,6 @@ from test_init import createBroker, createValueFederate, destroyFederate, destro
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
-@pt.mark.skip(reason="This test hangs when running")
 def test_combination_federate():
 
     broker = createBroker()
@@ -25,26 +24,20 @@ def test_combination_federate():
 
     assert h.helicsFederateIsValid(cfed)
 
-    assert h.helicsFederateGetEndpointCount(cfed) == 6
-    assert h.helicsFederateGetFilterCount(cfed) == 6
-    assert h.helicsFederateGetInputCount(cfed) == 7
+    assert h.helicsFederateGetEndpointCount(cfed) == 2
+    assert h.helicsFederateGetFilterCount(cfed) == 0
+    assert h.helicsFederateGetInputCount(cfed) == 2
 
     ept = h.helicsFederateGetEndpointByIndex(cfed, 0)
 
-    assert h.helicsEndpointGetName(ept) == "EV_Controller/EV6"
+    assert h.helicsEndpointGetName(ept) == "ept1"
 
-    filt = h.helicsFederateGetFilterByIndex(cfed, 3)
-
-    assert h.helicsFilterGetName(filt) == "EV_Controller/filterEV3"
-
-    f = h.helicsFederateGetFilter(cfed, "EV_Controller/filterEV3")
-    assert h.helicsFilterGetName(f) == "EV_Controller/filterEV3"
-
-    ipt = h.helicsFederateGetInputByIndex(cfed, 4)
+    ipt = h.helicsFederateGetInputByIndex(cfed, 1)
     assert h.helicsInputGetExtractionUnits(ipt) == ""
-    assert h.helicsSubscriptionGetKey(ipt) == "IEEE_123_feeder_0/charge_EV3"
+    assert h.helicsSubscriptionGetKey(ipt) == "comboFed/pub2"
 
     h.helicsEndpointClearMessages(ept)
 
     h.helicsFederateDestroy(cfed)
     h.helicsBrokerDestroy(broker)
+    h.helicsCloseLibrary()
