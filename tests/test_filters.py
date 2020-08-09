@@ -539,7 +539,6 @@ def test_filter_test_types_clone_test():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_test_types_clone_test_connections():
 
     broker = createBroker(3)
