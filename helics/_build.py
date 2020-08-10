@@ -4,7 +4,7 @@ import os
 
 ffi = cffi.FFI()
 
-PYHELICS_INSTALL = os.path.join(os.path.dirname(os.path.abspath(__file__)), "install")
+PYHELICS_INSTALL = os.getenv("PYHELICS_INSTALL", os.path.join(os.path.dirname(os.path.abspath(__file__)), "install"))
 
 files = [
     "helics_enums.h",
