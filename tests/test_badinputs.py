@@ -139,13 +139,12 @@ def test_bad_input_type_publication_2_tests():
     destroyBroker(broker)
 
 
-@pt.mark.skipif(sys.platform == "linux", reason="tests segfault when calling helicsInputGetComplexObject on linux")
 def test_bad_input_tests_raw_tests():
 
     broker = createBroker(1)
     vFed1, fedinfo = createValueFederate(1, "test")
 
-    pubid = h.helicsFederateRegisterPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_RAW, "")
+    pubid = h.helicsFederateRegisterPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_COMPLEX, "")
 
     subid = h.helicsFederateRegisterGlobalInput(vFed1, "inp1", h.HELICS_DATA_TYPE_RAW, "")
 
