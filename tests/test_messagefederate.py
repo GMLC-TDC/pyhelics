@@ -118,14 +118,16 @@ def test_message_federate_send(mFed):
     res = h.helicsEndpointHasMessage(epid2)
     assert res == 1
 
-    message = h.helicsEndpointGetMessage(epid2)
+    message = h.helicsEndpointGetMessageObject(epid2)
 
-    assert h.ffi.string(message.data).decode() == "random-data"
-    assert message.length == 11
-    assert h.ffi.string(message.original_dest).decode() == ""
-    assert h.ffi.string(message.original_source).decode() == "TestA Federate/ep1"
-    assert h.ffi.string(message.source).decode() == "TestA Federate/ep1"
-    assert message.time == 1.0
+    assert h.helicsMessageGetMessageID(message) == 55
+    assert h.helicsMessageIsValid(message) is True
+    assert h.helicsMessageGetString(message) == "random-data"
+    assert h.helicsMessageGetRawDataSize(message) == 11
+    assert h.helicsMessageGetOriginalDestination(message) == ""
+    assert h.helicsMessageGetOriginalSource(message) == "TestA Federate/ep1"
+    assert h.helicsMessageGetSource(message) == "TestA Federate/ep1"
+    assert h.helicsMessageGetTime(message) == 1.0
 
 
 def test_messagefederate_test_message_federate_initialize(mFed):
