@@ -115,7 +115,6 @@ def test_system_test_broker_global_value():
     assert h.helicsBrokerIsConnected(brk) is False
 
 
-@pt.mark.skip(reason="tests fail when calling helicsFederateInfoLoadFromArgs on linux and on macos on python 3.8 for different reasons")
 def test_system_test_federate_global_value():
 
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
