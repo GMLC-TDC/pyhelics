@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import cffi
 import os
+import platform
 
 ffi = cffi.FFI()
 
@@ -43,9 +44,24 @@ for file in files:
 #     library_dirs=[os.path.join(PYHELICS_INSTALL, "lib")],
 # )
 
-for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
-    if "helicsSharedLib" in file:
-        lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
-        break
-else:
-    raise Exception("Unable to load helics shared library")
+if platform.system() == "Windows":
+    for file in os.listdir(os.path.join(PYHELICS_INSTALL, "bin")):
+        if "helicsSharedLib" in file:
+            lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "bin", file))
+            break
+    else:
+        raise Exception("Unable to load helics shared library")
+elif platform.system() == "Darwin":
+    for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
+        if "helicsSharedLib" in file:
+            lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
+            break
+    else:
+        raise Exception("Unable to load helics shared library")
+elif platform.system() == "Linux":
+    for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
+        if "helicsSharedLib" in file:
+            lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
+            break
+    else:
+        raise Exception("Unable to load helics shared library")
