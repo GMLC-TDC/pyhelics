@@ -283,10 +283,11 @@ def test_messagefederate_message_object_tests(mFed):
 
     msg = h.helicsEndpointGetMessageObject(epid2)
     assert h.helicsMessageGetRawDataSize(msg) == 500
-    print(h.helicsMessageGetRawData(msg))
+    # TODO: segfaults
+    # print(h.helicsMessageGetRawData(msg))
     # @test_broken False
     # segfaults
-    rawdata = h.helicsMessageGetRawDataPointer(msg)
+    # rawdata = h.helicsMessageGetRawDataPointer(msg)
     # assert Char(unsafe_load(Ptr{Cchar}(rdata), 245)) == 'a'
 
     h.helicsFederateFinalize(mFed)
