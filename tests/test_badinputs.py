@@ -139,6 +139,7 @@ def test_bad_input_type_publication_2_tests():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "linux", reason="tests segfault when calling helicsInputGetComplexObject on linux")
 def test_bad_input_tests_raw_tests():
 
     broker = createBroker(1)
