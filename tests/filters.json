@@ -1,6 +1,6 @@
 {
   "coreinit": "--autobroker",
-  "corename": "the name of the core",
+  "corename": "the name of the filter federate core",
   "coretype": "inproc",
   "endpoints": [
     {
