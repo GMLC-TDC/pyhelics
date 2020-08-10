@@ -85,7 +85,8 @@ class HELICSDownloadCommand(Command):
                 dirname = tf.getnames()[0].partition("/")[0]
                 tf.extractall()
             shutil.move(dirname, self.pyhelics_install)
-
+            if platform.system() == "Linux":
+                shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
 
 setup(
     name="helics",
