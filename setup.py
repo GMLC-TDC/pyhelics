@@ -39,7 +39,7 @@ def read(*names, **kwargs):
 
 
 HELICS_VERSION = "2.5.2"
-
+CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 if platform.system() == "Darwin":
     DEFAULT_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
@@ -71,7 +71,7 @@ class HELICSDownloadCommand(Command):
 
     def initialize_options(self):
         self.helics_url = DEFAULT_URL
-        self.pyhelics_install = "./helics/install"
+        self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
 
     def finalize_options(self):
         pass
