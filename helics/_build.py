@@ -15,9 +15,23 @@ files = [
     "shared_api_library/MessageFilters.h",
     "shared_api_library/ValueFederate.h",
 ]
+IGNOREBLOCK = False
 for file in files:
     with open(os.path.join(PYHELICS_INSTALL, "include/helics", file)) as f:
-        data = "".join([line for line in f if not line.startswith("#")])
+        lines = []
+        for line in f:
+            if line.startswith("#ifdef __cplusplus"):
+                IGNOREBLOCK = True
+                continue
+            if IGNOREBLOCK is True and line.startswith("#endif"):
+                IGNOREBLOCK = False
+                continue
+            if IGNOREBLOCK is True:
+                continue
+            if line.startswith("#"):
+                continue
+            lines.append(line)
+        data = "\n".join(lines)
         data = data.replace("HELICS_EXPORT", "")
         data = data.replace("HELICS_DEPRECATED_EXPORT", "")
         ffi.cdef(data)
@@ -29,4 +43,7 @@ for file in files:
 #     library_dirs=[os.path.join(PYHELICS_INSTALL, "lib")],
 # )
 
-lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib/libhelicsSharedLib.dylib"))
+for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
+    if "helicsSharedLib" in file:
+        lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
+        break
