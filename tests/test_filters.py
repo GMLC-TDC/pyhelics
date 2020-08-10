@@ -827,7 +827,7 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     h.helicsFederateFinalizeComplete(sFed)
     h.helicsFederateFinalizeComplete(dFed)
     state = h.helicsFederateGetState(sFed)
-    state == h.HELICS_STATE_FINALIZE
+    assert state == h.HELICS_STATE_FINALIZE
 
     destroyFederate(sFed, fedinfo1)
     destroyFederate(dFed, fedinfo2)
