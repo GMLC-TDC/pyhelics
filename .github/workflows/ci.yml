@@ -22,7 +22,6 @@ jobs:
     - name: Download helics
       run: |
         python setup.py download
-        pip install "."
     - name: Install dependencies
       run: |
         python -m pip install -U pip
