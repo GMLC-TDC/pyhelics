@@ -88,6 +88,7 @@ class HELICSDownloadCommand(Command):
             if platform.system() == "Linux":
                 shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
 
+
 setup(
     name="helics",
     version="0.1.0",
@@ -126,7 +127,7 @@ setup(
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     install_requires=["cffi>=1.0.0"],
     # cffi_modules=["_build.py:ffi"],
-    extras_require={},
+    extras_require={"docs": ["mkdocs", "inari", "mkdocs-material", "pygments", "pymdown-extensions"]},
     # We only require CFFI when compiling.
     # pyproject.toml does not support requirements only for some build actions,
     # but we can do it in setup.py.
