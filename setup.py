@@ -15,11 +15,76 @@ from os.path import splitext
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
+from setuptools import setup, Command, Extension
+
+import os
+import platform
+import subprocess
+import urllib
+import zipfile
+import tarfile
+import shutil
+import struct
+
+
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 
 def read(*names, **kwargs):
     with io.open(join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")) as fh:
         return fh.read()
+
+
+HELICS_VERSION = "2.5.2"
+
+
+if platform.system() == "Darwin":
+    DEFAULT_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
+        helics_version=HELICS_VERSION
+    )
+elif platform.system() == "Windows":
+    if struct.calcsize("P") * 8 == 32:
+        DEFAULT_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
+            helics_version=HELICS_VERSION
+        )
+    else:
+        DEFAULT_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
+            helics_version=HELICS_VERSION
+        )
+
+elif platform.system() == "Linux":
+    DEFAULT_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+        helics_version=HELICS_VERSION
+    )
+else:
+    raise NotImplementedError("Unsupported platform {}".format(platform.system()))
+
+
+class HELICSDownloadCommand(Command):
+    description = "Download helics libraries dependency"
+    user_options = [
+        ("pyhelics-install=", None, "path to pyhelics install folder"),
+    ]
+
+    def initialize_options(self):
+        self.helics_url = DEFAULT_URL
+        self.pyhelics_install = "./helics/install"
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        r = urlopen(self.helics_url)
+        if r.getcode() == 200:
+            content = io.BytesIO(r.read())
+            content.seek(0)
+            with tarfile.open(fileobj=content) as tf:
+                dirname = tf.getnames()[0].partition("/")[0]
+                tf.extractall()
+            shutil.move(dirname, self.pyhelics_install)
 
 
 setup(
@@ -65,4 +130,5 @@ setup(
     # pyproject.toml does not support requirements only for some build actions,
     # but we can do it in setup.py.
     setup_requires=["pytest-runner", "cffi>=1.0.0"],
+    cmdclass={"download": HELICSDownloadCommand},
 )
