@@ -1,0 +1,11 @@
+site_name: PyHELICS
+theme:
+    name: "material"
+plugins:
+  - search
+  - inari:
+      module: helics
+      out-name: api
+markdown_extensions:
+  - admonition
+  - codehilite
