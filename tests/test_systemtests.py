@@ -120,7 +120,7 @@ def test_system_test_federate_global_value():
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
     cr = h.helicsCreateCore("inproc", "gcore", "--broker=gbrokerc")
 
-    argv = ["", "--corename=gcore", "--type=inproc"]
+    argv = ["", "--corename=gcore"]
 
     fi = h.helicsCreateFederateInfo()
     h.helicsFederateInfoLoadFromArgs(fi, argv)
