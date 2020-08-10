@@ -47,3 +47,5 @@ for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
     if "helicsSharedLib" in file:
         lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
         break
+else:
+    raise Exception("Unable to load helics shared library")
