@@ -12,6 +12,8 @@ import pytest
 import helics as h
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
+import pytest as pt
+import sys
 
 
 def test_bad_input_message_federate_message():
@@ -137,6 +139,7 @@ def test_bad_input_type_publication_2_tests():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "linux", "tests for linux only")
 def test_bad_input_tests_raw_tests():
 
     broker = createBroker(1)
