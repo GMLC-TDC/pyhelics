@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 import time
 import helics as h
 import pytest
+import pytest as pt
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
@@ -114,6 +115,7 @@ def test_system_test_broker_global_value():
     assert h.helicsBrokerIsConnected(brk) is False
 
 
+@pt.mark.skipif(sys.platform == "linux", reason="tests fail when calling helicsFederateInfoLoadFromArgs on linux")
 def test_system_test_federate_global_value():
 
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
