@@ -52,6 +52,17 @@ def test_broker_test_make_broker_connections(broker):
     with pt.raises(h.HelicsException):
         h.helicsBrokerMakeConnections(broker, "invalidfile.json")
 
+def test_broker_test_make_core_connections(broker):
+    cr = h.helicsCreateCoreFromArgs("zmq", "gcore", ["--broker=gbrokertest"])
+
+    assert h.helicsCoreGetIdentifier(cr) == "gcore"
+
+    with pt.raises(h.HelicsException):
+        h.helicsCoreMakeConnections(cr, "invalidfile.json")
+
+    h.helicsCoreDisconnect(cr)
+
+
 def test_other_tests_core_creation(broker):
 
     cr = h.helicsCreateCoreFromArgs("zmq", "gcore", ["--broker=gbrokertest"])
