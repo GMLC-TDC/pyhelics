@@ -21,7 +21,8 @@ def test_bad_input_message_federate_message():
     mFed1, fedinfo = createMessageFederate(1, "test")
 
     ept1 = h.helicsFederateRegisterGlobalEndpoint(mFed1, "ept1", "")
-    # pytests.expect_exception(h.helicsFederateRegisterGlobalEndpoint(mFed1, "ept1", ""))
+    with pt.raises(h.HelicsException):
+        h.helicsFederateRegisterGlobalEndpoint(mFed1, "ept1", "")
 
     h.helicsFederateEnterExecutingMode(mFed1)
     h.helicsEndpointSetDefaultDestination(ept1, "ept1")
@@ -39,7 +40,9 @@ def test_bad_input_message_federate_message():
     assert cnt == 1
 
     h.helicsFederateFinalize(mFed1)
-    # @test_throws h.HELICSErrorInvalidFunctionCall h.helicsEndpointSendMessage(ept1, mess0)
+    # @test_throws h.HELICSErrorInvalidFunctionCall
+    with pt.raises(h.HelicsException):
+        h.helicsEndpointSendMessage(ept1, mess0)
 
     destroyFederate(mFed1, fedinfo)
     destroyBroker(broker)
@@ -51,9 +54,13 @@ def test_bad_input_filter_test4():
     mFed1, fedinfo = createMessageFederate(1, "test")
 
     filt1 = h.helicsFederateRegisterCloningFilter(mFed1, "filt1")
-    # @test_throws h.HELICSErrorRegistrationFailure filt2 = h.helicsFederateRegisterCloningFilter(mFed1, "filt1")
+    # @test_throws h.HELICSErrorRegistrationFailure
+    with pt.raises(h.HelicsException):
+        filt2 = h.helicsFederateRegisterCloningFilter(mFed1, "filt1")
 
-    # @test_throws h.HELICSErrorInvalidArgument h.helicsFilterSetString(filt1, "unknown", "string")
+    # @test_throws h.HELICSErrorInvalidArgument
+    with pt.raises(h.HelicsException):
+        h.helicsFilterSetString(filt1, "unknown", "string")
 
     h.helicsFederateRegisterGlobalEndpoint(mFed1, "ept1", "")
 
@@ -62,7 +69,9 @@ def test_bad_input_filter_test4():
     h.helicsFilterAddDestinationTarget(filt1, "ept1")
     h.helicsFilterRemoveTarget(filt1, "ept1")
 
-    # @test_throws h.HELICSErrorInvalidArgument h.helicsFilterSet(filt1, "unknown", 10.0)
+    # @test_throws h.HELICSErrorInvalidArgument
+    with pt.raises(h.HelicsException):
+        h.helicsFilterSet(filt1, "unknown", 10.0)
     h.helicsFederateFinalize(mFed1)
 
     destroyFederate(mFed1, fedinfo)
@@ -77,7 +86,9 @@ def test_bad_input_filter_core_tests():
     cr = h.helicsFederateGetCoreObject(mFed1)
 
     filt1 = h.helicsCoreRegisterFilter(cr, h.HELICS_FILTER_TYPE_DELAY, "filt1")
-    # @test_throws h.HELICSErrorRegistrationFailure filt2 = h.helicsCoreRegisterFilter(cr, h.HELICS_FILTER_TYPE_DELAY, "filt1")
+    # @test_throws h.HELICSErrorRegistrationFailure
+    with pt.raises(h.HelicsException):
+        filt2 = h.helicsCoreRegisterFilter(cr, h.HELICS_FILTER_TYPE_DELAY, "filt1")
     h.helicsFilterSetOption(filt1, h.HELICS_HANDLE_OPTION_CONNECTION_OPTIONAL, True)
     assert h.helicsFilterGetOption(filt1, h.HELICS_HANDLE_OPTION_CONNECTION_OPTIONAL)
     h.helicsFederateFinalize(mFed1)
@@ -105,7 +116,9 @@ def test_bad_input_type_publication_2_tests():
         h.helicsFederateRegisterInterfaces(vFed1, "unknownfile.json")
 
     subid = h.helicsFederateRegisterTypeInput(vFed1, "inp1", "string", "")
-    # @test_throws h.HELICSErrorRegistrationFailure subid2 = h.helicsFederateRegisterTypeInput(vFed1, "inp1", "string", "")
+    # @test_throws h.HELICSErrorRegistrationFailure
+    with pt.raises(h.HelicsException):
+        subid2 = h.helicsFederateRegisterTypeInput(vFed1, "inp1", "string", "")
 
     h.helicsInputAddTarget(subid, "pub1")
 
@@ -117,7 +130,9 @@ def test_bad_input_type_publication_2_tests():
 
     h.helicsPublicationPublishTime(pubid, 27.0)
 
-    # @test_throws h.HELICSErrorInvalidArgument h.helicsFederatePublishJSON(vFed1, "unknownfile.json")
+    # @test_throws h.HELICSErrorInvalidArgument
+    with pt.raises(h.HelicsException):
+        h.helicsFederatePublishJSON(vFed1, "unknownfile.json")
 
     h.helicsFederateRequestNextStep(vFed1)
     string = h.helicsInputGetString(subid)
@@ -147,7 +162,7 @@ def test_bad_input_type_publication_2_tests():
         h.helicsPublicationPublishTime(pubid, 19.2)
     # @test_throws h.HELICSErrorInvalidFunctionCall
     with pt.raises(h.HelicsException):
-        h.helicsPublicationPublishChar(pubid, 'a')
+        h.helicsPublicationPublishChar(pubid, "a")
 
     # @test_throws h.HELICSErrorInvalidFunctionCall
     with pt.raises(h.HelicsException):
@@ -416,7 +431,7 @@ def test_bad_inputs_broker_link():
     # TODO: This test should throw an error
     # @test_throws h.HELICSErrorInvalidArgument
     # with pt.raises(h.HelicsException):
-        # h.helicsBrokerDataLink(br, "pub1", "")
+    # h.helicsBrokerDataLink(br, "pub1", "")
     # @test_broken False
 
     # @test_throws h.HELICSErrorInvalidArgument
@@ -476,11 +491,11 @@ def test_bad_inputs_init_error_5():
 
     # @test_throws h.HELICSErrorConnectionFailure
     with pt.raises(h.HelicsException):
-        resIt = h.helicsFederateEnterExecutingModeIterative(vFed1, h.HELICS_ITERATION_REQUEST_NO_ITERATION);
+        resIt = h.helicsFederateEnterExecutingModeIterative(vFed1, h.HELICS_ITERATION_REQUEST_NO_ITERATION)
 
     # @test_throws h.HELICSErrorInvalidFunctionCall
     with pt.raises(h.HelicsException):
-        h.helicsFederateRequestTimeIterativeAsync(vFed1, 1.0, h.HELICS_ITERATION_REQUEST_NO_ITERATION);
+        h.helicsFederateRequestTimeIterativeAsync(vFed1, 1.0, h.HELICS_ITERATION_REQUEST_NO_ITERATION)
 
     # @test_throws h.HELICSErrorInvalidFunctionCall
     with pt.raises(h.HelicsException):
