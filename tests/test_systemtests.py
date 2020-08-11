@@ -32,6 +32,7 @@ def broker():
     yield brk
     h.helicsBrokerDisconnect(brk)
     assert h.helicsBrokerIsConnected(brk) == False
+    h.helicsCloseLibrary()
 
 
 def test_other_tests_broker_creation():
@@ -47,6 +48,9 @@ def test_other_tests_broker_creation():
 
     h.helicsBrokerDisconnect(brk)
 
+def test_broker_test_make_broker_connections(broker):
+    with pt.raises(h.HelicsException):
+        h.helicsBrokerMakeConnections(broker, "invalidfile.json")
 
 def test_other_tests_core_creation(broker):
 
