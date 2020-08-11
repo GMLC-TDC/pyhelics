@@ -156,16 +156,6 @@ HelicsDataType = object
 HelicsPublication = object
 HelicsComplex = object
 
-"""
-HELICS_CLOSE_ON_EXCEPTION: Global flag to close HELICS library when a Python HELICS exception occurs.
-
-If you wish to manually handle closing the HELICS library, you can do the following:
-
->>> import helics as h
->>> h.HELICS_CLOSE_ON_EXCEPTION = False
-"""
-HELICS_CLOSE_ON_EXCEPTION = True
-
 
 class HelicsException(Exception):
     pass
