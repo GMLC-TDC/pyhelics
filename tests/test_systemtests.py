@@ -26,6 +26,27 @@ def isfile(filename):
     return os.path.exists(filename)
 
 
+@pt.fixture
+def broker():
+    brk = h.helicsCreateBroker("zmq", "gbrokertest", "--root")
+    yield brk
+    h.helicsBrokerDisconnect(brk)
+    assert h.helicsBrokerIsConnected(brk) == False
+
+
+def test_other_tests(broker):
+
+    cr = h.helicsCreateCoreFromArgs("zmq", "gcore", ["--broker=gbrokertest"])
+
+    assert h.helicsCoreGetIdentifier(cr) == "gcore"
+
+    # TODO: why is this not raising an exception?
+    # with pt.raises(h.HelicsException):
+    #    cr2 = h.helicsCreateCoreFromArgs("test", "gcore2", ["", "--broker=gbrokerc", "this is not an argument"])
+
+    h.helicsCoreDisconnect(cr)
+
+
 def test_system_broker_global_value():
     brk = h.helicsCreateBroker("ipc", "gbrokerc", "--root")
     globalVal = "this is a string constant that functions as a global"
