@@ -444,8 +444,12 @@ def test_bad_inputs_init_error_5():
 
 def test_bad_inputs_misc_tests():
 
-    assert h.helicsGetPropertyIndex("") == -1
-    assert h.helicsGetPropertyIndex("not_a_property") == -1
+    with pt.raises(h.HelicsException):
+        assert h.helicsGetPropertyIndex("") == -1
+    with pt.raises(h.HelicsException):
+        assert h.helicsGetPropertyIndex("not_a_property") == -1
 
-    assert h.helicsGetOptionIndex("") == -1
-    assert h.helicsGetOptionIndex("not_a_property") == -1
+    with pt.raises(h.HelicsException):
+        assert h.helicsGetOptionIndex("") == -1
+    with pt.raises(h.HelicsException):
+        assert h.helicsGetOptionIndex("not_a_property") == -1
