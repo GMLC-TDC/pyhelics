@@ -4712,33 +4712,33 @@ def helicsPublicationGetUnits(pub: HelicsPublication) -> str:
     return ffi.string(result).decode()
 
 
-def helicsInputGetInfo(inp: HelicsInput) -> str:
+def helicsInputGetInfo(ipt: HelicsInput) -> str:
     """
     Get the data in the info field of an input.
 
     **Parameters**
 
-    * **inp** - The input to query.
+    * **ipt** - The input to query.
 
     **Returns**: A string with the info field string.
     """
     f = loadSym("helicsInputGetInfo")
-    result = f(inp)
+    result = f(ipt)
     return ffi.string(result).decode()
 
 
-def helicsInputSetInfo(inp: HelicsInput, info: str):
+def helicsInputSetInfo(ipt: HelicsInput, info: str):
     """
     Set the data in the info field for an input.
 
     **Parameters**
 
-    * **inp** - The input to query.
+    * **ipt** - The input to query.
     * **info** - The string to set.
     """
     f = loadSym("helicsInputSetInfo")
     err = helicsErrorInitialize()
-    f(inp, cstring(info), err)
+    f(ipt, cstring(info), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4774,35 +4774,35 @@ def helicsPublicationSetInfo(pub: HelicsPublication, info: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputGetOption(inp: HelicsInput, option: int) -> int:
+def helicsInputGetOption(ipt: HelicsInput, option: int) -> int:
     """
     Get the current value of an input handle option.
 
     **Parameters**
 
-    * **inp** - The input to query.
+    * **ipt** - The input to query.
     * **option** - Integer representation of the option in question see `helics.helics_handle_options`.
 
     **Returns**: An integer value with the current value of the given option.
     """
     f = loadSym("helicsInputGetOption")
-    result = f(inp, option)
+    result = f(ipt, option)
     return result
 
 
-def helicsInputSetOption(inp: HelicsInput, option: int, value: int):
+def helicsInputSetOption(ipt: HelicsInput, option: int, value: int):
     """
     Set an option on an input.
 
     **Parameters**
 
-    * **inp** - The input to query.
+    * **ipt** - The input to query.
     * **option** - The option to set for the input `helics.helics_handle_options`.
     * **value** - The value to set the option to.
     """
     f = loadSym("helicsInputSetOption")
     err = helicsErrorInitialize()
-    f(inp, option, value, err)
+    f(ipt, option, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4856,18 +4856,18 @@ def helicsPublicationSetMinimumChange(pub: HelicsPublication, tolerance: float):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetMinimumChange(inp: HelicsInput, tolerance: float):
+def helicsInputSetMinimumChange(ipt: HelicsInput, tolerance: float):
     """
     Set the minimum change detection tolerance.
 
     **Parameters**
 
-    * **inp** - The input to modify.
+    * **ipt** - The input to modify.
     * **tolerance** - The tolerance level for registering an update, values changing less than this value will not show asbeing updated.
     """
     f = loadSym("helicsInputSetMinimumChange")
     err = helicsErrorInitialize()
-    f(inp, cdouble(tolerance), err)
+    f(ipt, cdouble(tolerance), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
