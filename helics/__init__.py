@@ -1651,7 +1651,7 @@ def helicsFederateInfoSetIntegerProperty(fi: HelicsFederateInfo, intProperty: He
     **Parameters**
 
     * **`fi`** - The federateInfo object to alter.
-    * **`intProperty`** - An int identifying the property.
+    * **`intProperty`** - `helics.HelicsProperty`.
     * **`propertyValue`** - The value to set the property to.
     """
     f = loadSym("helicsFederateInfoSetIntegerProperty")
@@ -1879,13 +1879,13 @@ def helicsFederateEnterExecutingModeIterative(fed: HelicsFederate, iterate: Heli
     **Parameters**
 
     * **`fed`** - The federate to make the request of.
-    * **`iterate`** - The requested iteration mode.
+    * **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
 
     **Returns**: `helics.HelicsIterationResult`.
     """
     f = loadSym("helicsFederateEnterExecutingModeIterative")
     err = helicsErrorInitialize()
-    result = f(fed, iterate, err)
+    result = f(fed, HelicsIterationRequest(iterate), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -1900,11 +1900,11 @@ def helicsFederateEnterExecutingModeIterativeAsync(fed: HelicsFederate, iterate:
     **Parameters**
 
     * **`fed`** - The federate to make the request of.
-    * **`iterate`** - The requested iteration mode.
+    * **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
     """
     f = loadSym("helicsFederateEnterExecutingModeIterativeAsync")
     err = helicsErrorInitialize()
-    f(fed, iterate, err)
+    f(fed, HelicsIterationRequest(iterate), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -2037,14 +2037,14 @@ def helicsFederateRequestTimeIterative(
 
     * **`fed`** - The federate to make the request of.
     * **`requestTime`** - The next desired time.
-    * **`iterate`** - The requested iteration mode.
+    * **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
 
     **Returns**: `(helics.HelicsTime, helics.HelicsIterationResult)`.
     """
     f = loadSym("helicsFederateRequestTimeIterative")
     err = helicsErrorInitialize()
     outIteration = ffi.new("helics_iteration_result *")
-    result = f(fed, requestTime, iterate, outIteration, err)
+    result = f(fed, requestTime, HelicsIterationRequest(iterate), outIteration, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -2094,11 +2094,11 @@ def helicsFederateRequestTimeIterativeAsync(fed: HelicsFederate, requestTime: He
 
     * **`fed`** - The federate to make the request of.
     * **`requestTime`** - The next desired time.
-    * **`iterate`** - The requested iteration mode.
+    * **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
     """
     f = loadSym("helicsFederateRequestTimeIterativeAsync")
     err = helicsErrorInitialize()
-    f(fed, requestTime, iterate, err)
+    f(fed, requestTime, HelicsIterationRequest(iterate), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -2197,7 +2197,7 @@ def helicsFederateSetIntegerProperty(fed: HelicsFederate, intProperty: HelicsPro
     **Parameters**
 
     * **`fed`** - The federate to change the property for.
-    * **`intProperty`** - The property to set.
+    * **`intProperty`** - `helics.HelicsProperty`.
     * **`propertyVal`** - The value of the property.
     """
     f = loadSym("helicsFederateSetIntegerProperty")
@@ -2238,7 +2238,7 @@ def helicsFederateGetFlagOption(fed: HelicsFederate, flag: HelicsFederateFlag) -
     """
     f = loadSym("helicsFederateGetFlagOption")
     err = helicsErrorInitialize()
-    result = f(fed, flag, err)
+    result = f(fed, HelicsFederateFlag(flag), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
