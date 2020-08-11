@@ -10,6 +10,22 @@ ffi = _build.ffi
 
 @unique
 class HelicsCoreType(IntEnum):
+    """
+    DEFAULT      = 0
+    TEST         = 3
+    INTERPROCESS = 4
+    IPC          = 5
+    TCP          = 6
+    UDP          = 7
+    NNG          = 9
+    ZMQ_TEST     = 10
+    TCP_SS       = 11
+    HTTP         = 12
+    WEBSOCKET    = 14
+    INPROC       = 18
+    NULL         = 66
+    """
+
     DEFAULT = 0  # HelicsCoreType
     ZMQ = 1  # HelicsCoreType
     MPI = 2  # HelicsCoreType
@@ -46,6 +62,21 @@ HELICS_CORE_TYPE_NULL = HelicsCoreType.NULL
 
 @unique
 class HelicsDataType(IntEnum):
+    """
+    STRING         = 0
+    DOUBLE         = 1
+    INT            = 2
+    COMPLEX        = 3
+    VECTOR         = 4
+    COMPLEX_VECTOR = 5
+    NAMED_POINT    = 6
+    BOOLEAN        = 7
+    TIME           = 8
+    RAW            = 25
+    MULTI          = 33
+    ANY            = 25262
+    """
+
     STRING = 0  # HelicsDataType
     DOUBLE = 1  # HelicsDataType
     INT = 2  # HelicsDataType
@@ -76,6 +107,26 @@ HELICS_DATA_TYPE_ANY = HelicsDataType.ANY
 
 @unique
 class HelicsFederateFlag(IntEnum):
+    """
+    OBSERVER                      = 0
+    UNINTERRUPTIBLE               = 1
+    INTERRUPTIBLE                 = 2
+    SOURCE_ONLY                   = 4
+    ONLY_TRANSMIT_ON_CHANGE       = 6
+    ONLY_UPDATE_ON_CHANGE         = 8
+    WAIT_FOR_CURRENT_TIME_UPDATE  = 10
+    RESTRICTIVE_TIME_POLICY       = 11
+    ROLLBACK                      = 12
+    FORWARD_COMPUTE               = 14
+    REALTIME                      = 16
+    SINGLE_THREAD_FEDERATE        = 27
+    SLOW_RESPONDING               = 29
+    DELAY_INIT_ENTRY              = 45
+    ENABLE_INIT_ENTRY             = 47
+    IGNORE_TIME_MISMATCH_WARNINGS = 67
+    TERMINATE_ON_ERROR            = 72
+    """
+
     OBSERVER = 0  # HelicsFederateFlags
     UNINTERRUPTIBLE = 1  # HelicsFederateFlags
     INTERRUPTIBLE = 2  # HelicsFederateFlags
@@ -116,6 +167,18 @@ HELICS_FLAG_TERMINATE_ON_ERROR = HelicsFederateFlag.TERMINATE_ON_ERROR
 
 @unique
 class HelicsLogLevel(IntEnum):
+    """
+    NO_PRINT    = -1
+    ERROR       = 0
+    WARNING     = 1
+    SUMMARY     = 2
+    CONNECTIONS = 3
+    INTERFACES  = 4
+    TIMING      = 5
+    DATA        = 6
+    TRACE       = 7
+    """
+
     NO_PRINT = -1  # HelicsLogLevels
     ERROR = 0  # HelicsLogLevels
     WARNING = 1  # HelicsLogLevels
@@ -140,6 +203,24 @@ HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.TRACE
 
 @unique
 class HelicsError(IntEnum):
+    """
+    FATAL                    = -404
+    EXTERNAL_TYPE            = -203
+    OTHER                    = -101
+    INSUFFICIENT_SPACE       = -18
+    EXECUTION_FAILURE        = -14
+    INVALID_FUNCTION_CALL    = -10
+    INVALID_STATE_TRANSITION = -9
+    WARNING                  = -8
+    SYSTEM_FAILURE           = -6
+    DISCARD                  = -5
+    INVALID_ARGUMENT         = -4
+    INVALID_OBJECT           = -3
+    CONNECTION_FAILURE       = -2
+    REGISTRATION_FAILURE     = -1
+    OK                       = 0
+    """
+
     FATAL = -404  # HelicsErrorTypes
     EXTERNAL_TYPE = -203  # HelicsErrorTypes
     OTHER = -101  # HelicsErrorTypes
@@ -176,6 +257,21 @@ HELICS_OK = HelicsError.OK
 
 @unique
 class HelicsProperty(IntEnum):
+    """
+    TIME_DELTA            = 137
+    TIME_PERIOD           = 140
+    TIME_OFFSET           = 141
+    TIME_RT_LAG           = 143
+    TIME_RT_LEAD          = 144
+    TIME_RT_TOLERANCE     = 145
+    TIME_INPUT_DELAY      = 148
+    TIME_OUTPUT_DELAY     = 150
+    INT_MAX_ITERATIONS    = 259
+    INT_LOG_LEVEL         = 271
+    INT_FILE_LOG_LEVEL    = 272
+    INT_CONSOLE_LOG_LEVEL = 274
+    """
+
     TIME_DELTA = 137  # HelicsProperties
     TIME_PERIOD = 140  # HelicsProperties
     TIME_OFFSET = 141  # HelicsProperties
@@ -206,6 +302,18 @@ HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = HelicsProperty.INT_CONSOLE_LOG_LEVEL
 
 @unique
 class HelicsMultiInputMode(IntEnum):
+    """
+    NO_OP               = 0
+    VECTORIZE_OPERATION = 1
+    AND_OPERATION       = 2
+    OR_OPERATION        = 3
+    SUM_OPERATION       = 4
+    DIFF_OPERATION      = 5
+    MAX_OPERATION       = 6
+    MIN_OPERATION       = 7
+    AVERAGE_OPERATION   = 8
+    """
+
     NO_OP = 0  # HelicsMultiInputMode
     VECTORIZE_OPERATION = 1  # HelicsMultiInputMode
     AND_OPERATION = 2  # HelicsMultiInputMode
@@ -230,6 +338,23 @@ HELICS_MULTI_INPUT_AVERAGE_OPERATION = HelicsMultiInputMode.AVERAGE_OPERATION
 
 @unique
 class HelicsHandleOption(IntEnum):
+    """
+    CONNECTION_REQUIRED          = 397
+    CONNECTION_OPTIONAL          = 402
+    SINGLE_CONNECTION_ONLY       = 407
+    MULTIPLE_CONNECTIONS_ALLOWED = 409
+    BUFFER_DATA                  = 411
+    STRICT_TYPE_CHECKING         = 414
+    IGNORE_UNIT_MISMATCH         = 447
+    ONLY_TRANSMIT_ON_CHANGE      = 452
+    ONLY_UPDATE_ON_CHANGE        = 454
+    IGNORE_INTERRUPTS            = 475
+    MULTI_INPUT_HANDLING_METHOD  = 507
+    INPUT_PRIORITY_LOCATION      = 510
+    CLEAR_PRIORITY_LIST          = 512
+    CONNECTIONS                  = 522
+    """
+
     CONNECTION_REQUIRED = 397  # HelicsHandleOptions
     CONNECTION_OPTIONAL = 402  # HelicsHandleOptions
     SINGLE_CONNECTION_ONLY = 407  # HelicsHandleOptions
@@ -264,6 +389,16 @@ HELICS_HANDLE_OPTION_CONNECTIONS = HelicsHandleOption.CONNECTIONS
 
 @unique
 class HelicsFilterType(IntEnum):
+    """
+    CUSTOM       = 0
+    DELAY        = 1
+    RANDOM_DELAY = 2
+    RANDOM_DROP  = 3
+    REROUTE      = 4
+    CLONE        = 5
+    FIREWALL     = 6
+    """
+
     CUSTOM = 0  # HelicsFilterType
     DELAY = 1  # HelicsFilterType
     RANDOM_DELAY = 2  # HelicsFilterType
@@ -284,6 +419,12 @@ HELICS_FILTER_TYPE_FIREWALL = HelicsFilterType.FIREWALL
 
 @unique
 class HelicsIterationRequest(IntEnum):
+    """
+    NO_ITERATION      = 0
+    FORCE_ITERATION   = 1
+    ITERATE_IF_NEEDED = 2
+    """
+
     NO_ITERATION = 0  # HelicsIterationRequest
     FORCE_ITERATION = 1  # HelicsIterationRequest
     ITERATE_IF_NEEDED = 2  # HelicsIterationRequest
@@ -296,6 +437,13 @@ HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED = HelicsIterationRequest.ITERATE_IF_N
 
 @unique
 class HelicsIterationResult(IntEnum):
+    """
+    NEXT_STEP = 0
+    ERROR     = 1
+    HALTED    = 2
+    ITERATING = 3
+    """
+
     NEXT_STEP = 0  # HelicsIterationResult
     ERROR = 1  # HelicsIterationResult
     HALTED = 2  # HelicsIterationResult
@@ -310,6 +458,19 @@ HELICS_ITERATION_RESULT_ITERATING = HelicsIterationResult.ITERATING
 
 @unique
 class HelicsFederateState(IntEnum):
+    """
+    STARTUP                = 0
+    INITIALIZATION         = 1
+    EXECUTION              = 2
+    FINALIZE               = 3
+    ERROR                  = 4
+    PENDING_INIT           = 5
+    PENDING_EXEC           = 6
+    PENDING_TIME           = 7
+    PENDING_ITERATIVE_TIME = 8
+    PENDING_FINALIZE       = 9
+    """
+
     STARTUP = 0  # HelicsFederateState
     INITIALIZATION = 1  # HelicsFederateState
     EXECUTION = 2  # HelicsFederateState
