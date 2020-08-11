@@ -19,6 +19,9 @@ jobs:
           python -m pip install -U pip
           pip install -e ".[docs]"
           python setup.py download
+      - name: Run Black
+        run: |
+          python -m black -l 80 helics/__init__.py
       - run: mkdocs build
       - name: Github Pages Deploy
         uses: peaceiris/actions-gh-pages@v3
