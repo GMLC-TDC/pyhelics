@@ -661,7 +661,7 @@ def helicsCoreClone(core: HelicsCore) -> HelicsCore:
 
     **Parameters**
 
-    * **core** - An existing helics_core.
+    * **core** - An existing `helics.HelicsCore`.
 
     **Returns**: `helics.HelicsCore`.
     """
@@ -680,7 +680,7 @@ def helicsCoreIsValid(core: HelicsCore) -> bool:
 
     **Parameters**
 
-    * **core** - The helics_core object to test.
+    * **core** - The `helics.HelicsCore` object to test.
 
     **Returns**: `True` if valid, `False` if not valid.
     """
@@ -742,7 +742,7 @@ def helicsBrokerClone(broker: HelicsBroker) -> HelicsBroker:
 
     **Parameters**
 
-    * **broker** - An existing helics_broker.
+    * **broker** - An existing `helics.HelicsBroker`.
 
     **Returns**: `helics.HelicsBroker`.
     """
@@ -761,7 +761,7 @@ def helicsBrokerIsValid(broker: HelicsBroker) -> bool:
 
     **Parameters**
 
-    * **broker** - The helics_broker object to test.
+    * **broker** - The `helics.HelicsBroker` object to test.
 
     **Returns**: `True` if valid, `False` if not valid.
     """
@@ -1152,7 +1152,7 @@ def helicsBrokerFree(broker: HelicsBroker):
 def helicsCreateValueFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsValueFederate:
     """
     Creation and destruction of Federates.
-    Create a value federate from a federate info object.
+    Create `helics.HelicsValueFederate` from `helics.HelicsFederateInfo`.
     `helics.HelicsValueFederate` objects can be used in all functions that take a `helics.HelicsFederate` as an argument.
 
     **Parameters**
@@ -1173,7 +1173,7 @@ def helicsCreateValueFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsVal
 
 def helicsCreateValueFederateFromConfig(configFile: str) -> HelicsValueFederate:
     """
-    Create a value federate from a JSON file, JSON string, or TOML file.
+    Create `helics.HelicsValueFederate` from a JSON file, JSON string, or TOML file.
     `helics.HelicsValueFederate` objects can be used in all functions that take a `helics.HelicsFederate` as an argument.
 
     **Parameters**
@@ -1193,7 +1193,7 @@ def helicsCreateValueFederateFromConfig(configFile: str) -> HelicsValueFederate:
 
 def helicsCreateMessageFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsMessageFederate:
     """
-    Create a message federate from a federate info object.
+    Create `helics.HelicsMessageFederate` from `helics.HelicsFederateInfo`.
     `helics.HelicsMessageFederate` objects can be used in all functions that take a `helics.HelicsFederate` as an argument.
 
     **Parameters**
@@ -1214,7 +1214,7 @@ def helicsCreateMessageFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsM
 
 def helicsCreateMessageFederateFromConfig(configFile: str) -> HelicsMessageFederate:
     """
-    Create a message federate from a JSON file or JSON string or TOML file.
+    Create `helics.HelicsMessageFederate` from a JSON file or JSON string or TOML file.
     `helics.HelicsMessageFederate` objects can be used in all functions that take a `helics.HelicsFederate` object as an argument.
 
     **Parameters**
@@ -1234,7 +1234,7 @@ def helicsCreateMessageFederateFromConfig(configFile: str) -> HelicsMessageFeder
 
 def helicsCreateCombinationFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsCombinationFederate:
     """
-    Create a combination federate from a federate info object.
+    Create a combination federate from `helics.HelicsFederateInfo`.
     Combination federates are both value federates and message federates, objects can be used in all functions
     that take a `helics.HelicsFederate` object as an argument.
 
@@ -1283,7 +1283,7 @@ def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
 
     **Parameters**
 
-    * **fed** - An existing helics_federate.
+    * **fed** - An existing `helics.HelicsFederate`.
 
     **Returns**: `helics.HelicsFederate`.
     """
@@ -1298,7 +1298,7 @@ def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
 
 def helicsCreateFederateInfo() -> HelicsFederateInfo:
     """
-    Create a federate info object for specifying federate information when constructing a federate.
+    Create `helics.HelicsFederateInfo` for specifying federate information when constructing a federate.
 
     **Returns**: `helics.HelicsFederateInfo`.
     """
@@ -1309,7 +1309,7 @@ def helicsCreateFederateInfo() -> HelicsFederateInfo:
 
 def helicsFederateInfoClone(fi: HelicsFederateInfo) -> HelicsFederateInfo:
     """
-    Create a federate info object from an existing one and clone the information.
+    Create `helics.HelicsFederateInfo` from an existing one and clone the information.
 
     **Parameters**
 
@@ -1349,7 +1349,7 @@ def helicsFederateInfoLoadFromArgs(fi: HelicsFederateInfo, arguments: List[str])
 
 def helicsFederateInfoFree(fi: HelicsFederateInfo):
     """
-    Delete the memory associated with a federate info object.
+    Delete the memory associated with `helics.HelicsFederateInfo`.
     """
     f = loadSym("helicsFederateInfoFree")
     f(fi)
@@ -1357,7 +1357,7 @@ def helicsFederateInfoFree(fi: HelicsFederateInfo):
 
 def helicsFederateIsValid(fed: HelicsFederate) -> bool:
     """
-    Check if a federate_object is valid.
+    Check if a `helics.HelicsFederate` is valid.
 
     **Returns**: `True` if the federate is a valid active federate, `False` otherwise.
     """
@@ -3011,7 +3011,7 @@ def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessageObject:
     So all messages that are available for the first endpoint, then all for the second, and so on.
     Within a single endpoint, the messages are ordered by time, then source_id, then order of arrival.
 
-    **Returns**: A `helics_message_object` which references the data in the message.
+    **Returns**: A `helics.HelicsMessageObject` which references the data in the message.
     """
     f = loadSym("helicsFederateGetMessageObject")
     result = f(fed)
