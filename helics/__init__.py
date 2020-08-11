@@ -172,7 +172,7 @@ class HelicsException(Exception):
     def __init__(self, *args, **kwargs):
         if HELICS_CLOSE_ON_EXCEPTION is True:
             helicsCloseLibrary()
-        super(*args, **kwargs)
+        super(Exception, self).__init__(*args, **kwargs)
 
 
 def cstring(s: str) -> str:

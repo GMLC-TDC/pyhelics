@@ -18,6 +18,8 @@ def test_misc_functions_api():
     print(h.helicsGetBuildFlags())
     assert len(h.helicsGetBuildFlags()) > 0
     assert len(h.helicsGetCompilerVersion()) > 0
+    with pytest.raises(h.HelicsException):
+        h.helicsCreateCore("something random", "here", "not an init string")
 
 
 def test_broker_api():
