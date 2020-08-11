@@ -22,6 +22,7 @@ jobs:
       - name: Run Black
         run: |
           python -m black -l 80 helics/__init__.py
+          cp README.md docs/index.md
       - run: mkdocs build
       - name: Github Pages Deploy
         uses: peaceiris/actions-gh-pages@v3
