@@ -92,11 +92,17 @@ def test_bad_input_type_publication_2_tests():
     vFed1, fedinfo = createValueFederate(1, "test")
 
     pubid = h.helicsFederateRegisterGlobalTypePublication(vFed1, "pub1", "string", "")
-    # @test_throws h.HELICSErrorRegistrationFailure pubid2 = h.helicsFederateRegisterGlobalTypePublication(vFed1, "pub1", "string", "")
+    with pt.raises(h.HelicsException):
+        # @test_throws h.HELICSErrorRegistrationFailure
+        pubid2 = h.helicsFederateRegisterGlobalTypePublication(vFed1, "pub1", "string", "")
 
-    # @test_throws h.HELICSErrorInvalidArgument h.helicsFederateRegisterFromPublicationJSON(vFed1, "unknownfile.json")
+    with pt.raises(h.HelicsException):
+        # @test_throws h.HELICSErrorInvalidArgument
+        h.helicsFederateRegisterFromPublicationJSON(vFed1, "unknownfile.json")
 
-    # @test_throws h.HELICSErrorExternalType h.helicsFederateRegisterInterfaces(vFed1, "unknownfile.json")
+    with pt.raises(h.HelicsException):
+        # @test_throws h.HELICSErrorExternalArgument
+        h.helicsFederateRegisterInterfaces(vFed1, "unknownfile.json")
 
     subid = h.helicsFederateRegisterTypeInput(vFed1, "inp1", "string", "")
     # @test_throws h.HELICSErrorRegistrationFailure subid2 = h.helicsFederateRegisterTypeInput(vFed1, "inp1", "string", "")
