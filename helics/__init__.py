@@ -3077,7 +3077,7 @@ def helicsMessageSetFlagOption(message: HelicsMessageObject, flag: int, flagValu
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageSetString(message: HelicsMessageObject, str: str):
+def helicsMessageSetString(message: HelicsMessageObject, string: str):
     """
     Set the data payload of a message as a string.
 
@@ -3088,7 +3088,7 @@ def helicsMessageSetString(message: HelicsMessageObject, str: str):
     """
     f = loadSym("helicsMessageSetString")
     err = helicsErrorInitialize()
-    f(message, cstring(str), err)
+    f(message, cstring(string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3942,7 +3942,7 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: pointer, inputData
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishString(pub: HelicsPublication, str: str):
+def helicsPublicationPublishString(pub: HelicsPublication, string: str):
     """
     Publish a string.
 
@@ -3953,7 +3953,7 @@ def helicsPublicationPublishString(pub: HelicsPublication, str: str):
     """
     f = loadSym("helicsPublicationPublishString")
     err = helicsErrorInitialize()
-    f(pub, cstring(str), err)
+    f(pub, cstring(string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4071,7 +4071,7 @@ def helicsPublicationPublishVector(pub: HelicsPublication, vectorInput: List[flo
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishNamedPoint(pub: HelicsPublication, str: str, val: float):
+def helicsPublicationPublishNamedPoint(pub: HelicsPublication, string: str, val: float):
     """
     Publish a named point.
 
@@ -4083,7 +4083,7 @@ def helicsPublicationPublishNamedPoint(pub: HelicsPublication, str: str, val: fl
     """
     f = loadSym("helicsPublicationPublishNamedPoint")
     err = helicsErrorInitialize()
-    f(pub, cstring(str), cdouble(val), err)
+    f(pub, cstring(string), cdouble(val), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4416,7 +4416,7 @@ def helicsInputSetDefaultRaw(ipt: HelicsInput, data: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultString(ipt: HelicsInput, str: str):
+def helicsInputSetDefaultString(ipt: HelicsInput, string: str):
     """
     Set the default as a string.
 
@@ -4427,7 +4427,7 @@ def helicsInputSetDefaultString(ipt: HelicsInput, str: str):
     """
     f = loadSym("helicsInputSetDefaultString")
     err = helicsErrorInitialize()
-    f(ipt, cstring(str), err)
+    f(ipt, cstring(string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4547,7 +4547,7 @@ def helicsInputSetDefaultVector(ipt: HelicsInput, vectorInput: List[float]):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultNamedPoint(ipt: HelicsInput, str: str, val: float):
+def helicsInputSetDefaultNamedPoint(ipt: HelicsInput, string: str, val: float):
     """
     Set the default as a `NamedPoint`.
 
@@ -4559,7 +4559,7 @@ def helicsInputSetDefaultNamedPoint(ipt: HelicsInput, str: str, val: float):
     """
     f = loadSym("helicsInputSetDefaultNamedPoint")
     err = helicsErrorInitialize()
-    f(ipt, cstring(str), cdouble(val), err)
+    f(ipt, cstring(string), cdouble(val), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
