@@ -1889,7 +1889,7 @@ def helicsFederateEnterExecutingModeIterative(fed: HelicsFederate, iterate: Heli
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return result
+        return HelicsIterationResult(result)
 
 
 def helicsFederateEnterExecutingModeIterativeAsync(fed: HelicsFederate, iterate: HelicsIterationRequest):
@@ -1925,7 +1925,7 @@ def helicsFederateEnterExecutingModeIterativeComplete(fed: HelicsFederate,) -> H
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return result
+        return HelicsIterationResult(result)
 
 
 def helicsFederateGetState(fed: HelicsFederate) -> HelicsFederateState:
@@ -2048,7 +2048,7 @@ def helicsFederateRequestTimeIterative(
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return result, outIteration
+        return result, HelicsIterationResult(outIteration[0])
 
 
 def helicsFederateRequestTimeAsync(fed: HelicsFederate, requestTime: HelicsTime):
@@ -4401,7 +4401,7 @@ def helicsPublicationIsValid(pub: HelicsPublication) -> bool:
     return result == 1
 
 
-def helicsPublicationPublishRaw(pub: HelicsPublication, data: pointer, inputDataLength: int):
+def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
     """
     Publish raw data from a char * and length.
 
@@ -4413,6 +4413,7 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: pointer, inputData
     """
     f = loadSym("helicsPublicationPublishRaw")
     err = helicsErrorInitialize()
+    inputDataLength = len(data)
     f(pub, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
