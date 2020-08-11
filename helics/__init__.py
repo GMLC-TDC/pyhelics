@@ -231,6 +231,8 @@ def helicsIsCoreTypeAvailable(type: str) -> bool:
     **Parameters**
 
     * **type** - A string representing a core type. Options include "zmq", "udp", "ipc", "interprocess", "tcp", "default", "mpi".
+
+    **Returns**: `True` if `type` is available, `False` if `type` is not available.
     """
     f = loadSym("helicsIsCoreTypeAvailable")
     result = f(cstring(type))
@@ -246,6 +248,8 @@ def helicsCreateCore(type: str, name: str, initString: str) -> HelicsCore:
     * **type** - The type of the core to create.
     * **name** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
     * **initString** - An initialization string to send to the core. The format is similar to command line arguments. Typical options include a broker name, the broker address, the number of federates, etc.
+
+    **Returns**: `helics.HelicsCore`.
     """
     f = loadSym("helicsCreateCore")
     err = helicsErrorInitialize()
@@ -265,6 +269,8 @@ def helicsCreateCoreFromArgs(type: str, name: str, arguments: List[str]) -> Heli
     * **type** - The type of the core to create.
     * **name** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
     * **arguments** - The list of string values from a command line.
+
+    **Returns**: `helics.HelicsCore`.
     """
     f = loadSym("helicsCreateCoreFromArgs")
     argc = len(arguments)
@@ -287,6 +293,8 @@ def helicsCoreClone(core: HelicsCore) -> HelicsCore:
     **Parameters**
 
     * **core** - An existing helics_core.
+
+    **Returns**: `helics.HelicsCore`.
     """
     f = loadSym("helicsCoreClone")
     err = helicsErrorInitialize()
@@ -304,6 +312,8 @@ def helicsCoreIsValid(core: HelicsCore) -> bool:
     **Parameters**
 
     * **core** - The helics_core object to test.
+
+    **Returns**: `True` if valid, `False` if not valid.
     """
     f = loadSym("helicsCoreIsValid")
     result = f(core)
@@ -319,6 +329,8 @@ def helicsCreateBroker(type: str, name: str, initString: str) -> HelicsBroker:
     * **type** - The type of the broker to create.
     * **name** - The name of the broker. It can be a nullptr or empty string to have a name automatically assigned.
     * **initString** - An initialization string to send to the core-the format is similar to command line arguments. Typical options include a broker address such as --broker="XSSAF" if this is a subbroker, or the number of federates, or the address.
+
+    **Returns**: `helics.HelicsBroker`.
     """
     f = loadSym("helicsCreateBroker")
     err = helicsErrorInitialize()
@@ -338,6 +350,8 @@ def helicsCreateBrokerFromArgs(type: str, name: str, arguments: List[str]) -> He
     * **type** - The type of the core to create.
     * **name** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
     * **arguments** - The list of string values from a command line.
+
+    **Returns**: `helics.HelicsBroker`.
     """
     f = loadSym("helicsCreateBrokerFromArgs")
     argc = len(arguments)
@@ -360,6 +374,8 @@ def helicsBrokerClone(broker: HelicsBroker) -> HelicsBroker:
     **Parameters**
 
     * **broker** - An existing helics_broker.
+
+    **Returns**: `helics.HelicsBroker`.
     """
     f = loadSym("helicsBrokerClone")
     err = helicsErrorInitialize()
@@ -377,6 +393,8 @@ def helicsBrokerIsValid(broker: HelicsBroker) -> bool:
     **Parameters**
 
     * **broker** - The helics_broker object to test.
+
+    **Returns**: `True` if valid, `False` if not valid.
     """
     f = loadSym("helicsBrokerIsValid")
     result = f(broker)
@@ -402,8 +420,8 @@ def helicsBrokerDataLink(broker: HelicsBroker, source: str, target: str):
     **Parameters**
 
     * **broker** - The broker to generate the connection from.
-    * **source** - The name of the publication (cannot be NULL).
-    * **target** - The name of the target to send the publication data (cannot be NULL).
+    * **source** - The name of the publication.
+    * **target** - The name of the target to send the publication data.
     """
     f = loadSym("helicsBrokerDataLink")
     err = helicsErrorInitialize()
@@ -419,8 +437,8 @@ def helicsBrokerAddSourceFilterToEndpoint(broker: HelicsBroker, filter: str, end
     **Parameters**
 
     * **broker** - The broker to generate the connection from.
-    * **filter** - The name of the filter (cannot be NULL).
-    * **endpoint** - The name of the endpoint to filter the data from (cannot be NULL).
+    * **filter** - The name of the filter.
+    * **endpoint** - The name of the endpoint to filter the data from.
     """
     f = loadSym("helicsBrokerAddSourceFilterToEndpoint")
     err = helicsErrorInitialize()
@@ -436,8 +454,8 @@ def helicsBrokerAddDestinationFilterToEndpoint(broker: HelicsBroker, filter: str
     **Parameters**
 
     * **broker** - The broker to generate the connection from.
-    * **filter** - The name of the filter (cannot be NULL).
-    * **endpoint** - The name of the endpoint to filter the data going to (cannot be NULL).
+    * **filter** - The name of the filter.
+    * **endpoint** - The name of the endpoint to filter the data going to.
     """
     f = loadSym("helicsBrokerAddDestinationFilterToEndpoint")
     err = helicsErrorInitialize()
@@ -517,8 +535,8 @@ def helicsCoreDataLink(core: HelicsCore, source: str, target: str):
     **Parameters**
 
     * **core** - The core to generate the connection from.
-    * **source** - The name of the publication (cannot be NULL).
-    * **target** - The name of the target to send the publication data (cannot be NULL).
+    * **source** - The name of the publication.
+    * **target** - The name of the target to send the publication data.
     """
     f = loadSym("helicsCoreDataLink")
     err = helicsErrorInitialize()
@@ -534,8 +552,8 @@ def helicsCoreAddSourceFilterToEndpoint(core: HelicsCore, filter: str, endpoint:
     **Parameters**
 
     * **core** - The core to generate the connection from.
-    * **filter** - The name of the filter (cannot be NULL).
-    * **endpoint** - The name of the endpoint to filter the data from (cannot be NULL).
+    * **filter** - The name of the filter.
+    * **endpoint** - The name of the endpoint to filter the data from.
     """
     f = loadSym("helicsCoreAddSourceFilterToEndpoint")
     err = helicsErrorInitialize()
@@ -551,8 +569,8 @@ def helicsCoreAddDestinationFilterToEndpoint(core: HelicsCore, filter: str, endp
     **Parameters**
 
     * **core** - The core to generate the connection from.
-    * **filter** - The name of the filter (cannot be NULL).
-    * **endpoint** - The name of the endpoint to filter the data going to (cannot be NULL).
+    * **filter** - The name of the filter.
+    * **endpoint** - The name of the endpoint to filter the data going to.
     """
     f = loadSym("helicsCoreAddDestinationFilterToEndpoint")
     err = helicsErrorInitialize()
