@@ -4,8 +4,6 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import io
-import re
-import sys
 from glob import glob
 from os.path import basename
 from os.path import dirname
@@ -13,15 +11,10 @@ from os.path import join
 from os.path import splitext
 
 from setuptools import find_packages
-from setuptools import setup
-from setuptools.command.build_ext import build_ext
-from setuptools import setup, Command, Extension
+from setuptools import setup, Command
 
 import os
 import platform
-import subprocess
-import urllib
-import zipfile
 import tarfile
 import shutil
 import struct
