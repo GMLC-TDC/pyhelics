@@ -135,8 +135,7 @@ HELICS_STATE_PENDING_ITERATIVE_TIME = 8  # HelicsFederateState
 HELICS_STATE_PENDING_FINALIZE = 9  # HelicsFederateState
 
 
-HelicsBool = bool
-HelicsError = bool
+HelicsError = object
 HelicsCore = object
 HelicsBroker = object
 HelicsFederate = object
@@ -235,7 +234,7 @@ def helicsErrorClear(err: HelicsError):
     f(err)
 
 
-def helicsIsCoreTypeAvailable(type: str) -> HelicsBool:
+def helicsIsCoreTypeAvailable(type: str) -> bool:
     """
     Returns true if core/broker type specified is available in current compilation.
 
@@ -308,7 +307,7 @@ def helicsCoreClone(core: HelicsCore) -> HelicsCore:
         return result
 
 
-def helicsCoreIsValid(core: HelicsCore) -> HelicsBool:
+def helicsCoreIsValid(core: HelicsCore) -> bool:
     """
     Check if a core object is a valid object.
 
@@ -381,7 +380,7 @@ def helicsBrokerClone(broker: HelicsBroker) -> HelicsBroker:
         return result
 
 
-def helicsBrokerIsValid(broker: HelicsBroker) -> HelicsBool:
+def helicsBrokerIsValid(broker: HelicsBroker) -> bool:
     """
     Check if a broker object is a valid object.
 
@@ -394,7 +393,7 @@ def helicsBrokerIsValid(broker: HelicsBroker) -> HelicsBool:
     return result == 1
 
 
-def helicsBrokerIsConnected(broker: HelicsBroker) -> HelicsBool:
+def helicsBrokerIsConnected(broker: HelicsBroker) -> bool:
     """
     Check if a broker is connected.
     A connected broker implies it is attached to cores or cores could reach out to communicate.
@@ -473,7 +472,7 @@ def helicsBrokerMakeConnections(broker: HelicsBroker, file: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsCoreWaitForDisconnect(core: HelicsCore, msToWait: int) -> HelicsBool:
+def helicsCoreWaitForDisconnect(core: HelicsCore, msToWait: int) -> bool:
     """
     Wait for the core to disconnect.
 
@@ -491,7 +490,7 @@ def helicsCoreWaitForDisconnect(core: HelicsCore, msToWait: int) -> HelicsBool:
         return result == 1
 
 
-def helicsBrokerWaitForDisconnect(broker: HelicsBroker, msToWait: int) -> HelicsBool:
+def helicsBrokerWaitForDisconnect(broker: HelicsBroker, msToWait: int) -> bool:
     """
     Wait for the broker to disconnect.
 
@@ -509,7 +508,7 @@ def helicsBrokerWaitForDisconnect(broker: HelicsBroker, msToWait: int) -> Helics
         return result == 1
 
 
-def helicsCoreIsConnected(core: HelicsCore) -> HelicsBool:
+def helicsCoreIsConnected(core: HelicsCore) -> bool:
     """
     Check if a core is connected.
     A connected core implies it is attached to federates or federates could be attached to it.
@@ -664,7 +663,7 @@ def helicsCoreSetReadyToInit(core: HelicsCore):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsCoreConnect(core: HelicsCore) -> HelicsBool:
+def helicsCoreConnect(core: HelicsCore) -> bool:
     """
     Connect a core to the federate based on current configuration.
 
@@ -959,7 +958,7 @@ def helicsFederateInfoFree(fi: HelicsFederateInfo):
     f(fi)
 
 
-def helicsFederateIsValid(fed: HelicsFederate) -> HelicsBool:
+def helicsFederateIsValid(fed: HelicsFederate) -> bool:
     """
     Check if a federate_object is valid.
 
@@ -1179,7 +1178,7 @@ def helicsGetOptionValue(val: str) -> int:
     return f(cstring(val))
 
 
-def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: int, value: HelicsBool):
+def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: int, value: bool):
     """
     Set a flag in the info structure
     Valid flags are available `helics.helics.HELICS_FEDERATE_FLAGS`.
@@ -1379,7 +1378,7 @@ def helicsFederateEnterInitializingModeAsync(fed: HelicsFederate):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateIsAsyncOperationCompleted(fed: HelicsFederate) -> HelicsBool:
+def helicsFederateIsAsyncOperationCompleted(fed: HelicsFederate) -> bool:
     """
     Check if the current Asynchronous operation has completed.
 
@@ -1726,7 +1725,7 @@ def helicsFederateSetTimeProperty(fed: HelicsFederate, timeProperty: int, time: 
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateSetFlagOption(fed: HelicsFederate, flag: int, flagValue: HelicsBool):
+def helicsFederateSetFlagOption(fed: HelicsFederate, flag: int, flagValue: bool):
     """
     Set a flag for the federate.
 
@@ -1796,7 +1795,7 @@ def helicsFederateGetTimeProperty(fed: HelicsFederate, timeProperty: int) -> Hel
         return result
 
 
-def helicsFederateGetFlagOption(fed: HelicsFederate, flag: int) -> HelicsBool:
+def helicsFederateGetFlagOption(fed: HelicsFederate, flag: int) -> bool:
     """
     Get a flag value for a federate.
 
@@ -2154,7 +2153,7 @@ def helicsQueryExecuteComplete(query: HelicsQuery) -> str:
         return ffi.string(result).decode()
 
 
-def helicsQueryIsCompleted(query: HelicsQuery) -> HelicsBool:
+def helicsQueryIsCompleted(query: HelicsQuery) -> bool:
     """
     Check if an asynchronously executed query has completed.
     This function should usually be called after a QueryExecuteAsync function has been called.
@@ -2301,7 +2300,7 @@ def helicsFederateGetEndpointByIndex(fed: HelicsFederate, index: int) -> HelicsE
         return result
 
 
-def helicsEndpointIsValid(endpoint: HelicsEndpoint) -> HelicsBool:
+def helicsEndpointIsValid(endpoint: HelicsEndpoint) -> bool:
     """
     Check if an endpoint is valid.
 
@@ -2453,7 +2452,7 @@ def helicsEndpointSubscribe(endpoint: HelicsEndpoint, key: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateHasMessage(fed: HelicsFederate) -> HelicsBool:
+def helicsFederateHasMessage(fed: HelicsFederate) -> bool:
     """
     Check if the federate has any outstanding messages.
 
@@ -2468,7 +2467,7 @@ def helicsFederateHasMessage(fed: HelicsFederate) -> HelicsBool:
     return result == 1
 
 
-def helicsEndpointHasMessage(endpoint: HelicsEndpoint) -> HelicsBool:
+def helicsEndpointHasMessage(endpoint: HelicsEndpoint) -> bool:
     """
     Check if a given endpoint has any unread messages.
 
@@ -2845,7 +2844,7 @@ def helicsMessageGetMessageID(message: HelicsMessageObject) -> int:
     return result
 
 
-def helicsMessageCheckFlag(message: HelicsMessageObject, flag: int) -> HelicsBool:
+def helicsMessageCheckFlag(message: HelicsMessageObject, flag: int) -> bool:
     """
     Check if a flag is set on a message.
 
@@ -2912,7 +2911,7 @@ def helicsMessageGetRawDataPointer(message: HelicsMessageObject) -> pointer:
     return result
 
 
-def helicsMessageIsValid(message: HelicsMessageObject) -> HelicsBool:
+def helicsMessageIsValid(message: HelicsMessageObject) -> bool:
     """
     A check if the message contains a valid payload.
 
@@ -3071,7 +3070,7 @@ def helicsMessageClearFlags(message: HelicsMessageObject):
     f(message)
 
 
-def helicsMessageSetFlagOption(message: HelicsMessageObject, flag: int, flagValue: HelicsBool):
+def helicsMessageSetFlagOption(message: HelicsMessageObject, flag: int, flagValue: bool):
     """
     Set a flag on a message.
 
@@ -3353,7 +3352,7 @@ def helicsFederateGetFilterByIndex(fed: HelicsFederate, index: int) -> HelicsFil
         return result
 
 
-def helicsFilterIsValid(filt: HelicsFilter) -> HelicsBool:
+def helicsFilterIsValid(filt: HelicsFilter) -> bool:
     """
     Check if a filter is valid.
 
@@ -3918,7 +3917,7 @@ def helicsFederatePublishJSON(fed: HelicsFederate, json: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationIsValid(pub: HelicsPublication) -> HelicsBool:
+def helicsPublicationIsValid(pub: HelicsPublication) -> bool:
     """
     Publication functions.
     Functions for publishing data of various kinds.
@@ -3985,7 +3984,7 @@ def helicsPublicationPublishInteger(pub: HelicsPublication, val: int):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishBoolean(pub: HelicsPublication, val: HelicsBool):
+def helicsPublicationPublishBoolean(pub: HelicsPublication, val: bool):
     """
     Publish a Boolean Value.
 
@@ -4056,8 +4055,7 @@ def helicsPublicationPublishComplex(pub: HelicsPublication, c: complex):
     **Parameters**
 
     * **pub** - The publication to publish for.
-    * **real** - The real part of a complex number to publish.
-    * **imag** - The imaginary part of a complex number to publish.
+    * **c** - `complex` number
     """
     f = loadSym("helicsPublicationPublishComplex")
     err = helicsErrorInitialize()
@@ -4116,7 +4114,7 @@ def helicsPublicationAddTarget(pub: HelicsPublication, target: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputIsValid(ipt: HelicsInput) -> HelicsBool:
+def helicsInputIsValid(ipt: HelicsInput) -> bool:
     """
     Check if an input is valid.
 
@@ -4235,7 +4233,7 @@ def helicsInputGetInteger(ipt: HelicsInput) -> int:
         return result
 
 
-def helicsInputGetBoolean(ipt: HelicsInput) -> HelicsBool:
+def helicsInputGetBoolean(ipt: HelicsInput) -> bool:
     """
     Get a boolean value from a subscription.
 
@@ -4460,7 +4458,7 @@ def helicsInputSetDefaultInteger(ipt: HelicsInput, val: int):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultBoolean(ipt: HelicsInput, val: HelicsBool):
+def helicsInputSetDefaultBoolean(ipt: HelicsInput, val: bool):
     """
     Set the default as a boolean.
 
@@ -4884,7 +4882,7 @@ def helicsInputSetMinimumChange(inp: HelicsInput, tolerance: float):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputIsUpdated(ipt: HelicsInput) -> HelicsBool:
+def helicsInputIsUpdated(ipt: HelicsInput) -> bool:
     """
     Check if a particular subscription was updated.
 
