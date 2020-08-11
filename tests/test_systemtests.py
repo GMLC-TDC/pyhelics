@@ -274,6 +274,34 @@ def test_system_tests_federate_logging():
     assert isfile(lfile)
     rm(lfile, force=True)
 
+
+def test_federate_tests_federateGeneratedLocalError():
+
+    brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
+    cr = h.helicsCreateCore("inproc", "gcore", "--broker=gbrokerc")
+
+    argv = ["", "--corename=gcore"]
+
+    fi = h.helicsCreateFederateInfo()
+    h.helicsFederateInfoLoadFromArgs(fi, argv)
+
+    fed1 = h.helicsCreateValueFederate("fed0", fi)
+
+    h.helicsFederateInfoFree(fi)
+    h.helicsFederateEnterExecutingMode(fed1)
+
+    h.helicsFederateRequestTime(fed1, 2.0)
+    h.helicsFederateLocalError(fed1, 9827, "user generated local error")
+
+    with pt.raises(h.HelicsException):
+        h.helicsFederateRequestTime(fed1, 3.0)
+
+    h.helicsFederateDestroy(fed1)
+    h.helicsCoreDisconnect(cr)
+    h.helicsBrokerDisconnect(brk)
+    h.helicsCloseLibrary()
+
+
 def test_federate_tests_federateGeneratedGlobalError():
 
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
