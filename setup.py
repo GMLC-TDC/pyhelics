@@ -128,7 +128,7 @@ setup(
     install_requires=["cffi>=1.0.0"],
     extras_require={
         "tests": ["pytest", "pytest-ordering", "pytest-cov"],
-        "docs": ["mkdocs", "inari", "mkdocs-material", "pygments", "pymdown-extensions"],
+        "docs": ["mkdocs", "inari[mkdocs]", "mkdocs-material", "pygments", "pymdown-extensions"],
     },
     # We only require CFFI when compiling.
     # pyproject.toml does not support requirements only for some build actions,
