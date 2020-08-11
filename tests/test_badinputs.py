@@ -241,19 +241,29 @@ def test_bad_input_init_error():
     h.helicsFederateSetTimeProperty(vFed1, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
 
     # unknown publication
-    # @test_throws h.HELICSErrorInvalidArgument pub3 = h.helicsFederateGetPublication(vFed1, "unknown")
+    with pt.raises(h.HelicsException):
+        # @test_throws h.HELICSErrorInvalidArgument
+        pub3 = h.helicsFederateGetPublication(vFed1, "unknown")
 
     # error in this call from the mismatch
-    # @test_throws h.HELICSErrorConnectionFailure h.helicsFederateEnterInitializingMode(vFed1)
+    with pt.raises(h.HelicsException):
+        # @test_throws h.HELICSErrorConnectionFailure
+        h.helicsFederateEnterInitializingMode(vFed1)
 
-    # @test_throws h.HELICSErrorInvalidFunctionCall h.helicsFederateRequestTimeAdvance(vFed1, 0.1)
+    with pt.raises(h.HelicsException):
+        # @test_throws h.HELICSErrorInvalidFunctionCall
+        h.helicsFederateRequestTimeAdvance(vFed1, 0.1)
 
     # unknown input
-    # @test_throws h.HELICSErrorInvalidArgument inp4 = h.helicsFederateGetInput(vFed1, "unknown")
+    with pt.raises(h.HelicsException):
+        # @test_throws h.HELICSErrorInvalidArgument
+        inp4 = h.helicsFederateGetInput(vFed1, "unknown")
 
     # invalid input index
     # TODO: does this test segfault some times?
-    # @test_throws h.HELICSErrorInvalidArgument inp5 = h.helicsFederateGetInputByIndex(vFed1, 4)
+    with pt.raises(h.HelicsException):
+        # @test_throws h.HELICSErrorInvalidArgument
+        inp5 = h.helicsFederateGetInputByIndex(vFed1, 4)
 
     h.helicsFederateFinalize(vFed1)
 
