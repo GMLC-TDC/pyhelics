@@ -126,8 +126,10 @@ setup(
     keywords=["helics", "co-simulation"],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     install_requires=["cffi>=1.0.0"],
-    # cffi_modules=["_build.py:ffi"],
-    extras_require={"docs": ["mkdocs", "inari", "mkdocs-material", "pygments", "pymdown-extensions"]},
+    extras_require={
+        "tests": ["pytest", "pytest-ordering", "pytest-cov"],
+        "docs": ["mkdocs", "inari", "mkdocs-material", "pygments", "pymdown-extensions"],
+    },
     # We only require CFFI when compiling.
     # pyproject.toml does not support requirements only for some build actions,
     # but we can do it in setup.py.

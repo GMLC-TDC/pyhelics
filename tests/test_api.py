@@ -14,6 +14,12 @@ import helics as h
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker
 
 
+def test_misc_functions_api():
+    print(h.helicsGetBuildFlags())
+    assert len(h.helicsGetBuildFlags()) > 0
+    assert len(h.helicsGetCompilerVersion()) > 0
+
+
 def test_broker_api():
     assert h.helicsIsCoreTypeAvailable("zmq") == 1
     broker1 = h.helicsCreateBroker("zmq", "broker1", "--federates 3 --loglevel 1")
@@ -135,7 +141,7 @@ def test_misc_api():
 
     _ = h.helicsFederateRegisterCloningFilter(fed1, "fed1/Ep1")
     fed1DestinationFilter = h.helicsFederateRegisterFilter(fed1, h.HELICS_FILTER_TYPE_DELAY, "fed1DestinationFilter")
-    h.helicsFilterAddDestinationTarget(fed1DestinationFilter, "ep2")
+    h.helicsFilterAddDestinationTarget(fed1DestinationFilter, "Ep2")
 
     ep1 = h.helicsFederateRegisterEndpoint(fed1, "Ep1", "string")
     ep2 = h.helicsFederateRegisterGlobalEndpoint(fed1, "Ep2", "string")
