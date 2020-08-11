@@ -34,15 +34,29 @@ def broker():
     assert h.helicsBrokerIsConnected(brk) == False
 
 
-def test_other_tests(broker):
+def test_other_tests_broker_creation():
+
+    argv = ["--root"]
+
+    brk = h.helicsCreateBrokerFromArgs("zmq", "gbrokerc", argv)
+    assert h.helicsBrokerGetIdentifier(brk) == "gbrokerc"
+
+    with pt.raises(h.HelicsException):
+        argv.append("--log-level=what_logs?")
+        brk2 = h.helicsCreateBrokerFromArgs("zmq", "gbrokerc", argv)
+
+    h.helicsBrokerDisconnect(brk)
+
+
+def test_other_tests_core_creation(broker):
 
     cr = h.helicsCreateCoreFromArgs("zmq", "gcore", ["--broker=gbrokertest"])
 
     assert h.helicsCoreGetIdentifier(cr) == "gcore"
 
     # TODO: why is this not raising an exception?
-    # with pt.raises(h.HelicsException):
-    #    cr2 = h.helicsCreateCoreFromArgs("test", "gcore2", ["", "--broker=gbrokerc", "this is not an argument"])
+    with pt.raises(h.HelicsException):
+        cr2 = h.helicsCreateCoreFromArgs("test", "gcore2", ["--broker=gbrokerc", "--log-level=what_logs?"])
 
     h.helicsCoreDisconnect(cr)
 
