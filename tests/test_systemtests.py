@@ -123,10 +123,10 @@ def test_system_test_core_global_value1():
     h.helicsBrokerDisconnect(brk)
 
     assert h.helicsBrokerIsConnected(brk) is False
+    h.helicsCloseLibrary()
 
 
 def test_system_test_core_global_value2():
-    h.helicsCloseLibrary()
     brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
 
     cr = h.helicsCreateCore("zmq", "gcore", "--broker=gbrokerc")
