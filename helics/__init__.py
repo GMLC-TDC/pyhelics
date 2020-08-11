@@ -1516,10 +1516,9 @@ def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, localPort: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsGetPropertyIndex(val: str) -> int:
+def helicsGetPropertyIndex(val: str) -> HelicsProperty:
     """
-    Get a property index for use in `helics.helicsFederateInfoSetFlagOption`, `helics.helicsFederateInfoSetTimeProperty`,
-    or `helics.helicsFederateInfoSetIntegerProperty`.
+    Get a property index for use in `helics.helicsFederateInfoSetFlagOption`, `helics.helicsFederateInfoSetTimeProperty`, or `helics.helicsFederateInfoSetIntegerProperty`.
 
     **Parameters**
 
@@ -1528,10 +1527,14 @@ def helicsGetPropertyIndex(val: str) -> int:
     **Returns**: An int with the property code or (-1) if not a valid property.
     """
     f = loadSym("helicsGetPropertyIndex")
-    return f(cstring(val))
+    result = f(cstring(val))
+    if result == -1:
+        raise HelicsException(f"[-1] Unknown property index for flag `{val}`")
+    else:
+        return HelicsProperty(result)
 
 
-def helicsGetFlagIndex(val: str) -> int:
+def helicsGetFlagIndex(val: str) -> HelicsProperty:
     """
     Get a property index for use in `helics.helicsFederateInfoSetFlagOption`, `helics.helicsFederateSetFlagOption`.
 
@@ -1542,10 +1545,14 @@ def helicsGetFlagIndex(val: str) -> int:
     **Returns**: An int with the property code or (-1) if not a valid property.
     """
     f = loadSym("helicsGetFlagIndex")
-    return f(cstring(val))
+    result = f(cstring(val))
+    if result == -1:
+        raise HelicsException(f"[-1] Unknown property index for flag `{val}`")
+    else:
+        return HelicsProperty(result)
 
 
-def helicsGetOptionIndex(val: str) -> int:
+def helicsGetOptionIndex(val: str) -> HelicsHandleOption:
     """
     Get an option index for use in `helics.helicsPublicationSetOption`, `helics.helicsInputSetOption`, `helics.helicsEndpointSetOption`,
     `helics.helicsFilterSetOption`, and the corresponding get functions
@@ -1557,7 +1564,11 @@ def helicsGetOptionIndex(val: str) -> int:
     **Returns**: An int with the option index or (-1) if not a valid property.
     """
     f = loadSym("helicsGetOptionIndex")
-    return f(cstring(val))
+    result = f(cstring(val))
+    if result == -1:
+        raise HelicsException(f"[-1] Unknown option index for flag `{val}`")
+    else:
+        return HelicsHandleOption(result)
 
 
 def helicsGetOptionValue(val: str) -> int:
@@ -1572,7 +1583,11 @@ def helicsGetOptionValue(val: str) -> int:
     **Returns**: An int with the option value or (-1) if not a valid value.
     """
     f = loadSym("helicsGetOptionValue")
-    return f(cstring(val))
+    result = f(cstring(val))
+    if result == -1:
+        raise HelicsException(f"[-1] Unknown option valud for flag `{val}`")
+    else:
+        return result
 
 
 def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: HelicsFederateFlag, value: bool):
@@ -2212,14 +2227,14 @@ def helicsFederateGetTimeProperty(fed: HelicsFederate, timeProperty: int) -> Hel
         return result
 
 
-def helicsFederateGetFlagOption(fed: HelicsFederate, flag: int) -> bool:
+def helicsFederateGetFlagOption(fed: HelicsFederate, flag: HelicsFederateFlag) -> bool:
     """
     Get a flag value for a federate.
 
     **Parameters**
 
     * **`fed`** - The federate to get the flag for.
-    * **`flag`** - The flag to query.
+    * **`flag`** - The `helics.HelicsFederateFlag` to query.
     """
     f = loadSym("helicsFederateGetFlagOption")
     err = helicsErrorInitialize()
@@ -3158,7 +3173,7 @@ def helicsEndpointSetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption
 
 def helicsEndpointGetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption) -> int:
     """
-    Set a handle option on an endpoint.
+    Get the value of handle option on an endpoint.
 
     **Parameters**
 
@@ -4000,7 +4015,7 @@ def helicsFilterSetOption(filt: HelicsFilter, option: HelicsHandleOption, value:
 
 def helicsFilterGetOption(filt: HelicsFilter, option: HelicsHandleOption) -> int:
     """
-    Get a handle option for the filter
+    Get a handle option for the filter.
 
     **Parameters**
 
@@ -4598,8 +4613,6 @@ def helicsInputAddTarget(ipt: HelicsInput, target: str):
 
 def helicsInputGetRawValueSize(ipt: HelicsInput) -> int:
     """
-
-    GetValue functions.
     Data can be returned in a number of formats,  for instance if data is published as a double it can be returned as a string and vice versa,  not all translations make that much sense but they do work.
     Get the size of the raw value for subscription.
 
