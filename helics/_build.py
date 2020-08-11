@@ -5,6 +5,7 @@ import platform
 
 ffi = cffi.FFI()
 
+
 PYHELICS_INSTALL = os.getenv("PYHELICS_INSTALL", os.path.join(os.path.dirname(os.path.abspath(__file__)), "install"))
 
 files = [
@@ -15,6 +16,7 @@ files = [
     "shared_api_library/MessageFederate.h",
     "shared_api_library/MessageFilters.h",
     "shared_api_library/ValueFederate.h",
+    "shared_api_library/helicsCallbacks.h",
 ]
 IGNOREBLOCK = False
 for file in files:

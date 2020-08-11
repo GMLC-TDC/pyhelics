@@ -67,6 +67,18 @@ def test_core_api():
     h.helicsCloseLibrary()
 
 
+class UserData(object):
+    def __init__(self, x):
+        self.x = x
+
+
+@h.ffi.callback("void logger(int loglevel, const char* identifier, const char* message, void* userData)")
+def logger(loglevel: int, identifier: str, message: str, userData: object):
+    userData = h.ffi.from_handle(userData)
+    print(f"{loglevel}, {h.ffi.string(identifier).decode()}, {h.ffi.string(message).decode()}, {userData}")
+    userData.x += 1
+
+
 def test_logging_api():
 
     fi = h.helicsCreateFederateInfo()
@@ -77,24 +89,24 @@ def test_logging_api():
 
     fed = h.helicsCreateValueFederate("test1", fi)
 
-    # userdata = UserData(5)
+    userdata = UserData(5)
 
-    # TODO: figure out how to do python function callbacks in cffi
-    # h.helicsFederateSetLoggingCallback(fed, cfunction(logger, Cvoid, (Cint, Cstring, Cstring, Ptr{Cvoid})), Ref(userdata))
+    handle = h.ffi.new_handle(userdata)
+    h.helicsFederateSetLoggingCallback(fed, logger, handle)
 
-    # h.helicsFederateEnterExecutingMode(fed)
-    # h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
-    # h.helicsFederateRequestNextStep(fed)
-    # h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
-    # h.helicsFederateRequestNextStep(fed)
-    # h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
-    # h.helicsFederateRequestNextStep(fed)
-    # h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
-    # h.helicsFederateRequestNextStep(fed)
+    h.helicsFederateEnterExecutingMode(fed)
+    h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
+    h.helicsFederateRequestNextStep(fed)
+    h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
+    h.helicsFederateRequestNextStep(fed)
+    h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
+    h.helicsFederateRequestNextStep(fed)
+    h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
+    h.helicsFederateRequestNextStep(fed)
 
-    # h.helicsFederateFinalize(fed)
+    h.helicsFederateFinalize(fed)
 
-    # assert userdata.x == 9
+    assert userdata.x == 9
 
     h.helicsFederateFree(fed)
     h.helicsFederateInfoFree(fi)

@@ -5381,3 +5381,23 @@ def helicsFederateGetInputCount(fed: HelicsFederate) -> int:
     f = loadSym("helicsFederateGetInputCount")
     result = f(fed)
     return result
+
+
+def helicsFederateSetLoggingCallback(fed: HelicsFederate, logger, userdata):
+    """
+    Set the logging callback for a `helics.HelicsFederate`
+
+    Add a logging callback function for the C.
+    The logging callback will be called when a message flows into a `helics.HelicsFederate` from the core or from a federate.
+
+    # Parameters
+
+    * **fed**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`, `helics.helicsCreateMessageFederate` or `helics.helicsCreateCombinationFederate`
+    * **logger**: a callback with signature void(int, const char *, const char *, void *); the function arguments are loglevel, an identifier string, and a message string, and a pointer to user data
+    * **userdata**: a pointer to user data that is passed to the function when executing
+    """
+    f = loadSym("helicsFederateSetLoggingCallback")
+    err = helicsErrorInitialize()
+    f(fed, logger, userdata, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
