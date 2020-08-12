@@ -517,7 +517,6 @@ HelicsTime = float
 HelicsQuery = object
 HelicsEndpoint = object
 pointer = int
-HelicsMessage = object
 HelicsMessageObject = object
 HelicsFilter = object
 HelicsInput = object
@@ -2835,26 +2834,7 @@ def helicsEndpointSendEventRaw(
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
-    """
-    Send a message object from a specific endpoint.
-
-    _**Deprecated: Use `helics.helicsEndpointSendMessageObject` instead.**_
-
-    **Parameters**
-
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`message`** - The actual message to send.
-    """
-    f = loadSym("helicsEndpointSendMessage")
-    err = helicsErrorInitialize()
-    message = ffi.new("helics_message *", message)
-    f(endpoint, message, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-
-
-def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMessageObject):
+def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessageObject):
     """
     Send a message object from a specific endpoint.
 
@@ -2864,22 +2844,6 @@ def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMes
     * **`message`** - The actual message to send which will be copied.
     """
     f = loadSym("helicsEndpointSendMessageObject")
-    err = helicsErrorInitialize()
-    f(endpoint, message, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-
-
-def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: HelicsMessageObject):
-    """
-    Send a message object from a specific endpoint, the message will not be copied and the message object will no longer be valid after the call.
-
-    **Parameters**
-
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`message`** - The actual message to send which will be copied.
-    """
-    f = loadSym("helicsEndpointSendMessageObjectZeroCopy")
     err = helicsErrorInitialize()
     f(endpoint, message, err)
     if err.error_code != 0:
@@ -2956,23 +2920,7 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
     return f(endpoint)
 
 
-def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
-    """
-    Receive a packet from a particular endpoint.
-
-    _**Deprecated: Use helicsEndpointGetMessageObject instead**_
-
-    **Parameters**
-
-    * **`endpoint`** - The identifier for the endpoint.
-
-    **Returns**: A message object.
-    """
-    f = loadSym("helicsEndpointGetMessage")
-    return f(endpoint)
-
-
-def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessageObject:
+def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessageObject:
     """
     Receive a packet from a particular endpoint.
 
@@ -2986,7 +2934,7 @@ def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessageObj
     return f(endpoint)
 
 
-def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessageObject:
+def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessageObject:
     """
     Create a new empty message object.
     The message is empty and isValid will return false since there is no data associated with the message yet.
@@ -3004,22 +2952,7 @@ def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage
         return result
 
 
-def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
-    """
-    Receive a communication message for any endpoint in the federate.
-
-    _**Deprecated: Use helicsFederateGetMessageObject instead**_
-
-    The return order will be in order of endpoint creation. So all messages that are available for the first endpoint, then all for the second, and so on. Within a single endpoint, the messages are ordered by time, then source_id, then order of arrival.
-
-    **Returns**: A unique_ptr to a Message object containing the message data.
-    """
-    f = loadSym("helicsFederateGetMessage")
-    result = f(fed)
-    return result
-
-
-def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessageObject:
+def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessageObject:
     """
     Receive a communication message for any endpoint in the federate.
     The return order will be in order of endpoint creation.
@@ -3033,7 +2966,7 @@ def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessageObject:
     return result
 
 
-def helicsFederateCreateMessageObject(fed: HelicsFederate) -> HelicsMessageObject:
+def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessageObject:
     """
     Create a new empty message object.
     The message is empty and isValid will return false since there is no data associated with the message yet.

@@ -223,21 +223,21 @@ def test_misc_api():
     h.helicsFederateEnterExecutingModeAsync(fed1)
     h.helicsFederateEnterExecutingModeComplete(fed1)
 
-    mesg1 = h.helicsFederateCreateMessageObject(fed1)
+    mesg1 = h.helicsFederateCreateMessage(fed1)
     h.helicsMessageSetString(mesg1, "Hello")
     h.helicsMessageSetSource(mesg1, "fed1/Ep1")
     h.helicsMessageSetOriginalSource(mesg1, "fed1/Ep1")
     h.helicsMessageSetDestination(mesg1, "Ep2")
     h.helicsMessageSetOriginalDestination(mesg1, "Ep2")
 
-    h.helicsEndpointSendMessageObject(ep1, mesg1)
-    mesg1 = h.helicsFederateCreateMessageObject(fed1)
+    h.helicsEndpointSendMessage(ep1, mesg1)
+    mesg1 = h.helicsFederateCreateMessage(fed1)
     h.helicsMessageSetString(mesg1, "There")
     h.helicsMessageSetSource(mesg1, "fed1/Ep1")
     h.helicsMessageSetOriginalSource(mesg1, "fed1/Ep1")
     h.helicsMessageSetDestination(mesg1, "Ep2")
     h.helicsMessageSetOriginalDestination(mesg1, "Ep2")
-    h.helicsEndpointSendMessageObject(ep1, mesg1)
+    h.helicsEndpointSendMessage(ep1, mesg1)
     h.helicsEndpointSetDefaultDestination(ep2, "fed1/Ep1")
 
     ep1NameString = h.helicsEndpointGetName(ep1)
@@ -281,7 +281,7 @@ def test_misc_api():
     ep2HasMsg = h.helicsEndpointHasMessage(ep2)
     assert ep2HasMsg == 1
 
-    msg2 = h.helicsEndpointGetMessageObject(ep2)
+    msg2 = h.helicsEndpointGetMessage(ep2)
     assert h.helicsMessageGetTime(msg2) == 1.0
     assert h.helicsMessageGetString(msg2) == "Hello"
     assert h.helicsMessageGetOriginalSource(msg2) == "fed1/Ep1"
@@ -294,7 +294,7 @@ def test_misc_api():
 
     assert h.helicsFederateHasMessage(fed1) == 1
 
-    msg3 = h.helicsFederateGetMessageObject(fed1)
+    msg3 = h.helicsFederateGetMessage(fed1)
     assert h.helicsMessageGetTime(msg3) == 1.0
     assert h.helicsMessageGetString(msg3) == "There"
     assert h.helicsMessageGetOriginalSource(msg3) == "fed1/Ep1"

@@ -179,7 +179,7 @@ def test_filter_type_tests_message_filter_function():
 
     assert h.helicsEndpointHasMessage(p2) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
@@ -242,7 +242,7 @@ def test_filter_test_types_function_mobj():
 
     assert h.helicsEndpointHasMessage(p2) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
@@ -310,7 +310,7 @@ def test_filter_test_types_function_two_stage():
     h.helicsFederateRequestTime(mFed, 3.0)
     assert h.helicsEndpointHasMessage(p2) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
@@ -381,7 +381,7 @@ def test_filter_test_types_function2():
 
     assert h.helicsEndpointHasMessage(p2) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
@@ -453,7 +453,7 @@ def test_filter_test_types_message_filter_function3():
 
     assert h.helicsEndpointHasMessage(p2)
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
@@ -510,7 +510,7 @@ def test_filter_test_types_clone_test():
 
     assert h.helicsFederateHasMessage(dFed)
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "dest"
@@ -518,7 +518,7 @@ def test_filter_test_types_clone_test():
 
     assert h.helicsFederateHasMessage(dcFed)
 
-    m2 = h.helicsEndpointGetMessageObject(p3)
+    m2 = h.helicsEndpointGetMessage(p3)
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "cm"
@@ -582,7 +582,7 @@ def test_filter_test_types_clone_test_connections():
 
     assert h.helicsFederateHasMessage(dFed) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "dest"
@@ -590,7 +590,7 @@ def test_filter_test_types_clone_test_connections():
 
     assert h.helicsFederateHasMessage(dcFed) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p3)
+    m2 = h.helicsEndpointGetMessage(p3)
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "cm"
@@ -646,7 +646,7 @@ def test_filter_test_types_clone_test_broker_connections():
 
     assert h.helicsFederateHasMessage(dFed) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "dest"
@@ -654,7 +654,7 @@ def test_filter_test_types_clone_test_broker_connections():
 
     assert h.helicsFederateHasMessage(dcFed) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p3)
+    m2 = h.helicsEndpointGetMessage(p3)
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "cm"
@@ -718,7 +718,7 @@ def test_filter_test_types_clone_test_dest_connections():
 
     # auto dFedExec = [&]() {
     #     h.helicsFederateRequestTime(dFed, 1.0)
-    #     m2 = h.helicsEndpointGetMessageObject(p2)
+    #     m2 = h.helicsEndpointGetMessage(p2)
     #     h.helicsFederateFinalize(dFed, "")
     # }
 
@@ -730,7 +730,7 @@ def test_filter_test_types_clone_test_dest_connections():
     #         std::this_thread::sleep_for(std::chrono::milliseconds(50))
     #         h.helicsFederateRequestTime(dcFed, 4.0)
     #     }
-    #     m3 = h.helicsEndpointGetMessageObject(p3)
+    #     m3 = h.helicsEndpointGetMessage(p3)
     #     h.helicsFederateFinalize(dcFed)
     # }
 
@@ -796,7 +796,7 @@ def test_filter_test_types_clone_test_broker_dest_connections():
 
     assert h.helicsFederateHasMessage(dFed) is True
 
-    m2 = h.helicsEndpointGetMessageObject(p2)
+    m2 = h.helicsEndpointGetMessage(p2)
 
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
@@ -814,7 +814,7 @@ def test_filter_test_types_clone_test_broker_dest_connections():
 
     # assert h.helicsFederateHasMessage(dcFed) is True
 
-    # m2 = h.helicsEndpointGetMessageObject(p3)
+    # m2 = h.helicsEndpointGetMessage(p3)
     # assert h.helicsMessageGetSource(m2) == "src"
     # assert h.helicsMessageGetOriginalSource(m2) == "src"
     # assert h.helicsMessageGetDestination(m2) == "cm"

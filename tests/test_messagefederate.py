@@ -118,7 +118,7 @@ def test_message_federate_send(mFed):
     res = h.helicsEndpointHasMessage(epid2)
     assert res == 1
 
-    message = h.helicsEndpointGetMessageObject(epid2)
+    message = h.helicsEndpointGetMessage(epid2)
 
     assert h.helicsMessageGetMessageID(message) == 55
     assert h.helicsMessageIsValid(message) is True
@@ -194,7 +194,7 @@ def test_messagefederate_test_message_federate_send(mFed):
     res = h.helicsEndpointHasMessage(epid2)
     assert res is True
 
-    message = h.helicsEndpointGetMessageObject(epid2)
+    message = h.helicsEndpointGetMessage(epid2)
 
     assert h.helicsMessageGetMessageID(message) == 55
     assert h.helicsMessageIsValid(message) is True
@@ -269,13 +269,13 @@ def test_messagefederate_message_object_tests(mFed):
 
     assert h.helicsFederateGetState(mFed) == h.HELICS_STATE_EXECUTION
 
-    msg = h.helicsFederateCreateMessageObject(mFed)
+    msg = h.helicsFederateCreateMessage(mFed)
     h.helicsMessageSetDestination(msg, "ep2")
     h.helicsMessageGetDestination(msg) == "ep2"
     h.helicsMessageSetData(msg, "".join(["a" for _ in range(0, 500)]).encode())
     h.helicsMessageSetTime(msg, 0.0)
 
-    h.helicsEndpointSendMessageObject(epid1, msg)
+    h.helicsEndpointSendMessage(epid1, msg)
     t = h.helicsFederateRequestTime(mFed, 1.0)
     assert t == 1.0
 
@@ -283,7 +283,7 @@ def test_messagefederate_message_object_tests(mFed):
     assert h.helicsEndpointHasMessage(epid1) is False
     assert h.helicsEndpointHasMessage(epid2) is True
 
-    msg = h.helicsEndpointGetMessageObject(epid2)
+    msg = h.helicsEndpointGetMessage(epid2)
     assert h.helicsMessageGetRawDataSize(msg) == 500
     # TODO: segfaults
     # print(h.helicsMessageGetRawData(msg))
@@ -346,7 +346,7 @@ def test_messagefederate_timing_tests():
     tres = h.helicsFederateGetTimeProperty(vFed1, h.HELICS_PROPERTY_TIME_PERIOD)
     assert tres == 0.1
 
-    # m = h.helicsEndpointGetMessageObject(ept1)
+    # m = h.helicsEndpointGetMessage(ept1)
     # @show h.helicsMessageGetRawData(m)
     # TODO: null pointer received from C
 
