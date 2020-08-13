@@ -12,12 +12,19 @@ from os.path import splitext
 
 from setuptools import find_packages
 from setuptools import setup, Command
+from setuptools.dist import Distribution
+
 
 import os
 import platform
 import tarfile
 import shutil
 import struct
+
+
+class BinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
 
 
 try:
@@ -65,6 +72,8 @@ class HELICSDownloadCommand(Command):
     def initialize_options(self):
         self.helics_url = DEFAULT_URL
         self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
+        if os.path.exists(self.pyhelics_install):
+            shutil.rmtree(self.pyhelics_install)
 
     def finalize_options(self):
         pass
@@ -94,7 +103,9 @@ setup(
     packages=find_packages("helics"),
     package_dir={"": "helics"},
     py_modules=[splitext(basename(path))[0] for path in glob("helics/*.py")],
+    # data_files=[("helics", ["install/include/helics/chelics.h"])],
     package_data={"helics": ["install/*"]},
+    distclass=BinaryDistribution,
     include_package_data=True,
     zip_safe=False,
     classifiers=[
@@ -124,9 +135,6 @@ setup(
         "tests": ["pytest", "pytest-ordering", "pytest-cov"],
         "docs": ["mkdocs", "inari[mkdocs]", "mkdocs-material", "black", "pygments", "pymdown-extensions"],
     },
-    # We only require CFFI when compiling.
-    # pyproject.toml does not support requirements only for some build actions,
-    # but we can do it in setup.py.
     setup_requires=["pytest-runner", "cffi>=1.0.0"],
     cmdclass={"download": HELICSDownloadCommand},
 )
