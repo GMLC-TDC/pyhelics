@@ -1,6 +1,5 @@
 graft docs
 graft helics
-graft helics/install
 graft tests
 
 include LICENSE
