@@ -94,6 +94,7 @@ setup(
     packages=find_packages("helics"),
     package_dir={"": "helics"},
     py_modules=[splitext(basename(path))[0] for path in glob("helics/*.py")],
+    package_data={"helics": ["*"]},
     include_package_data=True,
     zip_safe=False,
     classifiers=[
