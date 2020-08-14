@@ -12,39 +12,12 @@ jobs:
           - os: macOS-latest
             target: macosx_10_7_x86_64
             python-version: '3.8'
-          - os: macOS-latest
-            target: macosx_10_7_x86_64
-            python-version: '3.7'
-          - os: macOS-latest
-            target: macosx_10_7_x86_64
-            python-version: '3.6'
-          - os: macOS-latest
-            target: macosx_10_7_x86_64
-            python-version: '3.5'
           - os: ubuntu-latest
             target: manylinux1_x86_64
             python-version: '3.8'
-          - os: ubuntu-latest
-            target: manylinux1_x86_64
-            python-version: '3.7'
-          - os: ubuntu-latest
-            target: manylinux1_x86_64
-            python-version: '3.6'
-          - os: ubuntu-latest
-            target: manylinux1_x86_64
-            python-version: '3.5'
           - os: windows-latest
             target: win_amd64
             python-version: '3.8'
-          - os: windows-latest
-            target: win_amd64
-            python-version: '3.7'
-          - os: windows-latest
-            target: win_amd64
-            python-version: '3.6'
-          - os: windows-latest
-            target: win_amd64
-            python-version: '3.5'
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
