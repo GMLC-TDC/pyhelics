@@ -523,10 +523,10 @@ def test_valuefederate_default_value_tests():
     h.helicsInputGetVector(inp_vect)
 
     optset = h.helicsInputGetOption(inp_double2, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED)
-    assert optset is 1
+    assert optset == 1
 
     optset = h.helicsPublicationGetOption(pub, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED)
-    assert optset is 1
+    assert optset == 1
     h.helicsPublicationPublishInteger(pub, 12)
 
     h.helicsFederateRequestNextStep(vFed1)
