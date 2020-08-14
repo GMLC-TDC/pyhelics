@@ -33,13 +33,10 @@ jobs:
         python setup.py download
         python setup.py bdist_wheel --plat-name=${{ matrix.target }}
         pip install dist/helics-0.1.0-py3-none-${{ matrix.target }}.whl
-    - name: run pytests
+    - name: Run pytests and generate coverage report
       run: |
         pip install pytest pytest-ordering pytest-cov
-        pytest -vvv
-    - name: Generate coverage report
-      run: |
-        pytest --cov=./ --cov-report=xml:unit.coverage.xml
+        pytest -vvv --cov=./ --cov-report=xml:unit.coverage.xml
     - name: Upload unit test coverage to Codecov
       uses: codecov/codecov-action@v1.0.7
       with:
