@@ -10,7 +10,6 @@ from os.path import dirname
 from os.path import join
 from os.path import splitext
 
-from setuptools import find_packages
 from setuptools import setup, Command
 from setuptools.dist import Distribution
 
@@ -100,8 +99,7 @@ setup(
     author="Dheepak Krishnamurthy",
     author_email="me@kdheepak.com",
     url="https://github.com/GMLC-TDC/pyhelics",
-    packages=find_packages("helics"),
-    package_dir={"": "helics"},
+    packages=["helics"],
     py_modules=[splitext(basename(path))[0] for path in glob("helics/*.py")],
     # data_files=[("helics", ["install/include/helics/chelics.h"])],
     package_data={"helics": ["install/*"]},
@@ -117,7 +115,6 @@ setup(
         "Operating System :: POSIX",
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
