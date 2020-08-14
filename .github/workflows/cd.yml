@@ -1,0 +1,83 @@
+name: CD
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macOS-latest
+            target: macosx_10_7_x86_64
+            python-version: '3.8'
+          - os: macOS-latest
+            target: macosx_10_7_x86_64
+            python-version: '3.7'
+          - os: macOS-latest
+            target: macosx_10_7_x86_64
+            python-version: '3.6'
+          - os: macOS-latest
+            target: macosx_10_7_x86_64
+            python-version: '3.5'
+          - os: ubuntu-latest
+            target: manylinux1_x86_64
+            python-version: '3.8'
+          - os: ubuntu-latest
+            target: manylinux1_x86_64
+            python-version: '3.7'
+          - os: ubuntu-latest
+            target: manylinux1_x86_64
+            python-version: '3.6'
+          - os: ubuntu-latest
+            target: manylinux1_x86_64
+            python-version: '3.5'
+          - os: windows-latest
+            target: win_amd64
+            python-version: '3.8'
+          - os: windows-latest
+            target: win_amd64
+            python-version: '3.7'
+          - os: windows-latest
+            target: win_amd64
+            python-version: '3.6'
+          - os: windows-latest
+            target: win_amd64
+            python-version: '3.5'
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install -U pip install wheel setuptools cffi
+    - name: Download helics library and build wheel
+      run: |
+        python setup.py download
+        python setup.py bdist_wheel --plat-name=${{ matrix.target }}
+        pip install dist/helics-0.1.0-py3-none-${{ matrix.target }}.whl
+    - name: Run pytests
+      run: |
+        pip install pytest pytest-ordering
+        pytest -vvv
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: helics
+        path: dist/*
+    - name: Publish package
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_TOKEN }}
+    - name: GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: 'dist/*'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
