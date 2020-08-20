@@ -1533,7 +1533,7 @@ def helicsGetPropertyIndex(val: str) -> HelicsProperty:
         return HelicsProperty(result)
 
 
-def helicsGetFlagIndex(val: str) -> HelicsProperty:
+def helicsGetFlagIndex(val: str) -> HelicsFederateFlag:
     """
     Get a property index for use in `helics.helicsFederateInfoSetFlagOption`, `helics.helicsFederateSetFlagOption`.
 
@@ -1548,7 +1548,7 @@ def helicsGetFlagIndex(val: str) -> HelicsProperty:
     if result == -1:
         raise HelicsException(f"[-1] Unknown property index for flag `{val}`")
     else:
-        return HelicsProperty(result)
+        return HelicsFederateFlag(result)
 
 
 def helicsGetOptionIndex(val: str) -> HelicsHandleOption:

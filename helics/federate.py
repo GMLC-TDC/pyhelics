@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import capi as h
+from .core import Core
 import logging
 
 from typing import List, Any, TypeVar
@@ -9,10 +10,14 @@ FederateInfo = TypeVar("Any")
 
 
 class FederateInfo:
-    def __init__(self, *, core_type: str = "", federate_info=None):
+    def __init__(self, *, core_type: str = "", federate_info=None, clone=False):
 
-        if federate_info is not None and type(federate_info) == FederateInfo:
+        if federate_info is not None and type(federate_info) == FederateInfo and clone is True:
             self._federate_info = h.helicsFederateClone(federate_info._federate_info)
+        elif federate_info is not None and type(federate_info) == FederateInfo and clone is False:
+            self._federate_info = federate_info._federate_info
+        elif federate_info is not None and type(federate_info) != FederateInfo and clone is False:
+            self._federate_info = federate_info
         else:
             self._federate_info = h.helicsCreateFederateInfo()
 
@@ -128,6 +133,8 @@ class Federate:
             raise h.HelicsException("Cannot create Federate instance")
 
         assert h.helicsFederateIsValid(self._federate)
+
+        self.property = _FederatePropertyAccessor(self._federate)
 
     def __repr__(self):
 
@@ -426,9 +433,82 @@ class Federate:
 
     @property
     def core(self):
-        return h.helicsFederateGetCoreObject(self._federate)
+        return Core(core=h.helicsFederateGetCoreObject(self._federate))
+
+
+class _PublicationOptionAccessor:
+    def __init__(self, publication):
+        self._publication = publication
+
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = h.helicsGetOptionIndex(index)
+        else:
+            idx = h.HelicsHandleOption(index)
+        return h.helicsPublicationGetOption(self._publication, index)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = h.helicsGetOptionIndex(index)
+        else:
+            idx = h.HelicsHandleOption(index)
+        return h.helicsPublicationSetOption(self._publication, index, value)
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
+class _FederateFlagAccessor:
+    def __init__(self, federate):
+        self._federate = federate
+
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = h.helicsGetFlagIndex(index)
+        else:
+            idx = h.HelicsFederateFlag(index)
+        return h.helicsFederateGetFlagOption(self._federate, index)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = h.helicsGetFlagIndex(index)
+        else:
+            idx = h.HelicsFederateFlag(index)
+        return h.helicsFederateSetFlagOption(self._federate, index, value)
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
 
 
 class _FederatePropertyAccessor:
-    def __init__(self, federate: Federate):
-        self.federate = federate
+    def __init__(self, federate):
+        self._federate = federate
+
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = h.helicsGetPropertyIndex(index)
+        else:
+            idx = h.HelicsProperty(index)
+        if "TIME_" in idx.name:
+            return h.helicsFederateGetTimeProperty(self._federate, index)
+        elif "INT_" in idx.name:
+            return h.helicsFederateGetIntegerProperty(self._federate, index)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = h.helicsGetPropertyIndex(index)
+        else:
+            idx = h.HelicsProperty(index)
+        if "TIME_" in idx.name:
+            return h.helicsFederateSetTimeProperty(self._federate, idx, value)
+        elif "INT_" in idx.name:
+            return h.helicsFederateSetIntegerProperty(self._federate, index, value)
+
+    def __repr__(self):
+        l = []
+        for p in h.HelicsProperty:
+            l.append(f"{p.name} = {self[p]}")
+        return f"<HelicsProperty({', '.join(l)})>"
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
