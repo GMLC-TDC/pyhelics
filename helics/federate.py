@@ -30,6 +30,7 @@ class FederateInfo:
     def core_name(self):
         raise AttributeError("Unreadable attribute `core_name`")
 
+    @property
     def separator(self):
         raise AttributeError("Unreadable attribute `separator`")
 
@@ -111,7 +112,7 @@ class Federate:
 
     exec_async_iterate = False
 
-    def __init__(self, federate: Federate = None):
+    def __init__(self, federate=None):
         if federate is not None:
             self._federate = h.helicsFederateClone(federate._federate)
 
@@ -126,15 +127,13 @@ class Federate:
         """
         h.helicsFederateSetFlagOption(self._federate, flag, value)
 
-    @property
-    def property(self, prop):
+    def get_property(self, property):
         """get the value of a property for the federate
         """
-        return h.helicsFederateGetTimeProperty(self._federate, prop)
-        return h.helicsFederateGetIntegerProperty(self._federate, prop)
+        return h.helicsFederateGetTimeProperty(self._federate, property)
+        return h.helicsFederateGetIntegerProperty(self._federate, property)
 
-    @property.setter
-    def property(self, property, value):
+    def set_property(self, property, value):
         """set a time federate or core property
         @param timeProperty /ref helics_federate_properties an integer code with the property
         @param timeValue the value to set the property to
@@ -153,6 +152,11 @@ class Federate:
         """
         return h.helicsFederateGetFlagOption(self._federate, flag) is True
 
+    @property
+    def separator(self):
+        raise AttributeError("Unreadable attribute `separator`")
+
+    @separator.setter
     def separator(self, separator: str):
         """specify a separator to use for naming separation between the federate name and the interface
         name setSeparator('.') will result in future registrations of local endpoints such as
@@ -330,7 +334,7 @@ class Federate:
         """
         return CloningFilter(h.helicsFederateRegisterCloningFilter(self._federate, delivery_endpoint))
 
-    def register_global_filter(self, type: HelicsFilterType, filter_name):
+    def register_global_filter(self, type: h.HelicsFilterType, filter_name):
         """define a filter interface
         @details a filter will modify messages coming from or going to target endpoints
         @param type the type of the filter to register

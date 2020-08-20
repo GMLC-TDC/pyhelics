@@ -5,14 +5,15 @@ edit_uri: ""
 
 nav:
   - Home: index.md
-  - API: api/index.md
+  - CAPI: api/capi-py.md
+  - API: api.md
 
 theme:
     name: "material"
 plugins:
   - search
   - inari:
-      module: helics.capi
+      module: helics
       out-name: api
 markdown_extensions:
   - toc:
