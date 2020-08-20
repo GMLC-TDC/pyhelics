@@ -69,6 +69,23 @@ def test_python_api():
     assert fed.property[h.HelicsProperty.INT_FILE_LOG_LEVEL.value] == 5
     assert fed.property[h.HelicsProperty.INT_CONSOLE_LOG_LEVEL.value] == 5
 
+    assert fed.flag[h.HELICS_FLAG_OBSERVER] is False
+    assert fed.flag[h.HELICS_FLAG_UNINTERRUPTIBLE] is False
+    assert fed.flag[h.HELICS_FLAG_INTERRUPTIBLE] is True
+    assert fed.flag[h.HELICS_FLAG_SOURCE_ONLY] is False
+    assert fed.flag[h.HELICS_FLAG_ONLY_TRANSMIT_ON_CHANGE] is False
+    assert fed.flag[h.HELICS_FLAG_ONLY_UPDATE_ON_CHANGE] is False
+    assert fed.flag[h.HELICS_FLAG_WAIT_FOR_CURRENT_TIME_UPDATE] is False
+    assert fed.flag[h.HELICS_FLAG_RESTRICTIVE_TIME_POLICY] is False
+    assert fed.flag[h.HELICS_FLAG_REALTIME] is False
+    assert fed.flag[h.HELICS_FLAG_SLOW_RESPONDING] is False
+    assert fed.flag[h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS] is False
+    assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] is False
+
+    fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] = True
+
+    assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] is True
+
     del fed
 
     h.helicsBrokerDisconnect(broker)

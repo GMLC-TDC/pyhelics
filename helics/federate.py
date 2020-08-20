@@ -8,12 +8,13 @@ from typing import List, Any, TypeVar
 Federate = TypeVar("Any")
 FederateInfo = TypeVar("Any")
 
+
 class Federate:
     """Federate object"""
 
     exec_async_iterate = False
 
-    def __init__(self, *, name="", from_config=None, core_init_string = "--federates=1", federate: Federate = None, federate_info = None):
+    def __init__(self, *, name="", from_config=None, core_init_string="--federates=1", federate: Federate = None, federate_info=None):
         if from_config is not None:
             self._federate = h.helicsCreateCombinationFederateFromConfig(from_config)
             self._federate_info = None
@@ -383,8 +384,13 @@ class _FederateFlagAccessor:
 
     def __repr__(self):
         l = []
-        for p in h.HelicsFederateFlag:
-            l.append(f"{p.name} = {self[p]}")
+        for f in h.HelicsFederateFlag:
+            # TODO: remove this try except
+            # See https://github.com/GMLC-TDC/HELICS/issues/1549
+            try:
+                l.append(f"{f.name} = {self[f]}")
+            except:
+                pass
         l = ", ".join(l)
         return f"<{{ {l} }}>"
 
