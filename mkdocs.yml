@@ -12,7 +12,7 @@ theme:
 plugins:
   - search
   - inari:
-      module: helics
+      module: helics.capi
       out-name: api
 markdown_extensions:
   - toc:
