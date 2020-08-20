@@ -45,6 +45,19 @@ def test_python_api():
     with pt.raises(h.HelicsException):
         assert fed.property["CONSOLE_LOG_LEVEL"] == 5
 
+    assert fed.property[h.HelicsProperty.TIME_DELTA] == 1e-09
+    assert fed.property[h.HelicsProperty.TIME_PERIOD] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_OFFSET] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_RT_LAG] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_RT_LEAD] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_RT_TOLERANCE] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_INPUT_DELAY] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_OUTPUT_DELAY] == 0.0
+    assert fed.property[h.HelicsProperty.INT_MAX_ITERATIONS] == 50
+    assert fed.property[h.HelicsProperty.INT_LOG_LEVEL] == 5
+    assert fed.property[h.HelicsProperty.INT_FILE_LOG_LEVEL] == 5
+    assert fed.property[h.HelicsProperty.INT_CONSOLE_LOG_LEVEL] == 5
+
     assert fed.property[h.HelicsProperty.TIME_DELTA.value] == 1e-09
     assert fed.property[h.HelicsProperty.TIME_PERIOD.value] == 0.0
     assert fed.property[h.HelicsProperty.TIME_OFFSET.value] == 0.0
