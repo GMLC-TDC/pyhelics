@@ -2,6 +2,11 @@
 from . import capi as h
 import logging
 
+from typing import List, Any, TypeVar
+
+Federate = TypeVar("Any")
+FederateInfo = TypeVar("Any")
+
 
 class FederateInfo:
     def __init__(self, *, core_type: str = "", federate_info=None):
@@ -112,9 +117,25 @@ class Federate:
 
     exec_async_iterate = False
 
-    def __init__(self, federate=None):
-        if federate is not None:
+    def __init__(self, *, name="", from_config=None, federate_info: FederateInfo = None, federate: Federate = None):
+        if from_config is not None:
+            self._federate = h.helicsCreateCombinationFederateFromConfig(from_config)
+        elif federate is not None:
             self._federate = h.helicsFederateClone(federate._federate)
+        elif federate_info is not None:
+            self._federate = h.helicsCreateCombinationFederate(name, federate_info)
+        else:
+            raise h.HelicsException("Cannot create Federate instance")
+
+        assert h.helicsFederateIsValid(self._federate)
+
+    def __repr__(self):
+
+        publications = h.helicsFederateGetPublicationCount(self._federate)
+        endpoints = h.helicsFederateGetEndpointCount(self._federate)
+        filters = h.helicsFederateGetFilterCount(self._federate)
+        inputs = h.helicsFederateGetInputCount(self._federate)
+        return f"<helics.{self.__class__.__name__}(publications = {publications}, inputs = {inputs}, endpoints = {endpoints}, filters = {filters}) at {hex(id(self))}>"
 
     def __del__(self):
         h.helicsFederateFinalize(self._federate)
@@ -360,7 +381,7 @@ class Federate:
         """get a filter from its index
         @param index the index of a filter
         @return a reference to a filter object which could be invalid if filterName is not valid"""
-        return Filter(h.helicsFederateGetFilterByIndex(self._federate, index))
+        return Filter(h.helicsFederateGetFilterByIndex(self._federate, filter_index))
 
     def set_global(self, name: str, value: str):
         """set a federation global value
@@ -405,3 +426,8 @@ class Federate:
     @property
     def core(self):
         return h.helicsFederateGetCoreObject(self._federate)
+
+
+class _FederatePropertyAccessor:
+    def __init__(self, federate: Federate):
+        self.federate = federate
