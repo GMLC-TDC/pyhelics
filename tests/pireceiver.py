@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import helics as h
 
-fedinitstring = "--federates=1"
+federateinitstring = "--log_level=7 --federates=1 --dumplog"
 deltat = 0.01
 
 helicsversion = h.helicsGetVersion()
@@ -22,7 +22,7 @@ h.helicsFederateInfoSetCoreTypeFromString(fedinfo, "zmq")
 
 # Federate init string
 print("PI RECEIVER: Setting Federate Info Init String")
-h.helicsFederateInfoSetCoreInitString(fedinfo, fedinitstring)
+h.helicsFederateInfoSetCoreInitString(fedinfo, federateinitstring)
 
 # Set the message interval (timedelta) for federate. Note that
 # HELICS minimum message time interval is 1 ns and by default

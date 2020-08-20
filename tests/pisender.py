@@ -3,8 +3,8 @@ import time
 import helics as h
 from math import pi
 
-brokerinitstring = "-f 2 --name=mainbroker --dumplog --force_logging_flush"
-federateinitstring = "--broker=mainbroker --federates=1"
+brokerinitstring = "-f 2 --name=mainbroker --log_level=7 --dumplog"
+federateinitstring = "--broker=mainbroker --log_level=7 --federates=1 --dumplog"
 deltat = 0.01
 
 helicsversion = h.helicsGetVersion()
