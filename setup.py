@@ -37,7 +37,7 @@ def read(*names, **kwargs):
         return fh.read()
 
 
-HELICS_VERSION = "2.5.2"
+HELICS_VERSION = "2.6.0"
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 if platform.system() == "Darwin":
