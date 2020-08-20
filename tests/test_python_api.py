@@ -15,13 +15,9 @@ from helics.federate import Federate
 
 def test_python_api():
 
-    fi = h.helicsCreateFederateInfo()
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel 1")
-    h.helicsFederateInfoSetCoreInitString(fi, "--federates 1")
 
-    h.helicsFederateInfoSetIntegerProperty(fi, h.HELICS_PROPERTY_INT_LOG_LEVEL, 5)
-
-    fed = Federate(name="test1", federate_info=fi)
+    fed = Federate(name="test1")
 
     assert "publications = 0" in repr(fed)
     assert "inputs = 0" in repr(fed)
@@ -37,13 +33,15 @@ def test_python_api():
     assert fed.property["INPUT_DELAY"] == 0.0
     assert fed.property["OUTPUT_DELAY"] == 0.0
     assert fed.property["MAX_ITERATIONS"] == 50
-    assert fed.property["LOG_LEVEL"] == 5
+    assert fed.property["LOG_LEVEL"] == 1
     # TODO: change this test when helics version is updated
     with pt.raises(h.HelicsException):
-        assert fed.property["FILE_LOG_LEVEL"] == 5
+        assert fed.property["FILE_LOG_LEVEL"] == 1
     # TODO: change this test when helics version is updated
     with pt.raises(h.HelicsException):
-        assert fed.property["CONSOLE_LOG_LEVEL"] == 5
+        assert fed.property["CONSOLE_LOG_LEVEL"] == 1
+
+    fed.property[h.HELICS_PROPERTY_INT_LOG_LEVEL] = 5
 
     assert fed.property[h.HelicsProperty.TIME_DELTA] == 1e-09
     assert fed.property[h.HelicsProperty.TIME_PERIOD] == 0.0
@@ -72,8 +70,6 @@ def test_python_api():
     assert fed.property[h.HelicsProperty.INT_CONSOLE_LOG_LEVEL.value] == 5
 
     del fed
-
-    h.helicsFederateInfoFree(fi)
 
     h.helicsBrokerDisconnect(broker)
     h.helicsBrokerFree(broker)

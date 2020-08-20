@@ -8,133 +8,30 @@ from typing import List, Any, TypeVar
 Federate = TypeVar("Any")
 FederateInfo = TypeVar("Any")
 
-
-class FederateInfo:
-    def __init__(self, *, core_type: str = "", federate_info=None, clone=False):
-
-        if federate_info is not None and type(federate_info) == FederateInfo and clone is True:
-            self._federate_info = h.helicsFederateClone(federate_info._federate_info)
-        elif federate_info is not None and type(federate_info) == FederateInfo and clone is False:
-            self._federate_info = federate_info._federate_info
-        elif federate_info is not None and type(federate_info) != FederateInfo and clone is False:
-            self._federate_info = federate_info
-        else:
-            self._federate_info = h.helicsCreateFederateInfo()
-
-        self.core_type = core_type
-
-    def __del__(self):
-        h.helicsFederateInfoFree(self._federate_info)
-
-    @property
-    def core_name(self):
-        raise AttributeError("Unreadable attribute `core_name`")
-
-    @core_name.setter
-    def core_name(self, core_name: str):
-        """Set the core name to use in the federateInfo
-        @param corename the core name to use"""
-        h.helicsFederateInfoSetCoreName(self._federate_info, core_name)
-
-    @property
-    def core_name(self):
-        raise AttributeError("Unreadable attribute `core_name`")
-
-    @property
-    def separator(self):
-        raise AttributeError("Unreadable attribute `separator`")
-
-    @separator.setter
-    def separator(self, separator: str):
-        """Set the separator character"""
-        h.helicsFederateInfoSetSeparator(self._federate_info, separator)
-
-    @property
-    def core_init(self):
-        raise AttributeError("Unreadable attribute `core_init`")
-
-    @core_init.setter
-    def core_init(self, core_init: str):
-        """Set the core init string to use in the federateInfo
-        @param coreInit the core name to use"""
-        h.helicsFederateInfoSetCoreInitString(self._federate_info, core_init)
-
-    @property
-    def broker_init(self):
-        raise AttributeError("Unreadable attribute `broker_init`")
-
-    @broker_init.setter
-    def broker_init(self, broker_init: str):
-        """
-        Set a string for the broker initialization in command line argument format
-        """
-        h.helicsFederateInfoSetBrokerInitString(self._federate_info, broker_init)
-
-    @property
-    def core_type(self):
-        raise AttributeError("Unreadable attribute `core_type`")
-
-    @core_type.setter
-    def core_type(self, core_type):
-        """set the core type from a string with the core type
-        @param coretype the string defining a core type
-        """
-        if type(core_type) == str:
-            h.helicsFederateInfoSetCoreTypeFromString(self._federate_info, core_type)
-        elif type(core_type) == int or type(core_type) == h.HelicsCoreType:
-            h.helicsFederateInfoSetCoreType(self._federate_info, core_type)
-
-    def broker(self, broker: str):
-        """set the broker to connect with
-        @param broker a string with the broker connection information or name
-        """
-        h.helicsFederateInfoSetBroker(self._federate_info, broker)
-
-    def broker_key(self, broker_key: str):
-        """set the broker key to use
-        @param brokerkey a string with the broker key information
-        """
-        h.helicsFederateInfoSetBrokerKey(self._federate_info, broker_key)
-
-    def set_flag_option(self, flag: int, value: bool = True):
-        """set a flag
-        @param flag /ref helics_federate_flags
-        @param value the value of the flag usually helics_true or helics_false
-        """
-        h.helicsFederateInfoSetFlagOption(self._federate_info, flag, value)
-
-    def set_property(self, property, value):
-        """set a time federate or core property
-        @param timeProperty /ref helics_federate_properties an integer code with the property
-        @param timeValue the value to set the property to
-        set an integral federate or core property
-        @param integerProperty /ref helics_federate_properties an integer code with the property
-        @param propertyValue the value to set the property to
-        """
-        if type(value) == float:
-            h.helicsFederateInfoSetTimeProperty(self._federate_info, property, value)
-        else:
-            h.helicsFederateInfoSetIntegerProperty(self._federate_info, property, value)
-
-
 class Federate:
     """Federate object"""
 
     exec_async_iterate = False
 
-    def __init__(self, *, name="", from_config=None, federate_info: FederateInfo = None, federate: Federate = None):
+    def __init__(self, *, name="", from_config=None, core_init_string = "--federates=1", federate: Federate = None, federate_info = None):
         if from_config is not None:
             self._federate = h.helicsCreateCombinationFederateFromConfig(from_config)
+            self._federate_info = None
         elif federate is not None:
             self._federate = h.helicsFederateClone(federate._federate)
+            self._federate_info = None
         elif federate_info is not None:
             self._federate = h.helicsCreateCombinationFederate(name, federate_info)
+            self._federate_info = federate_info
         else:
-            raise h.HelicsException("Cannot create Federate instance")
+            self._federate_info = h.helicsCreateFederateInfo()
+            h.helicsFederateInfoSetCoreInitString(self._federate_info, "--federates 1")
+            self._federate = h.helicsCreateCombinationFederate(name, self._federate_info)
 
         assert h.helicsFederateIsValid(self._federate)
 
         self.property = _FederatePropertyAccessor(self._federate)
+        self.flag = _FederateFlagAccessor(self._federate)
 
     def __repr__(self):
 
@@ -145,6 +42,8 @@ class Federate:
         return f"<helics.{self.__class__.__name__}(publications = {publications}, inputs = {inputs}, endpoints = {endpoints}, filters = {filters}) at {hex(id(self))}>"
 
     def __del__(self):
+        if self._federate_info is not None:
+            h.helicsFederateInfoFree(self._federate_info)
         if h.helicsFederateIsValid(self._federate):
             h.helicsFederateFinalize(self._federate)
         h.helicsFederateFree(self._federate)
@@ -486,7 +385,8 @@ class _FederateFlagAccessor:
         l = []
         for p in h.HelicsFederateFlag:
             l.append(f"{p.name} = {self[p]}")
-        return f"<HelicsFederateFlag({', '.join(l)})>"
+        l = ", ".join(l)
+        return f"<{{ {l} }}>"
 
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index")
