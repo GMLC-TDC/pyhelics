@@ -454,6 +454,12 @@ class _PublicationOptionAccessor:
             idx = h.HelicsHandleOption(index)
         return h.helicsPublicationSetOption(self._publication, index, value)
 
+    def __repr__(self):
+        l = []
+        for p in h.HelicsHandleOption:
+            l.append(f"{p.name} = {self[p]}")
+        return f"<HelicsPublicationOption({', '.join(l)})>"
+
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index")
 
@@ -475,6 +481,12 @@ class _FederateFlagAccessor:
         else:
             idx = h.HelicsFederateFlag(index)
         return h.helicsFederateSetFlagOption(self._federate, index, value)
+
+    def __repr__(self):
+        l = []
+        for p in h.HelicsFederateFlag:
+            l.append(f"{p.name} = {self[p]}")
+        return f"<HelicsFederateFlag({', '.join(l)})>"
 
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index")
