@@ -8,7 +8,7 @@ sys.path.append(CURRENT_DIRECTORY)
 sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import time
-import pytest
+import pytest as pt
 import helics as h
 from helics.federate import Federate
 
@@ -27,6 +27,36 @@ def test_python_api():
     assert "inputs = 0" in repr(fed)
     assert "endpoints = 0" in repr(fed)
     assert "filters = 0" in repr(fed)
+
+    assert fed.property["DELTA"] == 1e-09
+    assert fed.property["PERIOD"] == 0.0
+    assert fed.property["OFFSET"] == 0.0
+    assert fed.property["RT_LAG"] == 0.0
+    assert fed.property["RT_LEAD"] == 0.0
+    assert fed.property["RT_TOLERANCE"] == 0.0
+    assert fed.property["INPUT_DELAY"] == 0.0
+    assert fed.property["OUTPUT_DELAY"] == 0.0
+    assert fed.property["MAX_ITERATIONS"] == 50
+    assert fed.property["LOG_LEVEL"] == 5
+    # TODO: change this test when helics version is updated
+    with pt.raises(h.HelicsException):
+        assert fed.property["FILE_LOG_LEVEL"] == 5
+    # TODO: change this test when helics version is updated
+    with pt.raises(h.HelicsException):
+        assert fed.property["CONSOLE_LOG_LEVEL"] == 5
+
+    assert fed.property[h.HelicsProperty.TIME_DELTA.value] == 1e-09
+    assert fed.property[h.HelicsProperty.TIME_PERIOD.value] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_OFFSET.value] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_RT_LAG.value] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_RT_LEAD.value] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_RT_TOLERANCE.value] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_INPUT_DELAY.value] == 0.0
+    assert fed.property[h.HelicsProperty.TIME_OUTPUT_DELAY.value] == 0.0
+    assert fed.property[h.HelicsProperty.INT_MAX_ITERATIONS.value] == 50
+    assert fed.property[h.HelicsProperty.INT_LOG_LEVEL.value] == 5
+    assert fed.property[h.HelicsProperty.INT_FILE_LOG_LEVEL.value] == 5
+    assert fed.property[h.HelicsProperty.INT_CONSOLE_LOG_LEVEL.value] == 5
 
     del fed
 

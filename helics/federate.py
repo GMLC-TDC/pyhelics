@@ -502,9 +502,9 @@ class _FederatePropertyAccessor:
         else:
             idx = h.HelicsProperty(index)
         if "TIME_" in idx.name:
-            return h.helicsFederateGetTimeProperty(self._federate, index)
+            return h.helicsFederateGetTimeProperty(self._federate, idx)
         elif "INT_" in idx.name:
-            return h.helicsFederateGetIntegerProperty(self._federate, index)
+            return h.helicsFederateGetIntegerProperty(self._federate, idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
@@ -520,7 +520,8 @@ class _FederatePropertyAccessor:
         l = []
         for p in h.HelicsProperty:
             l.append(f"{p.name} = {self[p]}")
-        return f"<HelicsProperty({', '.join(l)})>"
+        l = ", ".join(l)
+        return f"<{{ {l} }}>"
 
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index")
