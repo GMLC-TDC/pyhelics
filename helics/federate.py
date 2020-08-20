@@ -138,7 +138,8 @@ class Federate:
         return f"<helics.{self.__class__.__name__}(publications = {publications}, inputs = {inputs}, endpoints = {endpoints}, filters = {filters}) at {hex(id(self))}>"
 
     def __del__(self):
-        h.helicsFederateFinalize(self._federate)
+        if h.helicsFederateIsValid(self._federate):
+            h.helicsFederateFinalize(self._federate)
         h.helicsFederateFree(self._federate)
 
     def set_flag_option(self, flag: int, value: bool = True):
