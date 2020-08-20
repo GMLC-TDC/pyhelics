@@ -5,8 +5,8 @@ edit_uri: ""
 
 nav:
   - Home: index.md
-  - CAPI: api/capi-py.md
-  - API: api.md
+  - API: api/index.md
+  - Migration v2 -> v3: migration-helics2-helics3.md
 
 theme:
     name: "material"
