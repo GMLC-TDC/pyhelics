@@ -17,7 +17,7 @@ plugins:
       out-name: api
 markdown_extensions:
   - toc:
-      toc_depth: 4
+      toc_depth: 3
       permalink: True
   - smarty
   - codehilite:
