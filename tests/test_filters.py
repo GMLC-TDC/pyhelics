@@ -11,6 +11,7 @@ import helics as h
 import os
 
 import pytest
+import pytest as pt
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
@@ -757,6 +758,87 @@ def test_filter_test_types_clone_test_dest_connections():
     destroyFederate(sFed, fedinfo1)
     destroyFederate(dFed, fedinfo2)
     destroyFederate(dcFed, fedinfo3)
+    destroyBroker(broker)
+
+
+@h.ffi.callback("void logger(helics_message_object, void* userData)")
+def filterFunc1(mess, userData):
+    time = h.helicsMessageGetTime(mess)
+    h.helicsMessageSetTime(mess, time + 2.5)
+
+
+class UserData(object):
+    def __init__(self, x):
+        self.x = x
+
+
+def test_filter_callback_test():
+
+    broker = createBroker(2)
+
+    fFed, fedinfo1 = createMessageFederate(1, "filter", 1.0)
+    mFed, fedinfo2 = createMessageFederate(1, "message", 1.0)
+
+    h.helicsFederateSetFlagOption(mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
+
+    p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1")
+    p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
+
+    f1 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
+    f2 = h.helicsFederateRegisterFilter(mFed, h.HELICS_FILTER_TYPE_DELAY, "dfilter")
+
+    h.helicsFilterAddSourceTarget(f1, "port1")
+
+    userdata = UserData(5)
+
+    handle = h.ffi.new_handle(userdata)
+    h.helicsFilterSetCustomCallback(f1, filterFunc1, handle)
+
+    with pt.raises(h.HelicsException):
+        h.helicsFilterSetCustomCallback(f2, filterFunc1, handle)
+
+    h.helicsFederateEnterExecutingModeAsync(fFed)
+    h.helicsFederateEnterExecutingMode(mFed)
+    h.helicsFederateEnterExecutingModeComplete(fFed)
+
+    state = h.helicsFederateGetState(fFed)
+    assert state == h.HELICS_STATE_EXECUTION
+    data = "".join(["a" for _ in range(0, 500)]).encode()
+    h.helicsEndpointSendMessageRaw(p1, "port2", data)
+
+    h.helicsFederateRequestTimeAsync(mFed, 1.0)
+    h.helicsFederateRequestTime(fFed, 1.0)
+    h.helicsFederateRequestTimeComplete(mFed)
+
+    assert h.helicsFederateHasMessage(mFed) is False
+
+    h.helicsFederateRequestTimeAsync(mFed, 2.0)
+    h.helicsFederateRequestTime(fFed, 2.0)
+    h.helicsFederateRequestTimeComplete(mFed)
+    assert h.helicsEndpointHasMessage(p2) is False
+
+    h.helicsFederateRequestTimeAsync(fFed, 3.0)
+    h.helicsFederateRequestTime(mFed, 3.0)
+
+    assert h.helicsEndpointHasMessage(p2)
+
+    m2 = h.helicsEndpointGetMessage(p2)
+    assert h.helicsMessageGetSource(m2) == "port1"
+    assert h.helicsMessageGetOriginalSource(m2) == "port1"
+    assert h.helicsMessageGetDestination(m2) == "port2"
+    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetTime(m2) == 2.5
+
+    h.helicsFederateRequestTime(mFed, 3.0)
+    h.helicsFederateRequestTimeComplete(fFed)
+    h.helicsFederateFinalizeAsync(mFed)
+    h.helicsFederateFinalize(fFed)
+    h.helicsFederateFinalizeComplete(mFed)
+    state = h.helicsFederateGetState(fFed)
+    assert state == h.HELICS_STATE_FINALIZE
+
+    destroyFederate(fFed, fedinfo1)
+    destroyFederate(mFed, fedinfo2)
     destroyBroker(broker)
 
 

@@ -2683,7 +2683,7 @@ def helicsFederateRegisterEndpoint(fed: HelicsFederate, name: str, type: str) ->
         return result
 
 
-def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: str) -> HelicsEndpoint:
+def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: str = "") -> HelicsEndpoint:
     """
     Create an endpoint.
     The endpoint becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for endpoints.
@@ -5343,5 +5343,13 @@ def helicsFederateSetLoggingCallback(fed: HelicsFederate, logger, userdata):
     f = loadSym("helicsFederateSetLoggingCallback")
     err = helicsErrorInitialize()
     f(fed, logger, userdata, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFilterSetCustomCallback(filter: HelicsFilter, callback, userdata):
+    f = loadSym("helicsFilterSetCustomCallback")
+    err = helicsErrorInitialize()
+    f(filter, callback, userdata, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
