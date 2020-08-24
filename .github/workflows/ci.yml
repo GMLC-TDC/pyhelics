@@ -22,7 +22,7 @@ jobs:
     - name: Download helics library and build wheel
       run: |
         python setup.py download
-        pip install "."
+        pip install -e "."
     - name: Run pytests
       run: |
         pip install pytest pytest-ordering pytest-cov
