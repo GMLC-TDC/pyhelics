@@ -3267,13 +3267,13 @@ def helicsMessageGetRawData(message: HelicsMessageObject) -> bytes:
     """
     f = loadSym("helicsMessageGetRawData")
     err = helicsErrorInitialize()
-    data = ffi.new("char *")
-    maxMessageLen = helicsMessageGetRawDataSize(message)
-    actualSize = ffi.new("int *")
-    r = f(message, data, maxMessageLen, actualSize, err)
+    maxMessageLen = helicsMessageGetRawDataSize(message) + 1024
+    data = ffi.new(f"char[{maxMessageLen}]")
+    actualSize = ffi.new("int[1]")
+    f(message, data, maxMessageLen, actualSize, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    return r
+    return ffi.string(data, maxlen=actualSize[0])
 
 
 def helicsMessageGetRawDataPointer(message: HelicsMessageObject) -> pointer:
@@ -4554,7 +4554,7 @@ def helicsInputGetRawValueSize(ipt: HelicsInput) -> int:
     return result
 
 
-def helicsInputGetRawValue(ipt: HelicsInput) -> str:
+def helicsInputGetRawValue(ipt: HelicsInput) -> bytes:
     """
     Get the raw data for the latest value of a subscription.
 
@@ -4566,14 +4566,14 @@ def helicsInputGetRawValue(ipt: HelicsInput) -> str:
     """
     f = loadSym("helicsInputGetRawValue")
     err = helicsErrorInitialize()
-    data = ffi.new("char *")
-    maxDatalen = helicsInputGetRawValueSize(ipt)
-    actualSize = ffi.new("int *")
-    f(ipt, data, maxDatalen, actualSize, err)
+    maxDataLen = helicsInputGetRawValueSize(ipt) + 1024
+    data = ffi.new(f"char[{maxDataLen}]")
+    actualSize = ffi.new("int[1]")
+    f(ipt, data, maxDataLen, actualSize, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return ffi.string(data).decode()
+        return ffi.string(data, maxlen=actualSize[0])
 
 
 def helicsInputGetStringSize(ipt: HelicsInput) -> int:
@@ -4599,14 +4599,14 @@ def helicsInputGetString(ipt: HelicsInput) -> str:
     """
     f = loadSym("helicsInputGetString")
     err = helicsErrorInitialize()
-    outputString = ffi.new("char[500]")
-    maxStringLen = 500
-    actualLength = ffi.new("int *")
+    maxStringLen = helicsInputGetStringSize(ipt)
+    outputString = ffi.new(f"char[{maxStringLen}]")
+    actualLength = ffi.new("int[1]")
     f(ipt, outputString, maxStringLen, actualLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return ffi.string(outputString).decode()
+        return ffi.string(outputString, maxlen=actualLength[0]).decode()
 
 
 def helicsInputGetInteger(ipt: HelicsInput) -> int:
@@ -4770,7 +4770,7 @@ def helicsInputGetVector(ipt: HelicsInput) -> List[float]:
     err = helicsErrorInitialize()
     maxlen = helicsInputGetVectorSize(ipt)
     data = ffi.new(f"double[{maxlen}]")
-    actualSize = ffi.new("int *")
+    actualSize = ffi.new("int[1]")
     f(ipt, data, maxlen, actualSize, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
@@ -4790,15 +4790,15 @@ def helicsInputGetNamedPoint(ipt: HelicsInput):
     """
     f = loadSym("helicsInputGetNamedPoint")
     err = helicsErrorInitialize()
-    outputString = ffi.new("char[500]")
-    maxStringLen = 500
-    actualLength = ffi.new("int *")
-    val = ffi.new("double *")
+    maxStringLen = helicsInputGetStringSize(ipt) + 1024
+    outputString = ffi.new(f"char[{maxStringLen}]")
+    actualLength = ffi.new("int[1]")
+    val = ffi.new("double[1]")
     f(ipt, outputString, maxStringLen, actualLength, val, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return ffi.string(outputString).decode(), val[0]
+        return ffi.string(outputString, maxlen=actualLength[0]).decode(), val[0]
 
 
 def helicsInputSetDefaultRaw(ipt: HelicsInput, data: str):
