@@ -30,6 +30,15 @@ assert h.helicsMessageGetRawDataSize(m) == len(data)
 assert h.helicsMessageGetTime(m) == 2.5
 ```
 
+**Related to raw data**
+
+Additionally, any function that takes `bytes` as an input must be passed in a python bytestring. If you have a regular python unicode string, as the user yoou are responsible for converting to a byte string with an encoding of your choice.
+
+To convert a python unicode string to a byte string, you can do `"hello world".encode()`.
+You can even specify the encoding: `"hello world".encode()`.
+
+Similarly, any helics function that returns a byte string must be handled correctly on the user end. As a user, you are at the moment required to know the encoding of the message in order to convert it to the correct string.
+
 **Related to complex numbers**
 
 Previously, you would need to pass real and imaginary components of complex numbers as separate floating point values.
