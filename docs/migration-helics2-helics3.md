@@ -2,6 +2,8 @@
 
 This document will describe the path to migrate your python code from HELICS version 2.x.x to version 3.x.x.
 
+You can also see the [tests](https://github.com/GMLC-TDC/pyhelics/tree/master/tests) folder on github for more examples on how to use the various functions.
+
 ### Functions
 
 **Related to `HelicsMessage`**
