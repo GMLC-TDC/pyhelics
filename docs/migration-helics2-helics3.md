@@ -57,6 +57,14 @@ Now you can pass them as a complex number.
 h.helicsInputSetDefaultComplex(sub, -9.9 + 2.5j)
 ```
 
+These are the full list of functions:
+
+- `helicsInputGetComplex`
+- `helicsPublicationPublishComplex`
+- `helicsInputSetDefaultComplex`
+
+that are affected by this change.
+
 ### Enumerations
 
 Enumerations are constants now, and are represented by upper case variables:
