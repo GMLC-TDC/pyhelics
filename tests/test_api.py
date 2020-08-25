@@ -199,6 +199,7 @@ def test_misc_api():
     sub6 = h.helicsFederateRegisterSubscription(fed1, "pub6", "")
     pub7 = h.helicsFederateRegisterGlobalPublication(fed1, "pub7", h.HELICS_DATA_TYPE_NAMED_POINT, "")
     sub7 = h.helicsFederateRegisterSubscription(fed1, "pub7", "")
+    print(sub7)
 
     h.helicsInputSetDefaultBoolean(sub5, False)
     h.helicsInputSetDefaultComplex(sub2, -9.9 + 2.5j)
