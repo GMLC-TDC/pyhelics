@@ -776,6 +776,8 @@ def test_filter_callback_test():
 
     broker = createBroker(2)
 
+    assert """helics.HelicsBroker(identifier = "mainbroker", address = "tcp://127.0.0.1:23404"))""" in repr(broker)
+
     fFed, fedinfo1 = createMessageFederate(1, "filter", 1.0)
     mFed, fedinfo2 = createMessageFederate(1, "message", 1.0)
 
@@ -789,6 +791,8 @@ def test_filter_callback_test():
 
     h.helicsFilterAddSourceTarget(f1, "port1")
 
+    assert 'name = "Testfilter/filter1"' in repr(f1)
+
     userdata = UserData(5)
 
     handle = h.ffi.new_handle(userdata)
@@ -797,9 +801,15 @@ def test_filter_callback_test():
     with pt.raises(h.HelicsException):
         h.helicsFilterSetCustomCallback(f2, filterFunc1, handle)
 
+    assert """helics.HelicsMessageFederate(name = "Testfilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, publications = 0, inputs = 0, endpoints = 0, filters = 1)""" in repr(fFed)
+    assert """helics.HelicsMessageFederate(name = "Testmessage", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, publications = 0, inputs = 0, endpoints = 2, filters = 1)""" in repr(mFed)
+
     h.helicsFederateEnterExecutingModeAsync(fFed)
     h.helicsFederateEnterExecutingMode(mFed)
     h.helicsFederateEnterExecutingModeComplete(fFed)
+
+    assert """helics.HelicsMessageFederate(name = "Testfilter", state = HelicsFederateState.EXECUTION, current_time = 0.0, publications = 0, inputs = 0, endpoints = 0, filters = 1)""" in repr(fFed)
+    assert """helics.HelicsMessageFederate(name = "Testmessage", state = HelicsFederateState.EXECUTION, current_time = 0.0, publications = 0, inputs = 0, endpoints = 2, filters = 1)""" in repr(mFed)
 
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION

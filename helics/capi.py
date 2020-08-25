@@ -556,19 +556,22 @@ class HelicsMessage(_HelicsCHandle):
 class HelicsFilter(_HelicsCHandle):
     def __repr__(self):
         name = helicsFilterGetName(self)
-        return f"""<helics.{self.__class__.__name__}(name = "{name}")) at {hex(id(self))}>"""
+        info = helicsFilterGetInfo(self)
+        return f"""<helics.{self.__class__.__name__}(name = "{name}", info = "{info}")) at {hex(id(self))}>"""
 
 
 class HelicsInput(_HelicsCHandle):
     def __repr__(self):
-        name = helicsInputGetName(self)
-        return f"""<helics.{self.__class__.__name__}(name = "{name}")) at {hex(id(self))}>"""
+        name = helicsInputGetKey(self)
+        type = helicsInputGetPublicationType(self)
+        return f"""<helics.{self.__class__.__name__}(name = "{name}", type = "{type}")) at {hex(id(self))}>"""
 
 
 class HelicsPublication(_HelicsCHandle):
     def __repr__(self):
         name = helicsPublicationGetName(self)
-        return f"""<helics.{self.__class__.__name__}(name = "{name}")) at {hex(id(self))}>"""
+        type = helicsPublicationGetType(self)
+        return f"""<helics.{self.__class__.__name__}(name = "{name}", type = "{type}")) at {hex(id(self))}>"""
 
 
 HelicsTime = float
