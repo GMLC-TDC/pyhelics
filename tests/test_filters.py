@@ -786,6 +786,9 @@ def test_filter_callback_test():
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
 
+    assert """helics.HelicsEndpoint(name = "port1"))""" in repr(p1)
+    assert """helics.HelicsEndpoint(name = "port2"))""" in repr(p2)
+
     f1 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
     f2 = h.helicsFederateRegisterFilter(mFed, h.HELICS_FILTER_TYPE_DELAY, "dfilter")
 
