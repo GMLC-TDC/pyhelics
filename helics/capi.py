@@ -569,7 +569,7 @@ class HelicsInput(_HelicsCHandle):
 
 class HelicsPublication(_HelicsCHandle):
     def __repr__(self):
-        name = helicsPublicationGetName(self)
+        name = helicsPublicationGetKey(self)
         type = helicsPublicationGetType(self)
         return f"""<helics.{self.__class__.__name__}(name = "{name}", type = "{type}")) at {hex(id(self))}>"""
 
