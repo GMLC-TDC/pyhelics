@@ -7,6 +7,18 @@ from . import _build
 lib = _build.lib
 ffi = _build.ffi
 
+import signal
+import sys
+
+
+def signal_handler(sig, frame):
+    helicsCloseLibrary()
+    print("User pressed 'CTRL-C'. Exiting ...")
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, signal_handler)
+
 
 @unique
 class HelicsCoreType(IntEnum):
@@ -2869,6 +2881,10 @@ def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: byte
     """
     f = loadSym("helicsEndpointSendMessageRaw")
     err = helicsErrorInitialize()
+    if type(data) is not bytes:
+        raise HelicsException(
+            f"""Raw data must be of type `bytes`. Got {type(data)} instead. Try converting it to bytes (e.g. `"hello world".encode()`"""
+        )
     inputDataLength = len(data)
     f(endpoint.handle, cstring(dest), data, inputDataLength, err)
     if err.error_code != 0:
@@ -3817,7 +3833,7 @@ def helicsFilterIsValid(filter: HelicsFilter) -> bool:
 
     **Parameters**
 
-    * **`filt`** - The filter object to check.
+    * **`filter`** - The filter object to check.
 
     **Returns**: `True` if the Filter object represents a valid filter.
     """
@@ -3832,7 +3848,7 @@ def helicsFilterGetName(filter: HelicsFilter) -> str:
 
     **Parameters**
 
-    * **`filt`** - The given filter.
+    * **`filter`** - The given filter.
 
     **Returns**: A string with the name of the filter.
     """
@@ -3847,7 +3863,7 @@ def helicsFilterSet(filter: HelicsFilter, prop: str, val: float):
 
     **Parameters**
 
-    * **`filt`** - The filter to modify.
+    * **`filter`** - The filter to modify.
     * **`prop`** - A string containing the property to set.
     * **`val`** - A numerical value for the property.
     """
@@ -3864,7 +3880,7 @@ def helicsFilterSetString(filter: HelicsFilter, prop: str, val: str):
 
     **Parameters**
 
-    * **`filt`** - The filter to modify.
+    * **`filter`** - The filter to modify.
     * **`prop`** - A string containing the property to set.
     * **`val`** - A string containing the new value.
     """
@@ -3882,7 +3898,7 @@ def helicsFilterAddDestinationTarget(filter: HelicsFilter, dest: str):
 
     **Parameters**
 
-    * **`filt`** - The given filter to add a destination target to.
+    * **`filter`** - The given filter to add a destination target to.
     * **`dest`** - The name of the endpoint to add as a destination target.
     """
     f = loadSym("helicsFilterAddDestinationTarget")
@@ -3899,7 +3915,7 @@ def helicsFilterAddSourceTarget(filter: HelicsFilter, source_name: str):
 
     **Parameters**
 
-    * **`filt`** - The given filter.
+    * **`filter`** - The given filter.
     * **`source_name`** - The name of the endpoint to add as a source target.
     """
     f = loadSym("helicsFilterAddSourceTarget")
@@ -3918,7 +3934,7 @@ def helicsFilterAddDeliveryEndpoint(filter: HelicsFilter, delivery_endpoint: str
 
     **Parameters**
 
-    * **`filt`** - The given filter.
+    * **`filter`** - The given filter.
     * **`delivery_endpoint`** - The name of the endpoint to deliver messages to.
     """
     f = loadSym("helicsFilterAddDeliveryEndpoint")
@@ -3934,7 +3950,7 @@ def helicsFilterRemoveTarget(filter: HelicsFilter, target_name: str):
 
     **Parameters**
 
-    * **`filt`** - The given filter.
+    * **`filter`** - The given filter.
     * **`target_name`** - The named endpoint to remove as a target.
     """
     f = loadSym("helicsFilterRemoveTarget")
@@ -3950,7 +3966,7 @@ def helicsFilterRemoveDeliveryEndpoint(filter: HelicsFilter, delivery_endpoint: 
 
     **Parameters**
 
-    * **`filt`** - The given filter (must be a cloning filter).
+    * **`filter`** - The given filter (must be a cloning filter).
     * **`delivery_endpoint`** - A string with the delivery endpoint to remove.
     """
     f = loadSym("helicsFilterRemoveDeliveryEndpoint")
@@ -3966,7 +3982,7 @@ def helicsFilterGetInfo(filter: HelicsFilter) -> str:
 
     **Parameters**
 
-    * **`filt`** - The given filter.
+    * **`filter`** - The given filter.
 
     **Returns**: A string with the info field string.
     """
@@ -3981,7 +3997,7 @@ def helicsFilterSetInfo(filter: HelicsFilter, info: str):
 
     **Parameters**
 
-    * **`filt`** - The given filter.
+    * **`filter`** - The given filter.
     * **`info`** - The string to set.
     """
     f = loadSym("helicsFilterSetInfo")
@@ -3997,7 +4013,7 @@ def helicsFilterSetOption(filter: HelicsFilter, option: HelicsHandleOption, valu
 
     **Parameters**
 
-    * **`filt`** - The given filter.
+    * **`filter`** - The given filter.
     * **`option`** - The option to set `helics.HelicsHandleOption`.
     * **`value`** - The value of the option commonly 0 for false 1 for true.
     """
@@ -4014,7 +4030,7 @@ def helicsFilterGetOption(filter: HelicsFilter, option: HelicsHandleOption) -> i
 
     **Parameters**
 
-    * **`filt`** - The given filter to query.
+    * **`filter`** - The given filter to query.
     * **`option`** - The option to query `helics.HelicsHandleOption`.
 
     **Returns**: `int`.
@@ -4408,6 +4424,12 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
     """
     f = loadSym("helicsPublicationPublishRaw")
     err = helicsErrorInitialize()
+    if type(data) is str:
+        data = data.encode()
+    elif type(data) is not bytes:
+        raise HelicsException(
+            f"""Raw data must be of type `bytes`. Got {type(data)} instead. Try converting it to bytes (e.g. `"hello world".encode()`"""
+        )
     inputDataLength = len(data)
     f(pub.handle, data, inputDataLength, err)
     if err.error_code != 0:
