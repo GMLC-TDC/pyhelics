@@ -19,6 +19,11 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
+HELICS_TIME_ZERO = 0.0  # definition of time zero-the beginning of simulation
+HELICS_TIME_EPSILON = 1.0e-9  # definition of the minimum time resolution
+HELICS_TIME_INVALID = -1.785e39  # definition of an invalid time that has no meaning
+HELICS_TIME_MAXTIME = 9223372036.854774
+
 
 @unique
 class HelicsCoreType(IntEnum):
