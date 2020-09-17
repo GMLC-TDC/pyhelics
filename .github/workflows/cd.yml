@@ -1,9 +1,8 @@
 name: CD
 
 on:
-  push:
-    tags:
-      - '*'
+  release:
+    types: published
 
 jobs:
   build:
@@ -13,10 +12,19 @@ jobs:
       matrix:
         include:
           - os: macOS-latest
-            target: macosx_10_7_x86_64
+            target: macosx_10_9_x86_64
+            python-version: '3.8'
+          - os: macOS-latest
+            target: macosx_10_9_x86_64
+            python-version: '2.7'
+          - os: ubuntu-latest
+            target: manylinux2010_x86_64
             python-version: '3.8'
           - os: ubuntu-latest
-            target: manylinux1_x86_64
+            target: manylinux2010_x86_64
+            python-version: '2.7'
+          - os: windows-latest
+            target: win_amd64
             python-version: '3.8'
           - os: windows-latest
             target: win_amd64
@@ -27,31 +35,76 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
         python -m pip install -U pip install wheel setuptools cffi
+        
     - name: Download helics library and build wheel
       run: |
         python setup.py download
         python setup.py bdist_wheel --plat-name=${{ matrix.target }}
-        pip install dist/helics-0.1.0-py3-none-${{ matrix.target }}.whl
-    - name: Run pytests
-      run: |
-        pip install pytest pytest-ordering
-        pytest -vvv
+        pip install dist/helics-2.6.0.post0.dev0-py3-none-${{ matrix.target }}.whl
+        
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: helics
+        name: python-dist
         path: dist/*
-    - name: Publish package
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@master
+  
+  build-sdist:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        user: __token__
-        password: ${{ secrets.PYPI_TOKEN }}
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install -U pip install wheel setuptools cffi
+        
+    - name: Download helics header files and build sdist
+      run: |
+        python setup.py download
+        rm -rf helics/install/bin
+        rm -rf helics/install/lib || true
+        rm -rf helics/install/lib64 || true
+        rm -rf helics/install/share || true
+        python setup.py sdist
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: python-dist
+        path: dist/*
+      
+  publish-helics:
+    needs: [build, build-sdist]
+    runs-on: ubuntu-latest
+    if: github.event.action == 'published' || endsWith(github.ref, 'master')
+    steps:
+    - name: Get the built packages
+      uses: actions/download-artifact@v1
+      with:
+        name: python-dist
+        path: dist
+
+    #- name: Publish package to TestPyPI
+    #  uses: pypa/gh-action-pypi-publish@master
+    #  with:
+    #    user: __token__
+    #    password: ${{ secrets.TEST_PYPI_PASSWORD }}
+    #    repository_url: https://test.pypi.org/legacy/
+
+    #- name: Publish package to PyPI
+    #  uses: pypa/gh-action-pypi-publish@master
+    #  with:
+    #    user: __token__
+    #    password: ${{ secrets.PYPI_PASSWORD }}
+        
     - name: GitHub Release
-      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: 'dist/*'
