@@ -664,10 +664,7 @@ class HelicsCore(_HelicsCHandle):
         identifier = helicsCoreGetIdentifier(self)
         address = helicsCoreGetAddress(self)
         return """<helics.{class_name}(identifier = "{identifier}", address = "{address}") at {id}>""".format(
-            class_name = self.__class__.__name__,
-            identifier = identifier,
-            address = address,
-            id = hex(id(self)),
+            class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
 
 
@@ -676,10 +673,7 @@ class HelicsBroker(_HelicsCHandle):
         identifier = helicsBrokerGetIdentifier(self)
         address = helicsBrokerGetAddress(self)
         return """<helics.{class_name}(identifier = "{identifier}", address = "{address}") at {id}>""".format(
-            class_name = self.__class__.__name__,
-            identifier = identifier,
-            address = address,
-            id = hex(id(self)),
+            class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
 
 
@@ -693,15 +687,15 @@ class HelicsFederate(_HelicsCHandle):
         filters = helicsFederateGetFilterCount(self)
         inputs = helicsFederateGetInputCount(self)
         return """<helics.{class_name}(name = "{name}", state = {state}, current_time = {current_time}, publications = {publications}, inputs = {inputs}, endpoints = {endpoints}, filters = {filters}) at {id}>""".format(
-            class_name = self.__class__.__name__,
-            name = name,
-            state = state,
-            current_time = current_time,
-            publications = publications,
-            endpoints = endpoints,
-            filters = filters,
-            inputs = inputs,
-            id = hex(id(self)),
+            class_name=self.__class__.__name__,
+            name=name,
+            state=state,
+            current_time=current_time,
+            publications=publications,
+            endpoints=endpoints,
+            filters=filters,
+            inputs=inputs,
+            id=hex(id(self)),
         )
 
 
@@ -728,11 +722,7 @@ class HelicsQuery(_HelicsCHandle):
 class HelicsEndpoint(_HelicsCHandle):
     def __repr__(self):
         name = helicsEndpointGetName(self)
-        return """<helics.{class_name}(name = "{name}")) at {id}>""".format(
-            class_name = self.__class__.__name__,
-            name = name,
-            id = hex(id(self)),
-        )
+        return """<helics.{class_name}(name = "{name}")) at {id}>""".format(class_name=self.__class__.__name__, name=name, id=hex(id(self)),)
 
 
 class HelicsMessage(_HelicsCHandle):
@@ -745,15 +735,15 @@ class HelicsMessage(_HelicsCHandle):
         message_id = helicsMessageGetMessageID(self)
         message = helicsMessageGetRawData(self)
         return """<helics.{class_name}(source = "{source}", destination = "{destination}", original_source = "{original_source}", original_destination = "{original_destination}", time = {time}, id = {message_id}, message = "{message}") at {id}>""".format(
-            class_name = self.__class__.__name__,
-            source = source,
-            destination = destination,
-            original_source = original_source,
-            original_destination = original_destination,
-            time = time,
-            message_id = message_id,
-            message = message,
-            id = hex(id(self)),
+            class_name=self.__class__.__name__,
+            source=source,
+            destination=destination,
+            original_source=original_source,
+            original_destination=original_destination,
+            time=time,
+            message_id=message_id,
+            message=message,
+            id=hex(id(self)),
         )
 
     @property
@@ -818,10 +808,7 @@ class HelicsFilter(_HelicsCHandle):
         name = helicsFilterGetName(self)
         info = helicsFilterGetInfo(self)
         return """<helics.{class_name}(name = "{name}", info = "{info}") at {id}>""".format(
-            class_name =self.__class__.__name__,
-            name = name,
-            info = info,
-            id = hex(id(self))
+            class_name=self.__class__.__name__, name=name, info=info, id=hex(id(self))
         )
 
 
@@ -830,10 +817,7 @@ class HelicsInput(_HelicsCHandle):
         name = helicsInputGetKey(self)
         type = helicsInputGetPublicationType(self)
         return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
-            class_name =self.__class__.__name__,
-            name = name,
-            type = type,
-            id = hex(id(self))
+            class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
         )
 
 
@@ -842,10 +826,7 @@ class HelicsPublication(_HelicsCHandle):
         name = helicsPublicationGetKey(self)
         type = helicsPublicationGetType(self)
         return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
-            class_name =self.__class__.__name__,
-            name = name,
-            type = type,
-            id = hex(id(self))
+            class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
         )
 
 
@@ -970,7 +951,7 @@ def helicsCreateCoreFromArgs(type: str, name: str, arguments: List[str]) -> Heli
     """
     f = loadSym("helicsCreateCoreFromArgs")
     argc = len(arguments)
-    argv = ffi.new("char*[{argc}]".format(argc = argc))
+    argv = ffi.new("char*[{argc}]".format(argc=argc))
     for i, s in enumerate(arguments):
         argv[i] = cstring(s)
     err = helicsErrorInitialize()
@@ -1052,7 +1033,7 @@ def helicsCreateBrokerFromArgs(type: str, name: str, arguments: List[str]) -> He
     """
     f = loadSym("helicsCreateBrokerFromArgs")
     argc = len(arguments)
-    argv = ffi.new("char*[{argc}]".format(argc = argc))
+    argv = ffi.new("char*[{argc}]".format(argc=argc))
     for i, s in enumerate(arguments):
         argv[i] = cstring(s)
     err = helicsErrorInitialize()
@@ -1667,7 +1648,7 @@ def helicsFederateInfoLoadFromArgs(fi: HelicsFederateInfo, arguments: List[str])
     f = loadSym("helicsFederateInfoLoadFromArgs")
     err = helicsErrorInitialize()
     argc = len(arguments)
-    argv = ffi.new("char*[{argc}]".format(argc = argc))
+    argv = ffi.new("char*[{argc}]".format(argc=argc))
     for i, s in enumerate(arguments):
         argv[i] = cstring(s)
     f(fi.handle, argc, argv, err)
@@ -1857,7 +1838,7 @@ def helicsGetPropertyIndex(val: str) -> HelicsProperty:
     f = loadSym("helicsGetPropertyIndex")
     result = f(cstring(val))
     if result == -1:
-        raise HelicsException("[-1] Unknown property index for flag `{val}`".format(val = val))
+        raise HelicsException("[-1] Unknown property index for flag `{val}`".format(val=val))
     else:
         return HelicsProperty(result)
 
@@ -1875,7 +1856,7 @@ def helicsGetFlagIndex(val: str) -> HelicsFederateFlag:
     f = loadSym("helicsGetFlagIndex")
     result = f(cstring(val))
     if result == -1:
-        raise HelicsException("[-1] Unknown property index for flag `{val}`".format(val = val))
+        raise HelicsException("[-1] Unknown property index for flag `{val}`".format(val=val))
     else:
         return HelicsFederateFlag(result)
 
@@ -1894,7 +1875,7 @@ def helicsGetOptionIndex(val: str) -> HelicsHandleOption:
     f = loadSym("helicsGetOptionIndex")
     result = f(cstring(val))
     if result == -1:
-        raise HelicsException("[-1] Unknown option index for flag `{val}`".format(val = val))
+        raise HelicsException("[-1] Unknown option index for flag `{val}`".format(val=val))
     else:
         return HelicsHandleOption(result)
 
@@ -1913,7 +1894,7 @@ def helicsGetOptionValue(val: str) -> int:
     f = loadSym("helicsGetOptionValue")
     result = f(cstring(val))
     if result == -1:
-        raise HelicsException("[-1] Unknown option valud for flag `{val}`".format(val = val))
+        raise HelicsException("[-1] Unknown option valud for flag `{val}`".format(val=val))
     else:
         return result
 
@@ -3138,9 +3119,7 @@ def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: byte
     err = helicsErrorInitialize()
     if type(data) is not bytes:
         raise HelicsException(
-            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(
-                t = type(data)
-            )
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
     inputDataLength = len(data)
     f(endpoint.handle, cstring(dest), data, inputDataLength, err)
@@ -3697,7 +3676,7 @@ def helicsMessageGetRawData(message: HelicsMessage) -> bytes:
     f = loadSym("helicsMessageGetRawData")
     err = helicsErrorInitialize()
     maxMessageLen = helicsMessageGetRawDataSize(message) + 1024
-    data = ffi.new("char[{maxMessageLen}]".format(maxMessageLen = maxMessageLen))
+    data = ffi.new("char[{maxMessageLen}]".format(maxMessageLen=maxMessageLen))
     actualSize = ffi.new("int[1]")
     f(message.handle, data, maxMessageLen, actualSize, err)
     if err.error_code != 0:
@@ -4776,9 +4755,7 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
         data = data.encode()
     elif type(data) is not bytes:
         raise HelicsException(
-            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(
-                t= type(data)
-            )
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
     inputDataLength = len(data)
     f(pub.handle, data, inputDataLength, err)
@@ -5006,7 +4983,7 @@ def helicsInputGetRawValue(ipt: HelicsInput) -> bytes:
     f = loadSym("helicsInputGetRawValue")
     err = helicsErrorInitialize()
     maxDataLen = helicsInputGetRawValueSize(ipt) + 1024
-    data = ffi.new("char[{maxDataLen}]".format(maxDataLen = maxDataLen))
+    data = ffi.new("char[{maxDataLen}]".format(maxDataLen=maxDataLen))
     actualSize = ffi.new("int[1]")
     f(ipt.handle, data, maxDataLen, actualSize, err)
     if err.error_code != 0:
@@ -5039,7 +5016,7 @@ def helicsInputGetString(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetString")
     err = helicsErrorInitialize()
     maxStringLen = helicsInputGetStringSize(ipt) + 1024
-    outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen = maxStringLen))
+    outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen=maxStringLen))
     actualLength = ffi.new("int[1]")
     f(ipt.handle, outputString, maxStringLen, actualLength, err)
     if err.error_code != 0:
@@ -5210,7 +5187,7 @@ def helicsInputGetVector(ipt: HelicsInput) -> List[float]:
     f = loadSym("helicsInputGetVector")
     err = helicsErrorInitialize()
     maxlen = helicsInputGetVectorSize(ipt) + 1024
-    data = ffi.new("double[{maxlen}]".format(maxlen = maxlen))
+    data = ffi.new("double[{maxlen}]".format(maxlen=maxlen))
     actualSize = ffi.new("int[1]")
     f(ipt.handle, data, maxlen, actualSize, err)
     if err.error_code != 0:
@@ -5232,7 +5209,7 @@ def helicsInputGetNamedPoint(ipt: HelicsInput):
     f = loadSym("helicsInputGetNamedPoint")
     err = helicsErrorInitialize()
     maxStringLen = helicsInputGetStringSize(ipt) + 1024
-    outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen = maxStringLen))
+    outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen=maxStringLen))
     actualLength = ffi.new("int[1]")
     val = ffi.new("double[1]")
     f(ipt.handle, outputString, maxStringLen, actualLength, val, err)
