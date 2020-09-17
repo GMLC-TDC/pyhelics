@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import warnings
 from enum import IntEnum, unique
+
 try:
     from typing import List, Tuple
-except:
+except ImportError:
     pass
 
 from . import _build
@@ -730,13 +731,13 @@ class HelicsEndpoint(_HelicsCHandle):
 
 class HelicsMessage(_HelicsCHandle):
     def __repr__(self):
-        source = helicsMessageGetSource(self)
-        destination = helicsMessageGetDestination(self)
-        original_source = helicsMessageGetOriginalSource(self)
-        original_destination = helicsMessageGetOriginalDestination(self)
-        time = helicsMessageGetTime(self)
-        message_id = helicsMessageGetMessageID(self)
-        message = helicsMessageGetRawData(self)
+        source = self.source
+        destination = self.destination
+        original_source = self.original_source
+        original_destination = self.original_destination
+        time = self.time
+        message_id = self.message_id
+        message = self.data
         return """<helics.{class_name}(source = "{source}", destination = "{destination}", original_source = "{original_source}", original_destination = "{original_destination}", time = {time}, id = {message_id}, message = "{message}") at {id}>""".format(
             class_name=self.__class__.__name__,
             source=source,
@@ -774,6 +775,16 @@ class HelicsMessage(_HelicsCHandle):
         return helicsMessageSetOriginalSource(self, v)
 
     @property
+    def original_dest(self):
+        warnings.warn("This is deprecated. Use `original_destination` instead.")
+        return self.original_destination
+
+    @original_dest.setter
+    def original_dest(self, v):
+        warnings.warn("This is deprecated. Use `original_destination` instead.")
+        self.original_destination = v
+
+    @property
     def original_destination(self):
         return helicsMessageGetOriginalDestination(self)
 
@@ -794,7 +805,7 @@ class HelicsMessage(_HelicsCHandle):
         return helicsMessageGetString(self)
 
     @data.setter
-    def time(self, v):
+    def data(self, v):
         return helicsMessageSetString(self, v)
 
     @property
@@ -3277,7 +3288,7 @@ def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     **Returns**: A message.
 
-    **DEPRECATED*
+    **DEPRECATED**
     """
     warnings.warn("This function has been deprecated. Use `helicsEndpointGetMessage` instead.")
     return helicsEndpointGetMessage(endpoint)
