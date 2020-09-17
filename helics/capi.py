@@ -5069,7 +5069,7 @@ def helicsInputGetType(ipt: HelicsInput) -> str:
 
     * **`ipt`** - The input to query
 
-    **Returns**: A void enumeration, helics_ok if everything worked.
+    **Returns**: A string with the type information.
     """
     f = loadSym("helicsInputGetType")
     result = f(ipt.handle)
@@ -5084,7 +5084,7 @@ def helicsInputGetPublicationType(ipt: HelicsInput) -> str:
 
     * **`ipt`** - The input to query
 
-    **Returns**: A const char * with the type name.
+    **Returns**: A string with the type information.
     """
     f = loadSym("helicsInputGetPublicationType")
     result = f(ipt.handle)
@@ -5099,7 +5099,7 @@ def helicsPublicationGetType(pub: HelicsPublication) -> str:
 
     * **`pub`** - The publication to query
 
-    **Returns**: A void enumeration, helics_ok if everything worked.
+    **Returns**: A string with the publication type information.
     """
     f = loadSym("helicsPublicationGetType")
     result = f(pub.handle)
@@ -5114,7 +5114,7 @@ def helicsInputGetKey(ipt: HelicsInput) -> str:
 
     * **`ipt`** - The input to query
 
-    **Returns**: A void enumeration, helics_ok if everything worked.
+    **Returns**: A string with the key information.
     """
     f = loadSym("helicsInputGetKey")
     result = f(ipt.handle)
@@ -5125,7 +5125,7 @@ def helicsSubscriptionGetKey(ipt: HelicsInput) -> str:
     """
     Get the key of a subscription.
 
-    **Returns**: A const char with the subscription key.
+    **Returns**: A string with the subscription key.
     """
     f = loadSym("helicsSubscriptionGetKey")
     result = f(ipt.handle)
@@ -5141,7 +5141,7 @@ def helicsPublicationGetKey(pub: HelicsPublication) -> str:
 
     * **`pub`** - The publication to query.
 
-    **Returns**: A void enumeration, helics_ok if everything worked.
+    **Returns**: A string with the units information.
     """
     f = loadSym("helicsPublicationGetKey")
     result = f(pub.handle)
@@ -5156,7 +5156,7 @@ def helicsInputGetUnits(ipt: HelicsInput) -> str:
 
     * **`ipt`** - The input to query.
 
-    **Returns**: A void enumeration, helics_ok if everything worked.
+    **Returns**: A string with the units information.
     """
     f = loadSym("helicsInputGetUnits")
     result = f(ipt.handle)
@@ -5171,7 +5171,7 @@ def helicsInputGetInjectionUnits(ipt: HelicsInput) -> str:
 
     * **`ipt`** - The input to query.
 
-    **Returns**: A void enumeration, helics_ok if everything worked.
+    **Returns**: A string with the units information.
     """
     f = loadSym("helicsInputGetInjectionUnits")
     result = f(ipt.handle)
@@ -5187,7 +5187,7 @@ def helicsInputGetExtractionUnits(ipt: HelicsInput) -> str:
 
     * **`ipt`** - The input to query.
 
-    **Returns**: A void enumeration, helics_ok if everything worked.
+    **Returns**: A string with the units information.
     """
     f = loadSym("helicsInputGetExtractionUnits")
     result = f(ipt.handle)
@@ -5202,7 +5202,7 @@ def helicsPublicationGetUnits(pub: HelicsPublication) -> str:
 
     * **`pub`** - The publication to query.
 
-    **Returns**: A void enumeration, helics_ok if everything worked.
+    **Returns**: A string with the units information.
     """
     f = loadSym("helicsPublicationGetUnits")
     result = f(pub.handle)
