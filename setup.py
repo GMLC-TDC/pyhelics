@@ -126,7 +126,7 @@ setup(
     ],
     project_urls={"Issue Tracker": "https://github.com/GMLC-TDC/pyhelics/issues"},
     keywords=["helics", "co-simulation"],
-    python_requires=">=2.7",
+    python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*",
     install_requires=["cffi>=1.0.0", "enum34>=1.1.10"],
     extras_require={
         "tests": ["pytest", "pytest-ordering", "pytest-cov"],
