@@ -3247,7 +3247,7 @@ def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
     **DEPRECATED*
     """
     warnings.warn("This function has been deprecated. Use `helicsEndpointGetMessage` instead.")
-    return helicsEndpointGetMessageObject(endpoint)
+    return helicsEndpointGetMessage(endpoint)
 
 
 def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
