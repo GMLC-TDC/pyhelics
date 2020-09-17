@@ -5445,3 +5445,26 @@ def helicsFilterSetCustomCallback(filter: HelicsFilter, callback, userdata):
     f(filter.handle, callback, userdata, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsBrokerClearTimeBarrier(broker: HelicsBroker):
+    f = loadSym("helicsBrokerClearTimeBarrier")
+    f(broker.handle)
+
+
+def helicsBrokerSetTimeBarrier(broker: HelicsBroker, barrier_time: HelicsTime):
+    """
+    Set the broker time barrier
+
+    # Parameters
+
+    * **`broker`**: the `helics.HelicsBroker`
+    * **`barrier_time`**: the barrier time
+    """
+    f = loadSym("helicsBrokerSetTimeBarrier")
+    err = helicsErrorInitialize()
+    result = f(broker.handle, barrier_time, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsBroker(result)
