@@ -98,6 +98,7 @@ helics_core_type_websocket = HelicsCoreType.WEBSOCKET
 helics_core_type_inproc = HelicsCoreType.INPROC
 helics_core_type_null = HelicsCoreType.NULL
 
+
 @unique
 class HelicsDataType(IntEnum):
     """
@@ -776,8 +777,6 @@ class HelicsMessage(_HelicsCHandle):
     @id.setter
     def id(self, v):
         return helicsMessageSetMessageID(self, v)
-
-
 
 
 class HelicsFilter(_HelicsCHandle):
@@ -3076,7 +3075,6 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
     return ffi.string(result).decode()
 
 
-
 def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
     """
     Send a message to the specified destination.
@@ -5113,7 +5111,7 @@ def helicsInputGetComplexObject(ipt: HelicsInput) -> Tuple[float, float]:
         return (result.real, result.imag)
 
 
-def helicsInputGetComplex(ipt: HelicsInput) ->  Tuple[float, float]:
+def helicsInputGetComplex(ipt: HelicsInput) -> Tuple[float, float]:
     """
     Get a pair of double forming a complex number from a subscriptions.
 
