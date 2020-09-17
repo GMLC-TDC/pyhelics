@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import warnings
 from enum import IntEnum, unique
-from typing import List, Tuple
+try:
+    from typing import List, Tuple
+except:
+    pass
 
 from . import _build
 

@@ -115,6 +115,7 @@ setup(
         "Operating System :: POSIX",
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -125,8 +126,8 @@ setup(
     ],
     project_urls={"Issue Tracker": "https://github.com/GMLC-TDC/pyhelics/issues"},
     keywords=["helics", "co-simulation"],
-    python_requires=">=3.6",
-    install_requires=["cffi>=1.0.0"],
+    python_requires=">=2.7",
+    install_requires=["cffi>=1.0.0", "enum34>=1.1.10"],
     extras_require={
         "tests": ["pytest", "pytest-ordering", "pytest-cov"],
         "docs": ["mkdocs", "inari[mkdocs]", "mkdocs-material", "black", "pygments", "pymdown-extensions"],
