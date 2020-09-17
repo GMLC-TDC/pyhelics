@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+import warnings
 from enum import IntEnum, unique
-from typing import List
+from typing import List, Tuple
 
 from . import _build
 
@@ -23,6 +24,11 @@ HELICS_TIME_ZERO = 0.0  # definition of time zero-the beginning of simulation
 HELICS_TIME_EPSILON = 1.0e-9  # definition of the minimum time resolution
 HELICS_TIME_INVALID = -1.785e39  # definition of an invalid time that has no meaning
 HELICS_TIME_MAXTIME = 9223372036.854774
+
+helics_time_zero = HELICS_TIME_ZERO
+helics_time_epsilon = HELICS_TIME_EPSILON
+helics_time_invalid = HELICS_TIME_INVALID
+helics_time_maxtime = HELICS_TIME_MAXTIME
 
 
 @unique
@@ -76,6 +82,21 @@ HELICS_CORE_TYPE_WEBSOCKET = HelicsCoreType.WEBSOCKET
 HELICS_CORE_TYPE_INPROC = HelicsCoreType.INPROC
 HELICS_CORE_TYPE_NULL = HelicsCoreType.NULL
 
+helics_core_type_default = HelicsCoreType.DEFAULT
+helics_core_type_zmq = HelicsCoreType.ZMQ
+helics_core_type_mpi = HelicsCoreType.MPI
+helics_core_type_test = HelicsCoreType.TEST
+helics_core_type_interprocess = HelicsCoreType.INTERPROCESS
+helics_core_type_ipc = HelicsCoreType.IPC
+helics_core_type_tcp = HelicsCoreType.TCP
+helics_core_type_udp = HelicsCoreType.UDP
+helics_core_type_zmq_test = HelicsCoreType.ZMQ_TEST
+helics_core_type_nng = HelicsCoreType.NNG
+helics_core_type_tcp_ss = HelicsCoreType.TCP_SS
+helics_core_type_http = HelicsCoreType.HTTP
+helics_core_type_websocket = HelicsCoreType.WEBSOCKET
+helics_core_type_inproc = HelicsCoreType.INPROC
+helics_core_type_null = HelicsCoreType.NULL
 
 @unique
 class HelicsDataType(IntEnum):
@@ -120,6 +141,19 @@ HELICS_DATA_TYPE_TIME = HelicsDataType.TIME
 HELICS_DATA_TYPE_RAW = HelicsDataType.RAW
 HELICS_DATA_TYPE_MULTI = HelicsDataType.MULTI
 HELICS_DATA_TYPE_ANY = HelicsDataType.ANY
+
+helics_data_type_string = HelicsDataType.STRING
+helics_data_type_double = HelicsDataType.DOUBLE
+helics_data_type_int = HelicsDataType.INT
+helics_data_type_complex = HelicsDataType.COMPLEX
+helics_data_type_vector = HelicsDataType.VECTOR
+helics_data_type_complex_vector = HelicsDataType.COMPLEX_VECTOR
+helics_data_type_named_point = HelicsDataType.NAMED_POINT
+helics_data_type_boolean = HelicsDataType.BOOLEAN
+helics_data_type_time = HelicsDataType.TIME
+helics_data_type_raw = HelicsDataType.RAW
+helics_data_type_multi = HelicsDataType.MULTI
+helics_data_type_any = HelicsDataType.ANY
 
 
 @unique
@@ -178,6 +212,24 @@ HELICS_FLAG_ENABLE_INIT_ENTRY = HelicsFederateFlag.ENABLE_INIT_ENTRY
 HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
 HELICS_FLAG_TERMINATE_ON_ERROR = HelicsFederateFlag.TERMINATE_ON_ERROR
 
+helics_flag_observer = HelicsFederateFlag.OBSERVER
+helics_flag_uninterruptible = HelicsFederateFlag.UNINTERRUPTIBLE
+helics_flag_interruptible = HelicsFederateFlag.INTERRUPTIBLE
+helics_flag_source_only = HelicsFederateFlag.SOURCE_ONLY
+helics_flag_only_transmit_on_change = HelicsFederateFlag.ONLY_TRANSMIT_ON_CHANGE
+helics_flag_only_update_on_change = HelicsFederateFlag.ONLY_UPDATE_ON_CHANGE
+helics_flag_wait_for_current_time_update = HelicsFederateFlag.WAIT_FOR_CURRENT_TIME_UPDATE
+helics_flag_restrictive_time_policy = HelicsFederateFlag.RESTRICTIVE_TIME_POLICY
+# helics_flag_rollback = HelicsFederateFlag.ROLLBACK
+# helics_flag_forward_compute = HelicsFederateFlag.FORWARD_COMPUTE
+helics_flag_realtime = HelicsFederateFlag.REALTIME
+# helics_flag_single_thread_federate = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
+helics_flag_slow_responding = HelicsFederateFlag.SLOW_RESPONDING
+helics_flag_delay_init_entry = HelicsFederateFlag.DELAY_INIT_ENTRY
+helics_flag_enable_init_entry = HelicsFederateFlag.ENABLE_INIT_ENTRY
+helics_flag_ignore_time_mismatch_warnings = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
+helics_flag_terminate_on_error = HelicsFederateFlag.TERMINATE_ON_ERROR
+
 
 @unique
 class HelicsLogLevel(IntEnum):
@@ -213,6 +265,16 @@ HELICS_LOG_LEVEL_INTERFACES = HelicsLogLevel.INTERFACES
 HELICS_LOG_LEVEL_TIMING = HelicsLogLevel.TIMING
 HELICS_LOG_LEVEL_DATA = HelicsLogLevel.DATA
 HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.TRACE
+
+helics_log_level_no_print = HelicsLogLevel.NO_PRINT
+helics_log_level_error = HelicsLogLevel.ERROR
+helics_log_level_warning = HelicsLogLevel.WARNING
+helics_log_level_summary = HelicsLogLevel.SUMMARY
+helics_log_level_connections = HelicsLogLevel.CONNECTIONS
+helics_log_level_interfaces = HelicsLogLevel.INTERFACES
+helics_log_level_timing = HelicsLogLevel.TIMING
+helics_log_level_data = HelicsLogLevel.DATA
+helics_log_level_trace = HelicsLogLevel.TRACE
 
 
 @unique
@@ -268,6 +330,22 @@ HELICS_ERROR_CONNECTION_FAILURE = HelicsError.CONNECTION_FAILURE
 HELICS_ERROR_REGISTRATION_FAILURE = HelicsError.REGISTRATION_FAILURE
 HELICS_OK = HelicsError.OK
 
+helics_error_fatal = HelicsError.FATAL
+helics_error_external_type = HelicsError.EXTERNAL_TYPE
+helics_error_other = HelicsError.OTHER
+helics_error_insufficient_space = HelicsError.INSUFFICIENT_SPACE
+helics_error_execution_failure = HelicsError.EXECUTION_FAILURE
+helics_error_invalid_function_call = HelicsError.INVALID_FUNCTION_CALL
+helics_error_invalid_state_transition = HelicsError.INVALID_STATE_TRANSITION
+helics_warning = HelicsError.WARNING
+helics_error_system_failure = HelicsError.SYSTEM_FAILURE
+helics_error_discard = HelicsError.DISCARD
+helics_error_invalid_argument = HelicsError.INVALID_ARGUMENT
+helics_error_invalid_object = HelicsError.INVALID_OBJECT
+helics_error_connection_failure = HelicsError.CONNECTION_FAILURE
+helics_error_registration_failure = HelicsError.REGISTRATION_FAILURE
+helics_ok = HelicsError.OK
+
 
 @unique
 class HelicsProperty(IntEnum):
@@ -313,6 +391,19 @@ HELICS_PROPERTY_INT_LOG_LEVEL = HelicsProperty.INT_LOG_LEVEL
 HELICS_PROPERTY_INT_FILE_LOG_LEVEL = HelicsProperty.INT_FILE_LOG_LEVEL
 HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = HelicsProperty.INT_CONSOLE_LOG_LEVEL
 
+helics_property_time_delta = HelicsProperty.TIME_DELTA
+helics_property_time_period = HelicsProperty.TIME_PERIOD
+helics_property_time_offset = HelicsProperty.TIME_OFFSET
+helics_property_time_rt_lag = HelicsProperty.TIME_RT_LAG
+helics_property_time_rt_lead = HelicsProperty.TIME_RT_LEAD
+helics_property_time_rt_tolerance = HelicsProperty.TIME_RT_TOLERANCE
+helics_property_time_input_delay = HelicsProperty.TIME_INPUT_DELAY
+helics_property_time_output_delay = HelicsProperty.TIME_OUTPUT_DELAY
+helics_property_int_max_iterations = HelicsProperty.INT_MAX_ITERATIONS
+helics_property_int_log_level = HelicsProperty.INT_LOG_LEVEL
+helics_property_int_file_log_level = HelicsProperty.INT_FILE_LOG_LEVEL
+helics_property_int_console_log_level = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+
 
 @unique
 class HelicsMultiInputMode(IntEnum):
@@ -348,6 +439,16 @@ HELICS_MULTI_INPUT_DIFF_OPERATION = HelicsMultiInputMode.DIFF_OPERATION
 HELICS_MULTI_INPUT_MAX_OPERATION = HelicsMultiInputMode.MAX_OPERATION
 HELICS_MULTI_INPUT_MIN_OPERATION = HelicsMultiInputMode.MIN_OPERATION
 HELICS_MULTI_INPUT_AVERAGE_OPERATION = HelicsMultiInputMode.AVERAGE_OPERATION
+
+helics_multi_input_no_op = HelicsMultiInputMode.NO_OP
+helics_multi_input_vectorize_operation = HelicsMultiInputMode.VECTORIZE_OPERATION
+helics_multi_input_and_operation = HelicsMultiInputMode.AND_OPERATION
+helics_multi_input_or_operation = HelicsMultiInputMode.OR_OPERATION
+helics_multi_input_sum_operation = HelicsMultiInputMode.SUM_OPERATION
+helics_multi_input_diff_operation = HelicsMultiInputMode.DIFF_OPERATION
+helics_multi_input_max_operation = HelicsMultiInputMode.MAX_OPERATION
+helics_multi_input_min_operation = HelicsMultiInputMode.MIN_OPERATION
+helics_multi_input_average_operation = HelicsMultiInputMode.AVERAGE_OPERATION
 
 
 @unique
@@ -400,6 +501,21 @@ HELICS_HANDLE_OPTION_INPUT_PRIORITY_LOCATION = HelicsHandleOption.INPUT_PRIORITY
 HELICS_HANDLE_OPTION_CLEAR_PRIORITY_LIST = HelicsHandleOption.CLEAR_PRIORITY_LIST
 HELICS_HANDLE_OPTION_CONNECTIONS = HelicsHandleOption.CONNECTIONS
 
+helics_handle_option_connection_required = HelicsHandleOption.CONNECTION_REQUIRED
+helics_handle_option_connection_optional = HelicsHandleOption.CONNECTION_OPTIONAL
+helics_handle_option_single_connection_only = HelicsHandleOption.SINGLE_CONNECTION_ONLY
+helics_handle_option_multiple_connections_allowed = HelicsHandleOption.MULTIPLE_CONNECTIONS_ALLOWED
+helics_handle_option_buffer_data = HelicsHandleOption.BUFFER_DATA
+helics_handle_option_strict_type_checking = HelicsHandleOption.STRICT_TYPE_CHECKING
+helics_handle_option_ignore_unit_mismatch = HelicsHandleOption.IGNORE_UNIT_MISMATCH
+helics_handle_option_only_transmit_on_change = HelicsHandleOption.ONLY_TRANSMIT_ON_CHANGE
+helics_handle_option_only_update_on_change = HelicsHandleOption.ONLY_UPDATE_ON_CHANGE
+helics_handle_option_ignore_interrupts = HelicsHandleOption.IGNORE_INTERRUPTS
+helics_handle_option_multi_input_handling_method = HelicsHandleOption.MULTI_INPUT_HANDLING_METHOD
+helics_handle_option_input_priority_location = HelicsHandleOption.INPUT_PRIORITY_LOCATION
+helics_handle_option_clear_priority_list = HelicsHandleOption.CLEAR_PRIORITY_LIST
+helics_handle_option_connections = HelicsHandleOption.CONNECTIONS
+
 
 @unique
 class HelicsFilterType(IntEnum):
@@ -430,6 +546,14 @@ HELICS_FILTER_TYPE_REROUTE = HelicsFilterType.REROUTE
 HELICS_FILTER_TYPE_CLONE = HelicsFilterType.CLONE
 HELICS_FILTER_TYPE_FIREWALL = HelicsFilterType.FIREWALL
 
+helics_filter_type_custom = HelicsFilterType.CUSTOM
+helics_filter_type_delay = HelicsFilterType.DELAY
+helics_filter_type_random_delay = HelicsFilterType.RANDOM_DELAY
+helics_filter_type_random_drop = HelicsFilterType.RANDOM_DROP
+helics_filter_type_reroute = HelicsFilterType.REROUTE
+helics_filter_type_clone = HelicsFilterType.CLONE
+helics_filter_type_firewall = HelicsFilterType.FIREWALL
+
 
 @unique
 class HelicsIterationRequest(IntEnum):
@@ -447,6 +571,10 @@ class HelicsIterationRequest(IntEnum):
 HELICS_ITERATION_REQUEST_NO_ITERATION = HelicsIterationRequest.NO_ITERATION
 HELICS_ITERATION_REQUEST_FORCE_ITERATION = HelicsIterationRequest.FORCE_ITERATION
 HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED = HelicsIterationRequest.ITERATE_IF_NEEDED
+
+helics_iteration_request_no_iteration = HelicsIterationRequest.NO_ITERATION
+helics_iteration_request_force_iteration = HelicsIterationRequest.FORCE_ITERATION
+helics_iteration_request_iterate_if_needed = HelicsIterationRequest.ITERATE_IF_NEEDED
 
 
 @unique
@@ -468,6 +596,11 @@ HELICS_ITERATION_RESULT_NEXT_STEP = HelicsIterationResult.NEXT_STEP
 HELICS_ITERATION_RESULT_ERROR = HelicsIterationResult.ERROR
 HELICS_ITERATION_RESULT_HALTED = HelicsIterationResult.HALTED
 HELICS_ITERATION_RESULT_ITERATING = HelicsIterationResult.ITERATING
+
+helics_iteration_result_next_step = HelicsIterationResult.NEXT_STEP
+helics_iteration_result_error = HelicsIterationResult.ERROR
+helics_iteration_result_halted = HelicsIterationResult.HALTED
+helics_iteration_result_iterating = HelicsIterationResult.ITERATING
 
 
 @unique
@@ -507,6 +640,17 @@ HELICS_STATE_PENDING_EXEC = HelicsFederateState.PENDING_EXEC
 HELICS_STATE_PENDING_TIME = HelicsFederateState.PENDING_TIME
 HELICS_STATE_PENDING_ITERATIVE_TIME = HelicsFederateState.PENDING_ITERATIVE_TIME
 HELICS_STATE_PENDING_FINALIZE = HelicsFederateState.PENDING_FINALIZE
+
+helics_state_startup = HelicsFederateState.STARTUP
+helics_state_initialization = HelicsFederateState.INITIALIZATION
+helics_state_execution = HelicsFederateState.EXECUTION
+helics_state_finalize = HelicsFederateState.FINALIZE
+helics_state_error = HelicsFederateState.ERROR
+helics_state_pending_init = HelicsFederateState.PENDING_INIT
+helics_state_pending_exec = HelicsFederateState.PENDING_EXEC
+helics_state_pending_time = HelicsFederateState.PENDING_TIME
+helics_state_pending_iterative_time = HelicsFederateState.PENDING_ITERATIVE_TIME
+helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
 
 
 class _HelicsCHandle:
@@ -576,6 +720,64 @@ class HelicsMessage(_HelicsCHandle):
         message_id = helicsMessageGetMessageID(self)
         message = helicsMessageGetRawData(self)
         return f"""<helics.{self.__class__.__name__}(source = "{source}", destination = "{destination}", original_source = "{original_source}", original_destination = "{original_destination}", time = {time}, id = {message_id}, message = "{message}") at {hex(id(self))}>"""
+
+    @property
+    def source(self):
+        return helicsMessageGetSource(self)
+
+    @source.setter
+    def source(self, v):
+        return helicsMessageSetSource(self, v)
+
+    @property
+    def destination(self):
+        return helicsMessageGetDestination(self)
+
+    @destination.setter
+    def destination(self, v):
+        return helicsMessageSetDestination(self, v)
+
+    @property
+    def original_source(self):
+        return helicsMessageGetOriginalSource(self)
+
+    @original_source.setter
+    def original_source(self, v):
+        return helicsMessageSetOriginalSource(self, v)
+
+    @property
+    def original_destination(self):
+        return helicsMessageGetOriginalDestination(self)
+
+    @original_destination.setter
+    def original_destination(self, v):
+        return helicsMessageSetOriginalDestination(self, v)
+
+    @property
+    def time(self):
+        return helicsMessageGetTime(self)
+
+    @time.setter
+    def time(self, v):
+        return helicsMessageSetTime(self, v)
+
+    @property
+    def data(self):
+        return helicsMessageGetString(self)
+
+    @data.setter
+    def time(self, v):
+        return helicsMessageSetString(self, v)
+
+    @property
+    def id(self):
+        return helicsMessageGetMessageID(self)
+
+    @id.setter
+    def id(self, v):
+        return helicsMessageSetMessageID(self, v)
+
+
 
 
 class HelicsFilter(_HelicsCHandle):
@@ -2874,6 +3076,7 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
     return ffi.string(result).decode()
 
 
+
 def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
     """
     Send a message to the specified destination.
@@ -2915,6 +3118,36 @@ def helicsEndpointSendEventRaw(
     f(endpoint.handle, cstring(dest), cstring(data), inputDataLength, time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMessage):
+    """
+    Send a message object from a specific endpoint.
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint to send the data from.
+    * **`message`** - The actual message to send which will be copied.
+
+    **DEPRECATED**
+    """
+    warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
+    return helicsEndpointSendMessage(endpoint)
+
+
+def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: HelicsMessage):
+    """
+    Send a message object from a specific endpoint.
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint to send the data from.
+    * **`message`** - The actual message to send which will be copied.
+
+    **DEPRECATED**
+    """
+    warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
+    return helicsEndpointSendMessage(endpoint)
 
 
 def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
@@ -3003,6 +3236,22 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
     return f(endpoint.handle)
 
 
+def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
+    """
+    Receive a packet from a particular endpoint.
+
+    **Parameters**
+
+    * **`endpoint`** - The identifier for the endpoint.
+
+    **Returns**: A message.
+
+    **DEPRECATED*
+    """
+    warnings.warn("This function has been deprecated. Use `helicsEndpointGetMessage` instead.")
+    return helicsEndpointGetMessageObject(endpoint)
+
+
 def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
     """
     Receive a packet from a particular endpoint.
@@ -3015,6 +3264,21 @@ def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
     """
     f = loadSym("helicsEndpointGetMessageObject")
     return HelicsMessage(f(endpoint.handle))
+
+
+def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
+    """
+    Create a new empty message.
+    The message is empty and isValid will return false since there is no data associated with the message yet.
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint object to associate the message with.
+
+    **DEPRECATED**
+    """
+    warnings.warn("This function has been deprecated. Use helicsEndpointCreateMessage instead")
+    return helicsEndpointCreateMessage(endpoint)
 
 
 def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
@@ -3035,6 +3299,21 @@ def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
         return HelicsMessage(result)
 
 
+def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessage:
+    """
+    Receive a communication message for any endpoint in the federate.
+    The return order will be in order of endpoint creation.
+    So all messages that are available for the first endpoint.handle, then all for the second, and so on.
+    Within a single endpoint.handle, the messages are ordered by time, then source_id, then order of arrival.
+
+    **Returns**: A `helics.HelicsMessage` which references the data in the message.
+
+    **DEPRECATED**
+    """
+    warnings.warn("This function has been deprecated. Use helicsFederateCreateMessage instead")
+    return helicsFederateGetMessage(fed)
+
+
 def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
     """
     Receive a communication message for any endpoint in the federate.
@@ -3047,6 +3326,21 @@ def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
     f = loadSym("helicsFederateGetMessageObject")
     result = f(fed.handle)
     return HelicsMessage(result)
+
+
+def helicsFederateCreateMessageObject(fed: HelicsFederate) -> HelicsMessage:
+    """
+    Create a new empty message object.
+    The message is empty and isValid will return false since there is no data associated with the message yet.
+
+    **Parameters**
+
+    * **`fed`** - the `helics.HelicsFederate` to associate the message with.
+
+    **DEPRECATED**
+    """
+    warnings.warn("This function has been deprecated. Use helicsFederateCreateMessage instead")
+    return helicsFederateCreateMessage(fed)
 
 
 def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessage:
@@ -4537,15 +4831,17 @@ def helicsPublicationPublishChar(pub: HelicsPublication, val: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishComplex(pub: HelicsPublication, c: complex):
+def helicsPublicationPublishComplex(pub: HelicsPublication, real: float, imag: float = 0):
     """
     Publish a complex value (or pair of values).
 
     **Parameters**
 
     * **`pub`** - The publication to publish for.
-    * **`c`** - `complex` number
+    * **`real`** - `float` number or `complex` number
+    * **`imag`** - `float` number
     """
+    c = complex(real, imag)
     f = loadSym("helicsPublicationPublishComplex")
     err = helicsErrorInitialize()
     f(pub.handle, c.real, c.imag, err)
@@ -4797,7 +5093,7 @@ def helicsInputGetChar(ipt: HelicsInput) -> str:
         return result.decode()
 
 
-def helicsInputGetComplexObject(ipt: HelicsInput) -> complex:
+def helicsInputGetComplexObject(ipt: HelicsInput) -> Tuple[float, float]:
     """
     Get a complex object from an input object.
 
@@ -4813,10 +5109,11 @@ def helicsInputGetComplexObject(ipt: HelicsInput) -> complex:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return complex(result.real, result.imag)
+        warnings.warn("This function will return a complex number in the next major release")
+        return (result.real, result.imag)
 
 
-def helicsInputGetComplex(ipt: HelicsInput) -> complex:
+def helicsInputGetComplex(ipt: HelicsInput) ->  Tuple[float, float]:
     """
     Get a pair of double forming a complex number from a subscriptions.
 
@@ -4834,7 +5131,8 @@ def helicsInputGetComplex(ipt: HelicsInput) -> complex:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return complex(real[0], imag[0])
+        warnings.warn("This function will return a complex number in the next major release")
+        return (real[0], imag[0])
 
 
 def helicsInputGetVectorSize(ipt: HelicsInput) -> int:
@@ -5009,7 +5307,7 @@ def helicsInputSetDefaultDouble(ipt: HelicsInput, val: float):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultComplex(ipt: HelicsInput, c: complex):
+def helicsInputSetDefaultComplex(ipt: HelicsInput, real: float, imag: float = 0):
     """
     Set the default as a complex number.
 
@@ -5019,6 +5317,7 @@ def helicsInputSetDefaultComplex(ipt: HelicsInput, c: complex):
     * **`real`** - The default real value.
     * **`imag`** - The default imaginary value.
     """
+    c = complex(real, imag)
     f = loadSym("helicsInputSetDefaultComplex")
     err = helicsErrorInitialize()
     f(ipt.handle, c.real, c.imag, err)

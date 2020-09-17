@@ -340,12 +340,12 @@ def test_valuefederate_test_complex():
     # publish string1 at time=0.0
     h.helicsPublicationPublishComplex(pubid, complex(rTestValue, iTestValue))
 
-    assert complex(rDefaultValue, iDefaultValue) == h.helicsInputGetComplex(subid)
+    assert (rDefaultValue, iDefaultValue) == h.helicsInputGetComplex(subid)
 
     grantedtime = h.helicsFederateRequestTime(vFed, 1.0)
     assert grantedtime == 0.01
 
-    assert complex(rTestValue, iTestValue) == h.helicsInputGetComplex(subid)
+    assert (rTestValue, iTestValue) == h.helicsInputGetComplex(subid)
 
     destroyFederate(vFed, fedinfo)
     destroyBroker(broker)
