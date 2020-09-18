@@ -92,7 +92,7 @@ class HELICSDownloadCommand(Command):
 
 setup(
     name="helics",
-    version="2.6.0-post0",
+    version="2.6.0.post0.dev0",
     license="MIT",
     description="Python HELICS bindings",
     long_description=read("README.md"),
