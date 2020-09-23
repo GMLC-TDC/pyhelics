@@ -55,7 +55,8 @@ jobs:
 
     - name: Build python2 wheel
       run: |
-        strip-hints helics/capi.py > helics/capi.py
+        strip-hints helics/capi.py > tmp
+        mv tmp helics/capi.py
         python setup.py bdist_wheel --plat-name=${{ matrix.target }}
         pip install dist/helics-2.6.0.post0.dev0-py2-none-${{ matrix.target }}.whl
     # End steps to build Python 2 wheels
