@@ -35,10 +35,9 @@ You will also get precompiled binaries of [HELICS-v2.6.0](https://github.com/GML
 If they don't exist, a source distribution will be installed in which case the user must provide the location of the binaries.
 See the next section for more information about how to do that.
 
-The python package in this repository uses a environment variable called `PYHELICS_INSTALL` to choose the location of the precompiled binaries of the C HELICS library.
-
 ### Custom version of HELICS
 
+The python package in this repository uses a environment variable called `PYHELICS_INSTALL` to choose the location of the precompiled binaries of the C HELICS library.
 If you wish to change the version of HELICS used, you can set this environment variable to point to the location of an HELICS installation.
 
 For example, let's say as a user you want to use HELICS in a Conda environment.
