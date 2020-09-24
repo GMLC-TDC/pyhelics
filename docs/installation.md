@@ -145,7 +145,7 @@ $ python setup.py download
 ```
 
 Alternatively, you can install HELICS in any way you like and point this package to the correct installation.
-You can do this by setting the `PYHELICS_INSTALL` environment variable.
+You can do this by setting the `PYHELICS_INSTALL` environment variable, as described in the previous section.
 The path to the installation must be the root of the installation.
 
 On Linux or Mac, add the following to your `~/.bashrc`.
