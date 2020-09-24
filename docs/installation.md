@@ -47,7 +47,7 @@ $ conda create -n helics-py3-env python=3 -y
 $ conda activate helics-py3-env
 ```
 
-We have created a conda environment. Running `import helics` in python in this environment throws an error because we haven't installed the python package yet.
+Running `import helics` in python in this environment throws an error because python package hasn't been installed yet.
 
 ```bash
 $ python -c 'import helics'
@@ -56,7 +56,7 @@ Traceback (most recent call last):
   ModuleNotFoundError: No module named 'helics'
 ```
 
-We can install `helics` using `pip`.
+You can install `helics` using `pip`.
 
 ```bash
 $ pip install helics==2.6.0.post0.dev0
@@ -74,19 +74,20 @@ Installing collected packages: enum34, pycparser, cffi, helics
 Successfully installed cffi-1.14.3 enum34-1.1.10 helics-2.6.0.post0.dev0 pycparser-2.20
 ```
 
-Now that we have installed the python package, we can check that it works:
+Now that you have installed the python package, you can check that it works:
 
 ```bash
 $ python -c "import helics; print(helics.helicsGetVersion())"
 2.6.0 (2020-08-20)
 ```
 
-We installed the Python package `helics-2.6.0.post0.dev0` and it came with precompiled binaries for HELICS version 2.6.0 that we released on 2020-08-20.
+This installs the Python package `helics-2.6.0.post0.dev0` and it comes with precompiled binaries for HELICS version 2.6.0 that we released on 2020-08-20.
 
-Let's say we have made modification to the HELICS library or compiled it with some different flags or are interested in a using an older version of HELICS.
-We can do that with this python package by changing the `PYHELICS_INSTALL` environment variable.
+Let's say you've made modification to the HELICS library or compiled it with some different flags.
+Or you are interested in a using an older version of HELICS.
+You can do that with this python package by changing the `PYHELICS_INSTALL` environment variable.
 
-As an example, if we want to use the Python package with HELICS v2.5.2. We can clone the git repository for HELICS, build from source and install it to any location.
+As an example, if you want to use the Python package with HELICS v2.5.2, you can clone the git repository for HELICS, build from source and install it to any location.
 In this example, I chose to install it in `~/local/helics-v2.5.2`.
 
 ```bash
@@ -98,20 +99,20 @@ $ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-v2.5.2 ..
 $ make -j8 && make install
 ```
 
-Now in bash, we can set the environment variable:
+Now in bash, you can set the environment variable:
 
 ```bash
 $ export PYHELICS_INSTALL=~/local/helics-v2.5.2
 ```
 
-Now when we `import helics` and print the version we get `2.5.2 (2020-06-14)`.
+Now when you `import helics` and print the version you'll get `2.5.2 (2020-06-14)`.
 
 ```bash
 $ python -c "import helics; print(helics.helicsGetVersion())"
 2.5.2 (2020-06-14)
 ```
 
-We build from source and use the `develop` branch instead as well.
+If you want to build from source and use the `develop` branch:
 
 ```bash
 $ git checkout develop > /dev/null
@@ -122,8 +123,6 @@ $ export PYHELICS_INSTALL=~/local/helics-develop
 $ python -c "import helics; print(helics.helicsGetVersion())"
 2.6.0-develop-g3a460f1f (2020-09-24)
 ```
-
-You can see it prints out the version of HELICS built from the develop branch.
 
 The Python HELICS cffi interface is tested with the latest version of HELICS.
 If you find any issues with earlier versions of HELICS, please report them on <https://github.com/GMLC-TDC/HELICS>.
