@@ -25,7 +25,7 @@ jobs:
             python2-version: '2.7'
     steps:
     - uses: actions/checkout@v2
-      
+
     - name: Set up Python3
       uses: actions/setup-python@v2
       with:
@@ -34,15 +34,15 @@ jobs:
     - name: Install python3 dependencies
       run: |
         python -m pip install -U pip install wheel setuptools cffi
-        
+
     - name: Download helics library
       run: python setup.py download
-    
+
     - name: Build python3 wheel
       run: |
         python setup.py bdist_wheel --plat-name=${{ matrix.target }}
         pip install dist/helics-2.6.0.post0.dev0-py3-none-${{ matrix.target }}.whl
-        
+
     # Steps to build Python 2 wheels
     - name: Set up Python2
       uses: actions/setup-python@v2
@@ -52,20 +52,22 @@ jobs:
     - name: Install python2 dependencies
       run: |
         python -m pip install -U pip install wheel setuptools cffi strip-hints
-        
+
     - name: Build python2 wheel
       run: |
-        strip-hints helics/capi.py > helics/capi.py
+        strip-hints helics/capi.py > tmp
+        rm helics/capi.py
+        mv tmp helics/capi.py
         python setup.py bdist_wheel --plat-name=${{ matrix.target }}
         pip install dist/helics-2.6.0.post0.dev0-py2-none-${{ matrix.target }}.whl
     # End steps to build Python 2 wheels
-        
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: python-dist
         path: dist/*
-  
+
   build-sdist:
     runs-on: ubuntu-latest
     steps:
@@ -78,7 +80,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install -U pip install wheel setuptools cffi
-        
+
     - name: Download helics header files and build sdist
       run: |
         python setup.py download
@@ -87,13 +89,13 @@ jobs:
         rm -rf helics/install/lib64 || true
         rm -rf helics/install/share || true
         python setup.py sdist
-        
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: python-dist
         path: dist/*
-      
+
   publish-helics:
     needs: [build, build-sdist]
     runs-on: ubuntu-latest
@@ -117,7 +119,7 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_PASSWORD }}
-        
+
     - name: GitHub Release
       uses: softprops/action-gh-release@v1
       with:
