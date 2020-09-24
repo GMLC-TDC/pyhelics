@@ -1,4 +1,4 @@
-# Installation Instructions for developers
+# Installation
 
 This package uses `cffi` to interface with the HELICS library.
 The source for this package contains only pure python code.

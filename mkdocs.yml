@@ -5,8 +5,8 @@ edit_uri: ""
 
 nav:
   - Home: index.md
+  - Installation: installation.md
   - API: api/index.md
-  - Developer Guide: installation.md
   - Migration v2 -> v3: migration-helics2-helics3.md
 
 theme:
