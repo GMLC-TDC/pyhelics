@@ -118,10 +118,10 @@ $ python -c "import helics; print(helics.helicsGetVersion())"
 If you want to build from source and use the `develop` branch:
 
 ```bash
-$ git checkout develop > /dev/null
-$ git submodule update > /dev/null
-$ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-develop .. > /dev/null
-$ make -j8 && make install > /dev/null
+$ git checkout develop
+$ git submodule update
+$ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-develop ..
+$ make -j8 && make install
 $ export PYHELICS_INSTALL=~/local/helics-develop
 $ python -c "import helics; print(helics.helicsGetVersion())"
 2.6.0-develop-g3a460f1f (2020-09-24)
