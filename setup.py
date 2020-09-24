@@ -13,12 +13,17 @@ from os.path import splitext
 from setuptools import setup, Command
 from setuptools.dist import Distribution
 
-
+import re
 import os
 import platform
 import tarfile
 import shutil
 import struct
+
+with open(os.path.join(os.path.dirname(__file__), "helics", "_version.py"), encoding="utf-8") as f:
+    PYHELICS_VERSION = f.read()
+
+PYHELICS_VERSION = PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
 
 
 class BinaryDistribution(Distribution):
@@ -37,7 +42,8 @@ def read(*names, **kwargs):
         return fh.read()
 
 
-HELICS_VERSION = "2.6.0"
+HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
+
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 if platform.system() == "Darwin":
@@ -92,7 +98,7 @@ class HELICSDownloadCommand(Command):
 
 setup(
     name="helics",
-    version="2.6.0.post0.dev0",
+    version=PYHELICS_VERSION,
     license="MIT",
     description="Python HELICS bindings",
     long_description=read("README.md"),
