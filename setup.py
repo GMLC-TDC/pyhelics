@@ -20,17 +20,6 @@ import tarfile
 import shutil
 import struct
 
-with open(os.path.join(os.path.dirname(__file__), "helics", "_version.py"), encoding="utf-8") as f:
-    PYHELICS_VERSION = f.read()
-
-PYHELICS_VERSION = PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
-
-
-class BinaryDistribution(Distribution):
-    def is_pure(self):
-        return False
-
-
 try:
     from urllib2 import urlopen
 except ImportError:
@@ -40,6 +29,15 @@ except ImportError:
 def read(*names, **kwargs):
     with io.open(join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")) as fh:
         return fh.read()
+
+
+class BinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
+
+
+PYHELICS_VERSION = read(os.path.join(os.path.dirname(__file__), "helics", "_version.py"), encoding="utf-8")
+PYHELICS_VERSION = PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
 
 
 HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
