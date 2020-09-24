@@ -3,6 +3,9 @@
 This package uses `cffi` to interface with the HELICS library.
 The source for this package contains only pure python code.
 
+Python helics packages with version numbers greater than `v2.6.0` use this new cffi interface.
+Versions equal to and prior to `v2.6.0` used swig to generate the Python API.
+
 ## Install from PyPI (recommended)
 
 ```bash
