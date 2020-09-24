@@ -125,7 +125,7 @@ $ python -c "import helics; print(helics.helicsGetVersion())"
 ```
 
 The Python HELICS cffi interface is tested with the latest version of HELICS.
-If you find any issues with earlier versions of HELICS, please report them on <https://github.com/GMLC-TDC/HELICS>.
+If you find any issues with earlier versions of HELICS, please report them on <https://github.com/GMLC-TDC/HELICS/issues>.
 
 ## From Source
 
