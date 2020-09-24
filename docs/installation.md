@@ -9,27 +9,27 @@ Versions equal to and prior to `v2.6.0` used swig to generate the Python API.
 ## Install from PyPI (recommended)
 
 ```bash
-pip install helics
+$ pip install helics
 ```
 
 This will give you the latest version of the python helics interface.
 If you already have helics installed, you can upgrade to the latest version by using the following:
 
 ```bash
-pip install helics --upgrade
+$ pip install helics --upgrade
 ```
 
 You can install a specific version by using the following:
 
 ```bash
-pip install helics==2.6.0.post0
+$ pip install helics==2.6.0.post0
 ```
 
 By default, when you install from PyPI, the version number of the package will match the version of HELICS that is installed.
 For example, if you run the following:
 
-```
-pip install helics==2.6.0.post0.dev0
+```bash
+$ pip install helics==2.6.0.post0.dev0
 ```
 
 You will get the tagged release of this python package: [helics-v2.6.0.post0.dev0](https://github.com/GMLC-TDC/pyhelics/releases/tag/v2.6.0.post0.dev0).
@@ -138,10 +138,10 @@ In order to run this package, you will need to download HELICS.
 
 You can use this package to download HELICS.
 
-```
-git clone https://github.com/GMLC-TDC/pyhelics
-cd pyhelics
-python setup.py download
+```bash
+$ git clone https://github.com/GMLC-TDC/pyhelics
+$ cd pyhelics
+$ python setup.py download
 ```
 
 Alternatively, you can install HELICS in any way you like and point this package to the correct installation.
@@ -150,8 +150,8 @@ The path to the installation must be the root of the installation.
 
 On Linux or Mac, add the following to your `~/.bashrc`.
 
-```
-export PYHELICS_INSTALL="/path/to/helics_installation"
+```bash
+$ export PYHELICS_INSTALL="/path/to/helics_installation"
 ```
 
 where
@@ -185,10 +185,10 @@ You can also use `set PYHELICS_INSTALL="C:\path\to\helics_installation"` in a co
 
 Next, you can install pyhelics by either using `pip` or setting your `PYTHONPATH`
 
-```
-git clone https://github.com/GMLC-TDC/pyhelics
-cd pyhelics
-python -m pip install -e .
+```bash
+$ git clone https://github.com/GMLC-TDC/pyhelics
+$ cd pyhelics
+$ python -m pip install -e .
 ```
 
 This will install `pyhelics`.
