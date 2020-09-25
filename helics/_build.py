@@ -42,13 +42,13 @@ for file in files:
 # ffi.set_source(
 #     "_py_helics",
 #     f"""#include "{CHELICS}" """,
-#     libraries=["helicsSharedLib"],
+#     libraries=["libhelics"],
 #     library_dirs=[os.path.join(PYHELICS_INSTALL, "lib")],
 # )
 
 if platform.system() == "Windows":
     for file in os.listdir(os.path.join(PYHELICS_INSTALL, "bin")):
-        if "helicsSharedLib" in file:
+        if "libhelics" in file:
             try:
                 lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "bin", file))
                 break
@@ -66,19 +66,19 @@ if platform.system() == "Windows":
             raise Exception("Unable to load helics shared library")
 elif platform.system() == "Darwin":
     for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
-        if "helicsSharedLib" in file:
+        if "libhelics" in file:
             lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
             break
     else:
-        lib = ffi.dlopen("helicsSharedLib.dylib")
+        lib = ffi.dlopen("libhelics.dylib")
         if lib is None:
             raise Exception("Unable to load helics shared library")
 elif platform.system() == "Linux":
     for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
-        if "helicsSharedLib" in file:
+        if "libhelics" in file:
             lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
             break
     else:
-        lib = ffi.dlopen("helicsSharedLib.so")
+        lib = ffi.dlopen("libhelics.so")
         if lib is None:
             raise Exception("Unable to load helics shared library")
