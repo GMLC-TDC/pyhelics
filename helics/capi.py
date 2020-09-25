@@ -3263,6 +3263,46 @@ def helicsEndpointSend(endpoint: HelicsEndpoint, data: bytes):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
+    """
+    **DEPRECATED**
+
+    This function has been deprecated. Use `helicsEndpointGetMessage` instead.
+    """
+    warnings.warn("This function has been deprecated. Use `helicsEndpointGetMessage` instead.")
+    return helicsEndpointGetMessage(endpoint)
+
+
+def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
+    """
+    **DEPRECATED**
+
+    This function has been deprecated. Use `helicsEndpointCreateMessage` instead.
+    """
+    warnings.warn("This function has been deprecated. Use `helicsEndpointCreateMessage` instead.")
+    return helicsEndpointCreateMessage(endpoint)
+
+
+def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessage:
+    """
+    **DEPRECATED**
+
+    This function has been deprecated. Use `helicsFederateGetMessage` instead.
+    """
+    warnings.warn("This function has been deprecated. Use `helicsFederateGetMessage` instead.")
+    return helicsFederateGetMessage(fed)
+
+
+def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
+    """
+    **DEPRECATED**
+
+    Use helicsEndpointSendTo instead
+    """
+    warnings.warn("This function has been deprecated. Use helicsEndpointSendTo instead")
+    return helicsEndpointSendTo(endpoint, dest, data)
+
+
 def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: bytes):
     """
     Send a message to the specified destination.
@@ -3512,7 +3552,7 @@ def helicsEndpointClearMessages(endpoint: HelicsEndpoint):
 
     * **`endpoint`** - The endpoint object to operate on.
     """
-    warnings.warn("helics.helicsEndpointClearMessages is deprecated.")
+    warnings.warn("helics.helicsEndpointClearMessages is deprecated. Use `helics.helicsMessageFree` to clear an individual message.")
 
 
 def helicsEndpointGetType(endpoint: HelicsEndpoint) -> str:
