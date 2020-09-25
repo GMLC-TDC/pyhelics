@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 import time
 import helics as h
 import pytest as pt
+import pytest
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
@@ -95,6 +96,7 @@ def test_message_federate_endpoint_registration(mFed):
     assert endpoint_name == "random"
 
 
+@pytest.mark.skip
 def test_message_federate_send(mFed):
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
     epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "ep2", "random")
@@ -170,6 +172,7 @@ def test_messagefederate_test_message_federate_endpoint_registration(mFed):
     assert name == "TestA Federate/ep1"
 
 
+@pytest.mark.skip
 def test_messagefederate_test_message_federate_send(mFed):
 
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
@@ -208,6 +211,7 @@ def test_messagefederate_test_message_federate_send(mFed):
     # assert h.helicsMessageGetRawData(message) == None
 
 
+@pytest.mark.skip
 def test_messagefederate_send_receive_2fed_multisend():
 
     broker = createBroker(2)
@@ -304,6 +308,7 @@ def test_messagefederate_message_object_tests(mFed):
     h.helicsEndpointSetDefaultDestination(epid1, "ep2")
 
 
+@pytest.mark.skip
 def test_messagefederate_timing_tests():
 
     broker = createBroker(1)

@@ -2281,8 +2281,24 @@ def helicsFederateGetCoreObject(fed: HelicsFederate) -> HelicsCore:
     * **`fed`** - `helics.HelicsFederate`.
 
     **Returns**: `helics.HelicsCore`.
+
+    _**Deprecated: Use `helics.helicsFederateGetCore` instead.
     """
-    f = loadSym("helicsFederateGetCoreObject")
+    warnings.warn("helics.helicsFederateGetCoreObject is deprecated. Use helics.helicsFederateGetCore instead.")
+    return helicsFederateGetCore(fed)
+
+
+def helicsFederateGetCore(fed: HelicsFederate) -> HelicsCore:
+    """
+    Get the `helics.HelicsCore` associated with a federate.
+
+    **Parameters**
+
+    * **`fed`** - `helics.HelicsFederate`.
+
+    **Returns**: `helics.HelicsCore`.
+    """
+    f = loadSym("helicsFederateGetCore")
     err = helicsErrorInitialize()
     result = f(fed.handle, err)
     if err.error_code != 0:
@@ -3302,36 +3318,6 @@ def helicsEndpointSendAt(endpoint: HelicsEndpoint, time: HelicsTime, data: bytes
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMessage):
-    """
-    Send a message object from a specific endpoint.
-
-    **Parameters**
-
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`message`** - The actual message to send which will be copied.
-
-    **DEPRECATED**
-    """
-    warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
-    return helicsEndpointSendMessage(endpoint)
-
-
-def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: HelicsMessage):
-    """
-    Send a message object from a specific endpoint.
-
-    **Parameters**
-
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`message`** - The actual message to send which will be copied.
-
-    **DEPRECATED**
-    """
-    warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
-    return helicsEndpointSendMessage(endpoint)
-
-
 def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
     """
     Send a message object from a specific endpoint.
@@ -3341,7 +3327,7 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
     * **`endpoint`** - The endpoint to send the data from.
     * **`message`** - The actual message to send which will be copied.
     """
-    f = loadSym("helicsEndpointSendMessageObject")
+    f = loadSym("helicsEndpointSendMessage")
     err = helicsErrorInitialize()
     f(endpoint.handle, message.handle, err)
     if err.error_code != 0:
@@ -3418,22 +3404,6 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
     return f(endpoint.handle)
 
 
-def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
-    """
-    Receive a packet from a particular endpoint.
-
-    **Parameters**
-
-    * **`endpoint`** - The identifier for the endpoint.
-
-    **Returns**: A message.
-
-    **DEPRECATED**
-    """
-    warnings.warn("This function has been deprecated. Use `helicsEndpointGetMessage` instead.")
-    return helicsEndpointGetMessage(endpoint)
-
-
 def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
     """
     Receive a packet from a particular endpoint.
@@ -3444,23 +3414,8 @@ def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     **Returns**: A message object.
     """
-    f = loadSym("helicsEndpointGetMessageObject")
+    f = loadSym("helicsEndpointGetMessage")
     return HelicsMessage(f(endpoint.handle))
-
-
-def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
-    """
-    Create a new empty message.
-    The message is empty and isValid will return false since there is no data associated with the message yet.
-
-    **Parameters**
-
-    * **`endpoint`** - The endpoint object to associate the message with.
-
-    **DEPRECATED**
-    """
-    warnings.warn("This function has been deprecated. Use helicsEndpointCreateMessage instead")
-    return helicsEndpointCreateMessage(endpoint)
 
 
 def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
@@ -3472,28 +3427,13 @@ def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     * **`endpoint`** - The endpoint object to associate the message with.
     """
-    f = loadSym("helicsEndpointCreateMessageObject")
+    f = loadSym("helicsEndpointCreateMessage")
     err = helicsErrorInitialize()
     result = f(endpoint.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsMessage(result)
-
-
-def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessage:
-    """
-    Receive a communication message for any endpoint in the federate.
-    The return order will be in order of endpoint creation.
-    So all messages that are available for the first endpoint.handle, then all for the second, and so on.
-    Within a single endpoint.handle, the messages are ordered by time, then source_id, then order of arrival.
-
-    **Returns**: A `helics.HelicsMessage` which references the data in the message.
-
-    **DEPRECATED**
-    """
-    warnings.warn("This function has been deprecated. Use helicsFederateCreateMessage instead")
-    return helicsFederateGetMessage(fed)
 
 
 def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
@@ -3505,24 +3445,9 @@ def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
 
     **Returns**: A `helics.HelicsMessage` which references the data in the message.
     """
-    f = loadSym("helicsFederateGetMessageObject")
+    f = loadSym("helicsFederateGetMessage")
     result = f(fed.handle)
     return HelicsMessage(result)
-
-
-def helicsFederateCreateMessageObject(fed: HelicsFederate) -> HelicsMessage:
-    """
-    Create a new empty message object.
-    The message is empty and isValid will return false since there is no data associated with the message yet.
-
-    **Parameters**
-
-    * **`fed`** - the `helics.HelicsFederate` to associate the message with.
-
-    **DEPRECATED**
-    """
-    warnings.warn("This function has been deprecated. Use helicsFederateCreateMessage instead")
-    return helicsFederateCreateMessage(fed)
 
 
 def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessage:
@@ -3534,7 +3459,7 @@ def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessage:
 
     * **`fed`** - the `helics.HelicsFederate` to associate the message with.
     """
-    f = loadSym("helicsFederateCreateMessageObject")
+    f = loadSym("helicsFederateCreateMessage")
     err = helicsErrorInitialize()
     result = f(fed.handle, err)
     if err.error_code != 0:
@@ -3546,7 +3471,7 @@ def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessage:
 def helicsFederateClearMessages(fed: HelicsFederate):
     """
     Clear all stored messages from a federate.
-    This clears messages retrieved through `helics.helicsFederateGetMessage` or `helics.helicsFederateGetMessageObject`.
+    This clears messages retrieved through `helics.helicsFederateGetMessage` or `helics.helicsFederateGetMessage`.
 
     **Parameters**
 
@@ -3566,8 +3491,7 @@ def helicsEndpointClearMessages(endpoint: HelicsEndpoint):
 
     * **`endpoint`** - The endpoint object to operate on.
     """
-    f = loadSym("helicsEndpointClearMessages")
-    f(endpoint.handle)
+    warnings.warn("helics.helicsEndpointClearMessages is deprecated.")
 
 
 def helicsEndpointGetType(endpoint: HelicsEndpoint) -> str:

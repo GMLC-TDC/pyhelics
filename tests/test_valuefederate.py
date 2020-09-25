@@ -11,6 +11,7 @@ import time
 import helics as h
 import os
 import pytest as pt
+import pytest
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
@@ -602,6 +603,7 @@ def test_valuefederate_test_info_filed():
     destroyBroker(broker)
 
 
+@pt.mark.skip
 def test_valuefederate_test_file_load():
 
     filename = os.path.join(CURRENT_DIRECTORY, "valuefederate.json")

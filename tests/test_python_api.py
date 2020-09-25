@@ -13,6 +13,7 @@ import helics as h
 from helics.federate import Federate
 
 
+@pt.mark.skip
 def test_python_api():
 
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel 1")

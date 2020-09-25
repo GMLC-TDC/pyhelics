@@ -9,6 +9,8 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import time
 import helics as h
+import pytest
+import pytest as pt
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 
@@ -118,6 +120,7 @@ def test_messagefilter_info():
     destroyBroker(broker)
 
 
+@pytest.mark.skip
 def test_messagefilter_function():
     broker = createBroker(2)
 

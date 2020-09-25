@@ -12,4 +12,4 @@ import helics as h
 
 
 def test_helicsGetVersion():
-    assert h.helicsGetVersion() == "2.6.0 (2020-08-20)"
+    assert h.helicsGetVersion() == "3.0.0-alpha.1 (2020-09-24)"
