@@ -3119,7 +3119,7 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
     return ffi.string(result).decode()
 
 
-def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
+def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: bytes):
     """
     Send a message to the specified destination.
 
@@ -3136,7 +3136,46 @@ def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: byte
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dest), data, inputDataLength, err)
+    f(endpoint.handle, cstring(dst), data, inputDataLength, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
+    """
+    Send a message to the specified destination.
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint to send the data from.
+    * **`dest`** - The target destination.
+    * **`data`** - The data to send.
+
+    **DEPRECATED**
+
+    Use `helicsEndpointSendTo` instead
+    """
+    warnings.warn("This function is deprecated. Use `helicsEndpointSendTo` instead.")
+    helicsEndpointSendTo(endpoint, dest, data)
+
+
+def helicsEndpointSendToAt(
+    endpoint: HelicsEndpoint, dst: str, time: HelicsTime, data: str,
+):
+    """
+    Send a message at a specific time to the specified destination.
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint to send the data from.
+    * **`dest`** - The target destination.
+    * **`data`** - The data to send.
+    * **`time`** - The time the message should be sent.
+    """
+    f = loadSym("helicsEndpointSendEventRaw")
+    err = helicsErrorInitialize()
+    inputDataLength = len(data)
+    f(endpoint.handle, cstring(dst), cstring(data), inputDataLength, time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3153,13 +3192,13 @@ def helicsEndpointSendEventRaw(
     * **`dest`** - The target destination.
     * **`data`** - The data to send.
     * **`time`** - The time the message should be sent.
+
+    **DEPRECATED**
+
+    Use `helicsEndpointSendToAt` instead.
     """
-    f = loadSym("helicsEndpointSendEventRaw")
-    err = helicsErrorInitialize()
-    inputDataLength = len(data)
-    f(endpoint.handle, cstring(dest), cstring(data), inputDataLength, time, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    warnings.warn("This function is deprecated. Use `helicsEndpointSendToAt` instead.")
+    helicsEndpointSendToAt(endpoint, dest, time, data)
 
 
 def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMessage):
