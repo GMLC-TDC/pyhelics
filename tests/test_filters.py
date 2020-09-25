@@ -18,7 +18,6 @@ from test_init import createBroker, createValueFederate, destroyFederate, destro
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
-@pytest.mark.skip
 def test_filter_type_tests_registration():
 
     broker = createBroker(2)
@@ -49,7 +48,8 @@ def test_filter_type_tests_registration():
     tmp = h.helicsFilterGetName(f1_c)
     assert tmp == "Testfilter/c4"
 
-    # @test_throws h.HELICSErrorInvalidArgument f1_n = h.helicsFederateGetFilterByIndex(fFed, -2)
+    # with pt.raises(h.HELICSErrorInvalidArgument):
+        # f1_n = h.helicsFederateGetFilterByIndex(fFed, -2)
 
     h.helicsFederateEnterExecutingModeAsync(fFed)
     h.helicsFederateEnterExecutingMode(mFed)
@@ -66,7 +66,6 @@ def test_filter_type_tests_registration():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_filter_type_tests_info():
 
     broker = createBroker(2)
