@@ -178,7 +178,6 @@ def test_bad_input_type_publication_2_tests():
     destroyBroker(broker)
 
 
-@pt.mark.skip(reason="tests fail")
 def test_bad_input_tests_raw_tests():
 
     broker = createBroker(1)
@@ -194,14 +193,15 @@ def test_bad_input_tests_raw_tests():
 
     h.helicsFederateEnterExecutingMode(vFed1)
 
-    h.helicsPublicationPublishDouble(pubid, 27.0)
+    h.helicsPublicationPublishRaw(pubid, b"hello world")
     h.helicsFederateRequestNextStep(vFed1)
-    h.helicsInputGetRawValue(subid)
+    s = h.helicsInputGetRawValue(subid)
+    assert s == b"hello world"
 
-    s = h.helicsInputGetString(subid)
-    assert s == "0.000000"
-    val = h.helicsInputGetComplexObject(subid)
-    assert val == 0.0 + 0.0j
+    h.helicsPublicationPublishDouble(pubid, 27)
+    h.helicsFederateRequestNextStep(vFed1)
+    s = h.helicsInputGetComplex(subid)
+    assert complex(*s) != 27 + 0j
 
     h.helicsFederateFinalize(vFed1)
 
