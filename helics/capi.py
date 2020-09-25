@@ -197,6 +197,8 @@ class HelicsFederateFlag(IntEnum):
     ENABLE_INIT_ENTRY = 47  # HelicsFederateFlags
     IGNORE_TIME_MISMATCH_WARNINGS = 67  # HelicsFederateFlags
     TERMINATE_ON_ERROR = 72  # HelicsFederateFlags
+    FORCE_LOGGING_FLUSH = 88  # HelicsFederateFlags
+    DUMPLOG = 89  # HelicsFederateFlags
 
 
 HELICS_FLAG_OBSERVER = HelicsFederateFlag.OBSERVER
@@ -2736,6 +2738,44 @@ def helicsFederateLogLevelMessage(fed: HelicsFederate, loglevel: HelicsLogLevel,
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsFederateSendCommand(fed: HelicsFederate, target: str, command: str):
+    f = loadSym("helicsFederateSendCommand")
+    err = helicsErrorInitialize()
+    f(fed.handle, cstring(target), cstring(command), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateGetCommand(fed: HelicsFederate) -> str:
+    f = loadSym("helicsFederateGetCommand")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return ffi.string(result).decode()
+
+
+def helicsFederateGetCommandSource(fed: HelicsFederate) -> str:
+    f = loadSym("helicsFederateGetCommandSource")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return ffi.string(result).decode()
+
+
+def helicsFederateWaitCommand(fed: HelicsFederate) -> str:
+    f = loadSym("helicsFederateWaitCommand")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return ffi.string(result).decode()
+
+
 def helicsCoreSetGlobal(core: HelicsCore, value_name: str, value: str):
     """
     Set a global value in a core.
@@ -2768,6 +2808,22 @@ def helicsBrokerSetGlobal(broker: HelicsBroker, value_name: str, value: str):
     f = loadSym("helicsBrokerSetGlobal")
     err = helicsErrorInitialize()
     f(broker.handle, cstring(value_name), cstring(value), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsCoreSendCommand(core, target, command, err):
+    f = loadSym("helicsCoreSendCommand")
+    err = helicsErrorInitialize()
+    f(core.handle, cstring(target), cstring(command), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsBrokerSendCommand(broker, target, command, err):
+    f = loadSym("helicsBrokerSendCommand")
+    err = helicsErrorInitialize()
+    f(broker.handle, cstring(target), cstring(command), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3010,6 +3066,54 @@ def helicsFederateRegisterEndpoint(fed: HelicsFederate, name: str, type: str) ->
         return HelicsEndpoint(result)
 
 
+def helicsFederateRegisterTargetedEndpoint(fed: HelicsFederate, name: str, type: str):
+    """
+
+    Create an targeted endpoint.
+    The endpoint becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for endpoints.
+
+    **Parameters**
+
+    * **`fed`** - The `helics.HelicsFederate` in which to create an endpoint must have been created
+              with helicsCreateMessageFederate or helicsCreateCombinationFederate.
+    * **`name`** - The identifier for the endpoint. This will be prepended with the federate name for the global identifier.
+    * **`type`** - A string describing the expected type of the publication (optional).
+
+    **Returns**: `helics.HelicsEndpoint`.
+    """
+    f = loadSym("helicsFederateRegisterTargetedEndpoint")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, cstring(name), cstring(type), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsEndpoint(result)
+
+
+def helicsFederateRegisterGlobalTargetedEndpoint(fed: HelicsFederate, name: str, type: str):
+    """
+
+    Create a globally targeted endpoint.
+    The endpoint becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for endpoints.
+
+    **Parameters**
+
+    * **`fed`** - The `helics.HelicsFederate` in which to create an endpoint must have been created
+              with helicsCreateMessageFederate or helicsCreateCombinationFederate.
+    * **`name`** - The identifier for the endpoint. This will be prepended with the federate name for the global identifier.
+    * **`type`** - A string describing the expected type of the publication (optional).
+
+    **Returns**: `helics.HelicsEndpoint`.
+    """
+    f = loadSym("helicsFederateGlobalRegisterTargetedEndpoint")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, cstring(name), cstring(type), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsEndpoint(result)
+
+
 def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: str = "") -> HelicsEndpoint:
     """
     Create an endpoint.
@@ -3088,18 +3192,18 @@ def helicsEndpointIsValid(endpoint: HelicsEndpoint) -> bool:
     return result == 1
 
 
-def helicsEndpointSetDefaultDestination(endpoint: HelicsEndpoint, dest: str):
+def helicsEndpointSetDefaultDestination(endpoint: HelicsEndpoint, dst: str):
     """
     Set the default destination for an endpoint if no other endpoint is given.
 
     **Parameters**
 
     * **`endpoint`** - The endpoint to set the destination for.
-    * **`dest`** - A string naming the desired default endpoint.
+    * **`dst`** - A string naming the desired default endpoint.
     """
     f = loadSym("helicsEndpointSetDefaultDestination")
     err = helicsErrorInitialize()
-    f(endpoint.handle, cstring(dest), err)
+    f(endpoint.handle, cstring(dst), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3119,45 +3223,81 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
     return ffi.string(result).decode()
 
 
-def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
+def helicsEndpointSend(endpoint: HelicsEndpoint, data: bytes):
     """
     Send a message to the specified destination.
 
     **Parameters**
 
     * **`endpoint`** - The endpoint to send the data from.
-    * **`dest`** - The target destination.
     * **`data`** - The data to send.
     """
-    f = loadSym("helicsEndpointSendMessageRaw")
+    f = loadSym("helicsEndpointSend")
     err = helicsErrorInitialize()
-    if type(data) is not bytes:
+    if type(data) is str:
+        warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
+        data = data.encode()
+    elif type(data) is not bytes:
         raise HelicsException(
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dest), data, inputDataLength, err)
+    f(endpoint.handle, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsEndpointSendEventRaw(
-    endpoint: HelicsEndpoint, dest: str, data: str, time: HelicsTime,
-):
+def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: str):
+    """
+    Send a message to the specified destination.
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint to send the data from.
+    * **`dst`** - The target destination.
+    * **`data`** - The data to send.
+    """
+    f = loadSym("helicsEndpointSendEventRaw")
+    err = helicsErrorInitialize()
+    inputDataLength = len(data)
+    f(endpoint.handle, cstring(dst), cstring(data), inputDataLength, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointSendToAt(endpoint: HelicsEndpoint, dst: str, time: HelicsTime, data: bytes):
     """
     Send a message at a specific time to the specified destination.
 
     **Parameters**
 
     * **`endpoint`** - The endpoint to send the data from.
-    * **`dest`** - The target destination.
+    * **`dst`** - The target destination.
     * **`data`** - The data to send.
     * **`time`** - The time the message should be sent.
     """
-    f = loadSym("helicsEndpointSendEventRaw")
+    f = loadSym("helicsEndpointSendToAt")
     err = helicsErrorInitialize()
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dest), cstring(data), inputDataLength, time, err)
+    f(endpoint.handle, cstring(dst), time, cstring(data), inputDataLength, time, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointSendAt(endpoint: HelicsEndpoint, time: HelicsTime, data: bytes):
+    """
+    Send a message at a specific time to the specified destination.
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint to send the data from.
+    * **`data`** - The data to send.
+    * **`time`** - The time the message should be sent.
+    """
+    f = loadSym("helicsEndpointSendAt")
+    err = helicsErrorInitialize()
+    inputDataLength = len(data)
+    f(endpoint.handle, time, cstring(data), inputDataLength, time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3539,6 +3679,88 @@ def helicsEndpointGetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption
     return result
 
 
+def helicsEndpointAddSourceTarget(endpoint: HelicsEndpoint, source_name: str):
+    """
+    Add a source target to a endpoint.
+    All messages coming from a source are copied to the delivery address(es).
+
+    **Parameters**
+
+    * **`endpoint`** - The given endpoint.
+    * **`source_name`** - The name of the endpoint to add as a source target.
+    """
+    f = loadSym("helicsEndpointAddSourceTarget")
+    err = helicsErrorInitialize()
+    f(filter.handle, cstring(source_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointAddDestinationTarget(endpoint: HelicsEndpoint, destination_name: str):
+    """
+    Add a destination target to a endpoint.
+    All messages coming from a source are copied to the delivery address(es).
+
+    **Parameters**
+
+    * **`endpoint`** - The given endpoint.
+    * **`source_name`** - The name of the endpoint to add as a source target.
+    """
+    f = loadSym("helicsEndpointAddDestinationTarget")
+    err = helicsErrorInitialize()
+    f(filter.handle, cstring(destination_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointRemoveTarget(endpoint: HelicsEndpoint, target: str):
+    """
+    Remove target from endpoint
+
+    **Parameters**
+
+    * **`endpoint`** - The given endpoint.
+    * **`target_name`** - The name of the endpoint to remove.
+    """
+    f = loadSym("helicsEndpointAddRemoveTarget")
+    err = helicsErrorInitialize()
+    f(filter.handle, cstring(target), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointAddSourceFilter(endpoint: HelicsEndpoint, filter_name: str):
+    """
+    Add source filter to endpoint
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint.
+    * **`filter_name`** - The name of the filter.
+    """
+    f = loadSym("helicsEndpointAddSourceFilter")
+    err = helicsErrorInitialize()
+    f(endpoint.handle, cstring(filter_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointAddDestinationFilter(endpoint: HelicsEndpoint, filter_name: str):
+    """
+    Add destination filter to endpoint
+
+    **Parameters**
+
+    * **`endpoint`** - The endpoint.
+    * **`filter_name`** - The name of the filter.
+    """
+    f = loadSym("helicsEndpointAddDestinationFilter")
+    err = helicsErrorInitialize()
+    f(endpoint.handle, cstring(filter_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsMessageGetSource(message: HelicsMessage) -> str:
     """
     Message operation functions.
@@ -3744,18 +3966,18 @@ def helicsMessageSetSource(message: HelicsMessage, src: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageSetDestination(message: HelicsMessage, dest: str):
+def helicsMessageSetDestination(message: HelicsMessage, dst: str):
     """
     Set the destination of a message.
 
     **Parameters**
 
     * **`message`** - The message object in question.
-    * **`dest`** - A string containing the new destination.
+    * **`dst`** - A string containing the new destination.
     """
     f = loadSym("helicsMessageSetDestination")
     err = helicsErrorInitialize()
-    f(message.handle, cstring(dest), err)
+    f(message.handle, cstring(dst), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3776,18 +3998,18 @@ def helicsMessageSetOriginalSource(message: HelicsMessage, src: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageSetOriginalDestination(message: HelicsMessage, dest: str):
+def helicsMessageSetOriginalDestination(message: HelicsMessage, dst: str):
     """
     Set the original destination of a message.
 
     **Parameters**
 
     * **`message`** - The message object in question.
-    * **`dest`** - A string containing the new original source.
+    * **`dst`** - A string containing the new original source.
     """
     f = loadSym("helicsMessageSetOriginalDestination")
     err = helicsErrorInitialize()
-    f(message.handle, cstring(dest), err)
+    f(message.handle, cstring(dst), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3923,7 +4145,7 @@ def helicsMessageSetData(message: HelicsMessage, data: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageAppendData(message: HelicsMessage, data: pointer, inputDataLength: int):
+def helicsMessageAppendData(message: HelicsMessage, data: bytes):
     """
     Append data to the payload.
 
@@ -3935,23 +4157,31 @@ def helicsMessageAppendData(message: HelicsMessage, data: pointer, inputDataLeng
     """
     f = loadSym("helicsMessageAppendData")
     err = helicsErrorInitialize()
+    if type(data) is str:
+        warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
+        data = data.encode()
+    elif type(data) is not bytes:
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
+    inputDataLength = len(data)
     f(message.handle, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageCopy(source_message: HelicsMessage, dest_message: HelicsMessage):
+def helicsMessageCopy(src: HelicsMessage, dst: HelicsMessage):
     """
     Copy a message object.
 
     **Parameters**
 
-    * **`source_message`** - The message object to copy from.
-    * **`dest_message`** - The message object to copy to.
+    * **`src_message`** - The message object to copy from.
+    * **`dst_message`** - The message object to copy to.
     """
     f = loadSym("helicsMessageCopy")
     err = helicsErrorInitialize()
-    f(source_message, dest_message, err)
+    f(src, dst, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4232,7 +4462,7 @@ def helicsFilterSetString(filter: HelicsFilter, prop: str, val: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFilterAddDestinationTarget(filter: HelicsFilter, dest: str):
+def helicsFilterAddDestinationTarget(filter: HelicsFilter, dst: str):
     """
     Add a destination target to a filter.
     All messages going to a destination are copied to the delivery address(es).
@@ -4240,11 +4470,11 @@ def helicsFilterAddDestinationTarget(filter: HelicsFilter, dest: str):
     **Parameters**
 
     * **`filter`** - The given filter to add a destination target to.
-    * **`dest`** - The name of the endpoint to add as a destination target.
+    * **`dst`** - The name of the endpoint to add as a destination target.
     """
     f = loadSym("helicsFilterAddDestinationTarget")
     err = helicsErrorInitialize()
-    f(filter.handle, cstring(dest), err)
+    f(filter.handle, cstring(dst), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4766,6 +4996,7 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
     f = loadSym("helicsPublicationPublishRaw")
     err = helicsErrorInitialize()
     if type(data) is str:
+        warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
         data = data.encode()
     elif type(data) is not bytes:
         raise HelicsException(
@@ -5804,8 +6035,6 @@ def helicsBrokerSetTimeBarrier(broker: HelicsBroker, barrier_time: HelicsTime):
     """
     f = loadSym("helicsBrokerSetTimeBarrier")
     err = helicsErrorInitialize()
-    result = f(broker.handle, barrier_time, err)
+    f(broker.handle, barrier_time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    else:
-        return HelicsBroker(result)
