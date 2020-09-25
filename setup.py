@@ -40,7 +40,7 @@ PYHELICS_VERSION = read(os.path.join(os.path.dirname(__file__), "helics", "_vers
 PYHELICS_VERSION = PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
 
 
-HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
+HELICS_VERSION = "3.0.0.alpha.1"
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
