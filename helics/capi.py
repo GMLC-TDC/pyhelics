@@ -3253,7 +3253,7 @@ def helicsEndpointSend(endpoint: HelicsEndpoint, data: bytes):
     if type(data) is str:
         warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
         data = data.encode()
-    elif type(data) is not bytes:
+    if type(data) is not bytes:
         raise HelicsException(
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
@@ -3263,7 +3263,7 @@ def helicsEndpointSend(endpoint: HelicsEndpoint, data: bytes):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: str):
+def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: bytes):
     """
     Send a message to the specified destination.
 
@@ -3273,10 +3273,17 @@ def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: str):
     * **`dst`** - The target destination.
     * **`data`** - The data to send.
     """
-    f = loadSym("helicsEndpointSendEventRaw")
+    f = loadSym("helicsEndpointSendTo")
     err = helicsErrorInitialize()
+    if type(data) is str:
+        warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
+        data = data.encode()
+    if type(data) is not bytes:
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dst), cstring(data), inputDataLength, err)
+    f(endpoint.handle, cstring(dst), data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3294,8 +3301,15 @@ def helicsEndpointSendToAt(endpoint: HelicsEndpoint, dst: str, time: HelicsTime,
     """
     f = loadSym("helicsEndpointSendToAt")
     err = helicsErrorInitialize()
+    if type(data) is str:
+        warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
+        data = data.encode()
+    if type(data) is not bytes:
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dst), time, cstring(data), inputDataLength, time, err)
+    f(endpoint.handle, cstring(dst), time, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3312,8 +3326,15 @@ def helicsEndpointSendAt(endpoint: HelicsEndpoint, time: HelicsTime, data: bytes
     """
     f = loadSym("helicsEndpointSendAt")
     err = helicsErrorInitialize()
+    if type(data) is str:
+        warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
+        data = data.encode()
+    if type(data) is not bytes:
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
     inputDataLength = len(data)
-    f(endpoint.handle, time, cstring(data), inputDataLength, time, err)
+    f(endpoint.handle, time, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3841,7 +3862,7 @@ def helicsMessageGetRawData(message: HelicsMessage) -> bytes:
     f(message.handle, data, maxMessageLen, actualSize, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    return ffi.string(data, maxlen=actualSize[0])
+    return ffi.string(data, maxlen=actualSize[0]).encode()
 
 
 def helicsMessageGetRawDataPointer(message: HelicsMessage) -> pointer:
@@ -4084,7 +4105,7 @@ def helicsMessageAppendData(message: HelicsMessage, data: bytes):
     if type(data) is str:
         warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
         data = data.encode()
-    elif type(data) is not bytes:
+    if type(data) is not bytes:
         raise HelicsException(
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
@@ -4922,7 +4943,7 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
     if type(data) is str:
         warnings.warn("`data` must be bytes but received unicode string. Encoding using utf-8.")
         data = data.encode()
-    elif type(data) is not bytes:
+    if type(data) is not bytes:
         raise HelicsException(
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )

@@ -96,7 +96,6 @@ def test_message_federate_endpoint_registration(mFed):
     assert endpoint_name == "random"
 
 
-@pytest.mark.skip
 def test_message_federate_send(mFed):
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
     epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "ep2", "random")
@@ -106,7 +105,7 @@ def test_message_federate_send(mFed):
 
     data = "random-data"
 
-    h.helicsEndpointSendEventRaw(epid1, "ep2", data, 1.0)
+    h.helicsEndpointSendToAt(epid1, "ep2", 1.0, data)
 
     granted_time = h.helicsFederateRequestTime(mFed, 2.0)
     assert granted_time == 1.0
@@ -172,7 +171,6 @@ def test_messagefederate_test_message_federate_endpoint_registration(mFed):
     assert name == "TestA Federate/ep1"
 
 
-@pytest.mark.skip
 def test_messagefederate_test_message_federate_send(mFed):
 
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
@@ -183,7 +181,7 @@ def test_messagefederate_test_message_federate_send(mFed):
 
     data = "random-data"
 
-    h.helicsEndpointSendEventRaw(epid1, "ep2", data, 1.0)
+    h.helicsEndpointSendToAt(epid1, "ep2", 1.0, data)
 
     granted_time = h.helicsFederateRequestTime(mFed, 2.0)
     assert granted_time == 1.0
@@ -211,7 +209,6 @@ def test_messagefederate_test_message_federate_send(mFed):
     # assert h.helicsMessageGetRawData(message) == None
 
 
-@pytest.mark.skip
 def test_messagefederate_send_receive_2fed_multisend():
 
     broker = createBroker(2)
@@ -235,9 +232,9 @@ def test_messagefederate_send_receive_2fed_multisend():
 
     h.helicsEndpointSetDefaultDestination(epid1, "ep2")
 
-    h.helicsEndpointSendMessageRaw(epid1, "", "a".encode())
-    h.helicsEndpointSendMessageRaw(epid1, "", "a".encode())
-    h.helicsEndpointSendMessageRaw(epid1, "", "a".encode())
+    h.helicsEndpointSendTo(epid1, "", "a".encode())
+    h.helicsEndpointSendTo(epid1, "", "a".encode())
+    h.helicsEndpointSendTo(epid1, "", "a".encode())
 
     h.helicsFederateRequestTimeAsync(mFed1, 1.0)
     granted_time = h.helicsFederateRequestTime(mFed2, 1.0)
@@ -308,7 +305,6 @@ def test_messagefederate_message_object_tests(mFed):
     h.helicsEndpointSetDefaultDestination(epid1, "ep2")
 
 
-@pytest.mark.skip
 def test_messagefederate_timing_tests():
 
     broker = createBroker(1)
@@ -340,7 +336,7 @@ def test_messagefederate_timing_tests():
     assert h.helicsFederateGetFlagOption(vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS) is True
     assert h.helicsFederateGetFlagOption(vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS) is True
 
-    h.helicsEndpointSendMessageRaw(ept1, "e2", "test1".encode())
+    h.helicsEndpointSendTo(ept1, "e2", "test1".encode())
     h.helicsFederateRequestTimeAsync(vFed1, 1.9)
     gtime = h.helicsFederateRequestTimeComplete(vFed2)
     assert gtime >= 1.1  # the message should show up at the next available time point after the impact window
