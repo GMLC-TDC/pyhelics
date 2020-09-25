@@ -120,7 +120,6 @@ def test_messagefilter_info():
     destroyBroker(broker)
 
 
-@pytest.mark.skip
 def test_messagefilter_function():
     broker = createBroker(2)
 
@@ -152,7 +151,7 @@ def test_messagefilter_function():
     filt_key = h.helicsFilterGetName(f2)
     assert filt_key == "filter2"
 
-    h.helicsEndpointSendMessageRaw(p1, "port2", data.encode())
+    h.helicsEndpointSendTo(p1, "port2", data.encode())
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
     grantedtime = h.helicsFederateRequestTime(fFed, 1.0)
     assert grantedtime == 1.0
