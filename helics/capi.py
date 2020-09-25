@@ -5804,8 +5804,6 @@ def helicsBrokerSetTimeBarrier(broker: HelicsBroker, barrier_time: HelicsTime):
     """
     f = loadSym("helicsBrokerSetTimeBarrier")
     err = helicsErrorInitialize()
-    result = f(broker.handle, barrier_time, err)
+    f(broker.handle, barrier_time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    else:
-        return HelicsBroker(result)
