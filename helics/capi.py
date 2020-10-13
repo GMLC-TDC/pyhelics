@@ -777,7 +777,7 @@ class HelicsBroker(_HelicsCHandle):
         **Parameters**
 
         - **`target`**:  the target of the query can be "federation", "federate", "broker", "core", or a specific name of a federate, core, or broker
-        - **`query_str`**: a string with the query, see other documentation for specific properties to query, can be defined by the federate
+        - **`query`**: a string with the query, see other documentation for specific properties to query, can be defined by the federate
 
         Returns: a string with the value requested. This is either going to be a vector of strings value or a JSON string stored in the first element of the vector.  The string "#invalid" is returned if the query was not valid
         """
