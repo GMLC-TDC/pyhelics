@@ -684,6 +684,108 @@ class HelicsBroker(_HelicsCHandle):
             class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
 
+    def __del__(self):
+        helicsBrokerFree(self)
+
+    def is_connected(self):
+        """check if the broker is connected"""
+        return helicsBrokerIsConnected(self) is True
+
+    def wait_for_disconnect(self, ms_to_wait: int = -1):
+        """ waits in the current thread until the broker is disconnected
+
+        **Parameters**
+
+        - **`ms_to_wait`**: the timeout to wait for disconnect (-1) implies no timeout
+
+        Returns: `True` if the disconnect was successful false if it timed out
+        """
+        return helicsBrokerWaitForDisconnect(self, ms_to_wait) is True
+
+    def disconnect(self):
+        """
+        Disconnect the broker from any other brokers and communications.
+        """
+        return helicsBrokerDisconnect(self)
+
+    @property
+    def identifier(self):
+        """
+        Get the local identification for the broker.
+        """
+        return helicsBrokerGetIdentifier(self)
+
+    @property
+    def address(self):
+        """
+        Get the connection address for the broker.
+        """
+        return helicsBrokerGetAddress(self)
+
+    def set_global(self, name: str, value: str):
+        """
+        Set a federation global value.
+
+        This overwrites any previous value for this name. globals can be queried with a target of "global" and queryStr of the value to Query.
+
+        **Parameters**
+
+        - **`value_name`**: the name of the global to set
+        - **`value`**: the value of the global
+        """
+        helicsBrokerSetGlobal(self, name, value)
+
+    def data_link(self, source: str, target: str):
+        """
+        Create a data link between a named publication and a named input.
+
+        **Parameters**
+
+        - **`source`**: the name of the publication.
+        - **`target`**: the name of the input.
+        """
+        helicsBrokerDataLink(self, source, target)
+
+    def add_source_filter_to_endpoint(self, filter: str, target: str):
+        """
+        Create a filter connection between a named filter and a named endpoint for messages coming from that endpoint.
+
+        **Parameters**
+
+        **`filter`**: the name of the filter.
+        **`target`**: the name of the source target.
+        """
+        helicsBrokerAddSourceFilterToEndpoint(self, filter, target)
+
+    def add_destination_filter_to_endpoint(self, filter: str, target: str):
+        """
+        Create a filter connection between a named filter and a named endpoint for destination processing.
+
+        **Parameters**
+
+        - **`filter`**: the name of the filter
+        - **`target`**: the name of the source target
+        """
+        helicsBrokerAddDestinationFilterToEndpoint(self, filter, target)
+
+    def query(self, target: str, query: str) -> str:
+        """
+        Make a query of the broker
+
+        This call is blocking until the value is returned which may take some time depending on the size of the federation and the specific string being queried.
+
+        **Parameters**
+
+        - **`target`**:  the target of the query can be "federation", "federate", "broker", "core", or a specific name of a federate, core, or broker
+        - **`query_str`**: a string with the query, see other documentation for specific properties to query, can be defined by the federate
+
+        Returns: a string with the value requested. This is either going to be a vector of strings value or a JSON string stored in the first element of the vector.  The string "#invalid" is returned if the query was not valid
+        """
+        q = helicsCreateQuery(target, query)
+        result = helicsQueryBrokerExecute(q, self)
+        helicsQueryFree(q)
+        return result
+
 
 class HelicsFilter(_HelicsCHandle):
     def __repr__(self):
