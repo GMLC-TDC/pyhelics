@@ -1166,7 +1166,120 @@ class HelicsCombinationFederate(HelicsFederate):
 
 
 class HelicsFederateInfo(_HelicsCHandle):
-    pass
+    def __repr__(self):
+        return """<helics.{class_name}()) at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
+
+    @property
+    def core_name(self):
+        raise AttributeError("Unreadable attribute `core_name`")
+
+    @core_name.setter
+    def core_name(self, core_name: str):
+        helicsFederateInfoSetCoreName(self, core_name)
+
+    @property
+    def separator(self):
+        raise AttributeError("Unreadable attribute `separator`")
+
+    @separator.setter
+    def separator(self, separator: str):
+        """
+        Specify a separator to use for naming separation between the federate name and the interface name.
+
+        `self.separator = '.'` will result in future registrations of local endpoints such as `"fedName.endpoint"`.
+        `self.separator = '/'` will result in `"fedName/endpoint"`.
+
+        The default is `'/'`.
+        Any character can be used though many will not make that much sense.
+        This call is not thread safe and should be called before any local interfaces are created otherwise it may not be possible to retrieve them without using the full name.
+        Recommended: ['/', '.', ':', '-', '_']
+        """
+        helicsFederateInfoSetSeparator(self, separator)
+
+    @property
+    def core_init(self):
+        raise AttributeError("Unreadable attribute `core_init`")
+
+    @core_init.setter
+    def core_init(self, core_init: str):
+        """
+        Set the core init string to use in the FederateInfo.
+
+        **`core_init`**: core init string to use.
+        """
+        helicsFederateInfoSetCoreInitString(self, core_init)
+
+    @property
+    def broker_init(self):
+        raise AttributeError("Unreadable attribute `broker_init`")
+
+    @broker_init.setter
+    def broker_init(self, broker_init: str):
+        """Set a string for the broker initialization in command line argument format."""
+        helicsFederateInfoSetBrokerInitString(self, broker_init)
+
+    @property
+    def core_type(self):
+        raise AttributeError("Unreadable attribute `broker_init`")
+
+    @core_type.setter
+    def core_type(self, core_type):
+        """
+        Set the core type with the core type.
+
+        **`coretype`**: A core type.
+        """
+        if type(core_type) == str:
+            helicsFederateInfoSetCoreTypeFromString(self, core_type)
+        else:
+            helicsFederateInfoSetCoreType(self, HelicsCoreType(core_type))
+
+    @property
+    def broker(self):
+        raise AttributeError("Unreadable attribute `broker`")
+
+    @broker.setter
+    def broker(self, broker: str):
+        """
+        Set the broker to connect with.
+
+        **`broker`**: a string with the broker connection information or name.
+        """
+        helicsFederateInfoSetBroker(self, broker)
+
+    @property
+    def broker_key(self):
+        raise AttributeError("Unreadable attribute `broker_key`")
+
+    @broker_key.setter
+    def broker_key(self, broker_key):
+        """Set the broker key to use
+        **`broker_key`**: a string with the broker key information
+        """
+        helicsFederateInfoSetBrokerKey(self, broker_key)
+
+    def set_flag_option(self, flag: HelicsFederateFlag, value: bool):
+        """
+        Set a flag
+        **`flag`**: `helics.HelicsFederateFlag`
+        **`value`**: the bool value of the flag
+        """
+        helicsFederateInfoSetFlagOption(self, flag, value)
+
+    def set_property(self, index, value):
+        """
+        Set an federate or core property
+        **`index`**: HelicsProperty
+        **`value`**: the value to set the property to
+        """
+        if type(index) == str:
+            idx = helicsGetPropertyIndex(index)
+        else:
+            idx = HelicsProperty(index)
+        if "TIME_" in idx.name:
+            return helicsFederateInfoSetTimeProperty(self, idx, value)
+        elif "INT_" in idx.name:
+            return helicsFederateInfoSetIntegerProperty(self, index, value)
 
 
 class HelicsQuery(_HelicsCHandle):

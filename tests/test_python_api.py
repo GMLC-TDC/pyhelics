@@ -16,8 +16,9 @@ def test_python_api():
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel 1")
 
     fi = h.helicsCreateFederateInfo()
-    h.helicsFederateInfoSetCoreInitString(fi, "--federates 1")
-    h.helicsFederateInfoSetIntegerProperty(fi, h.HELICS_PROPERTY_INT_LOG_LEVEL, 1)
+    fi.core_init = "--federates 1"
+    fi.set_property(h.HELICS_PROPERTY_INT_LOG_LEVEL, 2)
+
     fed = h.helicsCreateValueFederate("test1", fi)
 
     assert "publications = 0" in repr(fed)
@@ -34,7 +35,7 @@ def test_python_api():
     assert fed.property["INPUT_DELAY"] == 0.0
     assert fed.property["OUTPUT_DELAY"] == 0.0
     assert fed.property["MAX_ITERATIONS"] == 50
-    assert fed.property["LOG_LEVEL"] == 1
+    assert fed.property["LOG_LEVEL"] == 2
     # TODO: change this test when helics version is updated
     with pt.raises(h.HelicsException):
         assert fed.property["FILE_LOG_LEVEL"] == 1
