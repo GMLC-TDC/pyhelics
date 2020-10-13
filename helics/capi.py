@@ -763,23 +763,23 @@ class HelicsBroker(_HelicsCHandle):
 
         **Parameters**
 
-        - **`filter`**: the name of the filter
-        - **`target`**: the name of the source target
+        - **`filter`**: the name of the filter.
+        - **`target`**: the name of the source target.
         """
         helicsBrokerAddDestinationFilterToEndpoint(self, filter, target)
 
     def query(self, target: str, query: str) -> str:
         """
-        Make a query of the broker
+        Make a query of the broker.
 
         This call is blocking until the value is returned which may take some time depending on the size of the federation and the specific string being queried.
 
         **Parameters**
 
-        - **`target`**:  the target of the query can be "federation", "federate", "broker", "core", or a specific name of a federate, core, or broker
-        - **`query`**: a string with the query, see other documentation for specific properties to query, can be defined by the federate
+        - **`target`**:  the target of the query can be "federation", "federate", "broker", "core", or a specific name of a federate, core, or broker.
+        - **`query`**: a string with the query, see other documentation for specific properties to query, can be defined by the federate.
 
-        Returns: a string with the value requested. This is either going to be a vector of strings value or a JSON string stored in the first element of the vector.  The string "#invalid" is returned if the query was not valid
+        Returns: a string with the value requested. This is either going to be a vector of strings value or a JSON string stored in the first element of the vector. The string "#invalid" is returned if the query was not valid.
         """
         q = helicsCreateQuery(target, query)
         result = helicsQueryBrokerExecute(q, self)
