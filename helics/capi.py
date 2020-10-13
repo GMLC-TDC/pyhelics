@@ -790,8 +790,8 @@ class HelicsFederate(_HelicsCHandle):
         super(HelicsFederate, self).__init__(handle)
 
         self._exec_async_iterate = False
-        self.property = _FederatePropertyAccessor(self)
-        self.flag = _FederateFlagAccessor(self)
+        self.property = _FederatePropertyAccessor(self.handle)
+        self.flag = _FederateFlagAccessor(self.handle)
 
     def __repr__(self):
         name = helicsFederateGetName(self)
