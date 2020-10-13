@@ -1168,6 +1168,11 @@ class HelicsCombinationFederate(HelicsFederate):
 
 
 class HelicsFederateInfo(_HelicsCHandle):
+    def __init__(self, handle=None):
+        if handle is None:
+            handle = helicsCreateFederateInfo().handle
+        super(HelicsFederateInfo, self).__init__(handle)
+
     def __repr__(self):
         return """<helics.{class_name}()) at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
 
@@ -2027,7 +2032,7 @@ def helicsBrokerFree(broker: HelicsBroker):
     f(broker.handle)
 
 
-def helicsCreateValueFederate(fed_name: str, fi: HelicsFederateInfo) -> HelicsValueFederate:
+def helicsCreateValueFederate(fed_name: str, fi: HelicsFederateInfo = None) -> HelicsValueFederate:
     """
     Creation and destruction of Federates.
     Create `helics.HelicsValueFederate` from `helics.HelicsFederateInfo`.
@@ -2042,6 +2047,8 @@ def helicsCreateValueFederate(fed_name: str, fi: HelicsFederateInfo) -> HelicsVa
     """
     f = loadSym("helicsCreateValueFederate")
     err = helicsErrorInitialize()
+    if fi is None:
+        fi = helicsCreateFederateInfo()
     result = f(cstring(fed_name), fi.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
@@ -2069,7 +2076,7 @@ def helicsCreateValueFederateFromConfig(config_file: str) -> HelicsValueFederate
         return HelicsValueFederate(result)
 
 
-def helicsCreateMessageFederate(fed_name: str, fi: HelicsFederateInfo) -> HelicsMessageFederate:
+def helicsCreateMessageFederate(fed_name: str, fi: HelicsFederateInfo = None) -> HelicsMessageFederate:
     """
     Create `helics.HelicsMessageFederate` from `helics.HelicsFederateInfo`.
     `helics.HelicsMessageFederate` objects can be used in all functions that take a `helics.HelicsFederate` as an argument.
@@ -2083,6 +2090,8 @@ def helicsCreateMessageFederate(fed_name: str, fi: HelicsFederateInfo) -> Helics
     """
     f = loadSym("helicsCreateMessageFederate")
     err = helicsErrorInitialize()
+    if fi is None:
+        fi = helicsCreateFederateInfo()
     result = f(cstring(fed_name), fi.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
@@ -2110,7 +2119,7 @@ def helicsCreateMessageFederateFromConfig(config_file: str) -> HelicsMessageFede
         return HelicsMessageFederate(result)
 
 
-def helicsCreateCombinationFederate(fed_name: str, fi: HelicsFederateInfo) -> HelicsCombinationFederate:
+def helicsCreateCombinationFederate(fed_name: str, fi: HelicsFederateInfo = None) -> HelicsCombinationFederate:
     """
     Create a combination federate from `helics.HelicsFederateInfo`.
     Combination federates are both value federates and message federates, objects can be used in all functions
@@ -2125,6 +2134,8 @@ def helicsCreateCombinationFederate(fed_name: str, fi: HelicsFederateInfo) -> He
     """
     f = loadSym("helicsCreateCombinationFederate")
     err = helicsErrorInitialize()
+    if fi is None:
+        fi = helicsCreateFederateInfo()
     result = f(cstring(fed_name), fi.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
