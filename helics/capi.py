@@ -795,6 +795,34 @@ class HelicsFilter(_HelicsCHandle):
             class_name=self.__class__.__name__, name=name, info=info, id=hex(id(self))
         )
 
+    def add_destination_target(self, dest: str):
+        """
+        Add a destination target to a cloning filter.
+        All messages going to a destination are copied to the delivery address(es).
+        """
+        helicsFilterAddDestinationTarget(self, dest)
+
+    def add_source_target(self, source: str):
+        """
+        Add a source target to a cloning filter.
+        All messages coming from a source are copied to the delivery address(es).
+        """
+        helicsFilterAddSourceTarget(self, source)
+
+    def remove_target(self, dest: str):
+        """remove a destination target from a cloning filter."""
+        helicsFilterRemoveTarget(self, dest)
+
+    @property
+    def info(self) -> str:
+        """Get the interface information field of the filter."""
+        return helicsFilterGetInfo(self)
+
+    @info.setter
+    def setInfo(self, info: str):
+        """Set the interface information field of the filter."""
+        helicsFilterSetInfo(self, info)
+
 
 class HelicsCloningFilter(HelicsFilter):
     pass
