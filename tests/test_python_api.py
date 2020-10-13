@@ -17,7 +17,7 @@ def test_python_api():
 
     fi = h.helicsCreateFederateInfo()
     h.helicsFederateInfoSetCoreInitString(fi, "--federates 1")
-    h.helicsFederateInfoSetIntegerProperty(fi, h.HELICS_PROPERTY_INT_LOG_LEVEL, 5)
+    h.helicsFederateInfoSetIntegerProperty(fi, h.HELICS_PROPERTY_INT_LOG_LEVEL, 1)
     fed = h.helicsCreateValueFederate("test1", fi)
 
     assert "publications = 0" in repr(fed)
@@ -34,7 +34,7 @@ def test_python_api():
     assert fed.property["INPUT_DELAY"] == 0.0
     assert fed.property["OUTPUT_DELAY"] == 0.0
     assert fed.property["MAX_ITERATIONS"] == 50
-    assert fed.property["LOG_LEVEL"] == 5
+    assert fed.property["LOG_LEVEL"] == 1
     # TODO: change this test when helics version is updated
     with pt.raises(h.HelicsException):
         assert fed.property["FILE_LOG_LEVEL"] == 1
