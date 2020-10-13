@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import warnings
 from enum import IntEnum, unique
 
@@ -33,6 +34,9 @@ helics_time_zero = HELICS_TIME_ZERO
 helics_time_epsilon = HELICS_TIME_EPSILON
 helics_time_invalid = HELICS_TIME_INVALID
 helics_time_maxtime = HELICS_TIME_MAXTIME
+
+HelicsTime = float
+pointer = int
 
 
 @unique
@@ -681,7 +685,114 @@ class HelicsBroker(_HelicsCHandle):
         )
 
 
+class HelicsFilter(_HelicsCHandle):
+    def __repr__(self):
+        name = helicsFilterGetName(self)
+        info = helicsFilterGetInfo(self)
+        return """<helics.{class_name}(name = "{name}", info = "{info}") at {id}>""".format(
+            class_name=self.__class__.__name__, name=name, info=info, id=hex(id(self))
+        )
+
+
+class HelicsCloningFilter(HelicsFilter):
+    pass
+
+
+class _PublicationOptionAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = helicsGetOptionIndex(index)
+        else:
+            idx = HelicsHandleOption(index)
+        return helicsPublicationGetOption(self, idx)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = helicsGetOptionIndex(index)
+        else:
+            idx = HelicsHandleOption(index)
+        return helicsPublicationSetOption(self, idx, value)
+
+    def __repr__(self):
+        lst = []
+        for o in HelicsHandleOption:
+            lst.append(f"'{o.name}' = {self[o]}")
+        return f"<{{ {', '.join(lst)} }}>"
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
+class _FederateFlagAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = helicsGetFlagIndex(index)
+        else:
+            idx = HelicsFederateFlag(index)
+        return helicsFederateGetFlagOption(self, idx)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = helicsGetFlagIndex(index)
+        else:
+            idx = HelicsFederateFlag(index)
+        return helicsFederateSetFlagOption(self, idx, value)
+
+    def __repr__(self):
+        lst = []
+        for f in HelicsFederateFlag:
+            # TODO: remove this try except
+            # See https://github.com/GMLC-TDC/HELICS/issues/1549
+            try:
+                lst.append(f"'{f.name}' = {self[f]}")
+            except Exception:
+                pass
+        return f"<{{ {', '.join(lst)} }}>"
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
+class _FederatePropertyAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = helicsGetPropertyIndex(index)
+        else:
+            idx = HelicsProperty(index)
+        if "TIME_" in idx.name:
+            return helicsFederateGetTimeProperty(self, idx)
+        elif "INT_" in idx.name:
+            return helicsFederateGetIntegerProperty(self, idx)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = helicsGetPropertyIndex(index)
+        else:
+            idx = HelicsProperty(index)
+        if "TIME_" in idx.name:
+            return helicsFederateSetTimeProperty(self, idx, value)
+        elif "INT_" in idx.name:
+            return helicsFederateSetIntegerProperty(self, index, value)
+
+    def __repr__(self):
+        lst = []
+        for p in HelicsProperty:
+            lst.append(f"'{p.name}' = {self[p]}")
+        return f"<{{ {', '.join(lst)} }}>"
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
 class HelicsFederate(_HelicsCHandle):
+    def __init__(self, handle):
+        # Python2 compatible super
+        super(HelicsFederate, self).__init__(handle)
+
+        self._exec_async_iterate = False
+        self.property = _FederatePropertyAccessor(self)
+        self.flag = _FederateFlagAccessor(self)
+
     def __repr__(self):
         name = helicsFederateGetName(self)
         state = str(helicsFederateGetState(self))
@@ -701,6 +812,345 @@ class HelicsFederate(_HelicsCHandle):
             inputs=inputs,
             id=hex(id(self)),
         )
+
+    def __del__(self):
+        helicsFederateFree(self)
+
+    @property
+    def state(self):
+        return helicsFederateGetState(self)
+
+    @property
+    def name(self):
+        return helicsFederateGetName(self)
+
+    @property
+    def core(self):
+        return helicsFederateGetCoreObject(self)
+
+    @property
+    def separator(self):
+        raise AttributeError("Unreadable attribute `separator`")
+
+    @separator.setter
+    def separator(self, separator: str):
+        """
+        Specify a separator to use for naming separation between the federate name and the interface name.
+
+        `self.separator = '.'` will result in future registrations of local endpoints such as `"fedName.endpoint"`.
+        `self.separator = '/'` will result in `"fedName/endpoint"`.
+
+        The default is `'/'`.
+        Any character can be used though many will not make that much sense.
+        This call is not thread safe and should be called before any local interfaces are created otherwise it may not be possible to retrieve them without using the full name.
+        Recommended: ['/', '.', ':', '-', '_']
+        """
+        helicsFederateSetSeparator(self, separator)
+
+    def register_interfaces(self, config):
+        """
+        Register a set of interfaces defined in a file.
+
+        Call is only valid in startup mode
+
+        **`configString`**: the location of the file or config String to load to generate the interfaces
+        """
+        helicsFederateRegisterInterfaces(self, config)
+
+    def enter_initializing_mode(self):
+        """
+        Enter the initialization mode after all interfaces have been defined.
+
+        The call will block until all federates have entered initialization mode.
+        """
+        helicsFederateEnterInitializingMode(self)
+
+    def enter_initializing_mode_async(self):
+        """
+        Enter the initialization mode after all interfaces have been defined.
+
+        The call will not block but a call to `enter_initializing_mode_complete` should be made to complete the call sequence.
+        """
+        helicsFederateEnterInitializingModeAsync(self)
+
+    def is_async_operation_completed(self):
+        """
+        Called after one of the async calls and will indicate true if an async operation has completed.
+        Only call from the same thread as the one that called the initial async call and will return false if called when no aysnc operation is in flight
+        """
+        return helicsFederateIsAsyncOperationCompleted(self)
+
+    def enter_initializing_mode_complete(self):
+        """
+        Second part of the async process for entering initializationState call after a call to `enter_initializing_mode_async` if call any other time it will throw an `InvalidFunctionCall` exception
+        """
+        helicsFederateEnterInitializingModeComplete(self)
+
+    def enter_executing_mode(self, iterate: HelicsIterationRequest = HelicsIterationRequest.NO_ITERATION):
+        """
+        Enter the normal execution mode.
+
+        Call will block until all federates have entered this mode.
+
+        **`iterate`**: An optional flag indicating the desired iteration mode.
+        """
+        if iterate == HelicsIterationRequest.NO_ITERATION:
+            helicsFederateEnterExecutingMode(self)
+            out_iterate = HelicsIterationResult.NEXT_STEP
+        else:
+            out_iterate = helicsFederateEnterExecutingModeIterative(self, iterate)
+        return out_iterate
+
+    def enter_executing_mode_async(self, iterate: HelicsIterationRequest = HelicsIterationRequest.NO_ITERATION):
+        """
+        Enter the normal execution mode.
+
+        Call will return immediately but `enter_executing_mode_complete` should be called to complete the operation.
+
+        **`iterate`**: An optional flag indicating the desired iteration mode.
+        """
+        if iterate == HelicsIterationRequest.NO_ITERATION:
+            helicsFederateEnterExecutingModeAsync(self)
+            self._exec_async_iterate = False
+        else:
+            helicsFederateEnterExecutingModeIterativeAsync(self, iterate)
+            self._exec_async_iterate = True
+
+    def enter_executing_mode_complete(self):
+        """
+        Complete the async call for entering Execution state.
+
+        Call will not block but will return quickly.
+        The `enter_initializing_mode_complete` must be called before doing other operations.
+        """
+        out_iterate = HelicsIterationResult.NEXT_STEP
+        if self._exec_async_iterate:
+            out_iterate = helicsFederateEnterExecutingModeIterativeComplete(self)
+        else:
+            helicsFederateEnterExecutingModeComplete(self)
+        return out_iterate
+
+    def finalize(self):
+        """
+        Terminate the simulation.
+
+        Call is will block until the finalize has been acknowledged, no commands that interact with the core may be called after this function function.
+        """
+        helicsFederateFinalize(self)
+
+    def finalize_async(self):
+        """
+        Terminate the simulation in a non-blocking call.
+        `self.finalize_complete()` must be called after this call to complete the finalize procedure.
+        """
+        helicsFederateFinalizeAsync(self)
+
+    def finalize_complete(self):
+        """
+        Complete the asynchronous terminate pair.
+        """
+        helicsFederateFinalizeComplete(self)
+
+    def request_time(self, time: HelicsTime) -> HelicsTime:
+        """
+        **`time`**: the next requested time step.
+
+        Returns: The granted time step.
+        """
+        return helicsFederateRequestTime(self, time)
+
+    def request_next_step(self) -> HelicsTime:
+        """
+        Request a time advancement to the next allowed time.
+
+        Returns: The granted time step.
+        """
+        return helicsFederateRequestNextStep(self)
+
+    def request_time_advance(self, time_delta: HelicsTime) -> HelicsTime:
+        """
+        Request a time advancement to the next allowed time.
+
+        **`timeDelta`**: The amount of time requested to advance.
+
+        Returns: The granted time step.
+        """
+        return helicsFederateRequestTimeAdvance(self, time_delta)
+
+    def request_time_iterative(self, time: float, iterate: HelicsIterationRequest) -> (HelicsTime, HelicsIterationResult):
+        """
+        Request a time advancement.
+
+        **`time`**: the next requested time step.
+        **`iterate`**: a requested iteration mode.
+
+        Returns: The granted time step in a structure containing a return time and an iteration_result.
+        """
+        grantedTime, status = helicsFederateRequestTimeIterative(self, time, iterate)
+        return grantedTime, status
+
+    def request_time_async(self, time: HelicsTime):
+        """
+        Request a time advancement and return immediately for asynchronous function.
+        `self.request_time_complete()` should be called to finish the operation and get the result.
+
+        **`time`**: the next requested time step
+        """
+        helicsFederateRequestTimeAsync(self, time)
+
+    def request_time_iterative_async(self, time: float, iterate: HelicsIterationRequest):
+        """
+        Request a time advancement with iterative call and return for asynchronous function.
+        `self.request_time_iterative_complete()` should be called to finish the operation and get the result.
+
+        **`time`**: the next requested time step.
+        **`iterate`**: a requested iteration level (none, require, optional).
+        """
+        helicsFederateRequestTimeIterativeAsync(self, time, iterate)
+
+    def request_time_complete(self) -> HelicsTime:
+        """
+        Request a time advancement.
+
+        Returns: the granted time step.
+        """
+        return helicsFederateRequestTimeComplete(self)
+
+    def request_time_iterative_complete(self) -> (HelicsTime, HelicsIterationResult):
+        """
+        Finalize the time advancement request.
+
+        Returns: the granted time step and iteration result.
+        """
+        granted_time, status = helicsFederateRequestTimeIterativeComplete(self)
+        return granted_time, status
+
+    def query(self, target: str, query: str) -> str:
+        """
+        Make a query of the federate.
+
+        This call is blocking until the value is returned which make take some time depending on the size of the federation and the specific string being queried.
+
+        **`target`**: the target of the query can be "federation", "federate", "broker", "core", or a
+        specific name of a federate, core, or broker.
+        **`query`**: a string with the query see other documentation for specific properties to query, can be defined by the federate
+
+        Returns: a string with the value requested.
+        this is either going to be a vector of strings value or a JSON string stored in the first element of the vector.  The string "#invalid" is returned if the query was not valid.
+        """
+        q = helicsCreateQuery(target, query)
+        result = helicsQueryExecute(q, self)
+        helicsQueryFree(q)
+        return result
+
+    def register_filter(self, type: HelicsFilterType, filter_name: str) -> HelicsFilter:
+        """
+        Define a filter interface.
+
+        A filter will modify messages coming from or going to target endpoints.
+
+        **`type`**: the type of the filter to register.
+        **`filterName`**: the name of the filter.
+        """
+        return helicsFederateRegisterFilter(self, type, filter_name)
+
+    def register_cloning_fitler(self, delivery_endpoint: str) -> HelicsCloningFilter:
+        """
+        Create a `HelicsCloningFilter` on the specified federate.
+
+        Cloning filters copy a message and send it to multiple locations source and destination can be added through other functions.
+
+        **`delivery_endpoint`**: the specified endpoint to deliver the message
+
+        Returns: A `HelicsCloningFilter` object.
+        """
+        return helicsFederateRegisterCloningFilter(self, delivery_endpoint)
+
+    def register_global_filter(self, type: HelicsFilterType, filter_name: str) -> HelicsFilter:
+        """
+        Define a filter interface.
+
+        A filter will modify messages coming from or going to target endpoints.
+
+        **`type`**: the type of the filter to register
+        **`filterName`**: the name of the filter
+        """
+        return helicsFederateRegisterGlobalFilter(self, type, filter_name)
+
+    def register_global_cloning_filter(self, delivery_endpoint: str) -> HelicsCloningFilter:
+        """
+        Create a cloning Filter on the specified federate
+
+        Cloning filters copy a message and send it to multiple locations source and destination can be added through other functions
+
+        **`delivery_endpoint`**: the specified endpoint to deliver the message
+
+        Returns: A CloningFilter object.
+        """
+        return helicsFederateRegisterGlobalCloningFilter(self, delivery_endpoint)
+
+    def get_filter_by_name(self, filter_name):
+        """get the id of a source filter from the name of the endpoint
+        @param filterName the name of the filter
+        @return a reference to a filter object which could be invalid if filterName is not valid"""
+        return helicsFederateGetFilter(self, filter_name)
+
+    def get_filter_by_index(self, filter_index):
+        """get a filter from its index
+        @param index the index of a filter
+        @return a reference to a filter object which could be invalid if filterName is not valid"""
+        return helicsFederateGetFilterByIndex(self, filter_index)
+
+    def set_global(self, name: str, value: str):
+        """
+        Set a federation global value.
+
+        This overwrites any previous value for this name.
+
+        **`value_name`**: the name of the global to set.
+        **`value`**: the value of the global.
+        """
+        helicsFederateSetGlobal(self, name, value)
+
+    def add_dependency(self, federate_name):
+        """
+        Add a dependency for this federate.
+
+        Adds an additional internal time dependency for the federate.
+        **`fed_name`**: the name of the federate to add a dependency on
+        """
+        helicsFederateAddDependency(self, federate_name)
+
+    def local_error(self, error_code: int, error_string: str):
+        """
+        Generate a local federate error.
+
+        **`error_code`**: an error code to give to the error
+        **`error_string`**: a string message associated with the error
+        """
+        helicsFederateLocalError(self, error_code)
+
+    def global_error(self, error_code: int, error_string: str):
+        """
+        Generate a global error to terminate the federation.
+
+        **`error_code`**: an error code to give to the error
+        **`error_string`**: a string message associated with the error
+        """
+        helicsFederateGlobalError(self, error_code)
+
+    def log_message(self, message: str, level: HelicsLogLevel):
+        """log an message"""
+        if level == logging.ERROR:
+            helicsFederateLogErrorMessage(self, message)
+        elif level == logging.WARN:
+            helicsFederateLogWarningMessage(self, message)
+        elif level == logging.INFO:
+            helicsFederateLogInfoMessage(self, message)
+        elif level == logging.DEBUG:
+            helicsFederateLogDebugMessage(self, message)
+        else:
+            helicsFederateLogLevelMessage(self, HelicsLogLevel(level))
 
 
 class HelicsValueFederate(HelicsFederate):
@@ -817,15 +1267,6 @@ class HelicsMessage(_HelicsCHandle):
         return helicsMessageSetMessageID(self, v)
 
 
-class HelicsFilter(_HelicsCHandle):
-    def __repr__(self):
-        name = helicsFilterGetName(self)
-        info = helicsFilterGetInfo(self)
-        return """<helics.{class_name}(name = "{name}", info = "{info}") at {id}>""".format(
-            class_name=self.__class__.__name__, name=name, info=info, id=hex(id(self))
-        )
-
-
 class HelicsInput(_HelicsCHandle):
     def __repr__(self):
         name = helicsInputGetKey(self)
@@ -842,10 +1283,6 @@ class HelicsPublication(_HelicsCHandle):
         return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
             class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
         )
-
-
-HelicsTime = float
-pointer = int
 
 
 class HelicsException(Exception):
@@ -2426,7 +2863,7 @@ def helicsFederateRequestTimeIterativeAsync(fed: HelicsFederate, requestTime: He
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> HelicsTime:
+def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> (HelicsTime, HelicsIterationResult):
     """
     Complete an iterative time request asynchronous call.
 
@@ -4085,7 +4522,7 @@ def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> Helic
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsFilter(result)
+        return HelicsCloningFilter(result)
 
 
 def helicsFederateRegisterGlobalCloningFilter(fed: HelicsFederate, name: str) -> HelicsFilter:
@@ -4106,7 +4543,7 @@ def helicsFederateRegisterGlobalCloningFilter(fed: HelicsFederate, name: str) ->
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsFilter(result)
+        return HelicsCloningFilter(result)
 
 
 def helicsCoreRegisterFilter(core: HelicsCore, type: HelicsFilterType, name: str) -> HelicsFilter:
