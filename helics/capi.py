@@ -726,7 +726,7 @@ class HelicsBroker(_HelicsCHandle):
         """
         Set a federation global value.
 
-        This overwrites any previous value for this name. globals can be queried with a target of "global" and queryStr of the value to Query.
+        This overwrites any previous value for this name. globals can be queried with a target of "global" and query of the value to Query.
 
         **Parameters**
 
