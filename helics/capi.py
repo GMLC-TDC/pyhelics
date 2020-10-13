@@ -1253,14 +1253,16 @@ class HelicsFederateInfo(_HelicsCHandle):
 
     @broker_key.setter
     def broker_key(self, broker_key):
-        """Set the broker key to use
+        """Set the broker key to use.
+
         **`broker_key`**: a string with the broker key information
         """
         helicsFederateInfoSetBrokerKey(self, broker_key)
 
     def set_flag_option(self, flag: HelicsFederateFlag, value: bool = True):
         """
-        Set a flag
+        Set a flag.
+
         **`flag`**: `helics.HelicsFederateFlag`
         **`value`**: the bool value of the flag
         """
@@ -1268,7 +1270,8 @@ class HelicsFederateInfo(_HelicsCHandle):
 
     def set_property(self, index, value):
         """
-        Set an federate or core property
+        Set an federate or core property.
+
         **`index`**: HelicsProperty
         **`value`**: the value to set the property to
         """
