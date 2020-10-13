@@ -1168,11 +1168,6 @@ class HelicsCombinationFederate(HelicsFederate):
 
 
 class HelicsFederateInfo(_HelicsCHandle):
-    def __init__(self, handle=None):
-        if handle is None:
-            handle = helicsCreateFederateInfo().handle
-        super(HelicsFederateInfo, self).__init__(handle)
-
     def __repr__(self):
         return """<helics.{class_name}()) at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
 
