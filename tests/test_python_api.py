@@ -96,6 +96,19 @@ def test_python_api():
     assert fed.flag[h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS] is False
     assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] is False
 
+    assert fed.flag[h.HELICS_FLAG_OBSERVER.value] is False
+    assert fed.flag[h.HELICS_FLAG_UNINTERRUPTIBLE.value] is False
+    assert fed.flag[h.HELICS_FLAG_INTERRUPTIBLE.value] is True
+    assert fed.flag[h.HELICS_FLAG_SOURCE_ONLY.value] is False
+    assert fed.flag[h.HELICS_FLAG_ONLY_TRANSMIT_ON_CHANGE.value] is False
+    assert fed.flag[h.HELICS_FLAG_ONLY_UPDATE_ON_CHANGE.value] is False
+    assert fed.flag[h.HELICS_FLAG_WAIT_FOR_CURRENT_TIME_UPDATE.value] is False
+    assert fed.flag[h.HELICS_FLAG_RESTRICTIVE_TIME_POLICY.value] is False
+    assert fed.flag[h.HELICS_FLAG_REALTIME.value] is False
+    assert fed.flag[h.HELICS_FLAG_SLOW_RESPONDING.value] is False
+    assert fed.flag[h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS.value] is False
+    assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR.value] is False
+
     assert "'OBSERVER' = False" in repr(fed.flag)
     assert "'UNINTERRUPTIBLE' = False" in repr(fed.flag)
     assert "'INTERRUPTIBLE' = True" in repr(fed.flag)
