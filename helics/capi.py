@@ -1496,6 +1496,9 @@ class HelicsMessage(_HelicsCHandle):
             id=hex(id(self)),
         )
 
+    def append(self, data: str):
+        helicsMessageAppendData(self, data)
+
     @property
     def source(self):
         return helicsMessageGetSource(self)
@@ -4683,7 +4686,7 @@ def helicsMessageSetString(message: HelicsMessage, string: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageSetData(message: HelicsMessage, data: str):
+def helicsMessageSetData(message: HelicsMessage, data: bytes):
     """
     Set the data payload of a message as raw data.
 
@@ -4695,13 +4698,19 @@ def helicsMessageSetData(message: HelicsMessage, data: str):
     """
     f = loadSym("helicsMessageSetData")
     err = helicsErrorInitialize()
+    if type(data) is str:
+        data = data.encode()
+    elif type(data) is not bytes:
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
     inputDataLength = len(data)
     f(message.handle, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageAppendData(message: HelicsMessage, data: pointer, inputDataLength: int):
+def helicsMessageAppendData(message: HelicsMessage, data: bytes):
     """
     Append data to the payload.
 
@@ -4713,6 +4722,13 @@ def helicsMessageAppendData(message: HelicsMessage, data: pointer, inputDataLeng
     """
     f = loadSym("helicsMessageAppendData")
     err = helicsErrorInitialize()
+    if type(data) is str:
+        data = data.encode()
+    elif type(data) is not bytes:
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
+    inputDataLength = len(data)
     f(message.handle, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
