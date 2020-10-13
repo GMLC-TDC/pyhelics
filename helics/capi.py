@@ -730,8 +730,8 @@ class HelicsBroker(_HelicsCHandle):
 
         **Parameters**
 
-        - **`value_name`**: the name of the global to set
-        - **`value`**: the value of the global
+        - **`name`**: the name of the global to set.
+        - **`value`**: the value of the global.
         """
         helicsBrokerSetGlobal(self, name, value)
 
