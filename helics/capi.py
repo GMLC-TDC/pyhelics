@@ -716,8 +716,8 @@ class _PublicationOptionAccessor(_HelicsCHandle):
     def __repr__(self):
         lst = []
         for o in HelicsHandleOption:
-            lst.append(f"'{o.name}' = {self[o]}")
-        return f"<{{ {', '.join(lst)} }}>"
+            lst.append("'{}' = {}".format(o.name, self[o]))
+        return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index")
@@ -744,10 +744,10 @@ class _FederateFlagAccessor(_HelicsCHandle):
             # TODO: remove this try except
             # See https://github.com/GMLC-TDC/HELICS/issues/1549
             try:
-                lst.append(f"'{f.name}' = {self[f]}")
+                lst.append("'{}' = {}".format(f.name, self[f]))
             except Exception:
                 pass
-        return f"<{{ {', '.join(lst)} }}>"
+        return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index")
@@ -777,8 +777,8 @@ class _FederatePropertyAccessor(_HelicsCHandle):
     def __repr__(self):
         lst = []
         for p in HelicsProperty:
-            lst.append(f"'{p.name}' = {self[p]}")
-        return f"<{{ {', '.join(lst)} }}>"
+            lst.append("'{}' = {}".format(p.name, self[p]))
+        return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index")

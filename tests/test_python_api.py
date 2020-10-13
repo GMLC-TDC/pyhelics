@@ -70,6 +70,19 @@ def test_python_api():
     assert fed.property[h.HelicsProperty.INT_FILE_LOG_LEVEL.value] == 5
     assert fed.property[h.HelicsProperty.INT_CONSOLE_LOG_LEVEL.value] == 5
 
+    assert "'TIME_DELTA' = 1e-09" in repr(fed.property)
+    assert "'TIME_PERIOD' = 0.0" in repr(fed.property)
+    assert "'TIME_OFFSET' = 0.0" in repr(fed.property)
+    assert "'TIME_RT_LAG' = 0.0" in repr(fed.property)
+    assert "'TIME_RT_LEAD' = 0.0" in repr(fed.property)
+    assert "'TIME_RT_TOLERANCE' = 0.0" in repr(fed.property)
+    assert "'TIME_INPUT_DELAY' = 0.0" in repr(fed.property)
+    assert "'TIME_OUTPUT_DELAY' = 0.0" in repr(fed.property)
+    assert "'INT_MAX_ITERATIONS' = 50" in repr(fed.property)
+    assert "'INT_LOG_LEVEL' = 5" in repr(fed.property)
+    assert "'INT_FILE_LOG_LEVEL' = 5" in repr(fed.property)
+    assert "'INT_CONSOLE_LOG_LEVEL' = 5" in repr(fed.property)
+
     assert fed.flag[h.HELICS_FLAG_OBSERVER] is False
     assert fed.flag[h.HELICS_FLAG_UNINTERRUPTIBLE] is False
     assert fed.flag[h.HELICS_FLAG_INTERRUPTIBLE] is True
@@ -82,6 +95,19 @@ def test_python_api():
     assert fed.flag[h.HELICS_FLAG_SLOW_RESPONDING] is False
     assert fed.flag[h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS] is False
     assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] is False
+
+    assert "'OBSERVER' = False" in repr(fed.flag)
+    assert "'UNINTERRUPTIBLE' = False" in repr(fed.flag)
+    assert "'INTERRUPTIBLE' = True" in repr(fed.flag)
+    assert "'SOURCE_ONLY' = False" in repr(fed.flag)
+    assert "'ONLY_TRANSMIT_ON_CHANGE' = False" in repr(fed.flag)
+    assert "'ONLY_UPDATE_ON_CHANGE' = False" in repr(fed.flag)
+    assert "'WAIT_FOR_CURRENT_TIME_UPDATE' = False" in repr(fed.flag)
+    assert "'RESTRICTIVE_TIME_POLICY' = False" in repr(fed.flag)
+    assert "'REALTIME' = False" in repr(fed.flag)
+    assert "'SLOW_RESPONDING' = False," in repr(fed.flag)
+    assert "'IGNORE_TIME_MISMATCH_WARNINGS' = False," in repr(fed.flag)
+    assert "'TERMINATE_ON_ERROR' = False" in repr(fed.flag)
 
     fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] = True
 
