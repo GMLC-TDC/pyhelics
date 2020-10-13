@@ -1258,7 +1258,7 @@ class HelicsFederateInfo(_HelicsCHandle):
         """
         helicsFederateInfoSetBrokerKey(self, broker_key)
 
-    def set_flag_option(self, flag: HelicsFederateFlag, value: bool):
+    def set_flag_option(self, flag: HelicsFederateFlag, value: bool = True):
         """
         Set a flag
         **`flag`**: `helics.HelicsFederateFlag`
