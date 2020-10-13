@@ -844,6 +844,10 @@ class HelicsFederate(_HelicsCHandle):
         Any character can be used though many will not make that much sense.
         This call is not thread safe and should be called before any local interfaces are created otherwise it may not be possible to retrieve them without using the full name.
         Recommended: ['/', '.', ':', '-', '_']
+
+        **Parameters**
+
+        - **separator**: str to use as separator.
         """
         helicsFederateSetSeparator(self, separator)
 
@@ -894,7 +898,9 @@ class HelicsFederate(_HelicsCHandle):
 
         Call will block until all federates have entered this mode.
 
-        **`iterate`**: An optional flag indicating the desired iteration mode.
+        **Parameters**
+
+        - **`iterate`**: An optional flag indicating the desired iteration mode.
         """
         if iterate == HelicsIterationRequest.NO_ITERATION:
             helicsFederateEnterExecutingMode(self)
@@ -909,7 +915,9 @@ class HelicsFederate(_HelicsCHandle):
 
         Call will return immediately but `enter_executing_mode_complete` should be called to complete the operation.
 
-        **`iterate`**: An optional flag indicating the desired iteration mode.
+        **Parameters**
+
+        - **`iterate`**: An optional flag indicating the desired iteration mode.
         """
         if iterate == HelicsIterationRequest.NO_ITERATION:
             helicsFederateEnterExecutingModeAsync(self)
@@ -955,7 +963,9 @@ class HelicsFederate(_HelicsCHandle):
 
     def request_time(self, time: HelicsTime) -> HelicsTime:
         """
-        **`time`**: the next requested time step.
+        **Parameters**
+
+        - **`time`**: the next requested time step.
 
         Returns: The granted time step.
         """
@@ -973,7 +983,9 @@ class HelicsFederate(_HelicsCHandle):
         """
         Request a time advancement to the next allowed time.
 
-        **`timeDelta`**: The amount of time requested to advance.
+        **Parameters**
+
+        - **`timeDelta`**: The amount of time requested to advance.
 
         Returns: The granted time step.
         """
@@ -983,8 +995,10 @@ class HelicsFederate(_HelicsCHandle):
         """
         Request a time advancement.
 
-        **`time`**: the next requested time step.
-        **`iterate`**: a requested iteration mode.
+        **Parameters**
+
+        - **`time`**: the next requested time step.
+        - **`iterate`**: a requested iteration mode.
 
         Returns: The granted time step in a structure containing a return time and an iteration_result.
         """
@@ -996,7 +1010,9 @@ class HelicsFederate(_HelicsCHandle):
         Request a time advancement and return immediately for asynchronous function.
         `self.request_time_complete()` should be called to finish the operation and get the result.
 
-        **`time`**: the next requested time step
+        **Parameters**
+
+        - **`time`**: the next requested time step
         """
         helicsFederateRequestTimeAsync(self, time)
 
@@ -1005,8 +1021,10 @@ class HelicsFederate(_HelicsCHandle):
         Request a time advancement with iterative call and return for asynchronous function.
         `self.request_time_iterative_complete()` should be called to finish the operation and get the result.
 
-        **`time`**: the next requested time step.
-        **`iterate`**: a requested iteration level (none, require, optional).
+        **Parameters**
+
+        - **`time`**: the next requested time step.
+        - **`iterate`**: a requested iteration level (none, require, optional).
         """
         helicsFederateRequestTimeIterativeAsync(self, time, iterate)
 
@@ -1033,12 +1051,13 @@ class HelicsFederate(_HelicsCHandle):
 
         This call is blocking until the value is returned which make take some time depending on the size of the federation and the specific string being queried.
 
-        **`target`**: the target of the query can be "federation", "federate", "broker", "core", or a
-        specific name of a federate, core, or broker.
-        **`query`**: a string with the query see other documentation for specific properties to query, can be defined by the federate
+        **Parameters**
+
+        - **`target`**: the target of the query can be "federation", "federate", "broker", "core", or a specific name of a federate, core, or broker.
+        - **`query`**: a string with the query see other documentation for specific properties to query, can be defined by the federate.
 
         Returns: a string with the value requested.
-        this is either going to be a vector of strings value or a JSON string stored in the first element of the vector.  The string "#invalid" is returned if the query was not valid.
+        this is either going to be a vector of strings value or a JSON string stored in the first element of the vector. The string "#invalid" is returned if the query was not valid.
         """
         q = helicsCreateQuery(target, query)
         result = helicsQueryExecute(q, self)
@@ -1051,8 +1070,10 @@ class HelicsFederate(_HelicsCHandle):
 
         A filter will modify messages coming from or going to target endpoints.
 
-        **`type`**: the type of the filter to register.
-        **`filterName`**: the name of the filter.
+        **Parameters**
+
+        - **`type`**: the type of the filter to register.
+        - **`filterName`**: the name of the filter.
         """
         return helicsFederateRegisterFilter(self, type, filter_name)
 
@@ -1062,7 +1083,9 @@ class HelicsFederate(_HelicsCHandle):
 
         Cloning filters copy a message and send it to multiple locations source and destination can be added through other functions.
 
-        **`delivery_endpoint`**: the specified endpoint to deliver the message
+        **Parameters**
+
+        - **`delivery_endpoint`**: the specified endpoint to deliver the message.
 
         Returns: A `HelicsCloningFilter` object.
         """
@@ -1074,8 +1097,10 @@ class HelicsFederate(_HelicsCHandle):
 
         A filter will modify messages coming from or going to target endpoints.
 
-        **`type`**: the type of the filter to register
-        **`filterName`**: the name of the filter
+        **Parameters**
+
+        - **`type`**: the type of the filter to register.
+        - **`filterName`**: the name of the filter.
         """
         return helicsFederateRegisterGlobalFilter(self, type, filter_name)
 
@@ -1083,24 +1108,38 @@ class HelicsFederate(_HelicsCHandle):
         """
         Create a cloning Filter on the specified federate
 
-        Cloning filters copy a message and send it to multiple locations source and destination can be added through other functions
+        Cloning filters copy a message and send it to multiple locations source and destination can be added through other functions.
 
-        **`delivery_endpoint`**: the specified endpoint to deliver the message
+        **Parameters**
+
+        - **`delivery_endpoint`**: the specified endpoint to deliver the message.
 
         Returns: A CloningFilter object.
         """
         return helicsFederateRegisterGlobalCloningFilter(self, delivery_endpoint)
 
     def get_filter_by_name(self, filter_name):
-        """get the id of a source filter from the name of the endpoint
-        @param filterName the name of the filter
-        @return a reference to a filter object which could be invalid if filterName is not valid"""
+        """
+        Get the id of a source filter from the name of the endpoint.
+
+        **Parameters**
+
+        - **`filter_name`**: the name of the filter.
+
+        Returns: a reference to a filter object which could be invalid if filterName is not valid.
+        """
         return helicsFederateGetFilter(self, filter_name)
 
     def get_filter_by_index(self, filter_index):
-        """get a filter from its index
-        @param index the index of a filter
-        @return a reference to a filter object which could be invalid if filterName is not valid"""
+        """
+        Get a filter by index.
+
+        **Parameters**
+
+        - **`index`**: the index of a filter.
+
+        Returns: A reference to a filter object which could be invalid if filterName is not valid.
+        """
         return helicsFederateGetFilterByIndex(self, filter_index)
 
     def set_global(self, name: str, value: str):
@@ -1109,8 +1148,10 @@ class HelicsFederate(_HelicsCHandle):
 
         This overwrites any previous value for this name.
 
-        **`value_name`**: the name of the global to set.
-        **`value`**: the value of the global.
+        **Parameters**
+
+        - **`value_name`**: the name of the global to set.
+        - **`value`**: the value of the global.
         """
         helicsFederateSetGlobal(self, name, value)
 
@@ -1119,7 +1160,10 @@ class HelicsFederate(_HelicsCHandle):
         Add a dependency for this federate.
 
         Adds an additional internal time dependency for the federate.
-        **`fed_name`**: the name of the federate to add a dependency on
+
+        **Parameters**
+
+        - **`fed_name`**: the name of the federate to add a dependency on.
         """
         helicsFederateAddDependency(self, federate_name)
 
@@ -1127,8 +1171,10 @@ class HelicsFederate(_HelicsCHandle):
         """
         Generate a local federate error.
 
-        **`error_code`**: an error code to give to the error
-        **`error_string`**: a string message associated with the error
+        **Parameters**
+
+        **`error_code`**: an error code to give to the error.
+        **`error_string`**: a string message associated with the error.
         """
         helicsFederateLocalError(self, error_code)
 
@@ -1136,13 +1182,15 @@ class HelicsFederate(_HelicsCHandle):
         """
         Generate a global error to terminate the federation.
 
-        **`error_code`**: an error code to give to the error
-        **`error_string`**: a string message associated with the error
+        **Parameters**
+
+        **`error_code`**: an error code to give to the error.
+        **`error_string`**: a string message associated with the error.
         """
         helicsFederateGlobalError(self, error_code)
 
     def log_message(self, message: str, level: HelicsLogLevel):
-        """log an message"""
+        """Log an message."""
         if level == logging.ERROR:
             helicsFederateLogErrorMessage(self, message)
         elif level == logging.WARN:
