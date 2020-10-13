@@ -7,17 +7,18 @@ CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(CURRENT_DIRECTORY)
 sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
-import time
 import pytest as pt
 import helics as h
-from helics.federate import Federate
 
 
 def test_python_api():
 
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel 1")
 
-    fed = Federate(name="test1")
+    fi = h.helicsCreateFederateInfo()
+    h.helicsFederateInfoSetCoreInitString(fi, "--federates 1")
+    h.helicsFederateInfoSetIntegerProperty(fi, h.HELICS_PROPERTY_INT_LOG_LEVEL, 5)
+    fed = h.helicsCreateValueFederate("test1", fi)
 
     assert "publications = 0" in repr(fed)
     assert "inputs = 0" in repr(fed)
