@@ -1496,7 +1496,7 @@ class HelicsMessage(_HelicsCHandle):
             id=hex(id(self)),
         )
 
-    def append(self, data: str):
+    def append(self, data: bytes):
         helicsMessageAppendData(self, data)
 
     @property
@@ -1554,8 +1554,16 @@ class HelicsMessage(_HelicsCHandle):
         return helicsMessageGetString(self)
 
     @data.setter
-    def data(self, v):
+    def data(self, v: str):
         return helicsMessageSetString(self, v)
+
+    @property
+    def raw_data(self) -> bytes:
+        return helicsMessageGetRawData(self)
+
+    @raw_data.setter
+    def raw_data(self, v: bytes):
+        return helicsMessageSetData(self, v)
 
     @property
     def id(self):
