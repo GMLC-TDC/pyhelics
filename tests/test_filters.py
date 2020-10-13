@@ -763,8 +763,9 @@ def test_filter_test_types_clone_test_dest_connections():
 
 @h.ffi.callback("void logger(helics_message_object, void* userData)")
 def filterFunc1(mess, userData):
-    time = h.helicsMessageGetTime(h.HelicsMessage(mess))
-    h.helicsMessageSetTime(h.HelicsMessage(mess), time + 2.5)
+    m = h.HelicsMessage(mess)
+    time = h.helicsMessageGetTime(m)
+    h.helicsMessageSetTime(m, time + 2.5)
 
 
 class UserData(object):
