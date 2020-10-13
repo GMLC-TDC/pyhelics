@@ -853,7 +853,9 @@ class HelicsFederate(_HelicsCHandle):
 
         Call is only valid in startup mode
 
-        **`configString`**: the location of the file or config String to load to generate the interfaces
+        **Parameters**
+
+        - **`configString`**: the location of the file or config String to load to generate the interfaces
         """
         helicsFederateRegisterInterfaces(self, config)
 
