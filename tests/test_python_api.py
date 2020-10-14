@@ -201,6 +201,12 @@ def test_python_api1():
 
     assert mFed.subscriptions["TestFilter/publication"].vector == [1.0, 2.0, 3.0, 4.0, 5.0]
 
+    m = mFed.create_message()
+    assert (
+        """HelicsMessage(source = "", destination = "", original_source = "", original_destination = "", time = 0.0, id = 0, message = "")"""
+        in repr(m)
+    )
+
     mFed.finalize()
 
     del mFed

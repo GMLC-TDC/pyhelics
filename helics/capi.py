@@ -1206,7 +1206,7 @@ class HelicsEndpoint(_HelicsCHandle):
 
 class HelicsFederateInfo(_HelicsCHandle):
     def __repr__(self):
-        return """<helics.{class_name}()) at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
+        return """<helics.{class_name}() at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
 
     @property
     def core_name(self):
