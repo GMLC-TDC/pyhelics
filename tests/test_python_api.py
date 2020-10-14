@@ -162,12 +162,14 @@ def test_python_api1():
     message.data = "random-data"
     assert message.raw_data == b"random-data"
 
+    message.message_id = 100
     message.source = "earth"
     message.destination = "moon"
     message.original_source = "hello-world"
     message.original_destination = "goodbye-world"
     message.time = 2.0
 
+    assert message.message_id == 100
     assert message.source == "earth"
     assert message.destination == "moon"
     assert message.original_source == "hello-world"
