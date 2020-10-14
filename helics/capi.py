@@ -673,7 +673,36 @@ class _HelicsCHandle:
             self.handle = handle
 
 
+class _FilterOptionAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = helicsGetOptionIndex(index)
+        else:
+            idx = HelicsHandleOption(index)
+        return helicsFilterGetOption(self, idx)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = helicsGetOptionIndex(index)
+        else:
+            idx = HelicsHandleOption(index)
+        return helicsFilterSetOption(self, idx, value)
+
+    def __repr__(self):
+        lst = []
+        for o in HelicsHandleOption:
+            lst.append("'{}' = {}".format(o.name, self[o]))
+        return "<{{ {} }}>".format(", ".join(lst))
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
 class HelicsFilter(_HelicsCHandle):
+    def __init__(self, handle):
+        super(HelicsFilter, self).__init__(handle)
+        self.option = _FilterOptionAccessor(self.handle)
+
     def __repr__(self):
         name = self.name
         info = self.info
@@ -709,9 +738,13 @@ class HelicsFilter(_HelicsCHandle):
         return helicsFilterGetInfo(self)
 
     @info.setter
-    def setInfo(self, info: str):
+    def info(self, info: str):
         """Set the interface information field of the filter."""
         helicsFilterSetInfo(self, info)
+
+    def set(self, property: str, value: float):
+        """Set a property on a filter."""
+        helicsFilterSet(self, property, value)
 
 
 class HelicsCloningFilter(HelicsFilter):
@@ -1071,7 +1104,7 @@ class HelicsEndpoint(_HelicsCHandle):
         is_valid = self.is_valid()
         default_destination = self.default_destination
         n_pending_messages = self.n_pending_messages
-        return """<helics.{class_name}(name = "{name}", type = "{type}", info = "{info}", is_valid = {is_valid}, default_destination = "{default_destination}", n_pending_messages = "{n_pending_messages}")) at {id}>""".format(
+        return """<helics.{class_name}(name = "{name}", type = "{type}", info = "{info}", is_valid = {is_valid}, default_destination = "{default_destination}", n_pending_messages = {n_pending_messages}) at {id}>""".format(
             class_name=self.__class__.__name__,
             name=name,
             type=type,
@@ -2209,7 +2242,7 @@ class HelicsMessageFederate(HelicsFederate):
 
         Returns: an Endpoint Object
         """
-        ep = helicsFederateRegisterEndpoint(self, name, type)
+        ep = helicsFederateRegisterEndpoint(self, name, kind)
         self.endpoints.append(ep)
         return ep
 

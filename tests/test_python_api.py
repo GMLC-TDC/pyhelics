@@ -11,7 +11,99 @@ import pytest as pt
 import helics as h
 
 
-def test_python_api():
+def test_python_api1():
+    broker = h.helicsCreateBroker("zmq", "", "-f2")
+    fedinfo = h.helicsCreateFederateInfo()
+    fedinfo.core_name = "TestFilter"
+    fFed = h.helicsCreateMessageFederate("TestFilter", fedinfo)
+    fedinfo = h.helicsCreateFederateInfo()
+    fedinfo.core_name = "TestMessage"
+    mFed = h.helicsCreateMessageFederate("TestMessage", fedinfo)
+
+    p1 = mFed.register_global_endpoint("port1")
+    p2 = mFed.register_global_endpoint("port2", "random")
+
+    assert """HelicsEndpoint(name = "port1", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)""" in repr(p1)
+    assert (
+        """HelicsEndpoint(name = "port2", type = "random", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
+        in repr(p2)
+    )
+
+    f1 = fFed.register_global_filter(h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
+    f1.add_source_target("port1")
+    assert """HelicsFilter(name = "filter1", info = "")""" in repr(f1)
+
+    f2 = fFed.register_global_filter(h.HELICS_FILTER_TYPE_DELAY, "filter2")
+    f2.add_source_target("port1")
+    assert """HelicsFilter(name = "filter2", info = "")""" in repr(f2)
+
+    ep1 = fFed.register_endpoint("fout")
+    assert (
+        """HelicsEndpoint(name = "TestFilter/fout", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
+        in repr(ep1)
+    )
+
+    f3 = fFed.register_filter(h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
+    f3.add_source_target("TestFilter/fout")
+
+    f2.set("delay", 2.5)
+    assert f2.option["CONNECTION_REQUIRED"] == 0
+    assert f2.option["CONNECTION_OPTIONAL"] == 0
+    assert f2.option["SINGLE_CONNECTION_ONLY"] == 0
+    assert f2.option["MULTIPLE_CONNECTIONS_ALLOWED"] == 0
+    assert f2.option["BUFFER_DATA"] == 0
+    assert f2.option["STRICT_TYPE_CHECKING"] == 0
+    assert f2.option["IGNORE_UNIT_MISMATCH"] == 0
+    assert f2.option["ONLY_TRANSMIT_ON_CHANGE"] == 0
+    assert f2.option["ONLY_UPDATE_ON_CHANGE"] == 0
+    assert f2.option["IGNORE_INTERRUPTS"] == 0
+    assert f2.option["MULTI_INPUT_HANDLING_METHOD"] == 0
+    assert f2.option["INPUT_PRIORITY_LOCATION"] == 0
+    assert f2.option["CLEAR_PRIORITY_LIST"] == 0
+    assert f2.option["CONNECTIONS"] == 0
+
+    f2.option["CONNECTION_REQUIRED"] = 1
+
+    assert f2.option["CONNECTION_REQUIRED"] == 1
+
+    h.helicsFederateEnterExecutingModeAsync(fFed)
+    h.helicsFederateEnterExecutingMode(mFed)
+    h.helicsFederateEnterExecutingModeComplete(fFed)
+    state = h.helicsFederateGetState(fFed)
+    assert state == 2
+    data = "hello world"
+
+    filt_key = h.helicsFilterGetName(f1)
+    assert filt_key == "filter1"
+
+    filt_key = h.helicsFilterGetName(f2)
+    assert filt_key == "filter2"
+
+    h.helicsEndpointSendMessageRaw(p1, "port2", data.encode())
+    h.helicsFederateRequestTimeAsync(mFed, 1.0)
+    grantedtime = h.helicsFederateRequestTime(fFed, 1.0)
+    assert grantedtime == 1.0
+    grantedtime = h.helicsFederateRequestTimeComplete(mFed)
+    assert grantedtime == 1.0
+    res = h.helicsFederateHasMessage(mFed)
+    assert res == 0
+    res = h.helicsEndpointHasMessage(p2)
+    assert res == 0
+    # grantedtime = h.helicsFederateRequestTime(fFed, 3.0)
+    # assert res==h.helics_true
+
+    h.helicsFederateFinalize(mFed)
+    h.helicsFederateFinalize(fFed)
+    # f2 = h.helicsFederateRegisterDestinationFilter(fFed, h.helics_custom_filter, "filter2", "port2")
+    # ep1 = h.helicsFederateRegisterEndpoint(fFed, "fout", "")
+    # f3 = h.helicsFederateRegisterSourceFilter(fFed, h.helics_custom_filter, "", "filter0/fout")
+
+    del fFed
+    del mFed
+    del broker
+
+
+def test_python_api2():
 
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel 1")
     assert broker.is_connected()
@@ -27,7 +119,7 @@ def test_python_api():
     fi.core_init = "--federates 1"
     fi.set_property(h.HELICS_PROPERTY_INT_LOG_LEVEL, 2)
 
-    fed = h.helicsCreateValueFederate("test1", fi)
+    fed = h.helicsCreateCombinationFederate("test1", fi)
 
     assert "HelicsCore" in repr(fed.core)
     assert 'address = "tcp://127.0.0.1' in repr(fed.core)
