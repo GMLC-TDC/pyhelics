@@ -297,6 +297,9 @@ def test_python_api3():
     source_filter1.add_destination_target("world")
     source_filter1.remove_destination_target("world")
 
+    source_filter1.info = "hello world"
+    assert source_filter1.info == "hello world"
+
     destination_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter")
 
     destination_filter1.add_destination_target("ep2")
