@@ -3219,7 +3219,7 @@ def helicsFederateInfoSetCoreName(fi: HelicsFederateInfo, core_name: str):
     **Parameters**
 
     * **`fi`** - The federate info object to alter.
-    * **`corename`** - The identifier for a core to link to.
+    * **`core_name`** - The identifier for a core to link to.
     """
     f = loadSym("helicsFederateInfoSetCoreName")
     err = helicsErrorInitialize()
@@ -3235,7 +3235,7 @@ def helicsFederateInfoSetCoreInitString(fi: HelicsFederateInfo, core_init_string
     **Parameters**
 
     * **`fi`** - The federate info object to alter.
-    * **`coreInit`** - A string containing command line arguments to be passed to the core.
+    * **`core_init_string`** - A string containing command line arguments to be passed to the core.
     """
     f = loadSym("helicsFederateInfoSetCoreInitString")
     err = helicsErrorInitialize()
@@ -3251,7 +3251,7 @@ def helicsFederateInfoSetBrokerInitString(fi: HelicsFederateInfo, broker_init_st
     **Parameters**
 
     * **`fi`** - The federate info object to alter.
-    * **`brokerInit`** - A string with command line arguments for a generated broker.
+    * **`broker_init_string`** - A string with command line arguments for a generated broker.
     """
     f = loadSym("helicsFederateInfoSetBrokerInitString")
     err = helicsErrorInitialize()
