@@ -9,129 +9,95 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import pytest as pt
 import helics as h
+import time
 
 
-def test_python_api1():
-    broker = h.helicsCreateBroker("zmq", "", "-f 2 --name=mainbroker")
+@pt.fixture
+def mFed():
+    initstring = "-f 1 --name=mainbroker"
+    fedinitstring = "--broker=mainbroker --federates=1"
+    deltat = 0.01
+
+    h.helicsGetVersion()
+
+    # Create broker #
+    broker = h.helicsCreateBroker("zmq", "", initstring)
+
+    isconnected = h.helicsBrokerIsConnected(broker)
+
+    if isconnected == 1:
+        pass
+
+    # Create Federate Info object that describes the federate properties #
     fedinfo = h.helicsCreateFederateInfo()
-    fedinfo.core_name = "TestFilter"
-    fedinfo.core_type = "zmq"
-    fedinfo.core_init = "-f 1 --broker=mainbroker"
-    fFed = h.helicsCreateMessageFederate("TestFilter", fedinfo)
 
-    print(fFed)
+    # Set Federate name #
+    h.helicsFederateInfoSetCoreName(fedinfo, "CoreA Federate")
 
-    fedinfo = h.helicsCreateFederateInfo()
-    fedinfo.core_name = "TestMessage"
-    fedinfo.core_type = "zmq"
-    fedinfo.core_init = "-f 1 --broker=mainbroker"
-    mFed = h.helicsCreateMessageFederate("TestMessage", fedinfo)
+    # Set core type from string #
+    h.helicsFederateInfoSetCoreTypeFromString(fedinfo, "zmq")
 
-    print(mFed)
+    # Federate init string #
+    h.helicsFederateInfoSetCoreInitString(fedinfo, fedinitstring)
 
-    p1 = fFed.register_global_endpoint("port1")
-    p2 = mFed.register_global_endpoint("port2")
+    # Set the message interval (timedelta) for federate. Note th#
+    # HELICS minimum message time interval is 1 ns and by default
+    # it uses a time delta of 1 second. What is provided to the
+    # setTimedelta routine is a multiplier for the default timedelta.
 
-    assert """HelicsEndpoint(name = "port1", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)""" in repr(p1)
-    assert """HelicsEndpoint(name = "port2", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)""" in repr(p2)
+    # Set one second message interval #
+    h.helicsFederateInfoSetTimeProperty(fedinfo, h.HELICS_PROPERTY_TIME_DELTA, deltat)
 
-    # f1 = fFed.register_global_filter(h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
-    # f1.add_source_target("port1")
-    # assert """HelicsFilter(name = "filter1", info = "")""" in repr(f1)
+    h.helicsFederateInfoSetIntegerProperty(fedinfo, h.HELICS_PROPERTY_INT_LOG_LEVEL, 1)
 
-    # f2 = fFed.register_global_filter(h.HELICS_FILTER_TYPE_DELAY, "filter2")
-    # f2.add_source_target("port2")
-    # assert """HelicsFilter(name = "filter2", info = "")""" in repr(f2)
+    mFed = h.helicsCreateMessageFederate("TestA Federate", fedinfo)
 
-    # ep1 = fFed.register_endpoint("fout")
-    # assert (
-    #     """HelicsEndpoint(name = "TestFilter/fout", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
-    #     in repr(ep1)
-    # )
+    yield mFed
 
-    # f3 = fFed.register_filter(h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
-    # f3.info = "test-filter"
-    # assert f3.info == "test-filter"
-    # f3.add_source_target("TestFilter/fout")
-    # f3.add_destination_target("filter2")
-    # f3.remove_target("filter2")
+    h.helicsFederateFinalize(mFed)
+    state = h.helicsFederateGetState(mFed)
+    assert state == 3
+    while h.helicsBrokerIsConnected(broker):
+        time.sleep(1)
 
-    # f2.set("delay", 2.5)
-    # repr(f2.option)
-    # assert f2.option["CONNECTION_REQUIRED"] == 0
-    # assert f2.option["CONNECTION_OPTIONAL"] == 0
-    # assert f2.option["SINGLE_CONNECTION_ONLY"] == 0
-    # assert f2.option["MULTIPLE_CONNECTIONS_ALLOWED"] == 0
-    # assert f2.option["BUFFER_DATA"] == 0
-    # assert f2.option["STRICT_TYPE_CHECKING"] == 0
-    # assert f2.option["IGNORE_UNIT_MISMATCH"] == 0
-    # assert f2.option["ONLY_TRANSMIT_ON_CHANGE"] == 0
-    # assert f2.option["ONLY_UPDATE_ON_CHANGE"] == 0
-    # assert f2.option["IGNORE_INTERRUPTS"] == 0
-    # assert f2.option["MULTI_INPUT_HANDLING_METHOD"] == 0
-    # assert f2.option["INPUT_PRIORITY_LOCATION"] == 0
-    # assert f2.option["CLEAR_PRIORITY_LIST"] == 0
-    # assert f2.option["CONNECTIONS"] == 0
+    h.helicsFederateInfoFree(fedinfo)
+    h.helicsFederateFree(mFed)
+    h.helicsCloseLibrary()
 
-    # f2.option["CONNECTION_REQUIRED"] = 1
-    # assert f2.option["CONNECTION_REQUIRED"] == 1
 
-    # assert f1.name == "filter1"
-    # assert f2.name == "filter2"
+def test_python_api1(mFed):
 
-    fFed.enter_executing_mode_async()
+    epid1 = mFed.register_endpoint("ep1")
+    epid2 = mFed.register_global_endpoint("ep2")
+
+    h.helicsFederateSetTimeProperty(mFed, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
+    mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
+
     mFed.enter_executing_mode()
-    fFed.enter_executing_mode_complete()
 
-    assert fFed.state == 2
-    assert fFed.state == h.HelicsFederateState.EXECUTION
+    data = "random-data"
 
-    mFed.request_time_async(1.0)
-    grantedtime = fFed.request_time(1.0)
-    assert grantedtime == 1.0
-    grantedtime = mFed.request_time_complete()
-    assert grantedtime == 1.0
-    assert mFed.has_message() is False
-    assert p2.has_message() is False
-    print(fFed)
-    print(mFed)
+    epid1.send_data(data, "ep2", 1.0)
 
-    data = "hello world"
-    p1.send_message("port2", data)
+    assert mFed.request_time(2.0) == 1.0
 
-    data = "hello world"
-    p2.send_message("port1", data)
+    assert mFed.has_message()
 
-    mFed.request_time_async(2.0)
-    grantedtime = fFed.request_time(2.0)
-    assert grantedtime == 2.0
-    grantedtime = mFed.request_time_complete()
-    assert grantedtime == 2.0
-    assert mFed.has_message() is False
-    assert p2.has_message() is False
+    assert epid1.has_message() is False
 
-    mFed.request_time_async(3.0)
-    grantedtime = fFed.request_time(3.0)
-    assert grantedtime == 3.0
-    grantedtime = mFed.request_time_complete()
-    assert grantedtime == 3.0
-    assert mFed.has_message() is False
-    assert p2.has_message() is False
+    assert epid2.has_message()
 
-    mFed.request_time_async(4.0)
-    grantedtime = fFed.request_time(4.0)
-    assert grantedtime == 4.0
-    grantedtime = mFed.request_time_complete()
-    assert grantedtime == 4.0
-    assert mFed.has_message() is False
-    assert p2.has_message() is False
+    message = epid2.message
 
-    # The order in which finalize is called is important
-    # mFed.finalize()
-    # fFed.finalize()
-    del mFed
-    del fFed
-    del broker
+    assert message.message_id == 55
+    assert message.is_valid() is True
+    assert message.data == "random-data"
+    assert message.raw_data == b"random-data"
+    assert len(message.raw_data) == 11
+    assert message.original_destination == ""
+    assert message.original_source == "TestA Federate/ep1"
+    assert message.source == "TestA Federate/ep1"
+    assert message.time == 1.0
 
 
 def test_python_api2():

@@ -1017,6 +1017,9 @@ class HelicsMessage(_HelicsCHandle):
     def append(self, data: bytes):
         helicsMessageAppendData(self, data)
 
+    def is_valid(self) -> bool:
+        return helicsMessageIsValid(self)
+
     @property
     def source(self):
         return helicsMessageGetSource(self)
@@ -1084,11 +1087,11 @@ class HelicsMessage(_HelicsCHandle):
         return helicsMessageSetData(self, v)
 
     @property
-    def id(self):
+    def message_id(self):
         return helicsMessageGetMessageID(self)
 
-    @id.setter
-    def id(self, v):
+    @message_id.setter
+    def message_id(self, v):
         return helicsMessageSetMessageID(self, v)
 
 
@@ -1158,15 +1161,16 @@ class HelicsEndpoint(_HelicsCHandle):
         """Checks if endpoint has unread messages."""
         return helicsEndpointHasMessage(self)
 
-    def get_message(self) -> HelicsMessage:
+    @property
+    def message(self) -> HelicsMessage:
         """Get a packet from an endpoint."""
-        return helicsEndpointGetMessageObject(self)
+        return helicsEndpointGetMessage(self)
 
     def create_message(self) -> HelicsMessage:
         """Create a message object."""
-        return helicsEndpointCreateMessageObject(self)
+        return helicsEndpointCreateMessage(self)
 
-    def send_message(self, data: Union[bytes, HelicsMessage], destination: str = None, time=None):
+    def send_data(self, data: Union[bytes, HelicsMessage], destination: str = None, time=None):
         if type(data) == HelicsMessage:
             helicsEndpointSendMessage(self, data)
         elif time is None:
