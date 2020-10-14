@@ -1612,7 +1612,7 @@ class HelicsFederate(_HelicsCHandle):
         helicsQueryFree(q)
         return result
 
-    def register_filter(self, type: HelicsFilterType, filter_name: str) -> HelicsFilter:
+    def register_filter(self, kind: HelicsFilterType, filter_name: str) -> HelicsFilter:
         """
         Define a filter interface.
 
@@ -1620,10 +1620,10 @@ class HelicsFederate(_HelicsCHandle):
 
         **Parameters**
 
-        - **`type`**: the type of the filter to register.
-        - **`filterName`**: the name of the filter.
+        - **`kind`**: the type of the filter to register.
+        - **`filter_name`**: the name of the filter.
         """
-        return helicsFederateRegisterFilter(self, type, filter_name)
+        return helicsFederateRegisterFilter(self, kind, filter_name)
 
     def register_cloning_fitler(self, delivery_endpoint: str) -> HelicsCloningFilter:
         """
@@ -1639,7 +1639,7 @@ class HelicsFederate(_HelicsCHandle):
         """
         return helicsFederateRegisterCloningFilter(self, delivery_endpoint)
 
-    def register_global_filter(self, type: HelicsFilterType, filter_name: str) -> HelicsFilter:
+    def register_global_filter(self, kind: HelicsFilterType, filter_name: str) -> HelicsFilter:
         """
         Define a filter interface.
 
@@ -1648,9 +1648,9 @@ class HelicsFederate(_HelicsCHandle):
         **Parameters**
 
         - **`type`**: the type of the filter to register.
-        - **`filterName`**: the name of the filter.
+        - **`filter_name`**: the name of the filter.
         """
-        return helicsFederateRegisterGlobalFilter(self, type, filter_name)
+        return helicsFederateRegisterGlobalFilter(self, kind, filter_name)
 
     def register_global_cloning_filter(self, delivery_endpoint: str) -> HelicsCloningFilter:
         """
