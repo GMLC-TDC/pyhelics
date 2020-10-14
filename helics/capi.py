@@ -675,8 +675,8 @@ class _HelicsCHandle:
 
 class HelicsFilter(_HelicsCHandle):
     def __repr__(self):
-        name = helicsFilterGetName(self)
-        info = helicsFilterGetInfo(self)
+        name = self.name
+        info = self.info
         return """<helics.{class_name}(name = "{name}", info = "{info}") at {id}>""".format(
             class_name=self.__class__.__name__, name=name, info=info, id=hex(id(self))
         )
@@ -700,6 +700,10 @@ class HelicsFilter(_HelicsCHandle):
         helicsFilterRemoveTarget(self, dest)
 
     @property
+    def name(self) -> str:
+        return helicsFilterGetName(self)
+
+    @property
     def info(self) -> str:
         """Get the interface information field of the filter."""
         return helicsFilterGetInfo(self)
@@ -716,8 +720,8 @@ class HelicsCloningFilter(HelicsFilter):
 
 class HelicsCore(_HelicsCHandle):
     def __repr__(self):
-        identifier = helicsCoreGetIdentifier(self)
-        address = helicsCoreGetAddress(self)
+        identifier = self.identifier
+        address = self.address
         return """<helics.{class_name}(identifier = "{identifier}", address = "{address}") at {id}>""".format(
             class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
@@ -822,8 +826,8 @@ class HelicsCore(_HelicsCHandle):
 
 class HelicsBroker(_HelicsCHandle):
     def __repr__(self):
-        identifier = helicsBrokerGetIdentifier(self)
-        address = helicsBrokerGetAddress(self)
+        identifier = self.identifier
+        address = self.address
         return """<helics.{class_name}(identifier = "{identifier}", address = "{address}") at {id}>""".format(
             class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
@@ -941,13 +945,11 @@ class _MessageFlagAccessor(_HelicsCHandle):
 
     def __repr__(self):
         lst = []
-        # for f in :
-        #     # TODO: remove this try except
-        #     # See https://github.com/GMLC-TDC/HELICS/issues/1549
-        #     try:
-        #         lst.append("'{}' = {}".format(f.name, self[f]))
-        #     except Exception:
-        #         pass
+        for f in range(1, 16):
+            try:
+                lst.append("{} = {}".format(f, self[f]))
+            except Exception:
+                pass
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
@@ -1063,16 +1065,22 @@ class HelicsQuery(_HelicsCHandle):
 
 class HelicsEndpoint(_HelicsCHandle):
     def __repr__(self):
-        name = helicsEndpointGetName(self)
-        return """<helics.{class_name}(name = "{name}")) at {id}>""".format(class_name=self.__class__.__name__, name=name, id=hex(id(self)),)
-
-    def is_valid(self) -> bool:
-        """Check if the input is valid."""
-        return helicsEndpointIsValid(self)
-
-    def has_message(self) -> bool:
-        """Checks if endpoint has unread messages."""
-        return helicsEndpointHasMessage(self)
+        name = self.name
+        type = self.type
+        info = self.info
+        is_valid = self.is_valid()
+        default_destination = self.default_destination
+        n_pending_messages = self.n_pending_messages
+        return """<helics.{class_name}(name = "{name}", type = "{type}", info = "{info}", is_valid = {is_valid}, default_destination = "{default_destination}", n_pending_messages = "{n_pending_messages}")) at {id}>""".format(
+            class_name=self.__class__.__name__,
+            name=name,
+            type=type,
+            info=info,
+            is_valid=is_valid,
+            default_destination=default_destination,
+            n_pending_messages=n_pending_messages,
+            id=hex(id(self)),
+        )
 
     @property
     def default_destination(self) -> str:
@@ -1088,22 +1096,6 @@ class HelicsEndpoint(_HelicsCHandle):
     def n_pending_messages(self) -> int:
         """Returns the number of pending receives for endpoint."""
         return helicsEndpointPendingMessages(self)
-
-    def get_message(self) -> HelicsMessage:
-        """Get a packet from an endpoint."""
-        return helicsEndpointGetMessageObject(self)
-
-    def create_message(self) -> HelicsMessage:
-        """Create a message object."""
-        return helicsEndpointCreateMessageObject(self)
-
-    def send_message(self, data: Union[str, HelicsMessage], destination: str = None, time=None):
-        if type(data) == HelicsMessage:
-            helicsEndpointSendMessage(self, data)
-        elif time is None:
-            helicsEndpointSendTo(self, destination, data)
-        else:
-            helicsEndpointSendToAt(self, destination, time, data)
 
     @property
     def name(self) -> str:
@@ -1124,6 +1116,30 @@ class HelicsEndpoint(_HelicsCHandle):
     def info(self, info: str):
         """Set the interface information field of the filter."""
         helicsEndpointSetInfo(self, info)
+
+    def is_valid(self) -> bool:
+        """Check if the input is valid."""
+        return helicsEndpointIsValid(self)
+
+    def has_message(self) -> bool:
+        """Checks if endpoint has unread messages."""
+        return helicsEndpointHasMessage(self)
+
+    def get_message(self) -> HelicsMessage:
+        """Get a packet from an endpoint."""
+        return helicsEndpointGetMessageObject(self)
+
+    def create_message(self) -> HelicsMessage:
+        """Create a message object."""
+        return helicsEndpointCreateMessageObject(self)
+
+    def send_message(self, data: Union[str, HelicsMessage], destination: str = None, time=None):
+        if type(data) == HelicsMessage:
+            helicsEndpointSendMessage(self, data)
+        elif time is None:
+            helicsEndpointSendTo(self, destination, data)
+        else:
+            helicsEndpointSendToAt(self, destination, time, data)
 
 
 class HelicsFederateInfo(_HelicsCHandle):
@@ -1342,22 +1358,22 @@ class HelicsFederate(_HelicsCHandle):
         self.flag = _FederateFlagAccessor(self.handle)
 
     def __repr__(self):
-        name = helicsFederateGetName(self)
-        state = str(helicsFederateGetState(self))
-        current_time = helicsFederateGetCurrentTime(self)
-        publications = helicsFederateGetPublicationCount(self)
-        endpoints = helicsFederateGetEndpointCount(self)
-        filters = helicsFederateGetFilterCount(self)
-        inputs = helicsFederateGetInputCount(self)
-        return """<helics.{class_name}(name = "{name}", state = {state}, current_time = {current_time}, publications = {publications}, inputs = {inputs}, endpoints = {endpoints}, filters = {filters}) at {id}>""".format(
+        name = self.name
+        state = str(self.state)
+        current_time = self.current_time
+        n_publications = self.n_publications
+        n_endpoints = self.n_endpoints
+        n_filters = self.n_filters
+        n_inputs = self.n_inputs
+        return """<helics.{class_name}(name = "{name}", state = {state}, current_time = {current_time}, n_publications = {n_publications}, n_inputs = {n_inputs}, n_endpoints = {n_endpoints}, n_filters = {n_filters}) at {id}>""".format(
             class_name=self.__class__.__name__,
             name=name,
             state=state,
             current_time=current_time,
-            publications=publications,
-            endpoints=endpoints,
-            filters=filters,
-            inputs=inputs,
+            n_publications=n_publications,
+            n_endpoints=n_endpoints,
+            n_filters=n_filters,
+            n_inputs=n_inputs,
             id=hex(id(self)),
         )
 
@@ -1365,16 +1381,36 @@ class HelicsFederate(_HelicsCHandle):
         helicsFederateFree(self)
 
     @property
-    def state(self):
-        return helicsFederateGetState(self)
-
-    @property
     def name(self):
         return helicsFederateGetName(self)
 
     @property
+    def state(self):
+        return helicsFederateGetState(self)
+
+    @property
+    def current_time(self):
+        helicsFederateGetCurrentTime(self)
+
+    @property
     def core(self):
         return helicsFederateGetCoreObject(self)
+
+    @property
+    def n_publications(self):
+        return helicsFederateGetPublicationCount(self)
+
+    @property
+    def n_endpoints(self):
+        return helicsFederateGetEndpointCount(self)
+
+    @property
+    def n_filters(self):
+        return helicsFederateGetFilterCount(self)
+
+    @property
+    def n_inputs(self):
+        return helicsFederateGetInputCount(self)
 
     @property
     def separator(self):

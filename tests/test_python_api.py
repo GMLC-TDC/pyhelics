@@ -21,10 +21,10 @@ def test_python_api():
 
     fed = h.helicsCreateValueFederate("test1", fi)
 
-    assert "publications = 0" in repr(fed)
-    assert "inputs = 0" in repr(fed)
-    assert "endpoints = 0" in repr(fed)
-    assert "filters = 0" in repr(fed)
+    assert "n_publications = 0" in repr(fed)
+    assert "n_inputs = 0" in repr(fed)
+    assert "n_endpoints = 0" in repr(fed)
+    assert "n_filters = 0" in repr(fed)
 
     assert fed.property["DELTA"] == 1e-09
     assert fed.property["PERIOD"] == 0.0
