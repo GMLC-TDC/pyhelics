@@ -139,6 +139,8 @@ def test_python_api():
     fed.register_filter(h.HelicsFilterType.DELAY, "")
     fed.register_cloning_filter("")
 
+    fed.core.set_global("hello", "world")
+
     fed.core.disconnect()
 
     fed.core.wait_for_disconnect()
