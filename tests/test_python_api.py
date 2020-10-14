@@ -425,3 +425,7 @@ def test_python_api4():
 
     fi.broker_port = 8929
     fi.local_port = 8229
+
+    fi.set_flag_option(h.HelicsFederateFlag.TERMINATE_ON_ERROR, True)
+    fi.set_property(h.HelicsProperty.TIME_DELTA, 1.0)
+    fi.set_property("TIME_DELTA", 1.0)
