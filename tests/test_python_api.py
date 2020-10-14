@@ -79,8 +79,8 @@ def test_python_api1():
         in repr(mFed)
     )
 
-    epid1 = mFed.register_endpoint("ep1")
-    epid2 = mFed.register_global_endpoint("ep2")
+    _ = mFed.register_endpoint("ep1")
+    _ = mFed.register_global_endpoint("ep2")
 
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
     assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
@@ -89,17 +89,17 @@ def test_python_api1():
 
     data = "random-data"
 
-    epid1.send_data(data, "ep2", 1.0)
+    mFed.endpoints["TestFilter/ep1"].send_data(data, "ep2", 1.0)
 
     assert mFed.request_time(2.0) == 1.0
 
     assert mFed.has_message()
 
-    assert epid1.has_message() is False
+    assert mFed.endpoints["TestFilter/ep1"].has_message() is False
 
-    assert epid2.has_message()
+    assert mFed.endpoints["ep2"].has_message()
 
-    message = epid2.message
+    message = mFed.endpoints["ep2"].message
 
     assert message.message_id == 55
     assert message.is_valid() is True

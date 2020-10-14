@@ -1393,6 +1393,7 @@ class HelicsFederate(_HelicsCHandle):
         self._exec_async_iterate = False
         self.property = _FederatePropertyAccessor(self.handle)
         self.flag = _FederateFlagAccessor(self.handle)
+        self._separator = "/"
 
     def __repr__(self):
         name = self.name
@@ -1458,7 +1459,7 @@ class HelicsFederate(_HelicsCHandle):
 
     @property
     def separator(self):
-        raise AttributeError("Unreadable attribute `separator`")
+        return self._separator
 
     @separator.setter
     def separator(self, separator: str):
@@ -1478,6 +1479,7 @@ class HelicsFederate(_HelicsCHandle):
         - **separator**: str to use as separator.
         """
         helicsFederateSetSeparator(self, separator)
+        self._separator = separator
 
     def register_interfaces(self, config):
         """
@@ -2242,7 +2244,7 @@ class HelicsValueFederate(HelicsFederate):
 class HelicsMessageFederate(HelicsFederate):
     def __init__(self, handle):
         super(HelicsMessageFederate, self).__init__(handle)
-        self.endpoints = []
+        self.endpoints = {}
 
     def register_endpoint(self, name: str, kind: str = "") -> HelicsEndpoint:
         """
@@ -2256,7 +2258,7 @@ class HelicsMessageFederate(HelicsFederate):
         Returns: an Endpoint Object
         """
         ep = helicsFederateRegisterEndpoint(self, name, kind)
-        self.endpoints.append(ep)
+        self.endpoints["{}{}{}".format(self.name, self.separator, name)] = ep
         return ep
 
     def register_global_endpoint(self, name: str, kind: str = "") -> HelicsEndpoint:
@@ -2269,7 +2271,7 @@ class HelicsMessageFederate(HelicsFederate):
         Returns: an Endpoint Object
         """
         ep = helicsFederateRegisterGlobalEndpoint(self, name, kind)
-        self.endpoints.append(ep)
+        self.endpoints["{}".format(name)] = ep
         return ep
 
     def get_endpoint_by_name(self, name: str) -> HelicsEndpoint:
