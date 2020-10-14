@@ -44,6 +44,8 @@ def test_python_api1():
     )
 
     f3 = fFed.register_filter(h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
+    f3.info = "test-filter"
+    assert f3.info == "test-filter"
     f3.add_source_target("TestFilter/fout")
     f3.add_destination_target("filter2")
     f3.remove_target("filter2")
