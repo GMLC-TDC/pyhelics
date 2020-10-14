@@ -11,6 +11,50 @@ import pytest as pt
 import helics as h
 
 
+def test_python_api0():
+    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
+    fedinfo = h.helicsCreateFederateInfo()
+    assert "HelicsFederateInfo()" in repr(fedinfo)
+    fedinfo.core_name = "TestFilter"
+    fedinfo.core_type = "zmq"
+    fedinfo.core_init = "-f 1 --broker=mainbroker"
+    mFed = h.helicsCreateCombinationFederate("TestFilter", fedinfo)
+
+    assert (
+        """HelicsCombinationFederate(name = "TestFilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
+        in repr(mFed)
+    )
+
+    _ = mFed.register_endpoint("ep1")
+    _ = mFed.register_global_endpoint("ep2")
+
+    pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
+    assert """HelicsPublication(key = "TestFilter/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
+
+    sub = mFed.register_subscription("subscription", "custom-units")
+    assert (
+        """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "subscription", info = "")"""
+        in repr(sub)
+    )
+    assert (
+        """{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 1, 'BUFFER_DATA' = 0, 'STRICT_TYPE_CHECKING' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = -1, 'CLEAR_PRIORITY_LIST' = 1, 'CONNECTIONS' = 0 }"""
+        in repr(sub.option)
+    )
+    sub.option["CONNECTION_REQUIRED"] = 1
+    assert sub.option["CONNECTION_REQUIRED"] == 1
+
+    mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
+    assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
+
+    with pt.raises(h.HelicsException):
+        mFed.enter_executing_mode()
+
+    h.helicsCloseLibrary()
+
+    del mFed
+    del broker
+
+
 def test_python_api1():
 
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
@@ -37,9 +81,18 @@ def test_python_api1():
         """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "subscription", info = "")"""
         in repr(sub)
     )
+    assert (
+        """{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 1, 'BUFFER_DATA' = 0, 'STRICT_TYPE_CHECKING' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = -1, 'CLEAR_PRIORITY_LIST' = 1, 'CONNECTIONS' = 0 }"""
+        in repr(sub.option)
+    )
+    sub.option["CONNECTION_REQUIRED"] = 1
+    assert sub.option["CONNECTION_REQUIRED"] == 1
 
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
     assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
+
+    sub.option["CONNECTION_REQUIRED"] = 0
+    assert sub.option["CONNECTION_REQUIRED"] == 0
 
     mFed.enter_executing_mode()
 
