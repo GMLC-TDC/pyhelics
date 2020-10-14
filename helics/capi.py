@@ -1381,35 +1381,35 @@ class HelicsFederate(_HelicsCHandle):
         helicsFederateFree(self)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return helicsFederateGetName(self)
 
     @property
-    def state(self):
+    def state(self) -> HelicsFederateState:
         return helicsFederateGetState(self)
 
     @property
-    def current_time(self):
-        helicsFederateGetCurrentTime(self)
+    def current_time(self) -> HelicsTime:
+        return helicsFederateGetCurrentTime(self)
 
     @property
-    def core(self):
+    def core(self) -> HelicsCore:
         return helicsFederateGetCoreObject(self)
 
     @property
-    def n_publications(self):
+    def n_publications(self) -> int:
         return helicsFederateGetPublicationCount(self)
 
     @property
-    def n_endpoints(self):
+    def n_endpoints(self) -> int:
         return helicsFederateGetEndpointCount(self)
 
     @property
-    def n_filters(self):
+    def n_filters(self) -> int:
         return helicsFederateGetFilterCount(self)
 
     @property
-    def n_inputs(self):
+    def n_inputs(self) -> int:
         return helicsFederateGetInputCount(self)
 
     @property
@@ -1819,10 +1819,22 @@ class HelicsInput(_HelicsCHandle):
 
     def __repr__(self):
         key = self.key
+        units = self.units
+        injection_units = self.injection_units
+        publication_type = self.publication_type
         type = self.type
-        bytes = self.bytes
-        return """<helics.{class_name}(key = "{key}", type = "{type}", bytes = "{bytes}") at {id}>""".format(
-            class_name=self.__class__.__name__, key=key, type=type, bytes=bytes, id=hex(id(self))
+        target = self.target
+        info = self.info
+        return """<helics.{class_name}(key = "{key}", units = "{units}", injection_units = "{injection_units}", publication_type = "{publication_type}", type = "{type}", target = "{target}", info = "{info}") at {id}>""".format(
+            class_name=self.__class__.__name__,
+            key=key,
+            units=units,
+            injection_units=injection_units,
+            publication_type=publication_type,
+            type=type,
+            target=target,
+            info=info,
+            id=hex(id(self)),
         )
 
     def is_valid(self) -> bool:
@@ -2247,6 +2259,11 @@ class HelicsMessageFederate(HelicsFederate):
         """Returns the number of pending receives for all endpoints."""
         return helicsFederatePendingMessages(self)
 
+    @property
+    def n_endpoints(self) -> int:
+        """Get the number of registered endpoints."""
+        return helicsFederateGetEndpointCount(self)
+
     def get_message(self) -> HelicsMessage:
         """Get a packet for any endpoints in the federate."""
         return helicsFederateGetMessage(self)
@@ -2254,10 +2271,6 @@ class HelicsMessageFederate(HelicsFederate):
     def create_message(self) -> HelicsMessage:
         """Create a message object."""
         return helicsFederateCreateMessage(self)
-
-    def n_endpoints(self) -> int:
-        """Get the number of registered endpoints."""
-        return helicsFederateGetEndpointCount(self)
 
 
 class HelicsCombinationFederate(HelicsValueFederate, HelicsMessageFederate):

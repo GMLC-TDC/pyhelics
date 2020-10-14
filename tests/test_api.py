@@ -200,14 +200,17 @@ def test_misc_api():
     pub7 = h.helicsFederateRegisterGlobalPublication(fed1, "pub7", h.HELICS_DATA_TYPE_NAMED_POINT, "")
     sub7 = h.helicsFederateRegisterSubscription(fed1, "pub7", "")
 
-    assert """helics.HelicsPublication(name = "pub1", type = "double")""" in repr(pub1)
-    assert """helics.HelicsPublication(name = "pub2", type = "complex")""" in repr(pub2)
-    assert """helics.HelicsPublication(name = "fed1/pub3", type = "string")""" in repr(pub3)
-    assert """helics.HelicsPublication(name = "fed1/pub4", type = "int")""" in repr(pub4)
-    assert """helics.HelicsPublication(name = "pub5", type = "boolean")""" in repr(pub5)
-    assert """helics.HelicsPublication(name = "pub6", type = "double_vector")""" in repr(pub6)
-    assert """helics.HelicsPublication(name = "pub7", type = "named_point")""" in repr(pub7)
-    assert """helics.HelicsInput(name = "_input_18", type = "")""" in repr(sub7)
+    assert """helics.HelicsPublication(key = "pub1", type = "double", info = "")""" in repr(pub1)
+    assert """helics.HelicsPublication(key = "pub2", type = "complex", info = "")""" in repr(pub2)
+    assert """helics.HelicsPublication(key = "fed1/pub3", type = "string", info = "")""" in repr(pub3)
+    assert """helics.HelicsPublication(key = "fed1/pub4", type = "int", info = "")""" in repr(pub4)
+    assert """helics.HelicsPublication(key = "pub5", type = "boolean", info = "")""" in repr(pub5)
+    assert """helics.HelicsPublication(key = "pub6", type = "double_vector", info = "")""" in repr(pub6)
+    assert """helics.HelicsPublication(key = "pub7", type = "named_point", info = "")""" in repr(pub7)
+    assert (
+        """helics.HelicsInput(key = "_input_18", units = "", injection_units = "", publication_type = "", type = "", target = "pub7", info = "")"""
+        in repr(sub7)
+    )
 
     h.helicsInputSetDefaultBoolean(sub5, False)
     h.helicsInputSetDefaultComplex(sub2, -9.9 + 2.5j)
@@ -232,7 +235,10 @@ def test_misc_api():
     h.helicsFederateEnterExecutingModeAsync(fed1)
     h.helicsFederateEnterExecutingModeComplete(fed1)
 
-    assert """helics.HelicsInput(name = "_input_18", type = "named_point")""" in repr(sub7)
+    assert (
+        """helics.HelicsInput(key = "_input_18", units = "", injection_units = "", publication_type = "named_point", type = "", target = "pub7", info = "")"""
+        in repr(sub7)
+    )
 
     mesg1 = h.helicsFederateCreateMessage(fed1)
     h.helicsMessageSetString(mesg1, "Hello")

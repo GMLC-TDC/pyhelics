@@ -787,8 +787,14 @@ def test_filter_callback_test():
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
 
-    assert """helics.HelicsEndpoint(name = "port1")""" in repr(p1)
-    assert """helics.HelicsEndpoint(name = "port2")""" in repr(p2)
+    assert (
+        """helics.HelicsEndpoint(name = "port1", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = "0")"""
+        in repr(p1)
+    )
+    assert (
+        """helics.HelicsEndpoint(name = "port2", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = "0")"""
+        in repr(p2)
+    )
 
     f1 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
     f2 = h.helicsFederateRegisterFilter(mFed, h.HELICS_FILTER_TYPE_DELAY, "dfilter")
@@ -806,11 +812,11 @@ def test_filter_callback_test():
         h.helicsFilterSetCustomCallback(f2, filterFunc1, handle)
 
     assert (
-        """helics.HelicsMessageFederate(name = "Testfilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, publications = 0, inputs = 0, endpoints = 0, filters = 1)"""
+        """helics.HelicsMessageFederate(name = "Testfilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 1)"""
         in repr(fFed)
     )
     assert (
-        """helics.HelicsMessageFederate(name = "Testmessage", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, publications = 0, inputs = 0, endpoints = 2, filters = 1)"""
+        """helics.HelicsMessageFederate(name = "Testmessage", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 2, n_filters = 1)"""
         in repr(mFed)
     )
 
@@ -819,11 +825,11 @@ def test_filter_callback_test():
     h.helicsFederateEnterExecutingModeComplete(fFed)
 
     assert (
-        """helics.HelicsMessageFederate(name = "Testfilter", state = HelicsFederateState.EXECUTION, current_time = 0.0, publications = 0, inputs = 0, endpoints = 0, filters = 1)"""
+        """helics.HelicsMessageFederate(name = "Testfilter", state = HelicsFederateState.EXECUTION, current_time = 0.0, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 1)"""
         in repr(fFed)
     )
     assert (
-        """helics.HelicsMessageFederate(name = "Testmessage", state = HelicsFederateState.EXECUTION, current_time = 0.0, publications = 0, inputs = 0, endpoints = 2, filters = 1)"""
+        """helics.HelicsMessageFederate(name = "Testmessage", state = HelicsFederateState.EXECUTION, current_time = 0.0, n_publications = 0, n_inputs = 0, n_endpoints = 2, n_filters = 1)"""
         in repr(mFed)
     )
 
