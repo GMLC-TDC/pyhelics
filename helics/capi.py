@@ -666,11 +666,7 @@ helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
 
 class _HelicsCHandle:
     def __init__(self, handle):
-        # allow passing an instance of _HelicsCHandle as well as a cffi handle
-        if issubclass(type(handle), _HelicsCHandle):
-            self.handle = handle.handle
-        else:
-            self.handle = handle
+        self.handle = handle
 
 
 class _FilterOptionAccessor(_HelicsCHandle):
@@ -2082,8 +2078,8 @@ class HelicsPublication(_HelicsCHandle):
 class HelicsValueFederate(HelicsFederate):
     def __init__(self, handle):
         super(HelicsValueFederate, self).__init__(handle)
-        self.publications = []
-        self.subscriptions = []
+        self.publications = {}
+        self.subscriptions = {}
 
     def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
         """
@@ -2103,7 +2099,7 @@ class HelicsValueFederate(HelicsFederate):
             pub = helicsFederateRegisterTypePublication(self, name, kind, units)
         else:
             pub = helicsFederateRegisterPublication(self, name, HelicsDataType(kind), units)
-        self.publications.append(pub)
+        self.publications[pub.key] = pub
         return pub
 
     def register_global_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
@@ -2122,7 +2118,7 @@ class HelicsValueFederate(HelicsFederate):
             pub = helicsFederateRegisterGlobalTypePublication(self, name, kind, units)
         else:
             pub = helicsFederateRegisterGlobalPublication(self, name, HelicsDataType(kind), units)
-        self.publications.append(pub)
+        self.publications[pub.key] = pub
         return pub
 
     def register_from_publication_json(self, data: Union[dict, str]) -> HelicsPublication:
@@ -2140,7 +2136,7 @@ class HelicsValueFederate(HelicsFederate):
         else:
             data = json.dumps(data)
         pub = helicsFederateRegisterFromPublicationJSON(self, data)
-        self.publications.append(pub)
+        self.publications["{}".format(pub.key)] = pub
         return pub
 
     def get_publication_by_name(self, name: str) -> HelicsPublication:
@@ -2161,7 +2157,7 @@ class HelicsValueFederate(HelicsFederate):
 
     def register_subscription(self, name: str, units: str = "") -> HelicsInput:
         sub = helicsFederateRegisterSubscription(self, name, units)
-        self.subscriptions.append(sub)
+        self.subscriptions[sub.key] = sub
         return sub
 
     def register_input(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsInput:
@@ -2182,7 +2178,7 @@ class HelicsValueFederate(HelicsFederate):
             ipt = helicsFederateRegisterTypeInput(self, name, kind, units)
         else:
             ipt = helicsFederateRegisterTypeInput(self, name, HelicsDataType(kind), units)
-        self.subscriptions.append(ipt)
+        self.subscriptions[ipt.key] = ipt
         return ipt
 
     def register_global_input(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsInput:
@@ -2203,7 +2199,7 @@ class HelicsValueFederate(HelicsFederate):
             ipt = helicsFederateRegisterGlobalTypeInput(self, name, kind, units)
         else:
             ipt = helicsFederateRegisterGlobalTypeInput(self, name, HelicsDataType(kind), units)
-        self.subscriptions.append(ipt)
+        self.subscriptions[ipt.key] = ipt
         return ipt
 
     def get_subscription_by_name(self, name: str) -> HelicsInput:
@@ -2258,7 +2254,7 @@ class HelicsMessageFederate(HelicsFederate):
         Returns: an Endpoint Object
         """
         ep = helicsFederateRegisterEndpoint(self, name, kind)
-        self.endpoints["{}{}{}".format(self.name, self.separator, name)] = ep
+        self.endpoints[ep.name] = ep
         return ep
 
     def register_global_endpoint(self, name: str, kind: str = "") -> HelicsEndpoint:
@@ -2271,7 +2267,7 @@ class HelicsMessageFederate(HelicsFederate):
         Returns: an Endpoint Object
         """
         ep = helicsFederateRegisterGlobalEndpoint(self, name, kind)
-        self.endpoints["{}".format(name)] = ep
+        self.endpoints[ep.name] = ep
         return ep
 
     def get_endpoint_by_name(self, name: str) -> HelicsEndpoint:

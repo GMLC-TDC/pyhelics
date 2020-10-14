@@ -72,10 +72,10 @@ def test_python_api1():
     fedinfo.core_name = "TestFilter"
     fedinfo.core_type = "zmq"
     fedinfo.core_init = "-f 1 --broker=mainbroker"
-    mFed = h.helicsCreateMessageFederate("TestFilter", fedinfo)
+    mFed = h.helicsCreateCombinationFederate("TestFilter", fedinfo)
 
     assert (
-        """HelicsMessageFederate(name = "TestFilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
+        """HelicsCombinationFederate(name = "TestFilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
         in repr(mFed)
     )
 
