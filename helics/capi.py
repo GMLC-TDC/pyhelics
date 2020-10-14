@@ -789,6 +789,200 @@ class HelicsBroker(_HelicsCHandle):
         return result
 
 
+class _MessageFlagAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        raise IndexError("Cannot read flags from Message")
+
+    def __setitem__(self, index: int, value: bool):
+        return helicsMessageSetFlagOption(self, index, value)
+
+    def __repr__(self):
+        lst = []
+        # for f in :
+        #     # TODO: remove this try except
+        #     # See https://github.com/GMLC-TDC/HELICS/issues/1549
+        #     try:
+        #         lst.append("'{}' = {}".format(f.name, self[f]))
+        #     except Exception:
+        #         pass
+        return "<{{ {} }}>".format(", ".join(lst))
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
+class HelicsMessage(_HelicsCHandle):
+    def __init__(self, handle):
+        super(HelicsMessage, self).__init__(handle)
+        self.flag = _MessageFlagAccessor(self.handle)
+
+    def __repr__(self):
+        source = self.source
+        destination = self.destination
+        original_source = self.original_source
+        original_destination = self.original_destination
+        time = self.time
+        message_id = self.message_id
+        message = self.data
+        return """<helics.{class_name}(source = "{source}", destination = "{destination}", original_source = "{original_source}", original_destination = "{original_destination}", time = {time}, id = {message_id}, message = "{message}") at {id}>""".format(
+            class_name=self.__class__.__name__,
+            source=source,
+            destination=destination,
+            original_source=original_source,
+            original_destination=original_destination,
+            time=time,
+            message_id=message_id,
+            message=message,
+            id=hex(id(self)),
+        )
+
+    def append(self, data: bytes):
+        helicsMessageAppendData(self, data)
+
+    @property
+    def source(self):
+        return helicsMessageGetSource(self)
+
+    @source.setter
+    def source(self, v):
+        return helicsMessageSetSource(self, v)
+
+    @property
+    def destination(self):
+        return helicsMessageGetDestination(self)
+
+    @destination.setter
+    def destination(self, v):
+        return helicsMessageSetDestination(self, v)
+
+    @property
+    def original_source(self):
+        return helicsMessageGetOriginalSource(self)
+
+    @original_source.setter
+    def original_source(self, v):
+        return helicsMessageSetOriginalSource(self, v)
+
+    @property
+    def original_dest(self):
+        warnings.warn("This is deprecated. Use `original_destination` instead.")
+        return self.original_destination
+
+    @original_dest.setter
+    def original_dest(self, v):
+        warnings.warn("This is deprecated. Use `original_destination` instead.")
+        self.original_destination = v
+
+    @property
+    def original_destination(self):
+        return helicsMessageGetOriginalDestination(self)
+
+    @original_destination.setter
+    def original_destination(self, v):
+        return helicsMessageSetOriginalDestination(self, v)
+
+    @property
+    def time(self):
+        return helicsMessageGetTime(self)
+
+    @time.setter
+    def time(self, v):
+        return helicsMessageSetTime(self, v)
+
+    @property
+    def data(self):
+        return helicsMessageGetString(self)
+
+    @data.setter
+    def data(self, v: str):
+        return helicsMessageSetString(self, v)
+
+    @property
+    def raw_data(self) -> bytes:
+        return helicsMessageGetRawData(self)
+
+    @raw_data.setter
+    def raw_data(self, v: bytes):
+        return helicsMessageSetData(self, v)
+
+    @property
+    def id(self):
+        return helicsMessageGetMessageID(self)
+
+    @id.setter
+    def id(self, v):
+        return helicsMessageSetMessageID(self, v)
+
+
+class HelicsQuery(_HelicsCHandle):
+    pass
+
+
+class HelicsEndpoint(_HelicsCHandle):
+    def __repr__(self):
+        name = helicsEndpointGetName(self)
+        return """<helics.{class_name}(name = "{name}")) at {id}>""".format(class_name=self.__class__.__name__, name=name, id=hex(id(self)),)
+
+    def is_valid(self) -> bool:
+        """Check if the input is valid."""
+        return helicsEndpointIsValid(self)
+
+    def has_message(self) -> bool:
+        """Checks if endpoint has unread messages."""
+        return helicsEndpointHasMessage(self)
+
+    @property
+    def default_destination(self) -> str:
+        """Get the default destination for an endpoint."""
+        return helicsEndpointGetDefaultDestination(self)
+
+    @default_destination.setter
+    def default_destination(self, dest: str):
+        """set the default destination for an endpoint."""
+        helicsEndpointSetDefaultDestination(self, dest)
+
+    @property
+    def n_pending_messages(self) -> int:
+        """Returns the number of pending receives for endpoint"""
+        return helicsEndpointPendingMessages(self)
+
+    def get_message(self) -> HelicsMessage:
+        """Get a packet from an endpoint."""
+        return helicsEndpointGetMessageObject(self)
+
+    def create_message(self) -> HelicsMessage:
+        """Create a message object."""
+        return helicsEndpointCreateMessageObject(self)
+
+    def send_message(self, data: Union[str, HelicsMessage], destination: str = None, time=None):
+        if type(data) == HelicsMessage:
+            helicsEndpointSendMessage(self, data)
+        elif time is None:
+            helicsEndpointSendTo(self, destination, data)
+        else:
+            helicsEndpointSendToAt(self, destination, time, data)
+
+    @property
+    def name(self) -> str:
+        """Get the name of the endpoint."""
+        return helicsEndpointGetName(self)
+
+    @property
+    def type(self) -> str:
+        """Get the specified type of the endpoint."""
+        return helicsEndpointGetType(self)
+
+    @property
+    def info(self) -> str:
+        """Get the interface information field of the filter."""
+        return helicsEndpointGetInfo(self)
+
+    @info.setter
+    def info(self, info: str):
+        """Set the interface information field of the filter."""
+        helicsEndpointSetInfo(self, info)
+
+
 class HelicsFilter(_HelicsCHandle):
     def __repr__(self):
         name = helicsFilterGetName(self)
@@ -828,6 +1022,126 @@ class HelicsFilter(_HelicsCHandle):
 
 class HelicsCloningFilter(HelicsFilter):
     pass
+
+
+class HelicsFederateInfo(_HelicsCHandle):
+    def __repr__(self):
+        return """<helics.{class_name}()) at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
+
+    @property
+    def core_name(self):
+        raise AttributeError("Unreadable attribute `core_name`")
+
+    @core_name.setter
+    def core_name(self, core_name: str):
+        helicsFederateInfoSetCoreName(self, core_name)
+
+    @property
+    def separator(self):
+        raise AttributeError("Unreadable attribute `separator`")
+
+    @separator.setter
+    def separator(self, separator: str):
+        """
+        Specify a separator to use for naming separation between the federate name and the interface name.
+
+        `self.separator = '.'` will result in future registrations of local endpoints such as `"fedName.endpoint"`.
+        `self.separator = '/'` will result in `"fedName/endpoint"`.
+
+        The default is `'/'`.
+        Any character can be used though many will not make that much sense.
+        This call is not thread safe and should be called before any local interfaces are created otherwise it may not be possible to retrieve them without using the full name.
+        Recommended: ['/', '.', ':', '-', '_']
+        """
+        helicsFederateInfoSetSeparator(self, separator)
+
+    @property
+    def core_init(self):
+        raise AttributeError("Unreadable attribute `core_init`")
+
+    @core_init.setter
+    def core_init(self, core_init: str):
+        """
+        Set the core init string to use in the FederateInfo.
+
+        **`core_init`**: core init string to use.
+        """
+        helicsFederateInfoSetCoreInitString(self, core_init)
+
+    @property
+    def broker_init(self):
+        raise AttributeError("Unreadable attribute `broker_init`")
+
+    @broker_init.setter
+    def broker_init(self, broker_init: str):
+        """Set a string for the broker initialization in command line argument format."""
+        helicsFederateInfoSetBrokerInitString(self, broker_init)
+
+    @property
+    def core_type(self):
+        raise AttributeError("Unreadable attribute `broker_init`")
+
+    @core_type.setter
+    def core_type(self, core_type):
+        """
+        Set the core type with the core type.
+
+        **`coretype`**: A core type.
+        """
+        if type(core_type) == str:
+            helicsFederateInfoSetCoreTypeFromString(self, core_type)
+        else:
+            helicsFederateInfoSetCoreType(self, HelicsCoreType(core_type))
+
+    @property
+    def broker(self):
+        raise AttributeError("Unreadable attribute `broker`")
+
+    @broker.setter
+    def broker(self, broker: str):
+        """
+        Set the broker to connect with.
+
+        **`broker`**: a string with the broker connection information or name.
+        """
+        helicsFederateInfoSetBroker(self, broker)
+
+    @property
+    def broker_key(self):
+        raise AttributeError("Unreadable attribute `broker_key`")
+
+    @broker_key.setter
+    def broker_key(self, broker_key):
+        """Set the broker key to use.
+
+        **`broker_key`**: a string with the broker key information
+        """
+        helicsFederateInfoSetBrokerKey(self, broker_key)
+
+    def set_flag_option(self, flag: HelicsFederateFlag, value: bool = True):
+        """
+        Set a flag.
+
+        **`flag`**: `helics.HelicsFederateFlag`
+        **`value`**: the bool value of the flag
+        """
+        helicsFederateInfoSetFlagOption(self, flag, value)
+
+    def set_property(self, index, value):
+        """
+        Set an federate or core property.
+
+        **`index`**: HelicsProperty
+        **`value`**: the value to set the property to
+        """
+        if type(index) == str:
+            idx = helicsGetPropertyIndex(index)
+        else:
+            idx = HelicsProperty(index)
+        if "TIME_" in idx.name:
+            return helicsFederateInfoSetTimeProperty(self, idx, value)
+        elif "INT_" in idx.name:
+            return helicsFederateInfoSetIntegerProperty(self, index, value)
 
 
 class _PublicationOptionAccessor(_HelicsCHandle):
@@ -1521,320 +1835,6 @@ class HelicsMessageFederate(HelicsFederate):
 
 class HelicsCombinationFederate(HelicsFederate):
     pass
-
-
-class HelicsFederateInfo(_HelicsCHandle):
-    def __repr__(self):
-        return """<helics.{class_name}()) at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
-
-    @property
-    def core_name(self):
-        raise AttributeError("Unreadable attribute `core_name`")
-
-    @core_name.setter
-    def core_name(self, core_name: str):
-        helicsFederateInfoSetCoreName(self, core_name)
-
-    @property
-    def separator(self):
-        raise AttributeError("Unreadable attribute `separator`")
-
-    @separator.setter
-    def separator(self, separator: str):
-        """
-        Specify a separator to use for naming separation between the federate name and the interface name.
-
-        `self.separator = '.'` will result in future registrations of local endpoints such as `"fedName.endpoint"`.
-        `self.separator = '/'` will result in `"fedName/endpoint"`.
-
-        The default is `'/'`.
-        Any character can be used though many will not make that much sense.
-        This call is not thread safe and should be called before any local interfaces are created otherwise it may not be possible to retrieve them without using the full name.
-        Recommended: ['/', '.', ':', '-', '_']
-        """
-        helicsFederateInfoSetSeparator(self, separator)
-
-    @property
-    def core_init(self):
-        raise AttributeError("Unreadable attribute `core_init`")
-
-    @core_init.setter
-    def core_init(self, core_init: str):
-        """
-        Set the core init string to use in the FederateInfo.
-
-        **`core_init`**: core init string to use.
-        """
-        helicsFederateInfoSetCoreInitString(self, core_init)
-
-    @property
-    def broker_init(self):
-        raise AttributeError("Unreadable attribute `broker_init`")
-
-    @broker_init.setter
-    def broker_init(self, broker_init: str):
-        """Set a string for the broker initialization in command line argument format."""
-        helicsFederateInfoSetBrokerInitString(self, broker_init)
-
-    @property
-    def core_type(self):
-        raise AttributeError("Unreadable attribute `broker_init`")
-
-    @core_type.setter
-    def core_type(self, core_type):
-        """
-        Set the core type with the core type.
-
-        **`coretype`**: A core type.
-        """
-        if type(core_type) == str:
-            helicsFederateInfoSetCoreTypeFromString(self, core_type)
-        else:
-            helicsFederateInfoSetCoreType(self, HelicsCoreType(core_type))
-
-    @property
-    def broker(self):
-        raise AttributeError("Unreadable attribute `broker`")
-
-    @broker.setter
-    def broker(self, broker: str):
-        """
-        Set the broker to connect with.
-
-        **`broker`**: a string with the broker connection information or name.
-        """
-        helicsFederateInfoSetBroker(self, broker)
-
-    @property
-    def broker_key(self):
-        raise AttributeError("Unreadable attribute `broker_key`")
-
-    @broker_key.setter
-    def broker_key(self, broker_key):
-        """Set the broker key to use.
-
-        **`broker_key`**: a string with the broker key information
-        """
-        helicsFederateInfoSetBrokerKey(self, broker_key)
-
-    def set_flag_option(self, flag: HelicsFederateFlag, value: bool = True):
-        """
-        Set a flag.
-
-        **`flag`**: `helics.HelicsFederateFlag`
-        **`value`**: the bool value of the flag
-        """
-        helicsFederateInfoSetFlagOption(self, flag, value)
-
-    def set_property(self, index, value):
-        """
-        Set an federate or core property.
-
-        **`index`**: HelicsProperty
-        **`value`**: the value to set the property to
-        """
-        if type(index) == str:
-            idx = helicsGetPropertyIndex(index)
-        else:
-            idx = HelicsProperty(index)
-        if "TIME_" in idx.name:
-            return helicsFederateInfoSetTimeProperty(self, idx, value)
-        elif "INT_" in idx.name:
-            return helicsFederateInfoSetIntegerProperty(self, index, value)
-
-
-class _MessageFlagAccessor(_HelicsCHandle):
-    def __getitem__(self, index):
-        raise IndexError("Cannot read flags from Message")
-
-    def __setitem__(self, index: int, value: bool):
-        return helicsMessageSetFlagOption(self, index, value)
-
-    def __repr__(self):
-        lst = []
-        # for f in :
-        #     # TODO: remove this try except
-        #     # See https://github.com/GMLC-TDC/HELICS/issues/1549
-        #     try:
-        #         lst.append("'{}' = {}".format(f.name, self[f]))
-        #     except Exception:
-        #         pass
-        return "<{{ {} }}>".format(", ".join(lst))
-
-    def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
-
-
-class HelicsMessage(_HelicsCHandle):
-    def __init__(self, handle):
-        super(HelicsMessage, self).__init__(handle)
-        self.flag = _MessageFlagAccessor(self.handle)
-
-    def __repr__(self):
-        source = self.source
-        destination = self.destination
-        original_source = self.original_source
-        original_destination = self.original_destination
-        time = self.time
-        message_id = self.message_id
-        message = self.data
-        return """<helics.{class_name}(source = "{source}", destination = "{destination}", original_source = "{original_source}", original_destination = "{original_destination}", time = {time}, id = {message_id}, message = "{message}") at {id}>""".format(
-            class_name=self.__class__.__name__,
-            source=source,
-            destination=destination,
-            original_source=original_source,
-            original_destination=original_destination,
-            time=time,
-            message_id=message_id,
-            message=message,
-            id=hex(id(self)),
-        )
-
-    def append(self, data: bytes):
-        helicsMessageAppendData(self, data)
-
-    @property
-    def source(self):
-        return helicsMessageGetSource(self)
-
-    @source.setter
-    def source(self, v):
-        return helicsMessageSetSource(self, v)
-
-    @property
-    def destination(self):
-        return helicsMessageGetDestination(self)
-
-    @destination.setter
-    def destination(self, v):
-        return helicsMessageSetDestination(self, v)
-
-    @property
-    def original_source(self):
-        return helicsMessageGetOriginalSource(self)
-
-    @original_source.setter
-    def original_source(self, v):
-        return helicsMessageSetOriginalSource(self, v)
-
-    @property
-    def original_dest(self):
-        warnings.warn("This is deprecated. Use `original_destination` instead.")
-        return self.original_destination
-
-    @original_dest.setter
-    def original_dest(self, v):
-        warnings.warn("This is deprecated. Use `original_destination` instead.")
-        self.original_destination = v
-
-    @property
-    def original_destination(self):
-        return helicsMessageGetOriginalDestination(self)
-
-    @original_destination.setter
-    def original_destination(self, v):
-        return helicsMessageSetOriginalDestination(self, v)
-
-    @property
-    def time(self):
-        return helicsMessageGetTime(self)
-
-    @time.setter
-    def time(self, v):
-        return helicsMessageSetTime(self, v)
-
-    @property
-    def data(self):
-        return helicsMessageGetString(self)
-
-    @data.setter
-    def data(self, v: str):
-        return helicsMessageSetString(self, v)
-
-    @property
-    def raw_data(self) -> bytes:
-        return helicsMessageGetRawData(self)
-
-    @raw_data.setter
-    def raw_data(self, v: bytes):
-        return helicsMessageSetData(self, v)
-
-    @property
-    def id(self):
-        return helicsMessageGetMessageID(self)
-
-    @id.setter
-    def id(self, v):
-        return helicsMessageSetMessageID(self, v)
-
-
-class HelicsQuery(_HelicsCHandle):
-    pass
-
-
-class HelicsEndpoint(_HelicsCHandle):
-    def __repr__(self):
-        name = helicsEndpointGetName(self)
-        return """<helics.{class_name}(name = "{name}")) at {id}>""".format(class_name=self.__class__.__name__, name=name, id=hex(id(self)),)
-
-    def is_valid(self) -> bool:
-        """Check if the input is valid."""
-        return helicsEndpointIsValid(self)
-
-    def has_message(self) -> bool:
-        """Checks if endpoint has unread messages."""
-        return helicsEndpointHasMessage(self)
-
-    @property
-    def default_destination(self) -> str:
-        """Get the default destination for an endpoint."""
-        return helicsEndpointGetDefaultDestination(self)
-
-    @default_destination.setter
-    def default_destination(self, dest: str):
-        """set the default destination for an endpoint."""
-        helicsEndpointSetDefaultDestination(self, dest)
-
-    @property
-    def n_pending_messages(self) -> int:
-        """Returns the number of pending receives for endpoint"""
-        return helicsEndpointPendingMessages(self)
-
-    def get_message(self) -> HelicsMessage:
-        """Get a packet from an endpoint."""
-        return helicsEndpointGetMessageObject(self)
-
-    def create_message(self) -> HelicsMessage:
-        """Create a message object."""
-        return helicsEndpointCreateMessageObject(self)
-
-    def send_message(self, data: Union[str, HelicsMessage], destination: str = None, time=None):
-        if type(data) == HelicsMessage:
-            helicsEndpointSendMessage(self, data)
-        elif time is None:
-            helicsEndpointSendTo(self, destination, data)
-        else:
-            helicsEndpointSendToAt(self, destination, time, data)
-
-    @property
-    def name(self) -> str:
-        """Get the name of the endpoint."""
-        return helicsEndpointGetName(self)
-
-    @property
-    def type(self) -> str:
-        """Get the specified type of the endpoint."""
-        return helicsEndpointGetType(self)
-
-    @property
-    def info(self) -> str:
-        """Get the interface information field of the filter."""
-        return helicsEndpointGetInfo(self)
-
-    @info.setter
-    def info(self, info: str):
-        """Set the interface information field of the filter."""
-        helicsEndpointSetInfo(self, info)
 
 
 class HelicsException(Exception):
