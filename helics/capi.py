@@ -720,7 +720,7 @@ class HelicsFilter(_HelicsCHandle):
         """
         helicsFilterAddSourceTarget(self, source)
 
-    def remove_target(self, dest: str):
+    def remove_destination_target(self, dest: str):
         """remove a destination target from a cloning filter."""
         helicsFilterRemoveTarget(self, dest)
 

@@ -293,6 +293,10 @@ def test_python_api3():
     source_filter1.option["CONNECTION_REQUIRED"] = 1
     assert source_filter1.option["CONNECTION_REQUIRED"] == 1
 
+    source_filter1.add_source_target("hello")
+    source_filter1.add_destination_target("world")
+    source_filter1.remove_destination_target("world")
+
     destination_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter")
 
     destination_filter1.add_destination_target("ep2")
