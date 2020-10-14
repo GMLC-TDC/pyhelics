@@ -2056,6 +2056,10 @@ class HelicsInput(_HelicsCHandle):
 
 
 class HelicsPublication(_HelicsCHandle):
+    def __init__(self, handle):
+        super(HelicsPublication, self).__init__(handle)
+        self.option = _PublicationOptionAccessor(self.handle)
+
     def __repr__(self):
         key = self.key
         type = self.type

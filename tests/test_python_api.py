@@ -115,6 +115,13 @@ def test_python_api1():
     sub.info = "hello world"
     assert sub.info == "hello world"
 
+    assert (
+        """{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 1, 'BUFFER_DATA' = 0, 'STRICT_TYPE_CHECKING' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = 0, 'CLEAR_PRIORITY_LIST' = 0, 'CONNECTIONS' = 0 }"""
+        in repr(mFed.publications["TestFilter/publication"].option)
+    )
+    mFed.publications["TestFilter/publication"].option["CONNECTION_REQUIRED"] = 1
+    assert mFed.publications["TestFilter/publication"].option["CONNECTION_REQUIRED"] == 1
+
     mFed.enter_executing_mode()
 
     data = "random-data"
