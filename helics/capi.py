@@ -1411,7 +1411,6 @@ class HelicsFederate(_HelicsCHandle):
         )
 
     def __del__(self):
-        helicsFederateFinalize(self)
         helicsFederateFree(self)
 
     @property
