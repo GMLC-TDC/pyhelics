@@ -805,7 +805,7 @@ class HelicsCore(_HelicsCHandle):
         a few extra features of name matching to function on the federate interface but otherwise
         equivalent behavior
 
-        **`type`**: the type of filter to create
+        **`kind`**: the type of filter to create
         **`name`**: the name of the filter (can be NULL)
 
         Returns: a `helics.HelicsFilter` object.
@@ -1719,7 +1719,7 @@ class HelicsFederate(_HelicsCHandle):
 
         **Parameters**
 
-        - **`type`**: the type of the filter to register.
+        - **`kind`**: the type of the filter to register.
         - **`filter_name`**: the name of the filter.
         """
         return helicsFederateRegisterGlobalFilter(self, kind, filter_name)
@@ -2161,7 +2161,7 @@ class HelicsValueFederate(HelicsFederate):
         **Parameters**
 
         **`name`**: the name of the input
-        **`type`**: the type of input to register
+        **`kind`**: the type of input to register
         **`units`**: a string defining the units of the input [optional]
 
         Returns: an input id object for use as an identifier
@@ -2182,7 +2182,7 @@ class HelicsValueFederate(HelicsFederate):
         **Parameters**
 
         **`name`**: the name of the input
-        **`type`**: a string defining the type of the input
+        **`kind`**: a string defining the type of the input
         **`units`**: a string defining the units of the input [optional]
 
         Returns: an input object for use as an identifier.
@@ -2241,7 +2241,7 @@ class HelicsMessageFederate(HelicsFederate):
         Call is only valid in startup mode
 
         **`name`**: the name of the endpoint
-        **`type`**: the defined type of the interface for endpoint checking if requested
+        **`kind`**: the defined type of the interface for endpoint checking if requested
 
         Returns: an Endpoint Object
         """
@@ -2254,7 +2254,7 @@ class HelicsMessageFederate(HelicsFederate):
         Register an endpoint directly without prepending the federate name.
 
         **`name`**: the name of the endpoint
-        **`type`**: the defined type of the interface for endpoint checking if requested
+        **`kind`**: the defined type of the interface for endpoint checking if requested
 
         Returns: an Endpoint Object
         """
