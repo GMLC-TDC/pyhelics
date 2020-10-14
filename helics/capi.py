@@ -1166,7 +1166,7 @@ class HelicsEndpoint(_HelicsCHandle):
         """Create a message object."""
         return helicsEndpointCreateMessageObject(self)
 
-    def send_message(self, data: Union[str, HelicsMessage], destination: str = None, time=None):
+    def send_message(self, data: Union[bytes, HelicsMessage], destination: str = None, time=None):
         if type(data) == HelicsMessage:
             helicsEndpointSendMessage(self, data)
         elif time is None:
@@ -1411,6 +1411,7 @@ class HelicsFederate(_HelicsCHandle):
         )
 
     def __del__(self):
+        helicsFederateFinalize(self)
         helicsFederateFree(self)
 
     @property
@@ -2285,7 +2286,7 @@ class HelicsMessageFederate(HelicsFederate):
         """
         return helicsFederateGetEndpointByIndex(self, index)
 
-    def hasMessage(self) -> bool:
+    def has_message(self) -> bool:
         """Checks if federate has any messages."""
         return helicsFederateHasMessage(self)
 
@@ -4601,7 +4602,9 @@ def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: bytes):
     """
     f = loadSym("helicsEndpointSendMessageRaw")
     err = helicsErrorInitialize()
-    if type(data) is not bytes:
+    if isinstance(data, str):
+        data = data.encode()
+    if not isinstance(data, bytes):
         raise HelicsException(
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
@@ -5426,9 +5429,9 @@ def helicsMessageSetData(message: HelicsMessage, data: bytes):
     """
     f = loadSym("helicsMessageSetData")
     err = helicsErrorInitialize()
-    if type(data) is str:
+    if isinstance(data, str):
         data = data.encode()
-    elif type(data) is not bytes:
+    if not isinstance(data, bytes):
         raise HelicsException(
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
@@ -5450,9 +5453,9 @@ def helicsMessageAppendData(message: HelicsMessage, data: bytes):
     """
     f = loadSym("helicsMessageAppendData")
     err = helicsErrorInitialize()
-    if type(data) is str:
+    if isinstance(data, str):
         data = data.encode()
-    elif type(data) is not bytes:
+    if not isinstance(data, bytes):
         raise HelicsException(
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
@@ -6287,9 +6290,9 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
     """
     f = loadSym("helicsPublicationPublishRaw")
     err = helicsErrorInitialize()
-    if type(data) is str:
+    if isinstance(data, str):
         data = data.encode()
-    elif type(data) is not bytes:
+    if not isinstance(data, bytes):
         raise HelicsException(
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )

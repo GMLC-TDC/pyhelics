@@ -72,35 +72,32 @@ def test_python_api1():
 
     assert fFed.state == 2
     assert fFed.state == h.HelicsFederateState.EXECUTION
+
+    assert f1.name == "filter1"
+    assert f2.name == "filter2"
+
     data = "hello world"
+    p1.send_message("port2", data)
 
-    filt_key = h.helicsFilterGetName(f1)
-    assert filt_key == "filter1"
-
-    filt_key = h.helicsFilterGetName(f2)
-    assert filt_key == "filter2"
-
-    h.helicsEndpointSendMessageRaw(p1, "port2", data.encode())
-    h.helicsFederateRequestTimeAsync(mFed, 1.0)
-    grantedtime = h.helicsFederateRequestTime(fFed, 1.0)
+    mFed.request_time_async(1.0)
+    grantedtime = fFed.request_time(1.0)
     assert grantedtime == 1.0
-    grantedtime = h.helicsFederateRequestTimeComplete(mFed)
+    grantedtime = mFed.request_time_complete()
     assert grantedtime == 1.0
-    res = h.helicsFederateHasMessage(mFed)
-    assert res == 0
-    res = h.helicsEndpointHasMessage(p2)
-    assert res == 0
+    assert mFed.has_message() is False
+    assert p2.has_message() is False
     # grantedtime = h.helicsFederateRequestTime(fFed, 3.0)
     # assert res==h.helics_true
 
-    h.helicsFederateFinalize(mFed)
-    h.helicsFederateFinalize(fFed)
     # f2 = h.helicsFederateRegisterDestinationFilter(fFed, h.helics_custom_filter, "filter2", "port2")
     # ep1 = h.helicsFederateRegisterEndpoint(fFed, "fout", "")
     # f3 = h.helicsFederateRegisterSourceFilter(fFed, h.helics_custom_filter, "", "filter0/fout")
 
-    del fFed
+    # The order in which finalize is called is important
+    # mFed.finalize()
+    # fFed.finalize()
     del mFed
+    del fFed
     del broker
 
 
