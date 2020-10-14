@@ -415,3 +415,13 @@ def test_python_api3():
     del core2
 
     h.helicsCloseLibrary()
+
+
+def test_python_api4():
+    fi = h.helicsCreateFederateInfo()
+    fi.broker = "broker test"
+
+    fi.broker_key = "hello-world"
+
+    fi.broker_port = 8929
+    fi.local_port = 8229

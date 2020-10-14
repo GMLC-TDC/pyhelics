@@ -1275,7 +1275,7 @@ class HelicsFederateInfo(_HelicsCHandle):
 
     @property
     def broker(self):
-        raise AttributeError("Unreadable attribute `broker`")
+        raise AttributeError("Unreadable attribute `broker`.")
 
     @broker.setter
     def broker(self, broker: str):
@@ -1288,7 +1288,7 @@ class HelicsFederateInfo(_HelicsCHandle):
 
     @property
     def broker_key(self):
-        raise AttributeError("Unreadable attribute `broker_key`")
+        raise AttributeError("Unreadable attribute `broker_key`.")
 
     @broker_key.setter
     def broker_key(self, broker_key):
@@ -1297,6 +1297,22 @@ class HelicsFederateInfo(_HelicsCHandle):
         **`broker_key`**: a string with the broker key information
         """
         helicsFederateInfoSetBrokerKey(self, broker_key)
+
+    @property
+    def local_port(self):
+        raise AttributeError("Unreadable attribute `local_port`.")
+
+    @local_port.setter
+    def local_port(self, broker_port: int):
+        helicsFederateInfoSetLocalPort(self, broker_port)
+
+    @property
+    def broker_port(self):
+        raise AttributeError("Unreadable attribute `broker_port`.")
+
+    @broker_port.setter
+    def broker_port(self, broker_port: int):
+        helicsFederateInfoSetBrokerPort(self, broker_port)
 
     def set_flag_option(self, flag: HelicsFederateFlag, value: bool = True):
         """
@@ -3306,7 +3322,7 @@ def helicsFederateInfoSetBrokerKey(fi: HelicsFederateInfo, broker_key: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateInfoSetBrokerPort(fi: HelicsFederateInfo, broker_port: int):
+def helicsFederateInfoSetBrokerPort(fi: HelicsFederateInfo, broker_port: Union[int, str]):
     """
     Set the port to use for the broker.
     This is only used if the core is automatically created, the broker information will be transferred to the core for connection.
@@ -3319,12 +3335,13 @@ def helicsFederateInfoSetBrokerPort(fi: HelicsFederateInfo, broker_port: int):
     """
     f = loadSym("helicsFederateInfoSetBrokerPort")
     err = helicsErrorInitialize()
+    broker_port = int(broker_port)
     f(fi.handle, broker_port, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, local_port: str):
+def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, local_port: Union[int, str]):
     """
     Set the local port to use.
     This is only used if the core is automatically created, the port information will be transferred to the core for connection.
@@ -3336,6 +3353,7 @@ def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, local_port: str):
     """
     f = loadSym("helicsFederateInfoSetLocalPort")
     err = helicsErrorInitialize()
+    local_port = str(local_port)
     f(fi.handle, cstring(local_port), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
