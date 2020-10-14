@@ -297,6 +297,8 @@ def test_python_api3():
 
     core1.disconnect()
     core2.disconnect()
-    h.helicsCoreFree(core1)
-    h.helicsCoreFree(core2)
+
+    del core1
+    del core2
+
     h.helicsCloseLibrary()
