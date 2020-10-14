@@ -1751,13 +1751,167 @@ class HelicsFederate(_HelicsCHandle):
             helicsFederateLogLevelMessage(self, HelicsLogLevel(level))
 
 
+class _InputOptionAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = helicsGetOptionIndex(index)
+        else:
+            idx = HelicsHandleOption(index)
+        return helicsInputGetOption(self, idx)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = helicsGetOptionIndex(index)
+        else:
+            idx = HelicsHandleOption(index)
+        return helicsInputSetOption(self, idx, value)
+
+    def __repr__(self):
+        lst = []
+        for o in HelicsHandleOption:
+            lst.append("'{}' = {}".format(o.name, self[o]))
+        return "<{{ {} }}>".format(", ".join(lst))
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
 class HelicsInput(_HelicsCHandle):
+    def __init__(self, handle):
+        super(HelicsInput, self).__init__(handle)
+        self.option = _InputOptionAccessor(self.handle)
+
     def __repr__(self):
         name = helicsInputGetKey(self)
         type = helicsInputGetPublicationType(self)
         return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
             class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
         )
+
+    def is_valid(self) -> bool:
+        """Check if the input is valid."""
+        return helicsInputIsValid(self)
+
+    def add_target(self, target: str):
+        """Add a publication target to the input."""
+        helicsInputAddTarget(self, target)
+
+    def set_default(self, data: Union[bytes, str, int, bool, float, complex, List[float]]):
+        """
+        Set the default value as a raw data
+        Set the default value as a string
+        Set the default value as an integer
+        Set the default value as a bool
+        Set the default value as a double
+        Set the default value as a vector of doubles
+        """
+        if isinstance(data, bytes):
+            helicsInputSetDefaultRaw(self, data)
+        elif isinstance(data, str):
+            helicsInputSetDefaultString(self, data)
+        elif isinstance(data, int):
+            helicsInputSetDefaultInteger(self, data)
+        elif isinstance(data, bool):
+            helicsInputSetDefaultBoolean(self, data)
+        elif isinstance(data, float):
+            helicsInputSetDefaultDouble(self, data)
+        elif isinstance(data, list):
+            helicsInputSetDefaultVector(self, data)
+        else:
+            raise NotImplementedError("Unknown type `{}`".format(type(data)))
+
+    @property
+    def bytes(self) -> bytes:
+        """Get a raw value as a character vector."""
+        return helicsInputGetRawValue(self)
+
+    @property
+    def string(self) -> str:
+        """Get the current value as a string"""
+        return helicsInputGetString(self)
+
+    @property
+    def named_point(self) -> Tuple[str, float]:
+        """Get the current value as a named point."""
+        return helicsInputGetNamedPoint(self)
+
+    @property
+    def integer(self) -> int:
+        """Get the current value as a 64 bit integer."""
+        return helicsInputGetInteger(self)
+
+    @property
+    def boolean(self) -> bool:
+        """Get the value as a boolean."""
+        return helicsInputGetBoolean(self)
+
+    @property
+    def double(self) -> float:
+        """Get the value as a double."""
+        return helicsInputGetDouble(self)
+
+    @property
+    def complex(self) -> complex:
+        """Get the value as a complex number."""
+        r, i = helicsInputGetComplex(self)
+        return complex(r, i)
+
+    @property
+    def vector(self) -> List[float]:
+        """get the current value as a vector of doubles"""
+        return helicsInputGetVector(self)
+
+    def is_updated(self) -> bool:
+        """Check if an input is updated."""
+        return helicsInputIsUpdated(self)
+
+    def get_last_update_time(self) -> HelicsTime:
+        """Get the last time an input was updated."""
+        return helicsInputLastUpdateTime(self)
+
+    def clear_update(self):
+        """Clear the updated flag."""
+        helicsInputClearUpdate(self)
+
+    @property
+    def key(self) -> str:
+        """get the Name/Key for the input
+        the name is the local name if given, key is the full key name"""
+        return helicsInputGetKey(self)
+
+    @property
+    def units(self) -> str:
+        """Get the units associated with a input."""
+        return helicsInputGetExtractionUnits(self)
+
+    @property
+    def injection_units(self) -> str:
+        """Get the units associated with an inputs publication."""
+        return helicsInputGetInjectionUnits(self)
+
+    @property
+    def publication_type(self) -> str:
+        """Get the units associated with a publication of an input."""
+        return helicsInputGetPublicationType(self)
+
+    @property
+    def type(self) -> str:
+        """Get the type of the input."""
+        return helicsInputGetType(self)
+
+    @property
+    def target(self) -> str:
+        """Get an associated target."""
+        return helicsSubscriptionGetKey(self)
+
+    @property
+    def info(self) -> str:
+        """Get the interface information field of the filter."""
+        return helicsInputGetInfo(self)
+
+    def set_info(self, info: str):
+        """Set the interface information field of the publication."""
+        helicsInputSetInfo(self, info)
 
 
 class HelicsPublication(_HelicsCHandle):
@@ -6434,7 +6588,7 @@ def helicsInputGetVector(ipt: HelicsInput) -> List[float]:
         return [x for x in data][0 : actualSize[0]]
 
 
-def helicsInputGetNamedPoint(ipt: HelicsInput):
+def helicsInputGetNamedPoint(ipt: HelicsInput) -> Tuple[str, float]:
     """
     Get a named point from a subscription.
 
