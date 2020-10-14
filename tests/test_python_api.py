@@ -65,7 +65,19 @@ def mFed():
     h.helicsCloseLibrary()
 
 
-def test_python_api1(mFed):
+def test_python_api1():
+
+    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
+    fedinfo = h.helicsCreateFederateInfo()
+    fedinfo.core_name = "TestFilter"
+    fedinfo.core_type = "zmq"
+    fedinfo.core_init = "-f 1 --broker=mainbroker"
+    mFed = h.helicsCreateMessageFederate("TestFilter", fedinfo)
+
+    assert (
+        """HelicsMessageFederate(name = "TestFilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0"""
+        in repr(mFed)
+    )
 
     epid1 = mFed.register_endpoint("ep1")
     epid2 = mFed.register_global_endpoint("ep2")
@@ -95,9 +107,14 @@ def test_python_api1(mFed):
     assert message.raw_data == b"random-data"
     assert len(message.raw_data) == 11
     assert message.original_destination == ""
-    assert message.original_source == "TestA Federate/ep1"
-    assert message.source == "TestA Federate/ep1"
+    assert message.original_source == "TestFilter/ep1"
+    assert message.source == "TestFilter/ep1"
     assert message.time == 1.0
+
+    mFed.finalize()
+
+    del mFed
+    del broker
 
 
 def test_python_api2():
