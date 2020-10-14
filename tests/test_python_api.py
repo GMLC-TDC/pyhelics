@@ -21,6 +21,12 @@ def test_python_api():
 
     fed = h.helicsCreateValueFederate("test1", fi)
 
+    assert "HelicsCore" in repr(fed.core)
+    assert 'address = "tcp://127.0.0.1' in repr(fed.core)
+
+    assert fed.core.is_connected()
+    fed.core.set_ready_to_init()
+
     assert "n_publications = 0" in repr(fed)
     assert "n_inputs = 0" in repr(fed)
     assert "n_endpoints = 0" in repr(fed)
@@ -126,6 +132,10 @@ def test_python_api():
     fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] = True
 
     assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] is True
+
+    fed.core.disconnect()
+
+    fed.core.wait_for_disconnect()
 
     del fed
 
