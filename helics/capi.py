@@ -666,7 +666,11 @@ helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
 
 class _HelicsCHandle:
     def __init__(self, handle):
-        self.handle = handle
+        # allow passing an instance of _HelicsCHandle as well as a cffi handle
+        if issubclass(type(handle), _HelicsCHandle):
+            self.handle = handle.handle
+        else:
+            self.handle = handle
 
 
 class HelicsCore(_HelicsCHandle):
@@ -791,7 +795,7 @@ class HelicsBroker(_HelicsCHandle):
 
 class _MessageFlagAccessor(_HelicsCHandle):
     def __getitem__(self, index):
-        raise IndexError("Cannot read flags from Message")
+        return helicsMessageCheckFlag(self, index)
 
     def __setitem__(self, index: int, value: bool):
         return helicsMessageSetFlagOption(self, index, value)
@@ -1908,7 +1912,7 @@ class HelicsMessageFederate(HelicsFederate):
         return helicsFederateGetEndpointCount(self)
 
 
-class HelicsCombinationFederate(HelicsFederate):
+class HelicsCombinationFederate(HelicsValueFederate, HelicsMessageFederate):
     pass
 
 
