@@ -2034,7 +2034,8 @@ class HelicsInput(_HelicsCHandle):
         """Get the interface information field of the filter."""
         return helicsInputGetInfo(self)
 
-    def set_info(self, info: str):
+    @info.setter
+    def info(self, info: str):
         """Set the interface information field of the publication."""
         helicsInputSetInfo(self, info)
 
