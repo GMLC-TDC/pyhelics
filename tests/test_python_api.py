@@ -95,12 +95,25 @@ def test_python_api1():
     assert sub.option["CONNECTION_REQUIRED"] == 0
 
     sub.set_default(b"hello")
+    assert sub.bytes == b"hello"
+
     sub.set_default("world")
+    assert sub.string == "world"
+
     sub.set_default(0)
+    assert sub.integer == 0
+
     sub.set_default(True)
+    assert sub.boolean is True
+
     sub.set_default(1.1)
+    assert sub.double == 1.1
+
     sub.set_default(2 + 1.1j)
+    assert sub.complex == 2 + 1.1j
+
     sub.set_default([1.0, 2.0, 3.0])
+    assert sub.vector == [1.0, 2.0, 3.0]
 
     mFed.enter_executing_mode()
 
