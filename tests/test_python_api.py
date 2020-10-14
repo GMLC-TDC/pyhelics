@@ -14,6 +14,9 @@ import helics as h
 def test_python_api():
 
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel 1")
+    assert broker.is_connected()
+
+    broker.set_global("hello", "world")
 
     fi = h.helicsCreateFederateInfo()
     fi.core_init = "--federates 1"
@@ -145,12 +148,14 @@ def test_python_api():
 
     fed.core.disconnect()
 
-    fed.core.wait_for_disconnect()
+    assert fed.core.wait_for_disconnect()
 
     del fed
 
-    h.helicsBrokerDisconnect(broker)
-    h.helicsBrokerFree(broker)
+    broker.disconnect()
+    assert broker.wait_for_disconnect()
+
+    del broker
 
     h.helicsCleanupLibrary()
     h.helicsCloseLibrary()
