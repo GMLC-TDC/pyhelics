@@ -91,6 +91,10 @@ def test_python_api1():
 
     mFed.endpoints["TestFilter/ep1"].default_destination = "ep2"
     mFed.endpoints["TestFilter/ep1"].info = "information"
+
+    assert mFed.endpoints["TestFilter/ep1"].default_destination == "ep2"
+    assert mFed.endpoints["TestFilter/ep1"].info == "information"
+
     mFed.endpoints["TestFilter/ep1"].send_data(data, "ep2", 1.0)
 
     assert mFed.request_time(2.0) == 1.0
