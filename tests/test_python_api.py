@@ -300,7 +300,7 @@ def test_python_api3():
     source_filter1.info = "hello world"
     assert source_filter1.info == "hello world"
 
-    source_filter1.set("hello", "world")
+    source_filter1.set("hello", 1)
 
     destination_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter")
 
