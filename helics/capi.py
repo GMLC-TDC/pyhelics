@@ -1929,12 +1929,10 @@ class HelicsPublication(_HelicsCHandle):
     def publish(self, data: Union[bytes, str, int, complex, float, List[float], Tuple[str, float], bool]):
         """
         publish raw bytes
-        publish a string from a char *
-        publish a string value
-        publish an int64_t value
+        publish a string
+        publish an int value
         publish a double
         publish a complex number
-        publish a vector of doubles
         publish a vector of doubles
         publish a named point with a string and double
         publish a boolean value
