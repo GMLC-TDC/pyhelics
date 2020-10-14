@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 import warnings
+import json
+
 from enum import IntEnum, unique
 
 try:
@@ -1334,7 +1336,158 @@ class HelicsFederate(_HelicsCHandle):
 
 
 class HelicsValueFederate(HelicsFederate):
-    pass
+    def __init__(self, handle):
+        super(HelicsValueFederate, self).__init__(handle)
+        self.publications = []
+        self.subscriptions = []
+
+    def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = ""):
+        """
+        Register a publication.
+
+        Call is only valid in startup mode.
+
+        **Parameters**
+
+        **`name`**: the name of the publication.
+        **`kind`**: the type of the publication.
+        **`units`**: a string defining the units of the publication [optional]
+
+        Returns: a publication id object for use as an identifier
+        """
+        if type(kind) == str:
+            pub = helicsFederateRegisterTypePublication(self, name, kind, units)
+        else:
+            pub = helicsFederateRegisterPublication(self, name, HelicsDataType(kind), units)
+        self.publications.append(pub)
+        return pub
+
+    def register_global_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = ""):
+        """
+        Register a publication
+
+        Call is only valid in startup mode
+
+        **`name`**: the name of the publication
+        **`kind`**: the type of the publication
+        **`units`**: a string defining the units of the publication [optional]
+
+        Returns: a publication object for use as an identifier
+        """
+        if type(kind) == str:
+            pub = helicsFederateRegisterGlobalTypePublication(self, name, kind, units)
+        else:
+            pub = helicsFederateRegisterGlobalPublication(self, name, HelicsDataType(kind), units)
+        self.publications.append(pub)
+        return pub
+
+    def register_from_publication_json(self, data: Union[dict, str]):
+        """
+        Register publications from a JSON output file or string.
+
+        Generates interface based on the data contained in a JSON file or string.
+        """
+        if type(data) == str:
+            try:
+                with open(data) as f:
+                    data = json.load(f)
+            except Exception:
+                data = json.loads(data)
+        data = json.dumps(data)
+        helicsFederateRegisterFromPublicationJSON(self, data)
+
+    def get_publication_by_name(self, name: str):
+        """Get publication by name."""
+        return helicsFederateGetPublication(self, name)
+
+    def get_publication_by_index(self, index: int):
+        """
+        Get a publication by index.
+
+        **Parameters**
+
+        **`index`**: a 0 based index of the publication to retrieve
+
+        Returns: a Publication object
+        """
+        return helicsFederateGetPublicationByIndex(self, index)
+
+    def register_subscription(self, name: str, units: str = ""):
+        sub = helicsFederateRegisterSubscription(self, name, units)
+        self.subscriptions.append(sub)
+        return sub
+
+    def register_input(self, name: str, kind: Union[str, HelicsDataType], units: str = ""):
+        """
+        Register an input.
+
+        Call is only valid in startup mode.
+
+        **Parameters**
+
+        **`name`**: the name of the input
+        **`type`**: the type of input to register
+        **`units`**: a string defining the units of the input [optional]
+
+        Returns: an input id object for use as an identifier
+        """
+        if type(kind) == str:
+            ipt = helicsFederateRegisterTypeInput(self, name, kind, units)
+        else:
+            ipt = helicsFederateRegisterTypeInput(self, name, HelicsDataType(kind), units)
+        self.subscriptions.append(ipt)
+        return ipt
+
+    def register_global_input(self, name: str, kind: Union[str, HelicsDataType], units: str = ""):
+        """
+        Register an input.
+
+        Call is only valid in startup mode.
+
+        **Parameters**
+
+        **`name`**: the name of the input
+        **`type`**: a string defining the type of the input
+        **`units`**: a string defining the units of the input [optional]
+
+        Returns: an input object for use as an identifier.
+        """
+        if type(kind) == str:
+            ipt = helicsFederateRegisterGlobalTypeInput(self, name, kind, units)
+        else:
+            ipt = helicsFederateRegisterGlobalTypeInput(self, name, HelicsDataType(kind), units)
+        self.subscriptions.append(ipt)
+        return ipt
+
+    def get_subscription_by_name(self, name: str):
+        """Get an input by index."""
+        return helicsFederateGetInput(self, name)
+
+    def get_subscription_by_index(self, index: int):
+        """get a subscription by index."""
+        return helicsFederateGetInputByIndex(self, index)
+
+    @property
+    def n_subscriptions(self):
+        """Get the number of inputs in this federate."""
+        return helicsFederateGetInputCount(self)
+
+    @property
+    def n_publications(self):
+        """Get the number of publications in this federate."""
+        return helicsFederateGetPublicationCount(self)
+
+    def clear_updates(self):
+        """Clear all the update flags from all federate inputs."""
+        helicsFederateClearUpdates(self)
+
+    def publish_json(self, data: dict):
+        """Publish data contained in a JSON file."""
+        if type(data) == dict:
+            data = json.dumps(data)
+        else:
+            data = str(data)
+        helicsFederatePublishJSON(self, data)
 
 
 class HelicsMessageFederate(HelicsFederate):
