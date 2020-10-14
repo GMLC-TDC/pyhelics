@@ -32,6 +32,12 @@ def test_python_api1():
     pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
     assert """HelicsPublication(key = "TestFilter/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
 
+    sub = mFed.register_subscription("subscription", "custom-units")
+    assert (
+        """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "subscription", info = "")"""
+        in repr(sub)
+    )
+
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
     assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
 
