@@ -116,6 +116,9 @@ def test_python_api1():
         in repr(message)
     )
 
+    message.append("-random")
+    assert message.data == "random-data-random"
+
     assert (
         """<{ 1 = False, 2 = False, 3 = False, 4 = False, 5 = False, 6 = False, 7 = False, 8 = False, 9 = False, 10 = False, 11 = False, 12 = False, 13 = False, 14 = False, 15 = False }>"""
         in repr(message.flag)
