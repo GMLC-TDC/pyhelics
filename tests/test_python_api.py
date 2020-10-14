@@ -82,8 +82,8 @@ def test_python_api1():
     epid1 = mFed.register_endpoint("ep1")
     epid2 = mFed.register_global_endpoint("ep2")
 
-    h.helicsFederateSetTimeProperty(mFed, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
+    assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
 
     mFed.enter_executing_mode()
 
