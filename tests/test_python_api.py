@@ -9,60 +9,6 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import pytest as pt
 import helics as h
-import time
-
-
-@pt.fixture
-def mFed():
-    initstring = "-f 1 --name=mainbroker"
-    fedinitstring = "--broker=mainbroker --federates=1"
-    deltat = 0.01
-
-    h.helicsGetVersion()
-
-    # Create broker #
-    broker = h.helicsCreateBroker("zmq", "", initstring)
-
-    isconnected = h.helicsBrokerIsConnected(broker)
-
-    if isconnected == 1:
-        pass
-
-    # Create Federate Info object that describes the federate properties #
-    fedinfo = h.helicsCreateFederateInfo()
-
-    # Set Federate name #
-    h.helicsFederateInfoSetCoreName(fedinfo, "CoreA Federate")
-
-    # Set core type from string #
-    h.helicsFederateInfoSetCoreTypeFromString(fedinfo, "zmq")
-
-    # Federate init string #
-    h.helicsFederateInfoSetCoreInitString(fedinfo, fedinitstring)
-
-    # Set the message interval (timedelta) for federate. Note th#
-    # HELICS minimum message time interval is 1 ns and by default
-    # it uses a time delta of 1 second. What is provided to the
-    # setTimedelta routine is a multiplier for the default timedelta.
-
-    # Set one second message interval #
-    h.helicsFederateInfoSetTimeProperty(fedinfo, h.HELICS_PROPERTY_TIME_DELTA, deltat)
-
-    h.helicsFederateInfoSetIntegerProperty(fedinfo, h.HELICS_PROPERTY_INT_LOG_LEVEL, 1)
-
-    mFed = h.helicsCreateMessageFederate("TestA Federate", fedinfo)
-
-    yield mFed
-
-    h.helicsFederateFinalize(mFed)
-    state = h.helicsFederateGetState(mFed)
-    assert state == 3
-    while h.helicsBrokerIsConnected(broker):
-        time.sleep(1)
-
-    h.helicsFederateInfoFree(fedinfo)
-    h.helicsFederateFree(mFed)
-    h.helicsCloseLibrary()
 
 
 def test_python_api1():
