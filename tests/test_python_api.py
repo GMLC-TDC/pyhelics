@@ -218,6 +218,8 @@ def test_python_api1():
         """HelicsMessage(source = "", destination = "", original_source = "", original_destination = "", time = 0.0, id = 0, message = "")"""
         in repr(m)
     )
+    mFed.info = "hello-world"
+    assert mFed.info == "hello-world"
 
     mFed.finalize()
 

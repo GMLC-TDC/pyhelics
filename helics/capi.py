@@ -2123,7 +2123,8 @@ class HelicsPublication(_HelicsCHandle):
         """Get the interface information field of the publication."""
         return helicsPublicationGetInfo(self)
 
-    def set_info(self, info: str):
+    @info.setter
+    def info(self, info: str):
         """Set the interface information field of the publication."""
         helicsPublicationSetInfo(self, info)
 
