@@ -112,6 +112,11 @@ def test_python_api1():
     assert message.time == 1.0
 
     assert (
+        """HelicsMessage(source = "TestFilter/ep1", destination = "ep2", original_source = "TestFilter/ep1", original_destination = "", time = 1.0, id = 55, message = "random-data")"""
+        in repr(message)
+    )
+
+    assert (
         """<{ 1 = False, 2 = False, 3 = False, 4 = False, 5 = False, 6 = False, 7 = False, 8 = False, 9 = False, 10 = False, 11 = False, 12 = False, 13 = False, 14 = False, 15 = False }>"""
         in repr(message.flag)
     )
