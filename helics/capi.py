@@ -673,6 +673,47 @@ class _HelicsCHandle:
             self.handle = handle
 
 
+class HelicsFilter(_HelicsCHandle):
+    def __repr__(self):
+        name = helicsFilterGetName(self)
+        info = helicsFilterGetInfo(self)
+        return """<helics.{class_name}(name = "{name}", info = "{info}") at {id}>""".format(
+            class_name=self.__class__.__name__, name=name, info=info, id=hex(id(self))
+        )
+
+    def add_destination_target(self, dest: str):
+        """
+        Add a destination target to a cloning filter.
+        All messages going to a destination are copied to the delivery address(es).
+        """
+        helicsFilterAddDestinationTarget(self, dest)
+
+    def add_source_target(self, source: str):
+        """
+        Add a source target to a cloning filter.
+        All messages coming from a source are copied to the delivery address(es).
+        """
+        helicsFilterAddSourceTarget(self, source)
+
+    def remove_target(self, dest: str):
+        """remove a destination target from a cloning filter."""
+        helicsFilterRemoveTarget(self, dest)
+
+    @property
+    def info(self) -> str:
+        """Get the interface information field of the filter."""
+        return helicsFilterGetInfo(self)
+
+    @info.setter
+    def setInfo(self, info: str):
+        """Set the interface information field of the filter."""
+        helicsFilterSetInfo(self, info)
+
+
+class HelicsCloningFilter(HelicsFilter):
+    pass
+
+
 class HelicsCore(_HelicsCHandle):
     def __repr__(self):
         identifier = helicsCoreGetIdentifier(self)
@@ -680,6 +721,103 @@ class HelicsCore(_HelicsCHandle):
         return """<helics.{class_name}(identifier = "{identifier}", address = "{address}") at {id}>""".format(
             class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
+
+    def is_connected(self) -> bool:
+        """Check if the core is connected to the broker."""
+        return helicsCoreIsConnected(self)
+
+    def set_ready_to_init(self):
+        """Set the core to ready to enter init.
+
+        This function only needs to be called for cores that don't have any federates but may have filters for cores with federates it won't do anything.
+        """
+        helicsCoreSetReadyToInit(self)
+
+    def disconnect(self):
+        """
+        Disconnect the core from its broker.
+        """
+        helicsCoreDisconnect(self)
+
+    def wait_for_disconnect(self, ms_to_wait: int = -1) -> bool:
+        """Waits in the current thread until the broker is disconnected
+
+        **Parameters**
+
+        **`ms_to_wait`**:  the timeout to wait for disconnect (-1) implies no timeout
+
+        Returns: true if the disconnect was successful false if it timed out.
+        """
+        return helicsCoreWaitForDisconnect(self, ms_to_wait)
+
+    @property
+    def identifier(self) -> str:
+        """Get an identifier string for the core."""
+        return helicsCoreGetIdentifier(self)
+
+    @property
+    def address(self) -> str:
+        """Get the connection network or connection address for the core."""
+        return helicsCoreGetAddress(self)
+
+    def register_filter(self, kind: HelicsFilterType, name: str = "") -> HelicsFilter:
+        """
+        Create a destination Filter on the specified federate.
+
+        Filters can be created through a federate or a core , linking through a federate allows
+        a few extra features of name matching to function on the federate interface but otherwise
+        equivalent behavior
+
+        **`type`**: the type of filter to create
+        **`name`**: the name of the filter (can be NULL)
+
+        Returns: a `helics.HelicsFilter` object.
+        """
+        return helicsCoreRegisterFilter(self, kind, name)
+
+    def register_cloning_filter(self, delivery_endpoint: str) -> HelicsCloningFilter:
+        """
+        Create a cloning Filter on the specified federate.
+
+        Cloning filters copy a message and send it to multiple locations source and destination can be added through other functions
+
+        **Parameters**
+
+        **`delivery_endpoint`**: the specified endpoint to deliver the message
+
+        Returns: a `helics.HelicsFilter` object.
+        """
+        return helicsCoreRegisterCloningFilter(self, delivery_endpoint)
+
+    def set_global(self, name: str, value: str):
+        """
+        Set a global federation value.
+
+        **Parameters**
+
+        **`value_name`**: the name of the global value to set
+        **`value`**: actual value of the global variable
+        """
+        helicsCoreSetGlobal(self, name, value)
+
+    def query(self, target: str, query: str) -> str:
+        """
+        Make a query of the core.
+
+        This call is blocking until the value is returned which may take some time depending
+        on the size of the federation and the specific string being queried
+
+        **`target`**:  the target of the query can be "federation", "federate", "broker", "core", or a specific name of a federate, core, or broker
+        **`query_str`**: a string with the query, see other documentation for specific properties to query, can be defined by the federate
+
+        Returns: a string with the value requested.  this is either going to be a vector of strings value
+        or a JSON string stored in the first element of the vector.  The string "#invalid" is returned
+        if the query was not valid
+        """
+        q = helicsCreateQuery(target, query)
+        result = helicsQueryCoreExecute(q, self)
+        helicsQueryFree(q)
+        return result
 
 
 class HelicsBroker(_HelicsCHandle):
@@ -694,11 +832,12 @@ class HelicsBroker(_HelicsCHandle):
         helicsBrokerFree(self)
 
     def is_connected(self):
-        """check if the broker is connected"""
+        """Check if the broker is connected."""
         return helicsBrokerIsConnected(self) is True
 
     def wait_for_disconnect(self, ms_to_wait: int = -1):
-        """ waits in the current thread until the broker is disconnected
+        """
+        Waits in the current thread until the broker is disconnected.
 
         **Parameters**
 
@@ -985,47 +1124,6 @@ class HelicsEndpoint(_HelicsCHandle):
     def info(self, info: str):
         """Set the interface information field of the filter."""
         helicsEndpointSetInfo(self, info)
-
-
-class HelicsFilter(_HelicsCHandle):
-    def __repr__(self):
-        name = helicsFilterGetName(self)
-        info = helicsFilterGetInfo(self)
-        return """<helics.{class_name}(name = "{name}", info = "{info}") at {id}>""".format(
-            class_name=self.__class__.__name__, name=name, info=info, id=hex(id(self))
-        )
-
-    def add_destination_target(self, dest: str):
-        """
-        Add a destination target to a cloning filter.
-        All messages going to a destination are copied to the delivery address(es).
-        """
-        helicsFilterAddDestinationTarget(self, dest)
-
-    def add_source_target(self, source: str):
-        """
-        Add a source target to a cloning filter.
-        All messages coming from a source are copied to the delivery address(es).
-        """
-        helicsFilterAddSourceTarget(self, source)
-
-    def remove_target(self, dest: str):
-        """remove a destination target from a cloning filter."""
-        helicsFilterRemoveTarget(self, dest)
-
-    @property
-    def info(self) -> str:
-        """Get the interface information field of the filter."""
-        return helicsFilterGetInfo(self)
-
-    @info.setter
-    def setInfo(self, info: str):
-        """Set the interface information field of the filter."""
-        helicsFilterSetInfo(self, info)
-
-
-class HelicsCloningFilter(HelicsFilter):
-    pass
 
 
 class HelicsFederateInfo(_HelicsCHandle):
