@@ -139,7 +139,7 @@ def test_python_api1():
 
     assert mFed.endpoints["ep2"].has_message()
 
-    message = mFed.endpoints["ep2"].message
+    message = mFed.endpoints["ep2"].get_message()
 
     assert message.message_id == 55
     assert message.is_valid() is True

@@ -1187,8 +1187,7 @@ class HelicsEndpoint(_HelicsCHandle):
         """Checks if endpoint has unread messages."""
         return helicsEndpointHasMessage(self)
 
-    @property
-    def message(self) -> HelicsMessage:
+    def get_message(self) -> HelicsMessage:
         """Get a packet from an endpoint."""
         return helicsEndpointGetMessage(self)
 
