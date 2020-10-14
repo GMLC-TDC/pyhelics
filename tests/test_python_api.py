@@ -95,6 +95,8 @@ def test_python_api1():
     message.flag[1] = True
     assert message.flag[1] is True
 
+    assert mFed.request_next_step() == 2.0
+
     mFed.finalize()
 
     del mFed
