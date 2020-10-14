@@ -111,6 +111,13 @@ def test_python_api1():
     assert message.source == "TestFilter/ep1"
     assert message.time == 1.0
 
+    assert (
+        """<{ 1 = False, 2 = False, 3 = False, 4 = False, 5 = False, 6 = False, 7 = False, 8 = False, 9 = False, 10 = False, 11 = False, 12 = False, 13 = False, 14 = False, 15 = False }>"""
+        in repr(message.flag)
+    )
+    message.flag[1] = True
+    assert message.flag[1] is True
+
     mFed.finalize()
 
     del mFed
