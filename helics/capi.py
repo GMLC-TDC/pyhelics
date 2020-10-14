@@ -1519,6 +1519,7 @@ class HelicsFederate(_HelicsCHandle):
 
         - **`iterate`**: An optional flag indicating the desired iteration mode.
         """
+        iterate = HelicsIterationRequest(iterate)
         if iterate == HelicsIterationRequest.NO_ITERATION:
             helicsFederateEnterExecutingMode(self)
             out_iterate = HelicsIterationResult.NEXT_STEP
@@ -1536,6 +1537,7 @@ class HelicsFederate(_HelicsCHandle):
 
         - **`iterate`**: An optional flag indicating the desired iteration mode.
         """
+        iterate = HelicsIterationRequest(iterate)
         if iterate == HelicsIterationRequest.NO_ITERATION:
             helicsFederateEnterExecutingModeAsync(self)
             self._exec_async_iterate = False

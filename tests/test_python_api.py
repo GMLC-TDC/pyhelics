@@ -66,11 +66,12 @@ def test_python_api1():
 
     assert f2.option["CONNECTION_REQUIRED"] == 1
 
-    h.helicsFederateEnterExecutingModeAsync(fFed)
-    h.helicsFederateEnterExecutingMode(mFed)
-    h.helicsFederateEnterExecutingModeComplete(fFed)
-    state = h.helicsFederateGetState(fFed)
-    assert state == 2
+    fFed.enter_executing_mode_async()
+    mFed.enter_executing_mode()
+    fFed.enter_executing_mode_complete()
+
+    assert fFed.state == 2
+    assert fFed.state == h.HelicsFederateState.EXECUTION
     data = "hello world"
 
     filt_key = h.helicsFilterGetName(f1)
