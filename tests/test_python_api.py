@@ -119,6 +119,19 @@ def test_python_api1():
     message.append("-random")
     assert message.data == "random-data-random"
 
+    message.data = "random-data"
+    assert message.raw_data == b"random-data"
+
+    message.original_source = "hello-world"
+    message.original_destination = "goodbye-world"
+    message.source = "world"
+    message.time = 2.0
+
+    assert message.original_source == "hello-world"
+    assert message.original_destination == "goodbye-world"
+    assert message.source == "world"
+    assert message.time == 2.0
+
     assert (
         """<{ 1 = False, 2 = False, 3 = False, 4 = False, 5 = False, 6 = False, 7 = False, 8 = False, 9 = False, 10 = False, 11 = False, 12 = False, 13 = False, 14 = False, 15 = False }>"""
         in repr(message.flag)
