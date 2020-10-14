@@ -115,6 +115,9 @@ def test_python_api1():
     sub.set_default([1.0, 2.0, 3.0])
     assert sub.vector == [1.0, 2.0, 3.0]
 
+    sub.info = "hello world"
+    assert sub.info == "hello world"
+
     mFed.enter_executing_mode()
 
     data = "random-data"
