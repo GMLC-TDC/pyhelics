@@ -98,9 +98,7 @@ class HELICSDownloadCommand(Command):
                 shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
 
 
-install_requires = ["cffi>=1.0.0"]
-if platform.python_version():
-    install_requires.append("enum34>=1.1.10")
+install_requires = ["cffi>=1.0.0", "enum34==1.1.8"]
 
 setup(
     name="helics",
