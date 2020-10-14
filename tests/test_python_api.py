@@ -141,6 +141,8 @@ def test_python_api():
 
     fed.core.set_global("hello", "world")
 
+    assert fed.core.query("broker", "something") == "#invalid"
+
     fed.core.disconnect()
 
     fed.core.wait_for_disconnect()

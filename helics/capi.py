@@ -849,7 +849,7 @@ class HelicsBroker(_HelicsCHandle):
 
         Returns: `True` if the disconnect was successful false if it timed out
         """
-        return helicsBrokerWaitForDisconnect(self, ms_to_wait) is True
+        return helicsBrokerWaitForDisconnect(self, ms_to_wait)
 
     def disconnect(self):
         """
