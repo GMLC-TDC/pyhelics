@@ -208,6 +208,11 @@ def test_python_api1():
 
     assert mFed.subscriptions["TestFilter/publication"].vector == [1.0, 2.0, 3.0, 4.0, 5.0]
 
+    mFed.publications["TestFilter/publication"].publish(False)
+
+    assert mFed.request_next_step() == 5.0
+
+    assert mFed.subscriptions["TestFilter/publication"].boolean is False
     m = mFed.create_message()
     assert (
         """HelicsMessage(source = "", destination = "", original_source = "", original_destination = "", time = 0.0, id = 0, message = "")"""
@@ -267,6 +272,12 @@ def test_python_api2():
         assert fed.property["CONSOLE_LOG_LEVEL"] == 1
 
     fed.property[h.HELICS_PROPERTY_INT_LOG_LEVEL] = 5
+
+    fed.separator = "_"
+    assert fed.separator == "_"
+
+    fed.separator = "/"
+    assert fed.separator == "/"
 
     assert fed.property[h.HelicsProperty.TIME_DELTA] == 1e-09
     assert fed.property[h.HelicsProperty.TIME_PERIOD] == 0.0
