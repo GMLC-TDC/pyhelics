@@ -47,6 +47,7 @@ def test_python_api1():
     f3.add_source_target("TestFilter/fout")
 
     f2.set("delay", 2.5)
+    repr(f2.option)
     assert f2.option["CONNECTION_REQUIRED"] == 0
     assert f2.option["CONNECTION_OPTIONAL"] == 0
     assert f2.option["SINGLE_CONNECTION_ONLY"] == 0
