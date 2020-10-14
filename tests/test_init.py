@@ -12,7 +12,7 @@ import helics as h
 
 
 def createBroker(number=1):
-    initstring = f"-f {number} --name=mainbroker --loglevel=0"
+    initstring = f"-f {number} --name=mainbroker"
     # @test_throws h.HELICSErrorInvalidArgument broker = h.helicsCreateBroker("mq", "", initstring)
     broker = h.helicsCreateBroker("zmq", "", initstring)
     # assert broker is h.Broker

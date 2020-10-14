@@ -12,64 +12,72 @@ import helics as h
 
 
 def test_python_api1():
-    broker = h.helicsCreateBroker("zmq", "", "-f2")
+    broker = h.helicsCreateBroker("zmq", "", "-f 2 --name=mainbroker")
     fedinfo = h.helicsCreateFederateInfo()
     fedinfo.core_name = "TestFilter"
+    fedinfo.core_type = "zmq"
+    fedinfo.core_init = "-f 1 --broker=mainbroker"
     fFed = h.helicsCreateMessageFederate("TestFilter", fedinfo)
+
+    print(fFed)
+
     fedinfo = h.helicsCreateFederateInfo()
     fedinfo.core_name = "TestMessage"
+    fedinfo.core_type = "zmq"
+    fedinfo.core_init = "-f 1 --broker=mainbroker"
     mFed = h.helicsCreateMessageFederate("TestMessage", fedinfo)
 
-    p1 = mFed.register_global_endpoint("port1")
-    p2 = mFed.register_global_endpoint("port2", "random")
+    print(mFed)
+
+    p1 = fFed.register_global_endpoint("port1")
+    p2 = mFed.register_global_endpoint("port2")
 
     assert """HelicsEndpoint(name = "port1", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)""" in repr(p1)
-    assert (
-        """HelicsEndpoint(name = "port2", type = "random", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
-        in repr(p2)
-    )
+    assert """HelicsEndpoint(name = "port2", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)""" in repr(p2)
 
-    f1 = fFed.register_global_filter(h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
-    f1.add_source_target("port1")
-    assert """HelicsFilter(name = "filter1", info = "")""" in repr(f1)
+    # f1 = fFed.register_global_filter(h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
+    # f1.add_source_target("port1")
+    # assert """HelicsFilter(name = "filter1", info = "")""" in repr(f1)
 
-    f2 = fFed.register_global_filter(h.HELICS_FILTER_TYPE_DELAY, "filter2")
-    f2.add_source_target("port1")
-    assert """HelicsFilter(name = "filter2", info = "")""" in repr(f2)
+    # f2 = fFed.register_global_filter(h.HELICS_FILTER_TYPE_DELAY, "filter2")
+    # f2.add_source_target("port2")
+    # assert """HelicsFilter(name = "filter2", info = "")""" in repr(f2)
 
-    ep1 = fFed.register_endpoint("fout")
-    assert (
-        """HelicsEndpoint(name = "TestFilter/fout", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
-        in repr(ep1)
-    )
+    # ep1 = fFed.register_endpoint("fout")
+    # assert (
+    #     """HelicsEndpoint(name = "TestFilter/fout", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
+    #     in repr(ep1)
+    # )
 
-    f3 = fFed.register_filter(h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
-    f3.info = "test-filter"
-    assert f3.info == "test-filter"
-    f3.add_source_target("TestFilter/fout")
-    f3.add_destination_target("filter2")
-    f3.remove_target("filter2")
+    # f3 = fFed.register_filter(h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
+    # f3.info = "test-filter"
+    # assert f3.info == "test-filter"
+    # f3.add_source_target("TestFilter/fout")
+    # f3.add_destination_target("filter2")
+    # f3.remove_target("filter2")
 
-    f2.set("delay", 2.5)
-    repr(f2.option)
-    assert f2.option["CONNECTION_REQUIRED"] == 0
-    assert f2.option["CONNECTION_OPTIONAL"] == 0
-    assert f2.option["SINGLE_CONNECTION_ONLY"] == 0
-    assert f2.option["MULTIPLE_CONNECTIONS_ALLOWED"] == 0
-    assert f2.option["BUFFER_DATA"] == 0
-    assert f2.option["STRICT_TYPE_CHECKING"] == 0
-    assert f2.option["IGNORE_UNIT_MISMATCH"] == 0
-    assert f2.option["ONLY_TRANSMIT_ON_CHANGE"] == 0
-    assert f2.option["ONLY_UPDATE_ON_CHANGE"] == 0
-    assert f2.option["IGNORE_INTERRUPTS"] == 0
-    assert f2.option["MULTI_INPUT_HANDLING_METHOD"] == 0
-    assert f2.option["INPUT_PRIORITY_LOCATION"] == 0
-    assert f2.option["CLEAR_PRIORITY_LIST"] == 0
-    assert f2.option["CONNECTIONS"] == 0
+    # f2.set("delay", 2.5)
+    # repr(f2.option)
+    # assert f2.option["CONNECTION_REQUIRED"] == 0
+    # assert f2.option["CONNECTION_OPTIONAL"] == 0
+    # assert f2.option["SINGLE_CONNECTION_ONLY"] == 0
+    # assert f2.option["MULTIPLE_CONNECTIONS_ALLOWED"] == 0
+    # assert f2.option["BUFFER_DATA"] == 0
+    # assert f2.option["STRICT_TYPE_CHECKING"] == 0
+    # assert f2.option["IGNORE_UNIT_MISMATCH"] == 0
+    # assert f2.option["ONLY_TRANSMIT_ON_CHANGE"] == 0
+    # assert f2.option["ONLY_UPDATE_ON_CHANGE"] == 0
+    # assert f2.option["IGNORE_INTERRUPTS"] == 0
+    # assert f2.option["MULTI_INPUT_HANDLING_METHOD"] == 0
+    # assert f2.option["INPUT_PRIORITY_LOCATION"] == 0
+    # assert f2.option["CLEAR_PRIORITY_LIST"] == 0
+    # assert f2.option["CONNECTIONS"] == 0
 
-    f2.option["CONNECTION_REQUIRED"] = 1
+    # f2.option["CONNECTION_REQUIRED"] = 1
+    # assert f2.option["CONNECTION_REQUIRED"] == 1
 
-    assert f2.option["CONNECTION_REQUIRED"] == 1
+    # assert f1.name == "filter1"
+    # assert f2.name == "filter2"
 
     fFed.enter_executing_mode_async()
     mFed.enter_executing_mode()
@@ -78,12 +86,6 @@ def test_python_api1():
     assert fFed.state == 2
     assert fFed.state == h.HelicsFederateState.EXECUTION
 
-    assert f1.name == "filter1"
-    assert f2.name == "filter2"
-
-    data = "hello world"
-    p1.send_message("port2", data)
-
     mFed.request_time_async(1.0)
     grantedtime = fFed.request_time(1.0)
     assert grantedtime == 1.0
@@ -91,12 +93,38 @@ def test_python_api1():
     assert grantedtime == 1.0
     assert mFed.has_message() is False
     assert p2.has_message() is False
-    # grantedtime = h.helicsFederateRequestTime(fFed, 3.0)
-    # assert res==h.helics_true
+    print(fFed)
+    print(mFed)
 
-    # f2 = h.helicsFederateRegisterDestinationFilter(fFed, h.helics_custom_filter, "filter2", "port2")
-    # ep1 = h.helicsFederateRegisterEndpoint(fFed, "fout", "")
-    # f3 = h.helicsFederateRegisterSourceFilter(fFed, h.helics_custom_filter, "", "filter0/fout")
+    data = "hello world"
+    p1.send_message("port2", data)
+
+    data = "hello world"
+    p2.send_message("port1", data)
+
+    mFed.request_time_async(2.0)
+    grantedtime = fFed.request_time(2.0)
+    assert grantedtime == 2.0
+    grantedtime = mFed.request_time_complete()
+    assert grantedtime == 2.0
+    assert mFed.has_message() is False
+    assert p2.has_message() is False
+
+    mFed.request_time_async(3.0)
+    grantedtime = fFed.request_time(3.0)
+    assert grantedtime == 3.0
+    grantedtime = mFed.request_time_complete()
+    assert grantedtime == 3.0
+    assert mFed.has_message() is False
+    assert p2.has_message() is False
+
+    mFed.request_time_async(4.0)
+    grantedtime = fFed.request_time(4.0)
+    assert grantedtime == 4.0
+    grantedtime = mFed.request_time_complete()
+    assert grantedtime == 4.0
+    assert mFed.has_message() is False
+    assert p2.has_message() is False
 
     # The order in which finalize is called is important
     # mFed.finalize()

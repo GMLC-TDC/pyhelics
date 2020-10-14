@@ -1398,7 +1398,8 @@ class HelicsFederate(_HelicsCHandle):
         n_endpoints = self.n_endpoints
         n_filters = self.n_filters
         n_inputs = self.n_inputs
-        return """<helics.{class_name}(name = "{name}", state = {state}, current_time = {current_time}, n_publications = {n_publications}, n_inputs = {n_inputs}, n_endpoints = {n_endpoints}, n_filters = {n_filters}) at {id}>""".format(
+        n_pending_messages = self.n_pending_messages
+        return """<helics.{class_name}(name = "{name}", state = {state}, current_time = {current_time}, n_publications = {n_publications}, n_inputs = {n_inputs}, n_endpoints = {n_endpoints}, n_filters = {n_filters}, n_pending_messages = {n_pending_messages}) at {id}>""".format(
             class_name=self.__class__.__name__,
             name=name,
             state=state,
@@ -1407,6 +1408,7 @@ class HelicsFederate(_HelicsCHandle):
             n_endpoints=n_endpoints,
             n_filters=n_filters,
             n_inputs=n_inputs,
+            n_pending_messages=n_pending_messages,
             id=hex(id(self)),
         )
 
@@ -1444,6 +1446,11 @@ class HelicsFederate(_HelicsCHandle):
     @property
     def n_inputs(self) -> int:
         return helicsFederateGetInputCount(self)
+
+    @property
+    def n_pending_messages(self):
+        """Returns the number of pending receives for all endpoints."""
+        return helicsFederatePendingMessages(self)
 
     @property
     def separator(self):
@@ -2288,16 +2295,6 @@ class HelicsMessageFederate(HelicsFederate):
     def has_message(self) -> bool:
         """Checks if federate has any messages."""
         return helicsFederateHasMessage(self)
-
-    @property
-    def n_pending_messages(self):
-        """Returns the number of pending receives for all endpoints."""
-        return helicsFederatePendingMessages(self)
-
-    @property
-    def n_endpoints(self) -> int:
-        """Get the number of registered endpoints."""
-        return helicsFederateGetEndpointCount(self)
 
     def get_message(self) -> HelicsMessage:
         """Get a packet for any endpoints in the federate."""
