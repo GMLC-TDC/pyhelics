@@ -1649,7 +1649,7 @@ class HelicsFederate(_HelicsCHandle):
         """
         return helicsFederateRequestTimeAdvance(self, time_delta)
 
-    def request_time_iterative(self, time: float, iterate: HelicsIterationRequest) -> (HelicsTime, HelicsIterationResult):
+    def request_time_iterative(self, time: float, iterate: HelicsIterationRequest) -> Tuple[HelicsTime, HelicsIterationResult]:
         """
         Request a time advancement.
 
@@ -1694,7 +1694,7 @@ class HelicsFederate(_HelicsCHandle):
         """
         return helicsFederateRequestTimeComplete(self)
 
-    def request_time_iterative_complete(self) -> (HelicsTime, HelicsIterationResult):
+    def request_time_iterative_complete(self) -> Tuple[HelicsTime, HelicsIterationResult]:
         """
         Finalize the time advancement request.
 
@@ -3851,7 +3851,7 @@ def helicsFederateRequestNextStep(fed: HelicsFederate) -> HelicsTime:
 
 def helicsFederateRequestTimeIterative(
     fed: HelicsFederate, requestTime: HelicsTime, iterate: HelicsIterationRequest
-) -> (HelicsTime, HelicsIterationResult):
+) -> Tuple[HelicsTime, HelicsIterationResult]:
     """
     Request an iterative time.
     This call allows for finer grain control of the iterative process than `helics.helicsFederateRequestTime`. It takes a time and iteration request, and returns a time and iteration status.
@@ -3926,7 +3926,7 @@ def helicsFederateRequestTimeIterativeAsync(fed: HelicsFederate, requestTime: He
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> (HelicsTime, HelicsIterationResult):
+def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> Tuple[HelicsTime, HelicsIterationResult]:
     """
     Complete an iterative time request asynchronous call.
 
