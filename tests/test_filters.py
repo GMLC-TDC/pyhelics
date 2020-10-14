@@ -788,11 +788,11 @@ def test_filter_callback_test():
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
 
     assert (
-        """helics.HelicsEndpoint(name = "port1", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = "0")"""
+        """helics.HelicsEndpoint(name = "port1", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
         in repr(p1)
     )
     assert (
-        """helics.HelicsEndpoint(name = "port2", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = "0")"""
+        """helics.HelicsEndpoint(name = "port2", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
         in repr(p2)
     )
 
