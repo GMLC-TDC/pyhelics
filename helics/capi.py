@@ -2042,8 +2042,9 @@ class HelicsPublication(_HelicsCHandle):
         key = self.key
         type = self.type
         info = self.info
-        return """<helics.{class_name}(key = "{key}", type = "{type}", info = "{info}") at {id}>""".format(
-            class_name=self.__class__.__name__, key=key, type=type, info=info, id=hex(id(self))
+        units = self.units
+        return """<helics.{class_name}(key = "{key}", type = "{type}", units = "{units}", info = "{info}") at {id}>""".format(
+            class_name=self.__class__.__name__, key=key, type=type, units=units, info=info, id=hex(id(self))
         )
 
     def is_valid(self) -> bool:

@@ -29,6 +29,9 @@ def test_python_api1():
     _ = mFed.register_endpoint("ep1")
     _ = mFed.register_global_endpoint("ep2")
 
+    pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
+    assert """HelicsPublication(key = "TestFilter/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
+
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
     assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
 
