@@ -1393,7 +1393,8 @@ class HelicsValueFederate(HelicsFederate):
                     data = json.load(f)
             except Exception:
                 data = json.loads(data)
-        data = json.dumps(data)
+        else:
+            data = json.dumps(data)
         helicsFederateRegisterFromPublicationJSON(self, data)
 
     def get_publication_by_name(self, name: str):
@@ -1481,12 +1482,16 @@ class HelicsValueFederate(HelicsFederate):
         """Clear all the update flags from all federate inputs."""
         helicsFederateClearUpdates(self)
 
-    def publish_json(self, data: dict):
+    def publish_json(self, data: Union[dict, str]):
         """Publish data contained in a JSON file."""
-        if type(data) == dict:
-            data = json.dumps(data)
+        if type(data) == str:
+            try:
+                with open(data) as f:
+                    data = json.load(f)
+            except Exception:
+                data = json.loads(data)
         else:
-            data = str(data)
+            data = json.dumps(data)
         helicsFederatePublishJSON(self, data)
 
 
