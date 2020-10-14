@@ -1818,10 +1818,11 @@ class HelicsInput(_HelicsCHandle):
         self.option = _InputOptionAccessor(self.handle)
 
     def __repr__(self):
-        name = helicsInputGetKey(self)
-        type = helicsInputGetPublicationType(self)
-        return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
-            class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
+        key = self.key
+        type = self.type
+        bytes = self.bytes
+        return """<helics.{class_name}(key = "{key}", type = "{type}", bytes = "{bytes}") at {id}>""".format(
+            class_name=self.__class__.__name__, key=key, type=type, bytes=bytes, id=hex(id(self))
         )
 
     def is_valid(self) -> bool:
@@ -1952,10 +1953,11 @@ class HelicsInput(_HelicsCHandle):
 
 class HelicsPublication(_HelicsCHandle):
     def __repr__(self):
-        name = helicsPublicationGetKey(self)
-        type = helicsPublicationGetType(self)
-        return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
-            class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
+        key = self.key
+        type = self.type
+        info = self.info
+        return """<helics.{class_name}(key = "{key}", type = "{type}", info = "{info}") at {id}>""".format(
+            class_name=self.__class__.__name__, key=key, type=type, info=info, id=hex(id(self))
         )
 
     def is_valid(self) -> bool:
