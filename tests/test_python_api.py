@@ -133,6 +133,9 @@ def test_python_api():
 
     assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] is True
 
+    fed.register_filter(h.HelicsFilterType.DELAY, "")
+    fed.core.register_cloning_filter("")
+
     fed.core.disconnect()
 
     fed.core.wait_for_disconnect()

@@ -1661,7 +1661,7 @@ class HelicsFederate(_HelicsCHandle):
         """
         return helicsFederateRegisterFilter(self, kind, filter_name)
 
-    def register_cloning_fitler(self, delivery_endpoint: str) -> HelicsCloningFilter:
+    def register_cloning_filter(self, delivery_endpoint: str) -> HelicsCloningFilter:
         """
         Create a `HelicsCloningFilter` on the specified federate.
 
