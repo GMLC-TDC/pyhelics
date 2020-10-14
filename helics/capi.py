@@ -4,7 +4,7 @@ import warnings
 from enum import IntEnum, unique
 
 try:
-    from typing import List, Tuple
+    from typing import List, Tuple, Union
 except ImportError:
     pass
 
@@ -1465,16 +1465,6 @@ class HelicsFederateInfo(_HelicsCHandle):
             return helicsFederateInfoSetIntegerProperty(self, index, value)
 
 
-class HelicsQuery(_HelicsCHandle):
-    pass
-
-
-class HelicsEndpoint(_HelicsCHandle):
-    def __repr__(self):
-        name = helicsEndpointGetName(self)
-        return """<helics.{class_name}(name = "{name}")) at {id}>""".format(class_name=self.__class__.__name__, name=name, id=hex(id(self)),)
-
-
 class _MessageFlagAccessor(_HelicsCHandle):
     def __getitem__(self, index):
         raise IndexError("Cannot read flags from Message")
@@ -1598,6 +1588,75 @@ class HelicsMessage(_HelicsCHandle):
     @id.setter
     def id(self, v):
         return helicsMessageSetMessageID(self, v)
+
+
+class HelicsQuery(_HelicsCHandle):
+    pass
+
+
+class HelicsEndpoint(_HelicsCHandle):
+    def __repr__(self):
+        name = helicsEndpointGetName(self)
+        return """<helics.{class_name}(name = "{name}")) at {id}>""".format(class_name=self.__class__.__name__, name=name, id=hex(id(self)),)
+
+    def is_valid(self) -> bool:
+        """Check if the input is valid."""
+        return helicsEndpointIsValid(self)
+
+    def has_message(self) -> bool:
+        """Checks if endpoint has unread messages."""
+        return helicsEndpointHasMessage(self)
+
+    @property
+    def default_destination(self) -> str:
+        """Get the default destination for an endpoint."""
+        return helicsEndpointGetDefaultDestination(self)
+
+    @default_destination.setter
+    def default_destination(self, dest: str):
+        """set the default destination for an endpoint."""
+        helicsEndpointSetDefaultDestination(self, dest)
+
+    @property
+    def n_pending_messages(self) -> int:
+        """Returns the number of pending receives for endpoint"""
+        return helicsEndpointPendingMessages(self)
+
+    def get_message(self) -> HelicsMessage:
+        """Get a packet from an endpoint."""
+        return helicsEndpointGetMessageObject(self)
+
+    def create_message(self) -> HelicsMessage:
+        """Create a message object."""
+        return helicsEndpointCreateMessageObject(self)
+
+    def send_message(self, data: Union[str, HelicsMessage], destination: str = None, time=None):
+        if type(data) == HelicsMessage:
+            helicsEndpointSendMessage(self, data)
+        elif time is None:
+            helicsEndpointSendTo(self, destination, data)
+        else:
+            helicsEndpointSendToAt(self, destination, time, data)
+
+    @property
+    def name(self) -> str:
+        """Get the name of the endpoint."""
+        return helicsEndpointGetName(self)
+
+    @property
+    def type(self) -> str:
+        """Get the specified type of the endpoint."""
+        return helicsEndpointGetType(self)
+
+    @property
+    def info(self) -> str:
+        """Get the interface information field of the filter."""
+        return helicsEndpointGetInfo(self)
+
+    @info.setter
+    def info(self, info: str):
+        """Set the interface information field of the filter."""
+        helicsEndpointSetInfo(self, info)
 
 
 class HelicsInput(_HelicsCHandle):
