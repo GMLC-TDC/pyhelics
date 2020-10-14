@@ -1335,13 +1335,31 @@ class HelicsFederate(_HelicsCHandle):
             helicsFederateLogLevelMessage(self, HelicsLogLevel(level))
 
 
+class HelicsInput(_HelicsCHandle):
+    def __repr__(self):
+        name = helicsInputGetKey(self)
+        type = helicsInputGetPublicationType(self)
+        return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
+            class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
+        )
+
+
+class HelicsPublication(_HelicsCHandle):
+    def __repr__(self):
+        name = helicsPublicationGetKey(self)
+        type = helicsPublicationGetType(self)
+        return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
+            class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
+        )
+
+
 class HelicsValueFederate(HelicsFederate):
     def __init__(self, handle):
         super(HelicsValueFederate, self).__init__(handle)
         self.publications = []
         self.subscriptions = []
 
-    def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = ""):
+    def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
         """
         Register a publication.
 
@@ -1362,7 +1380,7 @@ class HelicsValueFederate(HelicsFederate):
         self.publications.append(pub)
         return pub
 
-    def register_global_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = ""):
+    def register_global_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
         """
         Register a publication
 
@@ -1381,7 +1399,7 @@ class HelicsValueFederate(HelicsFederate):
         self.publications.append(pub)
         return pub
 
-    def register_from_publication_json(self, data: Union[dict, str]):
+    def register_from_publication_json(self, data: Union[dict, str]) -> HelicsPublication:
         """
         Register publications from a JSON output file or string.
 
@@ -1395,13 +1413,15 @@ class HelicsValueFederate(HelicsFederate):
                 data = json.loads(data)
         else:
             data = json.dumps(data)
-        helicsFederateRegisterFromPublicationJSON(self, data)
+        pub = helicsFederateRegisterFromPublicationJSON(self, data)
+        self.publications.append(pub)
+        return pub
 
-    def get_publication_by_name(self, name: str):
+    def get_publication_by_name(self, name: str) -> HelicsPublication:
         """Get publication by name."""
         return helicsFederateGetPublication(self, name)
 
-    def get_publication_by_index(self, index: int):
+    def get_publication_by_index(self, index: int) -> HelicsPublication:
         """
         Get a publication by index.
 
@@ -1413,12 +1433,12 @@ class HelicsValueFederate(HelicsFederate):
         """
         return helicsFederateGetPublicationByIndex(self, index)
 
-    def register_subscription(self, name: str, units: str = ""):
+    def register_subscription(self, name: str, units: str = "") -> HelicsInput:
         sub = helicsFederateRegisterSubscription(self, name, units)
         self.subscriptions.append(sub)
         return sub
 
-    def register_input(self, name: str, kind: Union[str, HelicsDataType], units: str = ""):
+    def register_input(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsInput:
         """
         Register an input.
 
@@ -1439,7 +1459,7 @@ class HelicsValueFederate(HelicsFederate):
         self.subscriptions.append(ipt)
         return ipt
 
-    def register_global_input(self, name: str, kind: Union[str, HelicsDataType], units: str = ""):
+    def register_global_input(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsInput:
         """
         Register an input.
 
@@ -1460,21 +1480,21 @@ class HelicsValueFederate(HelicsFederate):
         self.subscriptions.append(ipt)
         return ipt
 
-    def get_subscription_by_name(self, name: str):
+    def get_subscription_by_name(self, name: str) -> HelicsInput:
         """Get an input by index."""
         return helicsFederateGetInput(self, name)
 
-    def get_subscription_by_index(self, index: int):
+    def get_subscription_by_index(self, index: int) -> HelicsInput:
         """get a subscription by index."""
         return helicsFederateGetInputByIndex(self, index)
 
     @property
-    def n_subscriptions(self):
+    def n_subscriptions(self) -> int:
         """Get the number of inputs in this federate."""
         return helicsFederateGetInputCount(self)
 
     @property
-    def n_publications(self):
+    def n_publications(self) -> int:
         """Get the number of publications in this federate."""
         return helicsFederateGetPublicationCount(self)
 
@@ -1815,24 +1835,6 @@ class HelicsEndpoint(_HelicsCHandle):
     def info(self, info: str):
         """Set the interface information field of the filter."""
         helicsEndpointSetInfo(self, info)
-
-
-class HelicsInput(_HelicsCHandle):
-    def __repr__(self):
-        name = helicsInputGetKey(self)
-        type = helicsInputGetPublicationType(self)
-        return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
-            class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
-        )
-
-
-class HelicsPublication(_HelicsCHandle):
-    def __repr__(self):
-        name = helicsPublicationGetKey(self)
-        type = helicsPublicationGetType(self)
-        return """<helics.{class_name}(name = "{name}", type = "{type}") at {id}>""".format(
-            class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
-        )
 
 
 class HelicsException(Exception):
