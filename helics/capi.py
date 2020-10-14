@@ -1086,7 +1086,7 @@ class HelicsEndpoint(_HelicsCHandle):
 
     @property
     def n_pending_messages(self) -> int:
-        """Returns the number of pending receives for endpoint"""
+        """Returns the number of pending receives for endpoint."""
         return helicsEndpointPendingMessages(self)
 
     def get_message(self) -> HelicsMessage:
@@ -1827,7 +1827,7 @@ class HelicsInput(_HelicsCHandle):
 
     @property
     def string(self) -> str:
-        """Get the current value as a string"""
+        """Get the current value as a string."""
         return helicsInputGetString(self)
 
     @property
@@ -1858,7 +1858,7 @@ class HelicsInput(_HelicsCHandle):
 
     @property
     def vector(self) -> List[float]:
-        """get the current value as a vector of doubles"""
+        """get the current value as a vector of doubles."""
         return helicsInputGetVector(self)
 
     def is_updated(self) -> bool:
@@ -1876,7 +1876,7 @@ class HelicsInput(_HelicsCHandle):
     @property
     def key(self) -> str:
         """get the Name/Key for the input
-        the name is the local name if given, key is the full key name"""
+        the name is the local name if given, key is the full key name."""
         return helicsInputGetKey(self)
 
     @property
@@ -2201,7 +2201,7 @@ class HelicsMessageFederate(HelicsFederate):
         return helicsFederateGetEndpointByIndex(self, index)
 
     def hasMessage(self) -> bool:
-        """Checks if federate has any messages"""
+        """Checks if federate has any messages."""
         return helicsFederateHasMessage(self)
 
     @property
@@ -2218,7 +2218,7 @@ class HelicsMessageFederate(HelicsFederate):
         return helicsFederateCreateMessage(self)
 
     def n_endpoints(self) -> int:
-        """Get the number of registered endpoints"""
+        """Get the number of registered endpoints."""
         return helicsFederateGetEndpointCount(self)
 
 
