@@ -1475,7 +1475,33 @@ class HelicsEndpoint(_HelicsCHandle):
         return """<helics.{class_name}(name = "{name}")) at {id}>""".format(class_name=self.__class__.__name__, name=name, id=hex(id(self)),)
 
 
+class _MessageFlagAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        raise IndexError("Cannot read flags from Message")
+
+    def __setitem__(self, index: int, value: bool):
+        return helicsMessageSetFlagOption(self, index, value)
+
+    def __repr__(self):
+        lst = []
+        # for f in :
+        #     # TODO: remove this try except
+        #     # See https://github.com/GMLC-TDC/HELICS/issues/1549
+        #     try:
+        #         lst.append("'{}' = {}".format(f.name, self[f]))
+        #     except Exception:
+        #         pass
+        return "<{{ {} }}>".format(", ".join(lst))
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
 class HelicsMessage(_HelicsCHandle):
+    def __init__(self, handle):
+        super(HelicsMessage, self).__init__(handle)
+        self.flag = _MessageFlagAccessor(self.handle)
+
     def __repr__(self):
         source = self.source
         destination = self.destination
@@ -3228,7 +3254,7 @@ def helicsFederateSetTimeProperty(fed: HelicsFederate, timeProperty: int, time: 
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateSetFlagOption(fed: HelicsFederate, flag: int, flagValue: bool):
+def helicsFederateSetFlagOption(fed: HelicsFederate, flag: int, value: bool):
     """
     Set a flag for the federate.
 
@@ -3236,11 +3262,11 @@ def helicsFederateSetFlagOption(fed: HelicsFederate, flag: int, flagValue: bool)
 
     * **`fed`** - The federate to alter a flag for.
     * **`flag`** - The flag to change.
-    * **`flagValue`** - The new value of the flag. 0 for false, !=0 for true.
+    * **`value`** - The new value of the flag. 0 for false, !=0 for true.
     """
     f = loadSym("helicsFederateSetFlagOption")
     err = helicsErrorInitialize()
-    f(fed.handle, flag, flagValue, err)
+    f(fed.handle, flag, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4661,7 +4687,7 @@ def helicsMessageClearFlags(message: HelicsMessage):
     f(message.handle)
 
 
-def helicsMessageSetFlagOption(message: HelicsMessage, flag: int, flagValue: bool):
+def helicsMessageSetFlagOption(message: HelicsMessage, flag: int, value: bool):
     """
     Set a flag on a message.
 
@@ -4669,11 +4695,11 @@ def helicsMessageSetFlagOption(message: HelicsMessage, flag: int, flagValue: boo
 
     * **`message`** - The message object in question.
     * **`flag`** - An index of a flag to set on the message.
-    * **`flagValue`** - The desired value of the flag.
+    * **`value`** - The desired value of the flag.
     """
     f = loadSym("helicsMessageSetFlagOption")
     err = helicsErrorInitialize()
-    f(message.handle, flag, flagValue, err)
+    f(message.handle, flag, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
