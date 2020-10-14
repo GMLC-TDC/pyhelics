@@ -76,9 +76,9 @@ def test_python_api1():
     pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
     assert """HelicsPublication(key = "TestFilter/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
 
-    sub = mFed.register_subscription("subscription", "custom-units")
+    sub = mFed.register_subscription("TestFilter/publication", "custom-units")
     assert (
-        """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "subscription", info = "")"""
+        """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "TestFilter/publication", info = "")"""
         in repr(sub)
     )
     assert (
@@ -90,9 +90,6 @@ def test_python_api1():
 
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
     assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
-
-    sub.option["CONNECTION_REQUIRED"] = 0
-    assert sub.option["CONNECTION_REQUIRED"] == 0
 
     sub.set_default(b"hello")
     assert sub.bytes == b"hello"
@@ -130,7 +127,11 @@ def test_python_api1():
 
     mFed.endpoints["TestFilter/ep1"].send_data(data, "ep2", 1.0)
 
+    mFed.publications["TestFilter/publication"].publish("first-time")
+
     assert mFed.request_time(2.0) == 1.0
+
+    assert mFed.subscriptions["TestFilter/publication"].bytes == b"first-time"
 
     assert mFed.has_message()
 
@@ -178,7 +179,23 @@ def test_python_api1():
     message.flag[1] = True
     assert message.flag[1] is True
 
+    mFed.publications["TestFilter/publication"].publish(1)
+
     assert mFed.request_next_step() == 2.0
+
+    assert mFed.subscriptions["TestFilter/publication"].string == "1"
+
+    mFed.publications["TestFilter/publication"].publish(1 + 2j)
+
+    assert mFed.request_next_step() == 3.0
+
+    assert mFed.subscriptions["TestFilter/publication"].string == "1+2j"
+
+    mFed.publications["TestFilter/publication"].publish([1, 2, 3, 4, 5])
+
+    assert mFed.request_next_step() == 4.0
+
+    assert mFed.subscriptions["TestFilter/publication"].vector == [1.0, 2.0, 3.0, 4.0, 5.0]
 
     mFed.finalize()
 

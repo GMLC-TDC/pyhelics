@@ -2191,7 +2191,7 @@ class HelicsValueFederate(HelicsFederate):
 
     def register_subscription(self, name: str, units: str = "") -> HelicsInput:
         sub = helicsFederateRegisterSubscription(self, name, units)
-        self.subscriptions[sub.key] = sub
+        self.subscriptions[sub.target] = sub
         return sub
 
     def register_input(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsInput:
@@ -2212,7 +2212,7 @@ class HelicsValueFederate(HelicsFederate):
             ipt = helicsFederateRegisterTypeInput(self, name, kind, units)
         else:
             ipt = helicsFederateRegisterTypeInput(self, name, HelicsDataType(kind), units)
-        self.subscriptions[ipt.key] = ipt
+        self.subscriptions[ipt.target] = ipt
         return ipt
 
     def register_global_input(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsInput:
@@ -2233,7 +2233,7 @@ class HelicsValueFederate(HelicsFederate):
             ipt = helicsFederateRegisterGlobalTypeInput(self, name, kind, units)
         else:
             ipt = helicsFederateRegisterGlobalTypeInput(self, name, HelicsDataType(kind), units)
-        self.subscriptions[ipt.key] = ipt
+        self.subscriptions[ipt.target] = ipt
         return ipt
 
     def get_subscription_by_name(self, name: str) -> HelicsInput:
