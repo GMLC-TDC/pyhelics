@@ -69,6 +69,7 @@ def test_python_api1():
 
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
     fedinfo = h.helicsCreateFederateInfo()
+    assert "HelicsFederateInfo()" in repr(fedinfo)
     fedinfo.core_name = "TestFilter"
     fedinfo.core_type = "zmq"
     fedinfo.core_init = "-f 1 --broker=mainbroker"
