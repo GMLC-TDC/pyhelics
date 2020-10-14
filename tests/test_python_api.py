@@ -18,6 +18,11 @@ def test_python_api():
 
     broker.set_global("hello", "world")
 
+    broker.data_link("hello", "world")
+    broker.add_destination_filter_to_endpoint("hello", "world")
+    broker.add_source_filter_to_endpoint("hello", "world")
+    assert broker.query("hello", "world") == "#invalid"
+
     fi = h.helicsCreateFederateInfo()
     fi.core_init = "--federates 1"
     fi.set_property(h.HELICS_PROPERTY_INT_LOG_LEVEL, 2)
