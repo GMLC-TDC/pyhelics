@@ -285,6 +285,14 @@ def test_python_api3():
 
     source_filter1.add_source_target("ep1")
 
+    assert (
+        """<{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 0, 'BUFFER_DATA' = 0, 'STRICT_TYPE_CHECKING' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = 0, 'CLEAR_PRIORITY_LIST' = 0, 'CONNECTIONS' = 0 }>"""
+        in repr(source_filter1.option)
+    )
+
+    source_filter1.option["CONNECTION_REQUIRED"] = 1
+    assert source_filter1.option["CONNECTION_REQUIRED"] == 1
+
     destination_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter")
 
     destination_filter1.add_destination_target("ep2")
