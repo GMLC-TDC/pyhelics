@@ -1922,6 +1922,66 @@ class HelicsPublication(_HelicsCHandle):
             class_name=self.__class__.__name__, name=name, type=type, id=hex(id(self))
         )
 
+    def is_valid(self) -> bool:
+        """Check if the publication is valid."""
+        return helicsPublicationIsValid(self)
+
+    def publish(self, data: Union[bytes, str, int, complex, float, List[float], Tuple[str, float], bool]):
+        """
+        publish raw bytes
+        publish a string from a char *
+        publish a string value
+        publish an int64_t value
+        publish a double
+        publish a complex number
+        publish a vector of doubles
+        publish a vector of doubles
+        publish a named point with a string and double
+        publish a boolean value
+        """
+        if isinstance(data, bytes):
+            helicsPublicationPublishRaw(self, data)
+        elif isinstance(data, str):
+            helicsPublicationPublishString(self, data)
+        elif isinstance(data, int):
+            helicsPublicationPublishInteger(self, data)
+        elif isinstance(data, float):
+            helicsPublicationPublishDouble(self, data)
+        elif isinstance(data, complex):
+            helicsPublicationPublishComplex(self, data)
+        elif isinstance(data, list):
+            helicsPublicationPublishVector(self, data)
+        elif isinstance(data, tuple):
+            helicsPublicationPublishNamedPoint(self, data[0], data[1])
+        elif isinstance(data, bool):
+            helicsPublicationPublishBoolean(self, data)
+        else:
+            raise NotImplementedError("Unknown type `{}`".format(type(data)))
+
+    @property
+    def key(self) -> str:
+        """Get the key for the publication."""
+        return helicsPublicationGetKey(self)
+
+    @property
+    def units(self) -> str:
+        """Get the units of the publication."""
+        return helicsPublicationGetUnits(self)
+
+    @property
+    def type(self) -> str:
+        """Get the type for the publication."""
+        return helicsPublicationGetType(self)
+
+    @property
+    def info(self) -> str:
+        """Get the interface information field of the publication."""
+        return helicsPublicationGetInfo(self)
+
+    def set_info(self, info: str):
+        """Set the interface information field of the publication."""
+        helicsPublicationSetInfo(self, info)
+
 
 class HelicsValueFederate(HelicsFederate):
     def __init__(self, handle):
