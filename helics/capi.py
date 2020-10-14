@@ -724,6 +724,26 @@ class HelicsFilter(_HelicsCHandle):
         """remove a destination target from a cloning filter."""
         helicsFilterRemoveTarget(self, dest)
 
+    def add_delivery_endpoint(self, delivery_endpoint: str):
+        """
+        Add a delivery destination from a filter.
+
+        **Parameters**
+
+        * **`delivery_endpoint`** - A string with the delivery endpoint to add.
+        """
+        helicsFilterAddDeliveryEndpoint(self, delivery_endpoint)
+
+    def remove_delivery_endpoint(self, delivery_endpoint: str):
+        """
+        Remove a delivery destination from a filter.
+
+        **Parameters**
+
+        * **`delivery_endpoint`** - A string with the delivery endpoint to remove.
+        """
+        helicsFilterRemoveDeliveryEndpoint(self, delivery_endpoint)
+
     @property
     def name(self) -> str:
         return helicsFilterGetName(self)
@@ -755,9 +775,29 @@ class HelicsCore(_HelicsCHandle):
             class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
 
+    def __del__(self):
+        helicsCoreFree(self)
+
+    @property
+    def identifier(self) -> str:
+        """Get an identifier string for the core."""
+        return helicsCoreGetIdentifier(self)
+
+    @property
+    def address(self) -> str:
+        """Get the connection network or connection address for the core."""
+        return helicsCoreGetAddress(self)
+
+    def is_valid(self) -> bool:
+        """Check if the core is valid."""
+        return helicsCoreIsValid(self)
+
     def is_connected(self) -> bool:
         """Check if the core is connected to the broker."""
         return helicsCoreIsConnected(self)
+
+    def clone(self):
+        return helicsCoreClone(self)
 
     def set_ready_to_init(self):
         """Set the core to ready to enter init.
@@ -782,16 +822,6 @@ class HelicsCore(_HelicsCHandle):
         Returns: true if the disconnect was successful false if it timed out.
         """
         return helicsCoreWaitForDisconnect(self, ms_to_wait)
-
-    @property
-    def identifier(self) -> str:
-        """Get an identifier string for the core."""
-        return helicsCoreGetIdentifier(self)
-
-    @property
-    def address(self) -> str:
-        """Get the connection network or connection address for the core."""
-        return helicsCoreGetAddress(self)
 
     def register_filter(self, kind: HelicsFilterType, name: str = "") -> HelicsFilter:
         """

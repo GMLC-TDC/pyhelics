@@ -270,3 +270,33 @@ def test_python_api2():
 
     h.helicsCleanupLibrary()
     h.helicsCloseLibrary()
+
+
+def test_python_api3():
+    core1 = h.helicsCreateCore("inproc", "core1", "--autobroker")
+
+    assert """HelicsCore(identifier = "core1", address = "core1")""" in repr(core1)
+
+    core2 = core1.clone()
+
+    assert core1.identifier == "core1"
+
+    source_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter")
+
+    source_filter1.add_source_target("ep1")
+
+    destination_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter")
+
+    destination_filter1.add_destination_target("ep2")
+    cloning_filter1 = core1.register_cloning_filter("ep3")
+
+    cloning_filter1.remove_delivery_endpoint("ep3")
+
+    assert core1.is_connected()
+    core1.set_ready_to_init()
+
+    core1.disconnect()
+    core2.disconnect()
+    h.helicsCoreFree(core1)
+    h.helicsCoreFree(core2)
+    h.helicsCloseLibrary()
