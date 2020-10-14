@@ -1938,6 +1938,8 @@ class HelicsInput(_HelicsCHandle):
             helicsInputSetDefaultBoolean(self, data)
         elif isinstance(data, float):
             helicsInputSetDefaultDouble(self, data)
+        elif isinstance(data, complex):
+            helicsInputSetDefaultComplex(self, data)
         elif isinstance(data, list):
             helicsInputSetDefaultVector(self, data)
         else:
@@ -6787,7 +6789,7 @@ def helicsInputGetNamedPoint(ipt: HelicsInput) -> Tuple[str, float]:
         return ffi.string(outputString, maxlen=actualLength[0]).decode(), val[0]
 
 
-def helicsInputSetDefaultRaw(ipt: HelicsInput, data: str):
+def helicsInputSetDefaultRaw(ipt: HelicsInput, data: bytes):
     """
 
     Default Value functions.
@@ -6801,8 +6803,14 @@ def helicsInputSetDefaultRaw(ipt: HelicsInput, data: str):
     """
     f = loadSym("helicsInputSetDefaultRaw")
     err = helicsErrorInitialize()
+    if isinstance(data, str):
+        data = data.encode()
+    if not isinstance(data, bytes):
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
     inputDataLength = len(data)
-    f(ipt.handle, cstring(data), inputDataLength, err)
+    f(ipt.handle, data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 

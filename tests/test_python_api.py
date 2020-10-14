@@ -94,6 +94,14 @@ def test_python_api1():
     sub.option["CONNECTION_REQUIRED"] = 0
     assert sub.option["CONNECTION_REQUIRED"] == 0
 
+    sub.set_default(b"hello")
+    sub.set_default("world")
+    sub.set_default(0)
+    sub.set_default(True)
+    sub.set_default(1.1)
+    sub.set_default(2 + 1.1j)
+    sub.set_default([1.0, 2.0, 3.0])
+
     mFed.enter_executing_mode()
 
     data = "random-data"
