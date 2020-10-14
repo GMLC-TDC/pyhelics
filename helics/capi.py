@@ -44,19 +44,19 @@ pointer = int
 @unique
 class HelicsCoreType(IntEnum):
     """
-    * **DEFAULT**      = 0
-    * **TEST**         = 3
-    * **INTERPROCESS** = 4
-    * **IPC**          = 5
-    * **TCP**          = 6
-    * **UDP**          = 7
-    * **NNG**          = 9
-    * **ZMQ_TEST**     = 10
-    * **TCP_SS**       = 11
-    * **HTTP**         = 12
-    * **WEBSOCKET**    = 14
-    * **INPROC**       = 18
-    * **NULL**         = 66
+    - **DEFAULT**      = 0
+    - **TEST**         = 3
+    - **INTERPROCESS** = 4
+    - **IPC**          = 5
+    - **TCP**          = 6
+    - **UDP**          = 7
+    - **NNG**          = 9
+    - **ZMQ_TEST**     = 10
+    - **TCP_SS**       = 11
+    - **HTTP**         = 12
+    - **WEBSOCKET**    = 14
+    - **INPROC**       = 18
+    - **NULL**         = 66
     """
 
     DEFAULT = 0  # HelicsCoreType
@@ -112,18 +112,18 @@ helics_core_type_null = HelicsCoreType.NULL
 @unique
 class HelicsDataType(IntEnum):
     """
-    * **STRING**         = 0
-    * **DOUBLE**         = 1
-    * **INT**            = 2
-    * **COMPLEX**        = 3
-    * **VECTOR**         = 4
-    * **COMPLEX_VECTOR** = 5
-    * **NAMED_POINT**    = 6
-    * **BOOLEAN**        = 7
-    * **TIME**           = 8
-    * **RAW**            = 25
-    * **MULTI**          = 33
-    * **ANY**            = 25262
+    - **STRING**         = 0
+    - **DOUBLE**         = 1
+    - **INT**            = 2
+    - **COMPLEX**        = 3
+    - **VECTOR**         = 4
+    - **COMPLEX_VECTOR** = 5
+    - **NAMED_POINT**    = 6
+    - **BOOLEAN**        = 7
+    - **TIME**           = 8
+    - **RAW**            = 25
+    - **MULTI**          = 33
+    - **ANY**            = 25262
     """
 
     STRING = 0  # HelicsDataType
@@ -170,20 +170,20 @@ helics_data_type_any = HelicsDataType.ANY
 @unique
 class HelicsFederateFlag(IntEnum):
     """
-    * **OBSERVER**                      = 0
-    * **UNINTERRUPTIBLE**               = 1
-    * **INTERRUPTIBLE**                 = 2
-    * **SOURCE_ONLY**                   = 4
-    * **ONLY_TRANSMIT_ON_CHANGE**       = 6
-    * **ONLY_UPDATE_ON_CHANGE**         = 8
-    * **WAIT_FOR_CURRENT_TIME_UPDATE**  = 10
-    * **RESTRICTIVE_TIME_POLICY**       = 11
-    * **REALTIME**                      = 16
-    * **SLOW_RESPONDING**               = 29
-    * **DELAY_INIT_ENTRY**              = 45
-    * **ENABLE_INIT_ENTRY**             = 47
-    * **IGNORE_TIME_MISMATCH_WARNINGS** = 67
-    * **TERMINATE_ON_ERROR**            = 72
+    - **OBSERVER**                      = 0
+    - **UNINTERRUPTIBLE**               = 1
+    - **INTERRUPTIBLE**                 = 2
+    - **SOURCE_ONLY**                   = 4
+    - **ONLY_TRANSMIT_ON_CHANGE**       = 6
+    - **ONLY_UPDATE_ON_CHANGE**         = 8
+    - **WAIT_FOR_CURRENT_TIME_UPDATE**  = 10
+    - **RESTRICTIVE_TIME_POLICY**       = 11
+    - **REALTIME**                      = 16
+    - **SLOW_RESPONDING**               = 29
+    - **DELAY_INIT_ENTRY**              = 45
+    - **ENABLE_INIT_ENTRY**             = 47
+    - **IGNORE_TIME_MISMATCH_WARNINGS** = 67
+    - **TERMINATE_ON_ERROR**            = 72
     """
 
     OBSERVER = 0  # HelicsFederateFlags
@@ -245,15 +245,15 @@ helics_flag_terminate_on_error = HelicsFederateFlag.TERMINATE_ON_ERROR
 @unique
 class HelicsLogLevel(IntEnum):
     """
-    * **NO_PRINT**    = -1
-    * **ERROR**       = 0
-    * **WARNING**     = 1
-    * **SUMMARY**     = 2
-    * **CONNECTIONS** = 3
-    * **INTERFACES**  = 4
-    * **TIMING**      = 5
-    * **DATA**        = 6
-    * **TRACE**       = 7
+    - **NO_PRINT**    = -1
+    - **ERROR**       = 0
+    - **WARNING**     = 1
+    - **SUMMARY**     = 2
+    - **CONNECTIONS** = 3
+    - **INTERFACES**  = 4
+    - **TIMING**      = 5
+    - **DATA**        = 6
+    - **TRACE**       = 7
     """
 
     NO_PRINT = -1  # HelicsLogLevels
@@ -291,21 +291,21 @@ helics_log_level_trace = HelicsLogLevel.TRACE
 @unique
 class HelicsError(IntEnum):
     """
-    * **FATAL**                    = -404
-    * **EXTERNAL_TYPE**            = -203
-    * **OTHER**                    = -101
-    * **INSUFFICIENT_SPACE**       = -18
-    * **EXECUTION_FAILURE**        = -14
-    * **INVALID_FUNCTION_CALL**    = -10
-    * **INVALID_STATE_TRANSITION** = -9
-    * **WARNING**                  = -8
-    * **SYSTEM_FAILURE**           = -6
-    * **DISCARD**                  = -5
-    * **INVALID_ARGUMENT**         = -4
-    * **INVALID_OBJECT**           = -3
-    * **CONNECTION_FAILURE**       = -2
-    * **REGISTRATION_FAILURE**     = -1
-    * **OK**                       = 0
+    - **FATAL**                    = -404
+    - **EXTERNAL_TYPE**            = -203
+    - **OTHER**                    = -101
+    - **INSUFFICIENT_SPACE**       = -18
+    - **EXECUTION_FAILURE**        = -14
+    - **INVALID_FUNCTION_CALL**    = -10
+    - **INVALID_STATE_TRANSITION** = -9
+    - **WARNING**                  = -8
+    - **SYSTEM_FAILURE**           = -6
+    - **DISCARD**                  = -5
+    - **INVALID_ARGUMENT**         = -4
+    - **INVALID_OBJECT**           = -3
+    - **CONNECTION_FAILURE**       = -2
+    - **REGISTRATION_FAILURE**     = -1
+    - **OK**                       = 0
     """
 
     FATAL = -404  # HelicsErrorTypes
@@ -361,18 +361,18 @@ helics_ok = HelicsError.OK
 @unique
 class HelicsProperty(IntEnum):
     """
-    * **TIME_DELTA**            = 137
-    * **TIME_PERIOD**           = 140
-    * **TIME_OFFSET**           = 141
-    * **TIME_RT_LAG**           = 143
-    * **TIME_RT_LEAD**          = 144
-    * **TIME_RT_TOLERANCE**     = 145
-    * **TIME_INPUT_DELAY**      = 148
-    * **TIME_OUTPUT_DELAY**     = 150
-    * **INT_MAX_ITERATIONS**    = 259
-    * **INT_LOG_LEVEL**         = 271
-    * **INT_FILE_LOG_LEVEL**    = 272
-    * **INT_CONSOLE_LOG_LEVEL** = 274
+    - **TIME_DELTA**            = 137
+    - **TIME_PERIOD**           = 140
+    - **TIME_OFFSET**           = 141
+    - **TIME_RT_LAG**           = 143
+    - **TIME_RT_LEAD**          = 144
+    - **TIME_RT_TOLERANCE**     = 145
+    - **TIME_INPUT_DELAY**      = 148
+    - **TIME_OUTPUT_DELAY**     = 150
+    - **INT_MAX_ITERATIONS**    = 259
+    - **INT_LOG_LEVEL**         = 271
+    - **INT_FILE_LOG_LEVEL**    = 272
+    - **INT_CONSOLE_LOG_LEVEL** = 274
     """
 
     TIME_DELTA = 137  # HelicsProperties
@@ -419,15 +419,15 @@ helics_property_int_console_log_level = HelicsProperty.INT_CONSOLE_LOG_LEVEL
 @unique
 class HelicsMultiInputMode(IntEnum):
     """
-    * **NO_OP**               = 0
-    * **VECTORIZE_OPERATION** = 1
-    * **AND_OPERATION**       = 2
-    * **OR_OPERATION**        = 3
-    * **SUM_OPERATION**       = 4
-    * **DIFF_OPERATION**      = 5
-    * **MAX_OPERATION**       = 6
-    * **MIN_OPERATION**       = 7
-    * **AVERAGE_OPERATION**   = 8
+    - **NO_OP**               = 0
+    - **VECTORIZE_OPERATION** = 1
+    - **AND_OPERATION**       = 2
+    - **OR_OPERATION**        = 3
+    - **SUM_OPERATION**       = 4
+    - **DIFF_OPERATION**      = 5
+    - **MAX_OPERATION**       = 6
+    - **MIN_OPERATION**       = 7
+    - **AVERAGE_OPERATION**   = 8
     """
 
     NO_OP = 0  # HelicsMultiInputMode
@@ -465,20 +465,20 @@ helics_multi_input_average_operation = HelicsMultiInputMode.AVERAGE_OPERATION
 @unique
 class HelicsHandleOption(IntEnum):
     """
-    * **CONNECTION_REQUIRED**          = 397
-    * **CONNECTION_OPTIONAL**          = 402
-    * **SINGLE_CONNECTION_ONLY**       = 407
-    * **MULTIPLE_CONNECTIONS_ALLOWED** = 409
-    * **BUFFER_DATA**                  = 411
-    * **STRICT_TYPE_CHECKING**         = 414
-    * **IGNORE_UNIT_MISMATCH**         = 447
-    * **ONLY_TRANSMIT_ON_CHANGE**      = 452
-    * **ONLY_UPDATE_ON_CHANGE**        = 454
-    * **IGNORE_INTERRUPTS**            = 475
-    * **MULTI_INPUT_HANDLING_METHOD**  = 507
-    * **INPUT_PRIORITY_LOCATION**      = 510
-    * **CLEAR_PRIORITY_LIST**          = 512
-    * **CONNECTIONS**                  = 522
+    - **CONNECTION_REQUIRED**          = 397
+    - **CONNECTION_OPTIONAL**          = 402
+    - **SINGLE_CONNECTION_ONLY**       = 407
+    - **MULTIPLE_CONNECTIONS_ALLOWED** = 409
+    - **BUFFER_DATA**                  = 411
+    - **STRICT_TYPE_CHECKING**         = 414
+    - **IGNORE_UNIT_MISMATCH**         = 447
+    - **ONLY_TRANSMIT_ON_CHANGE**      = 452
+    - **ONLY_UPDATE_ON_CHANGE**        = 454
+    - **IGNORE_INTERRUPTS**            = 475
+    - **MULTI_INPUT_HANDLING_METHOD**  = 507
+    - **INPUT_PRIORITY_LOCATION**      = 510
+    - **CLEAR_PRIORITY_LIST**          = 512
+    - **CONNECTIONS**                  = 522
     """
 
     CONNECTION_REQUIRED = 397  # HelicsHandleOptions
@@ -531,13 +531,13 @@ helics_handle_option_connections = HelicsHandleOption.CONNECTIONS
 @unique
 class HelicsFilterType(IntEnum):
     """
-    * **CUSTOM**       = 0
-    * **DELAY**        = 1
-    * **RANDOM_DELAY** = 2
-    * **RANDOM_DROP**  = 3
-    * **REROUTE**      = 4
-    * **CLONE**        = 5
-    * **FIREWALL**     = 6
+    - **CUSTOM**       = 0
+    - **DELAY**        = 1
+    - **RANDOM_DELAY** = 2
+    - **RANDOM_DROP**  = 3
+    - **REROUTE**      = 4
+    - **CLONE**        = 5
+    - **FIREWALL**     = 6
     """
 
     CUSTOM = 0  # HelicsFilterType
@@ -569,9 +569,9 @@ helics_filter_type_firewall = HelicsFilterType.FIREWALL
 @unique
 class HelicsIterationRequest(IntEnum):
     """
-    * **NO_ITERATION**      = 0
-    * **FORCE_ITERATION**   = 1
-    * **ITERATE_IF_NEEDED** = 2
+    - **NO_ITERATION**      = 0
+    - **FORCE_ITERATION**   = 1
+    - **ITERATE_IF_NEEDED** = 2
     """
 
     NO_ITERATION = 0  # HelicsIterationRequest
@@ -591,10 +591,10 @@ helics_iteration_request_iterate_if_needed = HelicsIterationRequest.ITERATE_IF_N
 @unique
 class HelicsIterationResult(IntEnum):
     """
-    * **NEXT_STEP** = 0
-    * **ERROR**     = 1
-    * **HALTED**    = 2
-    * **ITERATING** = 3
+    - **NEXT_STEP** = 0
+    - **ERROR**     = 1
+    - **HALTED**    = 2
+    - **ITERATING** = 3
     """
 
     NEXT_STEP = 0  # HelicsIterationResult
@@ -617,16 +617,16 @@ helics_iteration_result_iterating = HelicsIterationResult.ITERATING
 @unique
 class HelicsFederateState(IntEnum):
     """
-    * **STARTUP**                = 0
-    * **INITIALIZATION**         = 1
-    * **EXECUTION**              = 2
-    * **FINALIZE**               = 3
-    * **ERROR**                  = 4
-    * **PENDING_INIT**           = 5
-    * **PENDING_EXEC**           = 6
-    * **PENDING_TIME**           = 7
-    * **PENDING_ITERATIVE_TIME** = 8
-    * **PENDING_FINALIZE**       = 9
+    - **STARTUP**                = 0
+    - **INITIALIZATION**         = 1
+    - **EXECUTION**              = 2
+    - **FINALIZE**               = 3
+    - **ERROR**                  = 4
+    - **PENDING_INIT**           = 5
+    - **PENDING_EXEC**           = 6
+    - **PENDING_TIME**           = 7
+    - **PENDING_ITERATIVE_TIME** = 8
+    - **PENDING_FINALIZE**       = 9
     """
 
     STARTUP = 0  # HelicsFederateState
@@ -730,7 +730,7 @@ class HelicsFilter(_HelicsCHandle):
 
         **Parameters**
 
-        * **`delivery_endpoint`** - A string with the delivery endpoint to add.
+        - **`delivery_endpoint`** - A string with the delivery endpoint to add.
         """
         helicsFilterAddDeliveryEndpoint(self, delivery_endpoint)
 
@@ -740,7 +740,7 @@ class HelicsFilter(_HelicsCHandle):
 
         **Parameters**
 
-        * **`delivery_endpoint`** - A string with the delivery endpoint to remove.
+        - **`delivery_endpoint`** - A string with the delivery endpoint to remove.
         """
         helicsFilterRemoveDeliveryEndpoint(self, delivery_endpoint)
 
@@ -858,7 +858,7 @@ class HelicsCore(_HelicsCHandle):
 
         **Parameters**
 
-        **`value_name`**: the name of the global value to set
+        **`name`**: the name of the global value to set
         **`value`**: actual value of the global variable
         """
         helicsCoreSetGlobal(self, name, value)
@@ -1823,7 +1823,7 @@ class HelicsFederate(_HelicsCHandle):
 
         **Parameters**
 
-        - **`value_name`**: the name of the global to set.
+        - **`name`**: the name of the global to set.
         - **`value`**: the value of the global.
         """
         helicsFederateSetGlobal(self, name, value)
@@ -1846,8 +1846,8 @@ class HelicsFederate(_HelicsCHandle):
 
         **Parameters**
 
-        **`error_code`**: an error code to give to the error.
-        **`error_string`**: a string message associated with the error.
+        - **`error_code`**: an error code to give to the error.
+        - **`error_string`**: a string message associated with the error.
         """
         helicsFederateLocalError(self, error_code)
 
@@ -1857,8 +1857,8 @@ class HelicsFederate(_HelicsCHandle):
 
         **Parameters**
 
-        **`error_code`**: an error code to give to the error.
-        **`error_string`**: a string message associated with the error.
+        - **`error_code`**: an error code to give to the error.
+        - **`error_string`**: a string message associated with the error.
         """
         helicsFederateGlobalError(self, error_code)
 
@@ -2143,9 +2143,9 @@ class HelicsValueFederate(HelicsFederate):
 
         **Parameters**
 
-        **`name`**: the name of the publication.
-        **`kind`**: the type of the publication.
-        **`units`**: a string defining the units of the publication [optional]
+        - **`name`**: the name of the publication.
+        - **`kind`**: the type of the publication.
+        - **`units`**: a string defining the units of the publication [optional]
 
         Returns: a publication id object for use as an identifier
         """
@@ -2162,9 +2162,11 @@ class HelicsValueFederate(HelicsFederate):
 
         Call is only valid in startup mode
 
-        **`name`**: the name of the publication
-        **`kind`**: the type of the publication
-        **`units`**: a string defining the units of the publication [optional]
+        **Parameters**
+
+        - **`name`**: the name of the publication
+        - **`kind`**: the type of the publication
+        - **`units`**: a string defining the units of the publication [optional]
 
         Returns: a publication object for use as an identifier
         """
@@ -2203,7 +2205,7 @@ class HelicsValueFederate(HelicsFederate):
 
         **Parameters**
 
-        **`index`**: a 0 based index of the publication to retrieve
+        - **`index`**: a 0 based index of the publication to retrieve
 
         Returns: a Publication object
         """
@@ -2222,9 +2224,9 @@ class HelicsValueFederate(HelicsFederate):
 
         **Parameters**
 
-        **`name`**: the name of the input
-        **`kind`**: the type of input to register
-        **`units`**: a string defining the units of the input [optional]
+        - **`name`**: the name of the input
+        - **`kind`**: the type of input to register
+        - **`units`**: a string defining the units of the input [optional]
 
         Returns: an input id object for use as an identifier
         """
@@ -2243,9 +2245,9 @@ class HelicsValueFederate(HelicsFederate):
 
         **Parameters**
 
-        **`name`**: the name of the input
-        **`kind`**: a string defining the type of the input
-        **`units`**: a string defining the units of the input [optional]
+        - **`name`**: the name of the input
+        - **`kind`**: a string defining the type of the input
+        - **`units`**: a string defining the units of the input [optional]
 
         Returns: an input object for use as an identifier.
         """
@@ -2261,7 +2263,7 @@ class HelicsValueFederate(HelicsFederate):
         return helicsFederateGetInput(self, name)
 
     def get_subscription_by_index(self, index: int) -> HelicsInput:
-        """get a subscription by index."""
+        """Get a subscription by index."""
         return helicsFederateGetInputByIndex(self, index)
 
     @property
@@ -2302,8 +2304,8 @@ class HelicsMessageFederate(HelicsFederate):
 
         Call is only valid in startup mode
 
-        **`name`**: the name of the endpoint
-        **`kind`**: the defined type of the interface for endpoint checking if requested
+        - **`name`**: the name of the endpoint
+        - **`kind`**: the defined type of the interface for endpoint checking if requested
 
         Returns: an Endpoint Object
         """
@@ -2315,8 +2317,8 @@ class HelicsMessageFederate(HelicsFederate):
         """
         Register an endpoint directly without prepending the federate name.
 
-        **`name`**: the name of the endpoint
-        **`kind`**: the defined type of the interface for endpoint checking if requested
+        - **`name`**: the name of the endpoint
+        - **`kind`**: the defined type of the interface for endpoint checking if requested
 
         Returns: an Endpoint Object
         """
@@ -2330,7 +2332,7 @@ class HelicsMessageFederate(HelicsFederate):
 
         **Parameters**
 
-        **`name`**: the name of the endpoint to retrieve.
+        - **`name`**: the name of the endpoint to retrieve.
 
         Returns: an Endpoint
         """
@@ -2342,7 +2344,7 @@ class HelicsMessageFederate(HelicsFederate):
 
         **Parameters**
 
-        **`index`**: the index of the endpoint to retrieve index is 0 based
+        - **`index`**: the index of the endpoint to retrieve index is 0 based
 
         Return an Endpoint
         """
@@ -2438,7 +2440,7 @@ def helicsIsCoreTypeAvailable(type: str) -> bool:
 
     **Parameters**
 
-    * **`type`** - A string representing a core type. Options include "zmq", "udp", "ipc", "interprocess", "tcp", "default", "mpi".
+    - **`type`** - A string representing a core type. Options include "zmq", "udp", "ipc", "interprocess", "tcp", "default", "mpi".
 
     **Returns**: `True` if `type` is available, `False` if `type` is not available.
     """
@@ -2453,9 +2455,9 @@ def helicsCreateCore(type: str, name: str, init_string: str) -> HelicsCore:
 
     **Parameters**
 
-    * **`type`** - The type of the core to create.
-    * **`name`** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
-    * **`init_string`** - An initialization string to send to the core. The format is similar to command line arguments. Typical options include a broker name, the broker address, the number of federates, etc.
+    - **`type`** - The type of the core to create.
+    - **`name`** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
+    - **`init_string`** - An initialization string to send to the core. The format is similar to command line arguments. Typical options include a broker name, the broker address, the number of federates, etc.
 
     **Returns**: `helics.HelicsCore`.
     """
@@ -2474,9 +2476,9 @@ def helicsCreateCoreFromArgs(type: str, name: str, arguments: List[str]) -> Heli
 
     **Parameters**
 
-    * **`type`** - The type of the core to create.
-    * **`name`** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
-    * **`arguments`** - The list of string values from a command line.
+    - **`type`** - The type of the core to create.
+    - **`name`** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
+    - **`arguments`** - The list of string values from a command line.
 
     **Returns**: `helics.HelicsCore`.
     """
@@ -2501,7 +2503,7 @@ def helicsCoreClone(core: HelicsCore) -> HelicsCore:
 
     **Parameters**
 
-    * **`core`** - An existing `helics.HelicsCore`.
+    - **`core`** - An existing `helics.HelicsCore`.
 
     **Returns**: `helics.HelicsCore`.
     """
@@ -2520,7 +2522,7 @@ def helicsCoreIsValid(core: HelicsCore) -> bool:
 
     **Parameters**
 
-    * **`core`** - The `helics.HelicsCore` object to test.
+    - **`core`** - The `helics.HelicsCore` object to test.
 
     **Returns**: `True` if valid, `False` if not valid.
     """
@@ -2535,9 +2537,9 @@ def helicsCreateBroker(type: str, name: str, init_string: str) -> HelicsBroker:
 
     **Parameters**
 
-    * **`type`** - The type of the broker to create.
-    * **`name`** - The name of the broker. It can be a nullptr or empty string to have a name automatically assigned.
-    * **`init_string`** - An initialization string to send to the core-the format is similar to command line arguments. Typical options include a broker address such as --broker="XSSAF" if this is a subbroker, or the number of federates, or the address.
+    - **`type`** - The type of the broker to create.
+    - **`name`** - The name of the broker. It can be a nullptr or empty string to have a name automatically assigned.
+    - **`init_string`** - An initialization string to send to the core-the format is similar to command line arguments. Typical options include a broker address such as --broker="XSSAF" if this is a subbroker, or the number of federates, or the address.
 
     **Returns**: `helics.HelicsBroker`.
     """
@@ -2556,9 +2558,9 @@ def helicsCreateBrokerFromArgs(type: str, name: str, arguments: List[str]) -> He
 
     **Parameters**
 
-    * **`type`** - The type of the core to create.
-    * **`name`** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
-    * **`arguments`** - The list of string values from a command line.
+    - **`type`** - The type of the core to create.
+    - **`name`** - The name of the core. It can be a nullptr or empty string to have a name automatically assigned.
+    - **`arguments`** - The list of string values from a command line.
 
     **Returns**: `helics.HelicsBroker`.
     """
@@ -2582,7 +2584,7 @@ def helicsBrokerClone(broker: HelicsBroker) -> HelicsBroker:
 
     **Parameters**
 
-    * **`broker`** - An existing `helics.HelicsBroker`.
+    - **`broker`** - An existing `helics.HelicsBroker`.
 
     **Returns**: `helics.HelicsBroker`.
     """
@@ -2601,7 +2603,7 @@ def helicsBrokerIsValid(broker: HelicsBroker) -> bool:
 
     **Parameters**
 
-    * **`broker`** - The `helics.HelicsBroker` object to test.
+    - **`broker`** - The `helics.HelicsBroker` object to test.
 
     **Returns**: `True` if valid, `False` if not valid.
     """
@@ -2628,9 +2630,9 @@ def helicsBrokerDataLink(broker: HelicsBroker, source_name: str, target_name: st
 
     **Parameters**
 
-    * **`broker`** - The broker to generate the connection from.
-    * **`source_name`** - The name of the publication.
-    * **`target_name`** - The name of the target to send the publication data.
+    - **`broker`** - The broker to generate the connection from.
+    - **`source_name`** - The name of the publication.
+    - **`target_name`** - The name of the target to send the publication data.
     """
     f = loadSym("helicsBrokerDataLink")
     err = helicsErrorInitialize()
@@ -2645,9 +2647,9 @@ def helicsBrokerAddSourceFilterToEndpoint(broker: HelicsBroker, filter_name: str
 
     **Parameters**
 
-    * **`broker`** - The broker to generate the connection from.
-    * **`filter`** - The name of the filter.
-    * **`endpoint`** - The name of the endpoint to filter the data from.
+    - **`broker`** - The broker to generate the connection from.
+    - **`filter`** - The name of the filter.
+    - **`endpoint`** - The name of the endpoint to filter the data from.
     """
     f = loadSym("helicsBrokerAddSourceFilterToEndpoint")
     err = helicsErrorInitialize()
@@ -2662,9 +2664,9 @@ def helicsBrokerAddDestinationFilterToEndpoint(broker: HelicsBroker, filter_name
 
     **Parameters**
 
-    * **`broker`** - The broker to generate the connection from.
-    * **`filter`** - The name of the filter.
-    * **`endpoint`** - The name of the endpoint to filter the data going to.
+    - **`broker`** - The broker to generate the connection from.
+    - **`filter`** - The name of the filter.
+    - **`endpoint`** - The name of the endpoint to filter the data going to.
     """
     f = loadSym("helicsBrokerAddDestinationFilterToEndpoint")
     err = helicsErrorInitialize()
@@ -2679,8 +2681,8 @@ def helicsBrokerMakeConnections(broker: HelicsBroker, file: str):
 
     **Parameters**
 
-    * **`broker`** - The broker to generate the connections from.
-    * **`file`** - A JSON or TOML file containing connection information.
+    - **`broker`** - The broker to generate the connections from.
+    - **`file`** - A JSON or TOML file containing connection information.
     """
     f = loadSym("helicsBrokerMakeConnections")
     err = helicsErrorInitialize()
@@ -2689,36 +2691,36 @@ def helicsBrokerMakeConnections(broker: HelicsBroker, file: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsCoreWaitForDisconnect(core: HelicsCore, msToWait: int) -> bool:
+def helicsCoreWaitForDisconnect(core: HelicsCore, ms_to_wait: int) -> bool:
     """
     Wait for the core to disconnect.
 
     **Parameters**
 
-    * **`core`** - The core to wait for.
-    * **`msToWait`** - The time out in millisecond (<0 for infinite timeout).
+    - **`core`** - The core to wait for.
+    - **`ms_to_wait`** - The time out in millisecond (<0 for infinite timeout).
     """
     f = loadSym("helicsCoreWaitForDisconnect")
     err = helicsErrorInitialize()
-    result = f(core.handle, msToWait, err)
+    result = f(core.handle, ms_to_wait, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return result == 1
 
 
-def helicsBrokerWaitForDisconnect(broker: HelicsBroker, msToWait: int) -> bool:
+def helicsBrokerWaitForDisconnect(broker: HelicsBroker, ms_to_wait: int) -> bool:
     """
     Wait for the broker to disconnect.
 
     **Parameters**
 
-    * **`broker`** - The broker to wait for.
-    * **`msToWait`** - The time out in millisecond (<0 for infinite timeout).
+    - **`broker`** - The broker to wait for.
+    - **`ms_to_wait`** - The time out in millisecond (<0 for infinite timeout).
     """
     f = loadSym("helicsBrokerWaitForDisconnect")
     err = helicsErrorInitialize()
-    result = f(broker.handle, msToWait, err)
+    result = f(broker.handle, ms_to_wait, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -2743,9 +2745,9 @@ def helicsCoreDataLink(core: HelicsCore, source_name: str, target_name: str):
 
     **Parameters**
 
-    * **`core`** - The core to generate the connection from.
-    * **`source_name`** - The name of the publication.
-    * **`target_name`** - The name of the target to send the publication data.
+    - **`core`** - The core to generate the connection from.
+    - **`source_name`** - The name of the publication.
+    - **`target_name`** - The name of the target to send the publication data.
     """
     f = loadSym("helicsCoreDataLink")
     err = helicsErrorInitialize()
@@ -2760,9 +2762,9 @@ def helicsCoreAddSourceFilterToEndpoint(core: HelicsCore, filter_name: str, endp
 
     **Parameters**
 
-    * **`core`** - The core to generate the connection from.
-    * **`filter`** - The name of the filter.
-    * **`endpoint`** - The name of the endpoint to filter the data from.
+    - **`core`** - The core to generate the connection from.
+    - **`filter`** - The name of the filter.
+    - **`endpoint`** - The name of the endpoint to filter the data from.
     """
     f = loadSym("helicsCoreAddSourceFilterToEndpoint")
     err = helicsErrorInitialize()
@@ -2777,9 +2779,9 @@ def helicsCoreAddDestinationFilterToEndpoint(core: HelicsCore, filter_name: str,
 
     **Parameters**
 
-    * **`core`** - The core to generate the connection from.
-    * **`filter`** - The name of the filter.
-    * **`endpoint`** - The name of the endpoint to filter the data going to.
+    - **`core`** - The core to generate the connection from.
+    - **`filter`** - The name of the filter.
+    - **`endpoint`** - The name of the endpoint to filter the data going to.
     """
     f = loadSym("helicsCoreAddDestinationFilterToEndpoint")
     err = helicsErrorInitialize()
@@ -2794,8 +2796,8 @@ def helicsCoreMakeConnections(core: HelicsCore, file: str):
 
     **Parameters**
 
-    * **`core`** - The core to generate the connections from.
-    * **`file`** - A JSON or TOML file containing connection information.
+    - **`core`** - The core to generate the connections from.
+    - **`file`** - A JSON or TOML file containing connection information.
     """
     f = loadSym("helicsCoreMakeConnections")
     err = helicsErrorInitialize()
@@ -2810,7 +2812,7 @@ def helicsBrokerGetIdentifier(broker: HelicsBroker) -> str:
 
     **Parameters**
 
-    * **`broker`** - The broker to query.
+    - **`broker`** - The broker to query.
 
     **Returns**: A string containing the identifier for the broker.
     """
@@ -2825,7 +2827,7 @@ def helicsCoreGetIdentifier(core: HelicsCore) -> str:
 
     **Parameters**
 
-    * **`core`** - The core to query.
+    - **`core`** - The core to query.
 
     **Returns**: A string with the identifier of the core.
     """
@@ -2840,7 +2842,7 @@ def helicsBrokerGetAddress(broker: HelicsBroker) -> str:
 
     **Parameters**
 
-    * **`broker`** - The broker to query.
+    - **`broker`** - The broker to query.
 
     **Returns**: A string with the network address of the broker.
     """
@@ -2855,7 +2857,7 @@ def helicsCoreGetAddress(core: HelicsCore) -> str:
 
     **Parameters**
 
-    * **`core`** - The core to query.
+    - **`core`** - The core to query.
 
     **Returns**: A string with the network address of the broker.
     """
@@ -2871,7 +2873,7 @@ def helicsCoreSetReadyToInit(core: HelicsCore):
 
     **Parameters**
 
-    * **`core`** - The `helics.HelicsCore` to enable init values for.
+    - **`core`** - The `helics.HelicsCore` to enable init values for.
     """
     f = loadSym("helicsCoreSetReadyToInit")
     err = helicsErrorInitialize()
@@ -2886,7 +2888,7 @@ def helicsCoreConnect(core: HelicsCore) -> bool:
 
     **Parameters**
 
-    * **`core`** - The core to connect.
+    - **`core`** - The core to connect.
 
     **Returns**: `True` if `core` is connected successfully, else `False`.
     """
@@ -2905,7 +2907,7 @@ def helicsCoreDisconnect(core: HelicsCore):
 
     **Parameters**
 
-    * **`core`** - The core to query.
+    - **`core`** - The core to query.
     """
     f = loadSym("helicsCoreDisconnect")
     err = helicsErrorInitialize()
@@ -2921,7 +2923,7 @@ def helicsGetFederateByName(fed_name: str) -> HelicsFederate:
 
     **Parameters**
 
-    * **`fed_name`** - The name of the federate to retrieve.
+    - **`fed_name`** - The name of the federate to retrieve.
 
     **Returns**: `helics.HelicsFederate`.
     """
@@ -2940,7 +2942,7 @@ def helicsBrokerDisconnect(broker: HelicsBroker):
 
     **Parameters**
 
-    * **`broker`** - The broker to disconnect.
+    - **`broker`** - The broker to disconnect.
     """
     f = loadSym("helicsBrokerDisconnect")
     err = helicsErrorInitialize()
@@ -2997,8 +2999,8 @@ def helicsCreateValueFederate(fed_name: str, fi: HelicsFederateInfo = None) -> H
 
     **Parameters**
 
-    * **`fed_name`** - The name of the federate to create, can NULL or an empty string to use the default name from fi or an assigned name.
-    * **`fi`** - The federate info object that contains details on the federate.
+    - **`fed_name`** - The name of the federate to create, can NULL or an empty string to use the default name from fi or an assigned name.
+    - **`fi`** - The federate info object that contains details on the federate.
 
     **Returns**: `helics.HelicsValueFederate`.
     """
@@ -3020,7 +3022,7 @@ def helicsCreateValueFederateFromConfig(config_file: str) -> HelicsValueFederate
 
     **Parameters**
 
-    * **`config_file`** - A JSON file or a JSON string or TOML file that contains setup and configuration information.
+    - **`config_file`** - A JSON file or a JSON string or TOML file that contains setup and configuration information.
 
     **Returns**: `helics.HelicsValueFederate`.
     """
@@ -3040,8 +3042,8 @@ def helicsCreateMessageFederate(fed_name: str, fi: HelicsFederateInfo = None) ->
 
     **Parameters**
 
-    * **`fed_name`** - The name of the federate to create.
-    * **`fi`** - The federate info object that contains details on the federate.
+    - **`fed_name`** - The name of the federate to create.
+    - **`fi`** - The federate info object that contains details on the federate.
 
     **Returns**: `helics.HelicsMessageFederate`.
     """
@@ -3063,7 +3065,7 @@ def helicsCreateMessageFederateFromConfig(config_file: str) -> HelicsMessageFede
 
     **Parameters**
 
-    * **`config_file`** - A config (JSON,TOML) file or a JSON string that contains setup and configuration information.
+    - **`config_file`** - A config (JSON,TOML) file or a JSON string that contains setup and configuration information.
 
     **Returns**: `helics.HelicsMessageFederate`.
     """
@@ -3084,8 +3086,8 @@ def helicsCreateCombinationFederate(fed_name: str, fi: HelicsFederateInfo = None
 
     **Parameters**
 
-    * **`fed_name`** - A string with the name of the federate, can be NULL or an empty string to pull the default name from fi.
-    * **`fi`** - The federate info object that contains details on the federate.
+    - **`fed_name`** - A string with the name of the federate, can be NULL or an empty string to pull the default name from fi.
+    - **`fi`** - The federate info object that contains details on the federate.
 
     **Returns**: `helics.HelicsCombinationFederate`.
     """
@@ -3108,7 +3110,7 @@ def helicsCreateCombinationFederateFromConfig(config_file: str) -> HelicsCombina
 
     **Parameters**
 
-    * **`config_file`** - A JSON file or a JSON string or TOML file that contains setup and configuration information.
+    - **`config_file`** - A JSON file or a JSON string or TOML file that contains setup and configuration information.
 
     **Returns**: `helics.HelicsCombinationFederate`.
     """
@@ -3129,7 +3131,7 @@ def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
 
     **Parameters**
 
-    * **`fed`** - An existing `helics.HelicsFederate`.
+    - **`fed`** - An existing `helics.HelicsFederate`.
 
     **Returns**: `helics.HelicsFederate`.
     """
@@ -3159,7 +3161,7 @@ def helicsFederateInfoClone(fi: HelicsFederateInfo) -> HelicsFederateInfo:
 
     **Parameters**
 
-    * **`fi`** - A federateInfo object to duplicate.
+    - **`fi`** - A federateInfo object to duplicate.
 
     **Returns**: `helics.HelicsFederateInfo`.
     """
@@ -3178,9 +3180,9 @@ def helicsFederateInfoLoadFromArgs(fi: HelicsFederateInfo, arguments: List[str])
 
     **Parameters**
 
-    * **`fi`** - A federateInfo object.
-    * **`argc`** - The number of command line arguments.
-    * **`argv`** - An array of strings from the command line.
+    - **`fi`** - A federateInfo object.
+    - **`argc`** - The number of command line arguments.
+    - **`argv`** - An array of strings from the command line.
     """
     f = loadSym("helicsFederateInfoLoadFromArgs")
     err = helicsErrorInitialize()
@@ -3218,8 +3220,8 @@ def helicsFederateInfoSetCoreName(fi: HelicsFederateInfo, core_name: str):
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`core_name`** - The identifier for a core to link to.
+    - **`fi`** - The federate info object to alter.
+    - **`core_name`** - The identifier for a core to link to.
     """
     f = loadSym("helicsFederateInfoSetCoreName")
     err = helicsErrorInitialize()
@@ -3234,8 +3236,8 @@ def helicsFederateInfoSetCoreInitString(fi: HelicsFederateInfo, core_init_string
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`core_init_string`** - A string containing command line arguments to be passed to the core.
+    - **`fi`** - The federate info object to alter.
+    - **`core_init_string`** - A string containing command line arguments to be passed to the core.
     """
     f = loadSym("helicsFederateInfoSetCoreInitString")
     err = helicsErrorInitialize()
@@ -3250,8 +3252,8 @@ def helicsFederateInfoSetBrokerInitString(fi: HelicsFederateInfo, broker_init_st
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`broker_init_string`** - A string with command line arguments for a generated broker.
+    - **`fi`** - The federate info object to alter.
+    - **`broker_init_string`** - A string with command line arguments for a generated broker.
     """
     f = loadSym("helicsFederateInfoSetBrokerInitString")
     err = helicsErrorInitialize()
@@ -3267,8 +3269,8 @@ def helicsFederateInfoSetCoreType(fi: HelicsFederateInfo, core_type: HelicsCoreT
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`core_type`** - An numerical code for a core type see `helics.HelicsCoreType`.
+    - **`fi`** - The federate info object to alter.
+    - **`core_type`** - An numerical code for a core type see `helics.HelicsCoreType`.
     """
     f = loadSym("helicsFederateInfoSetCoreType")
     err = helicsErrorInitialize()
@@ -3283,8 +3285,8 @@ def helicsFederateInfoSetCoreTypeFromString(fi: HelicsFederateInfo, core_type: s
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`core_type`** - A string naming a core type.
+    - **`fi`** - The federate info object to alter.
+    - **`core_type`** - A string naming a core type.
     """
     f = loadSym("helicsFederateInfoSetCoreTypeFromString")
     err = helicsErrorInitialize()
@@ -3300,8 +3302,8 @@ def helicsFederateInfoSetBroker(fi: HelicsFederateInfo, broker_string: str):
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`broker_string`** - A string which defines the connection information for a broker either a name or an address.
+    - **`fi`** - The federate info object to alter.
+    - **`broker_string`** - A string which defines the connection information for a broker either a name or an address.
     """
     f = loadSym("helicsFederateInfoSetBroker")
     err = helicsErrorInitialize()
@@ -3317,8 +3319,8 @@ def helicsFederateInfoSetBrokerKey(fi: HelicsFederateInfo, broker_key: str):
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`broker_key`** - A string containing a key for the broker to connect.
+    - **`fi`** - The federate info object to alter.
+    - **`broker_key`** - A string containing a key for the broker to connect.
     """
     f = loadSym("helicsFederateInfoSetBrokerKey")
     err = helicsErrorInitialize()
@@ -3335,8 +3337,8 @@ def helicsFederateInfoSetBrokerPort(fi: HelicsFederateInfo, broker_port: Union[i
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`broker_port`** - The integer port number to use for connection with a broker.
+    - **`fi`** - The federate info object to alter.
+    - **`broker_port`** - The integer port number to use for connection with a broker.
     """
     f = loadSym("helicsFederateInfoSetBrokerPort")
     err = helicsErrorInitialize()
@@ -3353,8 +3355,8 @@ def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, local_port: Union[int
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`local_port`** - A string with the port information to use as the local server port can be a number or "auto" or "os_local".
+    - **`fi`** - The federate info object to alter.
+    - **`local_port`** - A string with the port information to use as the local server port can be a number or "auto" or "os_local".
     """
     f = loadSym("helicsFederateInfoSetLocalPort")
     err = helicsErrorInitialize()
@@ -3364,76 +3366,76 @@ def helicsFederateInfoSetLocalPort(fi: HelicsFederateInfo, local_port: Union[int
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsGetPropertyIndex(val: str) -> HelicsProperty:
+def helicsGetPropertyIndex(value: str) -> HelicsProperty:
     """
     Get a property index for use in `helics.helicsFederateInfoSetFlagOption`, `helics.helicsFederateInfoSetTimeProperty`, or `helics.helicsFederateInfoSetIntegerProperty`.
 
     **Parameters**
 
-    * **`val`** - A string with the property name.
+    - **`value`** - A string with the property name.
 
     **Returns**: An int with the property code or (-1) if not a valid property.
     """
     f = loadSym("helicsGetPropertyIndex")
-    result = f(cstring(val))
+    result = f(cstring(value))
     if result == -1:
-        raise HelicsException("[-1] Unknown property index for flag `{val}`".format(val=val))
+        raise HelicsException("[-1] Unknown property index for flag `{value}`".format(value=value))
     else:
         return HelicsProperty(result)
 
 
-def helicsGetFlagIndex(val: str) -> HelicsFederateFlag:
+def helicsGetFlagIndex(value: str) -> HelicsFederateFlag:
     """
     Get a property index for use in `helics.helicsFederateInfoSetFlagOption`, `helics.helicsFederateSetFlagOption`.
 
     **Parameters**
 
-    * **`val`** - A string with the option name.
+    - **`value`** - A string with the option name.
 
     **Returns**: An int with the property code or (-1) if not a valid property.
     """
     f = loadSym("helicsGetFlagIndex")
-    result = f(cstring(val))
+    result = f(cstring(value))
     if result == -1:
-        raise HelicsException("[-1] Unknown property index for flag `{val}`".format(val=val))
+        raise HelicsException("[-1] Unknown property index for flag `{value}`".format(value=value))
     else:
         return HelicsFederateFlag(result)
 
 
-def helicsGetOptionIndex(val: str) -> HelicsHandleOption:
+def helicsGetOptionIndex(value: str) -> HelicsHandleOption:
     """
     Get an option index for use in `helics.helicsPublicationSetOption`, `helics.helicsInputSetOption`, `helics.helicsEndpointSetOption`,
     `helics.helicsFilterSetOption`, and the corresponding get functions
 
     **Parameters**
 
-    * **`val`** - A string with the option name
+    - **`value`** - A string with the option name
 
     **Returns**: An int with the option index or (-1) if not a valid property.
     """
     f = loadSym("helicsGetOptionIndex")
-    result = f(cstring(val))
+    result = f(cstring(value))
     if result == -1:
-        raise HelicsException("[-1] Unknown option index for flag `{val}`".format(val=val))
+        raise HelicsException("[-1] Unknown option index for flag `{value}`".format(value=value))
     else:
         return HelicsHandleOption(result)
 
 
-def helicsGetOptionValue(val: str) -> int:
+def helicsGetOptionValue(value: str) -> int:
     """
     Get an option value for use in `helics.helicsPublicationSetOption`, `helics.helicsInputSetOption`, `helics.helicsEndpointSetOption`,
     `helics.helicsFilterSetOption`.
 
     **Parameters**
 
-    * **`val`** - A string representing the value
+    - **`value`** - A string representing the value
 
     **Returns**: An int with the option value or (-1) if not a valid value.
     """
     f = loadSym("helicsGetOptionValue")
-    result = f(cstring(val))
+    result = f(cstring(value))
     if result == -1:
-        raise HelicsException("[-1] Unknown option valud for flag `{val}`".format(val=val))
+        raise HelicsException("[-1] Unknown option valud for flag `{value}`".format(value=value))
     else:
         return result
 
@@ -3445,9 +3447,9 @@ def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: HelicsFederate
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`flag`** - A numerical index for a flag.
-    * **`value`** - The desired value of the flag `True` or `False`.
+    - **`fi`** - The federate info object to alter.
+    - **`flag`** - A numerical index for a flag.
+    - **`value`** - The desired value of the flag `True` or `False`.
     """
     f = loadSym("helicsFederateInfoSetFlagOption")
     err = helicsErrorInitialize()
@@ -3464,8 +3466,8 @@ def helicsFederateInfoSetSeparator(fi: HelicsFederateInfo, separator: str):
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`separator`** - The character to use as a separator.
+    - **`fi`** - The federate info object to alter.
+    - **`separator`** - The character to use as a separator.
     """
     f = loadSym("helicsFederateInfoSetSeparator")
     err = helicsErrorInitialize()
@@ -3474,37 +3476,37 @@ def helicsFederateInfoSetSeparator(fi: HelicsFederateInfo, separator: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateInfoSetTimeProperty(fi: HelicsFederateInfo, timeProperty: HelicsProperty, propertyValue: HelicsTime):
+def helicsFederateInfoSetTimeProperty(fi: HelicsFederateInfo, time_property: HelicsProperty, value: HelicsTime):
     """
     Set the output delay for a federate.
 
     **Parameters**
 
-    * **`fi`** - The federate info object to alter.
-    * **`timeProperty`** - An integer representation of the time based property to set see `helics.HelicsProperty`.
-    * **`propertyValue`** - The value of the property to set the timeProperty to.
+    - **`fi`** - The federate info object to alter.
+    - **`time_property`** - An integer representation of the time based property to set see `helics.HelicsProperty`.
+    - **`propertyValue`** - The value of the property to set the timeProperty to.
     """
     f = loadSym("helicsFederateInfoSetTimeProperty")
     err = helicsErrorInitialize()
-    f(fi.handle, HelicsProperty(timeProperty), propertyValue, err)
+    f(fi.handle, HelicsProperty(time_property), value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateInfoSetIntegerProperty(fi: HelicsFederateInfo, intProperty: HelicsProperty, propertyValue: int):
+def helicsFederateInfoSetIntegerProperty(fi: HelicsFederateInfo, property: HelicsProperty, value: int):
     """
     Set an integer property for a federate.
     Set known properties.
 
     **Parameters**
 
-    * **`fi`** - The federateInfo object to alter.
-    * **`intProperty`** - `helics.HelicsProperty`.
-    * **`propertyValue`** - The value to set the property to.
+    - **`fi`** - The federateInfo object to alter.
+    - **`property`** - `helics.HelicsProperty`.
+    - **`value`** - The value to set the property to.
     """
     f = loadSym("helicsFederateInfoSetIntegerProperty")
     err = helicsErrorInitialize()
-    f(fi.handle, HelicsProperty(intProperty), propertyValue, err)
+    f(fi.handle, HelicsProperty(property), value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3515,8 +3517,8 @@ def helicsFederateRegisterInterfaces(fed: HelicsFederate, file: str):
 
     **Parameters**
 
-    * **`fed`** - The federate to which to load interfaces.
-    * **`file`** - The name of a file to load the interfaces from either JSON, or TOML.
+    - **`fed`** - The federate to which to load interfaces.
+    - **`file`** - The name of a file to load the interfaces from either JSON, or TOML.
     """
     f = loadSym("helicsFederateRegisterInterfaces")
     err = helicsErrorInitialize()
@@ -3532,9 +3534,9 @@ def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string
 
     **Parameters**
 
-    * **`fed`** - The federate to create an error in.
-    * **`error_code`** - The integer code for the error.
-    * **`error_string`** - A string describing the error.
+    - **`fed`** - The federate to create an error in.
+    - **`error_code`** - The integer code for the error.
+    - **`error_string`** - A string describing the error.
     """
     f = loadSym("helicsFederateGlobalError")
     f(fed.handle, error_code, cstring(error_string))
@@ -3547,9 +3549,9 @@ def helicsFederateLocalError(fed: HelicsFederate, error_code: int, error_string:
 
     **Parameters**
 
-    * **`fed`** - The federate to create an error in.
-    * **`error_code`** - The integer code for the error.
-    * **`error_string`** - A string describing the error.
+    - **`fed`** - The federate to create an error in.
+    - **`error_code`** - The integer code for the error.
+    - **`error_string`** - A string describing the error.
     """
     f = loadSym("helicsFederateLocalError")
     f(fed.handle, error_code, cstring(error_string))
@@ -3613,7 +3615,7 @@ def helicsFederateEnterInitializingMode(fed: HelicsFederate):
 
     **Parameters**
 
-    * **`fed`** - The federate to operate on.
+    - **`fed`** - The federate to operate on.
     """
     f = loadSym("helicsFederateEnterInitializingMode")
     err = helicsErrorInitialize()
@@ -3629,7 +3631,7 @@ def helicsFederateEnterInitializingModeAsync(fed: HelicsFederate):
 
     **Parameters**
 
-    * **`fed`** - The federate to operate on.
+    - **`fed`** - The federate to operate on.
     """
     f = loadSym("helicsFederateEnterInitializingModeAsync")
     err = helicsErrorInitialize()
@@ -3644,7 +3646,7 @@ def helicsFederateIsAsyncOperationCompleted(fed: HelicsFederate) -> bool:
 
     **Parameters**
 
-    * **`fed`** - The federate to operate on.
+    - **`fed`** - The federate to operate on.
 
     **Returns**: `True` if current operation has completed, else `False`.
     """
@@ -3663,7 +3665,7 @@ def helicsFederateEnterInitializingModeComplete(fed: HelicsFederate):
 
     **Parameters**
 
-    * **`fed`** - The federate desiring to complete the initialization step.
+    - **`fed`** - The federate desiring to complete the initialization step.
     """
     f = loadSym("helicsFederateEnterInitializingModeComplete")
     err = helicsErrorInitialize()
@@ -3679,7 +3681,7 @@ def helicsFederateEnterExecutingMode(fed: HelicsFederate):
 
     **Parameters**
 
-    * **`fed`** - A federate to change modes.
+    - **`fed`** - A federate to change modes.
     """
     f = loadSym("helicsFederateEnterExecutingMode")
     err = helicsErrorInitialize()
@@ -3695,7 +3697,7 @@ def helicsFederateEnterExecutingModeAsync(fed: HelicsFederate):
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` to complete the call.
+    - **`fed`** - The `helics.HelicsFederate` to complete the call.
     """
     f = loadSym("helicsFederateEnterExecutingModeAsync")
     err = helicsErrorInitialize()
@@ -3710,7 +3712,7 @@ def helicsFederateEnterExecutingModeComplete(fed: HelicsFederate):
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` to complete the call.
+    - **`fed`** - The `helics.HelicsFederate` to complete the call.
     """
     f = loadSym("helicsFederateEnterExecutingModeComplete")
     err = helicsErrorInitialize()
@@ -3726,8 +3728,8 @@ def helicsFederateEnterExecutingModeIterative(fed: HelicsFederate, iterate: Heli
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
-    * **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
+    - **`fed`** - The federate to make the request of.
+    - **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
 
     **Returns**: `helics.HelicsIterationResult`.
     """
@@ -3747,8 +3749,8 @@ def helicsFederateEnterExecutingModeIterativeAsync(fed: HelicsFederate, iterate:
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
-    * **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
+    - **`fed`** - The federate to make the request of.
+    - **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
     """
     f = loadSym("helicsFederateEnterExecutingModeIterativeAsync")
     err = helicsErrorInitialize()
@@ -3763,7 +3765,7 @@ def helicsFederateEnterExecutingModeIterativeComplete(fed: HelicsFederate,) -> H
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
+    - **`fed`** - The federate to make the request of.
 
     **Returns**: `helics.HelicsIterationResult`.
     """
@@ -3782,7 +3784,7 @@ def helicsFederateGetState(fed: HelicsFederate) -> HelicsFederateState:
 
     **Parameters**
 
-    * **`fed`** - The federate to query.
+    - **`fed`** - The federate to query.
 
     **Returns**: `helics.HelicsFederateState`.
     """
@@ -3801,7 +3803,7 @@ def helicsFederateGetCoreObject(fed: HelicsFederate) -> HelicsCore:
 
     **Parameters**
 
-    * **`fed`** - `helics.HelicsFederate`.
+    - **`fed`** - `helics.HelicsFederate`.
 
     **Returns**: `helics.HelicsCore`.
     """
@@ -3814,40 +3816,40 @@ def helicsFederateGetCoreObject(fed: HelicsFederate) -> HelicsCore:
         return HelicsCore(result)
 
 
-def helicsFederateRequestTime(fed: HelicsFederate, requestTime: HelicsTime) -> HelicsTime:
+def helicsFederateRequestTime(fed: HelicsFederate, request_time: HelicsTime) -> HelicsTime:
     """
     Request the next time for federate execution.
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
-    * **`requestTime`** - The next requested time.
+    - **`fed`** - The federate to make the request of.
+    - **`request_time`** - The next requested time.
 
     **Returns**: `helics.HelicsTime`.
     """
     f = loadSym("helicsFederateRequestTime")
     err = helicsErrorInitialize()
-    result = f(fed.handle, requestTime, err)
+    result = f(fed.handle, request_time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return result
 
 
-def helicsFederateRequestTimeAdvance(fed: HelicsFederate, timeDelta: HelicsTime) -> HelicsTime:
+def helicsFederateRequestTimeAdvance(fed: HelicsFederate, time_delta: HelicsTime) -> HelicsTime:
     """
     Request the next time for federate execution.
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
-    * **`timeDelta`** - The requested amount of time to advance.
+    - **`fed`** - The federate to make the request of.
+    - **`time_delta`** - The requested amount of time to advance.
 
     **Returns**: `helics.HelicsTime`.
     """
     f = loadSym("helicsFederateRequestTimeAdvance")
     err = helicsErrorInitialize()
-    result = f(fed.handle, timeDelta, err)
+    result = f(fed.handle, time_delta, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -3861,7 +3863,7 @@ def helicsFederateRequestNextStep(fed: HelicsFederate) -> HelicsTime:
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
+    - **`fed`** - The federate to make the request of.
 
     **Returns**: `helics.HelicsTime`.
     """
@@ -3875,7 +3877,7 @@ def helicsFederateRequestNextStep(fed: HelicsFederate) -> HelicsTime:
 
 
 def helicsFederateRequestTimeIterative(
-    fed: HelicsFederate, requestTime: HelicsTime, iterate: HelicsIterationRequest
+    fed: HelicsFederate, request_time: HelicsTime, iterate: HelicsIterationRequest
 ) -> Tuple[HelicsTime, HelicsIterationResult]:
     """
     Request an iterative time.
@@ -3883,35 +3885,35 @@ def helicsFederateRequestTimeIterative(
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
-    * **`requestTime`** - The next desired time.
-    * **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
+    - **`fed`** - The federate to make the request of.
+    - **`request_time`** - The next desired time.
+    - **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
 
     **Returns**: `(helics.HelicsTime, helics.HelicsIterationResult)`.
     """
     f = loadSym("helicsFederateRequestTimeIterative")
     err = helicsErrorInitialize()
-    outIteration = ffi.new("helics_iteration_result *")
-    result = f(fed.handle, requestTime, HelicsIterationRequest(iterate), outIteration, err)
+    out_iterate = ffi.new("helics_iteration_result *")
+    result = f(fed.handle, request_time, HelicsIterationRequest(iterate), out_iterate, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return result, HelicsIterationResult(outIteration[0])
+        return result, HelicsIterationResult(out_iterate[0])
 
 
-def helicsFederateRequestTimeAsync(fed: HelicsFederate, requestTime: HelicsTime):
+def helicsFederateRequestTimeAsync(fed: HelicsFederate, request_time: HelicsTime):
     """
     Request the next time for federate execution in an asynchronous call.
     Call `helics.helicsFederateRequestTimeComplete` to finish the call.
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
-    * **`requestTime`** - The next requested time.
+    - **`fed`** - The federate to make the request of.
+    - **`request_time`** - The next requested time.
     """
     f = loadSym("helicsFederateRequestTimeAsync")
     err = helicsErrorInitialize()
-    f(fed.handle, requestTime, err)
+    f(fed.handle, request_time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3922,7 +3924,7 @@ def helicsFederateRequestTimeComplete(fed: HelicsFederate) -> HelicsTime:
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
+    - **`fed`** - The federate to make the request of.
     """
     f = loadSym("helicsFederateRequestTimeComplete")
     err = helicsErrorInitialize()
@@ -3933,20 +3935,20 @@ def helicsFederateRequestTimeComplete(fed: HelicsFederate) -> HelicsTime:
         return result
 
 
-def helicsFederateRequestTimeIterativeAsync(fed: HelicsFederate, requestTime: HelicsTime, iterate: HelicsIterationRequest):
+def helicsFederateRequestTimeIterativeAsync(fed: HelicsFederate, request_time: HelicsTime, iterate: HelicsIterationRequest):
     """
     Request an iterative time through an asynchronous call.
     This call allows for finer grain control of the iterative process than `helics.helicsFederateRequestTime`. It takes a time and iteration request, and returns a time and iteration status. Call `helics.helicsFederateRequestTimeIterativeComplete` to finish the process.
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
-    * **`requestTime`** - The next desired time.
-    * **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
+    - **`fed`** - The federate to make the request of.
+    - **`request_time`** - The next desired time.
+    - **`iterate`** - `helics.HelicsIterationRequest`, i.e. the requested iteration mode.
     """
     f = loadSym("helicsFederateRequestTimeIterativeAsync")
     err = helicsErrorInitialize()
-    f(fed.handle, requestTime, HelicsIterationRequest(iterate), err)
+    f(fed.handle, request_time, HelicsIterationRequest(iterate), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -3957,18 +3959,18 @@ def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> Tuple[Hel
 
     **Parameters**
 
-    * **`fed`** - The federate to make the request of.
+    - **`fed`** - The federate to make the request of.
 
     **Returns**: The iteration specification of the result.
     """
     f = loadSym("helicsFederateRequestTimeIterativeComplete")
     err = helicsErrorInitialize()
-    outIterate = ffi.new("helics_iteration_result *")
-    result = f(fed.handle, outIterate, err)
+    out_iterate = ffi.new("helics_iteration_result *")
+    result = f(fed.handle, out_iterate, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return result, outIterate
+        return result, out_iterate
 
 
 def helicsFederateGetName(fed: HelicsFederate) -> str:
@@ -3977,7 +3979,7 @@ def helicsFederateGetName(fed: HelicsFederate) -> str:
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` to query.
+    - **`fed`** - The `helics.HelicsFederate` to query.
 
     **Returns**: A string with the name.
     """
@@ -3986,19 +3988,19 @@ def helicsFederateGetName(fed: HelicsFederate) -> str:
     return ffi.string(result).decode()
 
 
-def helicsFederateSetTimeProperty(fed: HelicsFederate, timeProperty: int, time: HelicsTime):
+def helicsFederateSetTimeProperty(fed: HelicsFederate, time_property: int, time: HelicsTime):
     """
     Set a time based property for a federate.
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` to set the property for.
-    * **`timeProperty`** - A integer code for a time property.
-    * **`time`** - The requested value of the property.
+    - **`fed`** - The `helics.HelicsFederate` to set the property for.
+    - **`time_property`** - A integer code for a time property.
+    - **`time`** - The requested value of the property.
     """
     f = loadSym("helicsFederateSetTimeProperty")
     err = helicsErrorInitialize()
-    f(fed.handle, timeProperty, time, err)
+    f(fed.handle, time_property, time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4009,9 +4011,9 @@ def helicsFederateSetFlagOption(fed: HelicsFederate, flag: int, value: bool):
 
     **Parameters**
 
-    * **`fed`** - The federate to alter a flag for.
-    * **`flag`** - The flag to change.
-    * **`value`** - The new value of the flag. 0 for false, !=0 for true.
+    - **`fed`** - The federate to alter a flag for.
+    - **`flag`** - The flag to change.
+    - **`value`** - The new value of the flag. 0 for false, !=0 for true.
     """
     f = loadSym("helicsFederateSetFlagOption")
     err = helicsErrorInitialize()
@@ -4028,8 +4030,8 @@ def helicsFederateSetSeparator(fed: HelicsFederate, separator: str):
 
     **Parameters**
 
-    * **`fed`** - The federate info object to alter.
-    * **`separator`** - The character to use as a separator.
+    - **`fed`** - The federate info object to alter.
+    - **`separator`** - The character to use as a separator.
     """
     f = loadSym("helicsFederateSetSeparator")
     err = helicsErrorInitialize()
@@ -4038,37 +4040,37 @@ def helicsFederateSetSeparator(fed: HelicsFederate, separator: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateSetIntegerProperty(fed: HelicsFederate, intProperty: HelicsProperty, propertyVal: int):
+def helicsFederateSetIntegerProperty(fed: HelicsFederate, property: HelicsProperty, value: int):
     """
     Set an integer based property of a federate.
 
     **Parameters**
 
-    * **`fed`** - The federate to change the property for.
-    * **`intProperty`** - `helics.HelicsProperty`.
-    * **`propertyVal`** - The value of the property.
+    - **`fed`** - The federate to change the property for.
+    - **`property`** - `helics.HelicsProperty`.
+    - **`value`** - The value of the property.
     """
     f = loadSym("helicsFederateSetIntegerProperty")
     err = helicsErrorInitialize()
-    f(fed.handle, HelicsProperty(intProperty), propertyVal, err)
+    f(fed.handle, HelicsProperty(property), value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateGetTimeProperty(fed: HelicsFederate, timeProperty: int) -> HelicsTime:
+def helicsFederateGetTimeProperty(fed: HelicsFederate, time_property: int) -> HelicsTime:
     """
     Get the current value of a time based property in a federate.
 
     **Parameters**
 
-    * **`fed`** - The federate query.
-    * **`timeProperty`** - The property to query.
+    - **`fed`** - The federate query.
+    - **`time_property`** - The property to query.
 
     **Returns**: `helics.HelicsTime`.
     """
     f = loadSym("helicsFederateGetTimeProperty")
     err = helicsErrorInitialize()
-    result = f(fed.handle, timeProperty, err)
+    result = f(fed.handle, time_property, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -4081,8 +4083,8 @@ def helicsFederateGetFlagOption(fed: HelicsFederate, flag: HelicsFederateFlag) -
 
     **Parameters**
 
-    * **`fed`** - The federate to get the flag for.
-    * **`flag`** - The `helics.HelicsFederateFlag` to query.
+    - **`fed`** - The federate to get the flag for.
+    - **`flag`** - The `helics.HelicsFederateFlag` to query.
     """
     f = loadSym("helicsFederateGetFlagOption")
     err = helicsErrorInitialize()
@@ -4093,18 +4095,18 @@ def helicsFederateGetFlagOption(fed: HelicsFederate, flag: HelicsFederateFlag) -
         return result == 1
 
 
-def helicsFederateGetIntegerProperty(fed: HelicsFederate, intProperty: HelicsProperty) -> int:
+def helicsFederateGetIntegerProperty(fed: HelicsFederate, property: HelicsProperty) -> int:
     """
     Get the current value of an integer property (such as a logging level).
 
     **Parameters**
 
-    * **`fed`** - The federate to get the flag for.
-    * **`intProperty`** - A code for the property to set `helics.HelicsProperty`.
+    - **`fed`** - The federate to get the flag for.
+    - **`property`** - A code for the property to set `helics.HelicsProperty`.
     """
     f = loadSym("helicsFederateGetIntegerProperty")
     err = helicsErrorInitialize()
-    result = f(fed.handle, HelicsProperty(intProperty), err)
+    result = f(fed.handle, HelicsProperty(property), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -4117,7 +4119,7 @@ def helicsFederateGetCurrentTime(fed: HelicsFederate) -> HelicsTime:
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` to query.
+    - **`fed`** - The `helics.HelicsFederate` to query.
 
     **Returns**: `helics.HelicsTime`.
     """
@@ -4130,36 +4132,36 @@ def helicsFederateGetCurrentTime(fed: HelicsFederate) -> HelicsTime:
         return result
 
 
-def helicsFederateSetGlobal(fed: HelicsFederate, value_name: str, value: str):
+def helicsFederateSetGlobal(fed: HelicsFederate, name: str, value: str):
     """
     Set a federation global value through a federate.
     This overwrites any previous value for this name.
 
     **Parameters**
 
-    * **`fed`** - The federate to set the global through.
-    * **`value_name`** - The name of the global to set.
-    * **`value`** - The value of the global.
+    - **`fed`** - The federate to set the global through.
+    - **`name`** - The name of the global to set.
+    - **`value`** - The value of the global.
     """
     f = loadSym("helicsFederateSetGlobal")
     err = helicsErrorInitialize()
-    f(fed.handle, cstring(value_name), cstring(value), err)
+    f(fed.handle, cstring(name), cstring(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateAddDependency(fed: HelicsFederate, fed_name: str):
+def helicsFederateAddDependency(fed: HelicsFederate, name: str):
     """
     Add a time dependency for a federate. The federate will depend on the given named federate for time synchronization.
 
     **Parameters**
 
-    * **`fed`** - The federate to add the dependency for.
-    * **`fed_name`** - The name of the federate to depend on.
+    - **`fed`** - The federate to add the dependency for.
+    - **`name`** - The name of the federate to depend on.
     """
     f = loadSym("helicsFederateAddDependency")
     err = helicsErrorInitialize()
-    f(fed.handle, cstring(fed_name), err)
+    f(fed.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4170,8 +4172,8 @@ def helicsFederateSetLogFile(fed: HelicsFederate, log_file: str):
 
     **Parameters**
 
-    * **`fed`** - The federate to set the log file for.
-    * **`log_file`** - The name of the log file.
+    - **`fed`** - The federate to set the log file for.
+    - **`log_file`** - The name of the log file.
     """
     f = loadSym("helicsFederateSetLogFile")
     err = helicsErrorInitialize()
@@ -4186,8 +4188,8 @@ def helicsFederateLogErrorMessage(fed: HelicsFederate, log_message: str):
 
     **Parameters**
 
-    * **`fed`** - The federate to log the error message through.
-    * **`log_message`** - The message to put in the log.
+    - **`fed`** - The federate to log the error message through.
+    - **`log_message`** - The message to put in the log.
     """
     f = loadSym("helicsFederateLogErrorMessage")
     err = helicsErrorInitialize()
@@ -4202,8 +4204,8 @@ def helicsFederateLogWarningMessage(fed: HelicsFederate, log_message: str):
 
     **Parameters**
 
-    * **`fed`** - The federate to log the warning message through.
-    * **`log_message`** - The message to put in the log.
+    - **`fed`** - The federate to log the warning message through.
+    - **`log_message`** - The message to put in the log.
     """
     f = loadSym("helicsFederateLogWarningMessage")
     err = helicsErrorInitialize()
@@ -4218,8 +4220,8 @@ def helicsFederateLogInfoMessage(fed: HelicsFederate, log_message: str):
 
     **Parameters**
 
-    * **`fed`** - The federate to log the info message through.
-    * **`log_message`** - The message to put in the log.
+    - **`fed`** - The federate to log the info message through.
+    - **`log_message`** - The message to put in the log.
     """
     f = loadSym("helicsFederateLogInfoMessage")
     err = helicsErrorInitialize()
@@ -4234,8 +4236,8 @@ def helicsFederateLogDebugMessage(fed: HelicsFederate, log_message: str):
 
     **Parameters**
 
-    * **`fed`** - The federate to log the debug message through.
-    * **`log_message`** - The message to put in the log.
+    - **`fed`** - The federate to log the debug message through.
+    - **`log_message`** - The message to put in the log.
     """
     f = loadSym("helicsFederateLogDebugMessage")
     err = helicsErrorInitialize()
@@ -4244,55 +4246,55 @@ def helicsFederateLogDebugMessage(fed: HelicsFederate, log_message: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateLogLevelMessage(fed: HelicsFederate, loglevel: HelicsLogLevel, log_message: str):
+def helicsFederateLogLevelMessage(fed: HelicsFederate, log_level: HelicsLogLevel, log_message: str):
     """
     Log a message through a federate.
 
     **Parameters**
 
-    * **`fed`** - The federate to log the message through.
-    * **`loglevel`** - The level of the message to log see `helics.HelicsLogLevel`.
-    * **`log_message`** - The message to put in the log.
+    - **`fed`** - The federate to log the message through.
+    - **`log_level`** - The level of the message to log see `helics.HelicsLogLevel`.
+    - **`log_message`** - The message to put in the log.
     """
     f = loadSym("helicsFederateLogLevelMessage")
     err = helicsErrorInitialize()
-    f(fed.handle, HelicsLogLevel(loglevel), cstring(log_message), err)
+    f(fed.handle, HelicsLogLevel(log_level), cstring(log_message), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsCoreSetGlobal(core: HelicsCore, value_name: str, value: str):
+def helicsCoreSetGlobal(core: HelicsCore, name: str, value: str):
     """
     Set a global value in a core.
     This overwrites any previous value for this name.
 
     **Parameters**
 
-    * **`core`** - The core to set the global through.
-    * **`value_name`** - The name of the global to set.
-    * **`value`** - The value of the global.
+    - **`core`** - The core to set the global through.
+    - **`name`** - The name of the global to set.
+    - **`value`** - The value of the global.
     """
     f = loadSym("helicsCoreSetGlobal")
     err = helicsErrorInitialize()
-    f(core.handle, cstring(value_name), cstring(value), err)
+    f(core.handle, cstring(name), cstring(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsBrokerSetGlobal(broker: HelicsBroker, value_name: str, value: str):
+def helicsBrokerSetGlobal(broker: HelicsBroker, name: str, value: str):
     """
     Set a federation global value.
     This overwrites any previous value for this name.
 
     **Parameters**
 
-    * **`broker`** - The broker to set the global through.
-    * **`value_name`** - The name of the global to set.
-    * **`value`** - The value of the global.
+    - **`broker`** - The broker to set the global through.
+    - **`name`** - The name of the global to set.
+    - **`value`** - The value of the global.
     """
     f = loadSym("helicsBrokerSetGlobal")
     err = helicsErrorInitialize()
-    f(broker.handle, cstring(value_name), cstring(value), err)
+    f(broker.handle, cstring(name), cstring(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4303,8 +4305,8 @@ def helicsCoreSetLogFile(core: HelicsCore, log_file: str):
 
     **Parameters**
 
-    * **`core`** - The core to set the log file for.
-    * **`log_file`** - The name of the file to log to.
+    - **`core`** - The core to set the log file for.
+    - **`log_file`** - The name of the file to log to.
     """
     f = loadSym("helicsCoreSetLogFile")
     err = helicsErrorInitialize()
@@ -4319,8 +4321,8 @@ def helicsBrokerSetLogFile(broker: HelicsBroker, log_file: str):
 
     **Parameters**
 
-    * **`broker`** - The broker to set the log file for.
-    * **`log_file`** - The name of the file to log to.
+    - **`broker`** - The broker to set the log file for.
+    - **`log_file`** - The name of the file to log to.
     """
     f = loadSym("helicsBrokerSetLogFile")
     err = helicsErrorInitialize()
@@ -4336,8 +4338,8 @@ def helicsCreateQuery(target_name: str, query_string: str) -> HelicsQuery:
 
     **Parameters**
 
-    * **`target_name`** - The name of the target to query.
-    * **`query`** - The query to make of the target.
+    - **`target_name`** - The name of the target to query.
+    - **`query_string`** - The query to make of the target.
 
     **Returns**: `helics.HelicsQuery`.
     """
@@ -4353,8 +4355,8 @@ def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> str:
 
     **Parameters**
 
-    * **`query`** - The query object to use in the query.
-    * **`fed`** - A federate to send the query through.
+    - **`query`** - The query object to use in the query.
+    - **`fed`** - A federate to send the query through.
 
     **Returns**: String that contains the result of the query that was executed.
     """
@@ -4374,8 +4376,8 @@ def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> str:
 
     **Parameters**
 
-    * **`query`** - The query object to use in the query.
-    * **`core`** - The core to send the query to.
+    - **`query`** - The query object to use in the query.
+    - **`core`** - The core to send the query to.
 
     **Returns**: String that contains the result of the query that was executed.
     """
@@ -4395,8 +4397,8 @@ def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> str:
 
     **Parameters**
 
-    * **`query`** - The query object to use in the query.
-    * **`broker`** - The broker to send the query to.
+    - **`query`** - The query object to use in the query.
+    - **`broker`** - The broker to send the query to.
 
     **Returns**: String that contains the result of the query that was executed.
     """
@@ -4415,8 +4417,8 @@ def helicsQueryExecuteAsync(query: HelicsQuery, fed: HelicsFederate):
 
     **Parameters**
 
-    * **`query`** - The query object to use in the query.
-    * **`fed`** - A federate to send the query through.
+    - **`query`** - The query object to use in the query.
+    - **`fed`** - A federate to send the query through.
     """
     f = loadSym("helicsQueryExecuteAsync")
     err = helicsErrorInitialize()
@@ -4432,7 +4434,7 @@ def helicsQueryExecuteComplete(query: HelicsQuery) -> str:
 
     **Parameters**
 
-    * **`query`** - The query object to complete execution of.
+    - **`query`** - The query object to complete execution of.
 
     **Returns**: String that contains the result of the query that was executed.
     """
@@ -4452,7 +4454,7 @@ def helicsQueryIsCompleted(query: HelicsQuery) -> bool:
 
     **Parameters**
 
-    * **`query`** - The query object to check if completed
+    - **`query`** - The query object to check if completed
 
     **Returns**: Will return `True` if an asynchronous query has completed or a regular query call was made with a result, and false if an asynchronous query has not completed or is invalid.
     """
@@ -4467,8 +4469,8 @@ def helicsQuerySetTarget(query: HelicsQuery, target_name: str):
 
     **Parameters**
 
-    * **`query`** - The query object to change the target of.
-    * **`target_name`** - the name of the target to query.
+    - **`query`** - The query object to change the target of.
+    - **`target_name`** - the name of the target to query.
     """
     f = loadSym("helicsQuerySetTarget")
     err = helicsErrorInitialize()
@@ -4483,8 +4485,8 @@ def helicsQuerySetQueryString(query: HelicsQuery, query_string: str):
 
     **Parameters**
 
-    * **`query`** - The query object to change the target of.
-    * **`query_string`** - the new queryString.
+    - **`query`** - The query object to change the target of.
+    - **`query_string`** - the new queryString.
     """
     f = loadSym("helicsQuerySetQueryString")
     err = helicsErrorInitialize()
@@ -4519,10 +4521,9 @@ def helicsFederateRegisterEndpoint(fed: HelicsFederate, name: str, type: str) ->
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create an endpoint must have been created
-              with helicsCreateMessageFederate or helicsCreateCombinationFederate.
-    * **`name`** - The identifier for the endpoint. This will be prepended with the federate name for the global identifier.
-    * **`type`** - A string describing the expected type of the publication (optional).
+    - **`fed`** - The `helics.HelicsFederate` in which to create an endpoint must have been created with helicsCreateMessageFederate or helicsCreateCombinationFederate.
+    - **`name`** - The identifier for the endpoint. This will be prepended with the federate name for the global identifier.
+    - **`type`** - A string describing the expected type of the publication (optional).
 
     **Returns**: `helics.HelicsEndpoint`.
     """
@@ -4542,10 +4543,9 @@ def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: s
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create an endpoint must have been created
-           with helicsCreateMessageFederate or helicsCreateCombinationFederate.
-    * **`name`** - The identifier for the endpoint.handle, the given name is the global identifier.
-    * **`type`** - A string describing the expected type of the publication (optional).
+    - **`fed`** - The `helics.HelicsFederate` in which to create an endpoint must have been created with helicsCreateMessageFederate or helicsCreateCombinationFederate.
+    - **`name`** - The identifier for the endpoint.handle, the given name is the global identifier.
+    - **`type`** - A string describing the expected type of the publication (optional).
 
     **Returns**: `helics.HelicsEndpoint`.
     """
@@ -4564,8 +4564,8 @@ def helicsFederateGetEndpoint(fed: HelicsFederate, name: str) -> HelicsEndpoint:
 
     **Parameters**
 
-    * **`fed`** - The message `helics.HelicsFederate` to use to get the endpoint.
-    * **`name`** - The name of the endpoint.
+    - **`fed`** - The message `helics.HelicsFederate` to use to get the endpoint.
+    - **`name`** - The name of the endpoint.
 
     **Returns**: `helics.HelicsEndpoint`.
     """
@@ -4584,8 +4584,8 @@ def helicsFederateGetEndpointByIndex(fed: HelicsFederate, index: int) -> HelicsE
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`index`** - The index of the publication to get.
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`index`** - The index of the publication to get.
 
     **Returns**: `helics.HelicsEndpoint`.
     """
@@ -4604,7 +4604,7 @@ def helicsEndpointIsValid(endpoint: HelicsEndpoint) -> bool:
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint object to check.
+    - **`endpoint`** - The endpoint object to check.
 
     **Returns**: `True` if the Endpoint object represents a valid endpoint.
     """
@@ -4619,8 +4619,8 @@ def helicsEndpointSetDefaultDestination(endpoint: HelicsEndpoint, dest: str):
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to set the destination for.
-    * **`dest`** - A string naming the desired default endpoint.
+    - **`endpoint`** - The endpoint to set the destination for.
+    - **`dest`** - A string naming the desired default endpoint.
     """
     f = loadSym("helicsEndpointSetDefaultDestination")
     err = helicsErrorInitialize()
@@ -4635,7 +4635,7 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to set the destination for.
+    - **`endpoint`** - The endpoint to set the destination for.
 
     **Returns**: A string with the default destination.
     """
@@ -4650,9 +4650,9 @@ def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: bytes):
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`dest`** - The target destination.
-    * **`data`** - The data to send.
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`dest`** - The target destination.
+    - **`data`** - The data to send.
     """
     f = loadSym("helicsEndpointSendMessageRaw")
     err = helicsErrorInitialize()
@@ -4674,9 +4674,9 @@ def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: byte
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`dest`** - The target destination.
-    * **`data`** - The data to send.
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`dest`** - The target destination.
+    - **`data`** - The data to send.
 
     **DEPRECATED**
 
@@ -4694,10 +4694,10 @@ def helicsEndpointSendToAt(
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`dest`** - The target destination.
-    * **`data`** - The data to send.
-    * **`time`** - The time the message should be sent.
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`dest`** - The target destination.
+    - **`data`** - The data to send.
+    - **`time`** - The time the message should be sent.
     """
     f = loadSym("helicsEndpointSendEventRaw")
     err = helicsErrorInitialize()
@@ -4715,10 +4715,10 @@ def helicsEndpointSendEventRaw(
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`dest`** - The target destination.
-    * **`data`** - The data to send.
-    * **`time`** - The time the message should be sent.
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`dest`** - The target destination.
+    - **`data`** - The data to send.
+    - **`time`** - The time the message should be sent.
 
     **DEPRECATED**
 
@@ -4734,8 +4734,8 @@ def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMes
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`message`** - The actual message to send which will be copied.
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`message`** - The actual message to send which will be copied.
 
     **DEPRECATED**
     """
@@ -4749,8 +4749,8 @@ def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: H
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`message`** - The actual message to send which will be copied.
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`message`** - The actual message to send which will be copied.
 
     **DEPRECATED**
     """
@@ -4764,8 +4764,8 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to send the data from.
-    * **`message`** - The actual message to send which will be copied.
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`message`** - The actual message to send which will be copied.
     """
     f = loadSym("helicsEndpointSendMessageObject")
     err = helicsErrorInitialize()
@@ -4780,8 +4780,8 @@ def helicsEndpointSubscribe(endpoint: HelicsEndpoint, key: str):
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to use.
-    * **`key`** - The name of the publication.
+    - **`endpoint`** - The endpoint to use.
+    - **`key`** - The name of the publication.
     """
     f = loadSym("helicsEndpointSubscribe")
     err = helicsErrorInitialize()
@@ -4796,7 +4796,7 @@ def helicsFederateHasMessage(fed: HelicsFederate) -> bool:
 
     **Parameters**
 
-    * **`fed`** - The federate to check.
+    - **`fed`** - The federate to check.
 
     **Returns**: `True` if the federate has a message waiting, `False` otherwise.
     """
@@ -4811,7 +4811,7 @@ def helicsEndpointHasMessage(endpoint: HelicsEndpoint) -> bool:
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to check.
+    - **`endpoint`** - The endpoint to check.
 
     **Returns**: `True` if the endpoint has a message, `False` otherwise.
     """
@@ -4826,7 +4826,7 @@ def helicsFederatePendingMessages(fed: HelicsFederate) -> int:
 
     **Parameters**
 
-    * **`fed`** - The federate to get the number of waiting messages from.
+    - **`fed`** - The federate to get the number of waiting messages from.
     """
     f = loadSym("helicsFederatePendingMessages")
     return f(fed.handle)
@@ -4838,7 +4838,7 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint to query.
+    - **`endpoint`** - The endpoint to query.
     """
     f = loadSym("helicsEndpointPendingMessages")
     return f(endpoint.handle)
@@ -4850,7 +4850,7 @@ def helicsEndpointGetMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     **Parameters**
 
-    * **`endpoint`** - The identifier for the endpoint.
+    - **`endpoint`** - The identifier for the endpoint.
 
     **Returns**: A message.
 
@@ -4866,7 +4866,7 @@ def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     **Parameters**
 
-    * **`endpoint`** - The identifier for the endpoint.
+    - **`endpoint`** - The identifier for the endpoint.
 
     **Returns**: A message object.
     """
@@ -4881,7 +4881,7 @@ def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint object to associate the message with.
+    - **`endpoint`** - The endpoint object to associate the message with.
 
     **DEPRECATED**
     """
@@ -4896,7 +4896,7 @@ def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint object to associate the message with.
+    - **`endpoint`** - The endpoint object to associate the message with.
     """
     f = loadSym("helicsEndpointCreateMessageObject")
     err = helicsErrorInitialize()
@@ -4943,7 +4943,7 @@ def helicsFederateCreateMessageObject(fed: HelicsFederate) -> HelicsMessage:
 
     **Parameters**
 
-    * **`fed`** - the `helics.HelicsFederate` to associate the message with.
+    - **`fed`** - the `helics.HelicsFederate` to associate the message with.
 
     **DEPRECATED**
     """
@@ -4958,7 +4958,7 @@ def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessage:
 
     **Parameters**
 
-    * **`fed`** - the `helics.HelicsFederate` to associate the message with.
+    - **`fed`** - the `helics.HelicsFederate` to associate the message with.
     """
     f = loadSym("helicsFederateCreateMessageObject")
     err = helicsErrorInitialize()
@@ -4976,7 +4976,7 @@ def helicsFederateClearMessages(fed: HelicsFederate):
 
     **Parameters**
 
-    * **`fed`** - The federate to clear the message for.
+    - **`fed`** - The federate to clear the message for.
     """
     f = loadSym("helicsFederateClearMessages")
     f(fed.handle)
@@ -4990,7 +4990,7 @@ def helicsEndpointClearMessages(endpoint: HelicsEndpoint):
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint object to operate on.
+    - **`endpoint`** - The endpoint object to operate on.
     """
     f = loadSym("helicsEndpointClearMessages")
     f(endpoint.handle)
@@ -5002,7 +5002,7 @@ def helicsEndpointGetType(endpoint: HelicsEndpoint) -> str:
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint object in question.
+    - **`endpoint`** - The endpoint object in question.
 
     **Returns**: The defined type of the endpoint.
     """
@@ -5017,7 +5017,7 @@ def helicsEndpointGetName(endpoint: HelicsEndpoint) -> str:
 
     **Parameters**
 
-    * **`endpoint`** - The endpoint object in question.
+    - **`endpoint`** - The endpoint object in question.
 
     **Returns**: The name of the endpoint.
     """
@@ -5032,7 +5032,7 @@ def helicsFederateGetEndpointCount(fed: HelicsFederate) -> int:
 
     **Parameters**
 
-    * **`fed`** - The message federate to query.
+    - **`fed`** - The message federate to query.
 
     **Returns**: (-1) if fed was not a valid federate, otherwise returns the number of endpoints.
     """
@@ -5047,7 +5047,7 @@ def helicsEndpointGetInfo(endpoint: HelicsEndpoint) -> str:
 
     **Parameters**
 
-    * **`end`** - The filter to query.
+    - **`end`** - The filter to query.
 
     **Returns**: A string with the info field string.
     """
@@ -5062,8 +5062,8 @@ def helicsEndpointSetInfo(endpoint: HelicsEndpoint, info: str):
 
     **Parameters**
 
-    * **`end`** - The endpoint to query.
-    * **`info`** - The string to set.
+    - **`endpoint`** - The endpoint to query.
+    - **`info`** - The string to set.
     """
     f = loadSym("helicsEndpointSetInfo")
     err = helicsErrorInitialize()
@@ -5078,9 +5078,9 @@ def helicsEndpointSetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption
 
     **Parameters**
 
-    * **`end`** - The endpoint to modify.
-    * **`option`** - Integer code for the option to set `helics.HelicsHandleOption`.
-    * **`value`** - The value to set the option to.
+    - **`endpoint`** - The endpoint to modify.
+    - **`option`** - Integer code for the option to set `helics.HelicsHandleOption`.
+    - **`value`** - The value to set the option to.
     """
     f = loadSym("helicsEndpointSetOption")
     err = helicsErrorInitialize()
@@ -5095,8 +5095,8 @@ def helicsEndpointGetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption
 
     **Parameters**
 
-    * **`end`** - The endpoint to modify.
-    * **`option`** - Integer code for the option to set `helics.HelicsHandleOption`.
+    - **`endpoint`** - The endpoint to modify.
+    - **`option`** - Integer code for the option to set `helics.HelicsHandleOption`.
 
     **Returns**: the value of the option, for boolean options will be 0 or 1.
     """
@@ -5113,7 +5113,7 @@ def helicsMessageGetSource(message: HelicsMessage) -> str:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: A string with the source endpoint.
     """
@@ -5128,7 +5128,7 @@ def helicsMessageGetDestination(message: HelicsMessage) -> str:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: A string with the destination endpoint.
     """
@@ -5143,7 +5143,7 @@ def helicsMessageGetOriginalSource(message: HelicsMessage) -> str:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: A string with the source of a message.
     """
@@ -5158,7 +5158,7 @@ def helicsMessageGetOriginalDestination(message: HelicsMessage) -> str:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: A string with the original destination of a message.
     """
@@ -5173,7 +5173,7 @@ def helicsMessageGetTime(message: HelicsMessage) -> HelicsTime:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: The time associated with a message.
     """
@@ -5188,7 +5188,7 @@ def helicsMessageGetString(message: HelicsMessage) -> str:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: A string representing the payload of a message.
     """
@@ -5203,7 +5203,7 @@ def helicsMessageGetMessageID(message: HelicsMessage) -> int:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: The messageID.
     """
@@ -5218,8 +5218,8 @@ def helicsMessageCheckFlag(message: HelicsMessage, flag: int) -> bool:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`flag`** - The flag to check should be between [0,15].
+    - **`message`** - The message object in question.
+    - **`flag`** - The flag to check should be between [0,15].
 
     **Returns**: The flags associated with a message.
     """
@@ -5234,7 +5234,7 @@ def helicsMessageGetRawDataSize(message: HelicsMessage) -> int:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: The size of the data payload.
     """
@@ -5249,7 +5249,7 @@ def helicsMessageGetRawData(message: HelicsMessage) -> bytes:
 
     **Parameters**
 
-    * **`message`** - A message object to get the data for.
+    - **`message`** - A message object to get the data for.
 
     **Returns**: Raw string data.
     """
@@ -5270,7 +5270,7 @@ def helicsMessageGetRawDataPointer(message: HelicsMessage) -> pointer:
 
     **Parameters**
 
-    * **`message`** - A message object to get the data for.
+    - **`message`** - A message object to get the data for.
 
     **Returns**: A pointer to the raw data in memory, the pointer may be NULL if the message is not a valid message.
     """
@@ -5285,7 +5285,7 @@ def helicsMessageIsValid(message: HelicsMessage) -> bool:
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
 
     **Returns**: `True` if the message contains a payload.
     """
@@ -5300,8 +5300,8 @@ def helicsMessageSetSource(message: HelicsMessage, src: str):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`src`** - A string containing the source.
+    - **`message`** - The message object in question.
+    - **`src`** - A string containing the source.
     """
     f = loadSym("helicsMessageSetSource")
     err = helicsErrorInitialize()
@@ -5316,8 +5316,8 @@ def helicsMessageSetDestination(message: HelicsMessage, dest: str):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`dest`** - A string containing the new destination.
+    - **`message`** - The message object in question.
+    - **`dest`** - A string containing the new destination.
     """
     f = loadSym("helicsMessageSetDestination")
     err = helicsErrorInitialize()
@@ -5332,8 +5332,8 @@ def helicsMessageSetOriginalSource(message: HelicsMessage, src: str):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`src`** - A string containing the new original source.
+    - **`message`** - The message object in question.
+    - **`src`** - A string containing the new original source.
     """
     f = loadSym("helicsMessageSetOriginalSource")
     err = helicsErrorInitialize()
@@ -5348,8 +5348,8 @@ def helicsMessageSetOriginalDestination(message: HelicsMessage, dest: str):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`dest`** - A string containing the new original source.
+    - **`message`** - The message object in question.
+    - **`dest`** - A string containing the new original source.
     """
     f = loadSym("helicsMessageSetOriginalDestination")
     err = helicsErrorInitialize()
@@ -5364,8 +5364,8 @@ def helicsMessageSetTime(message: HelicsMessage, time: HelicsTime):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`time`** - The time the message should be delivered.
+    - **`message`** - The message object in question.
+    - **`time`** - The time the message should be delivered.
     """
     f = loadSym("helicsMessageSetTime")
     err = helicsErrorInitialize()
@@ -5374,7 +5374,7 @@ def helicsMessageSetTime(message: HelicsMessage, time: HelicsTime):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageResize(message: HelicsMessage, newSize: int):
+def helicsMessageResize(message: HelicsMessage, new_size: int):
     """
     Resize the data buffer for a message.
     The message data buffer will be resized. There are no guarantees on what is in the buffer in newly allocated space.
@@ -5382,46 +5382,46 @@ def helicsMessageResize(message: HelicsMessage, newSize: int):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`newSize`** - The new size in bytes of the buffer.
+    - **`message`** - The message object in question.
+    - **`new_size`** - The new size in bytes of the buffer.
     """
     f = loadSym("helicsMessageResize")
     err = helicsErrorInitialize()
-    f(message.handle, newSize, err)
+    f(message.handle, new_size, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageReserve(message: HelicsMessage, reserveSize: int):
+def helicsMessageReserve(message: HelicsMessage, reserve_size: int):
     """
     Reserve space in a buffer but don't actually resize.
     The message data buffer will be reserved but not resized.
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`reserveSize`** - The number of bytes to reserve in the message object.
+    - **`message`** - The message object in question.
+    - **`reserve_size`** - The number of bytes to reserve in the message object.
     """
     f = loadSym("helicsMessageReserve")
     err = helicsErrorInitialize()
-    f(message.handle, reserveSize, err)
+    f(message.handle, reserve_size, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageSetMessageID(message: HelicsMessage, messageID: int):
+def helicsMessageSetMessageID(message: HelicsMessage, message_id: int):
     """
     Set the message ID for the message.
     Normally this is not needed and the core of HELICS will adjust as needed.
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`messageID`** - A new message ID.
+    - **`message`** - The message object in question.
+    - **`message_id`** - A new message ID.
     """
     f = loadSym("helicsMessageSetMessageID")
     err = helicsErrorInitialize()
-    f(message.handle, messageID, err)
+    f(message.handle, message_id, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -5432,7 +5432,7 @@ def helicsMessageClearFlags(message: HelicsMessage):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
+    - **`message`** - The message object in question.
     """
     f = loadSym("helicsMessageClearFlags")
     f(message.handle)
@@ -5444,9 +5444,9 @@ def helicsMessageSetFlagOption(message: HelicsMessage, flag: int, value: bool):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`flag`** - An index of a flag to set on the message.
-    * **`value`** - The desired value of the flag.
+    - **`message`** - The message object in question.
+    - **`flag`** - An index of a flag to set on the message.
+    - **`value`** - The desired value of the flag.
     """
     f = loadSym("helicsMessageSetFlagOption")
     err = helicsErrorInitialize()
@@ -5461,8 +5461,8 @@ def helicsMessageSetString(message: HelicsMessage, string: str):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`str`** - A string containing the message data.
+    - **`message`** - The message object in question.
+    - **`string`** - A string containing the message data.
     """
     f = loadSym("helicsMessageSetString")
     err = helicsErrorInitialize()
@@ -5477,9 +5477,8 @@ def helicsMessageSetData(message: HelicsMessage, data: bytes):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`data`** - A string containing the message data.
-    * **`inputDataLength`** - The length of the data to input.
+    - **`message`** - The message object in question.
+    - **`data`** - A string containing the message data.
     """
     f = loadSym("helicsMessageSetData")
     err = helicsErrorInitialize()
@@ -5501,9 +5500,8 @@ def helicsMessageAppendData(message: HelicsMessage, data: bytes):
 
     **Parameters**
 
-    * **`message`** - The message object in question.
-    * **`data`** - A string containing the message data to append.
-    * **`inputDataLength`** - The length of the data to input.
+    - **`message`** - The message object in question.
+    - **`data`** - A string containing the message data to append.
     """
     f = loadSym("helicsMessageAppendData")
     err = helicsErrorInitialize()
@@ -5525,8 +5523,8 @@ def helicsMessageCopy(source_message: HelicsMessage, dest_message: HelicsMessage
 
     **Parameters**
 
-    * **`source_message`** - The message object to copy from.
-    * **`dest_message`** - The message object to copy to.
+    - **`source_message`** - The message object to copy from.
+    - **`dest_message`** - The message object to copy to.
     """
     f = loadSym("helicsMessageCopy")
     err = helicsErrorInitialize()
@@ -5541,7 +5539,7 @@ def helicsMessageClone(message: HelicsMessage) -> HelicsMessage:
 
     **Parameters**
 
-    * **`message`** - The message object to copy from.
+    - **`message`** - The message object to copy from.
 
     **Returns**: `helics.HelicsMessage`.
     """
@@ -5570,9 +5568,9 @@ def helicsFederateRegisterFilter(fed: HelicsFederate, type: HelicsFilterType, na
 
     **Parameters**
 
-    * **`fed`** - The federate to register through.
-    * **`type`** - The type of filter to create `helics.HelicsFilterType`.
-    * **`name`** - The name of the filter (can be NULL).
+    - **`fed`** - The federate to register through.
+    - **`type`** - The type of filter to create `helics.HelicsFilterType`.
+    - **`name`** - The name of the filter (can be NULL).
 
     **Returns**: `helics.HelicsFilter`.
     """
@@ -5592,9 +5590,9 @@ def helicsFederateRegisterGlobalFilter(fed: HelicsFederate, type: HelicsFilterTy
 
     **Parameters**
 
-    * **`fed`** - The federate to register through.
-    * **`type`** - The type of filter to create `helics.HelicsFilterType`.
-    * **`name`** - The name of the filter (can be NULL).
+    - **`fed`** - The federate to register through.
+    - **`type`** - The type of filter to create `helics.HelicsFilterType`.
+    - **`name`** - The name of the filter (can be NULL).
 
     **Returns**: `helics.HelicsFilter`.
     """
@@ -5614,8 +5612,8 @@ def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> Helic
 
     **Parameters**
 
-    * **`fed`** - The federate to register through.
-    * **`name`** - The name of the filter (can be NULL).
+    - **`fed`** - The federate to register through.
+    - **`name`** - The name of the filter (can be NULL).
 
     **Returns**: `helics.HelicsFilter`.
     """
@@ -5635,8 +5633,8 @@ def helicsFederateRegisterGlobalCloningFilter(fed: HelicsFederate, name: str) ->
 
     **Parameters**
 
-    * **`fed`** - The federate to register through.
-    * **`name`** - The name of the filter (can be NULL).
+    - **`fed`** - The federate to register through.
+    - **`name`** - The name of the filter (can be NULL).
 
     **Returns**: `helics.HelicsFilter`.
     """
@@ -5656,9 +5654,9 @@ def helicsCoreRegisterFilter(core: HelicsCore, type: HelicsFilterType, name: str
 
     **Parameters**
 
-    * **`core`** - The core to register through.
-    * **`type`** - The type of filter to create `helics.HelicsFilterType`.
-    * **`name`** - The name of the filter (can be NULL).
+    - **`core`** - The core to register through.
+    - **`type`** - The type of filter to create `helics.HelicsFilterType`.
+    - **`name`** - The name of the filter (can be NULL).
 
     **Returns**: `helics.HelicsFilter`.
     """
@@ -5678,8 +5676,8 @@ def helicsCoreRegisterCloningFilter(core: HelicsCore, name: str) -> HelicsFilter
 
     **Parameters**
 
-    * **`core`** - The core to register through.
-    * **`name`** - The name of the filter (can be NULL).
+    - **`core`** - The core to register through.
+    - **`name`** - The name of the filter (can be NULL).
 
     **Returns**: `helics.HelicsFilter`.
     """
@@ -5698,7 +5696,7 @@ def helicsFederateGetFilterCount(fed: HelicsFederate) -> int:
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` to use to get the filter.
+    - **`fed`** - The `helics.HelicsFederate` to use to get the filter.
 
     **Returns**: A count of the number of filters registered through a federate.
     """
@@ -5713,8 +5711,8 @@ def helicsFederateGetFilter(fed: HelicsFederate, name: str) -> HelicsFilter:
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` to use to get the filter.
-    * **`name`** - The name of the filter.
+    - **`fed`** - The `helics.HelicsFederate` to use to get the filter.
+    - **`name`** - The name of the filter.
 
     **Returns**: `helics.HelicsFilter`.
     """
@@ -5733,8 +5731,8 @@ def helicsFederateGetFilterByIndex(fed: HelicsFederate, index: int) -> HelicsFil
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`index`** - The index of the publication to get.
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`index`** - The index of the publication to get.
 
     **Returns**: `helics.HelicsFilter`.
     """
@@ -5753,7 +5751,7 @@ def helicsFilterIsValid(filter: HelicsFilter) -> bool:
 
     **Parameters**
 
-    * **`filter`** - The filter object to check.
+    - **`filter`** - The filter object to check.
 
     **Returns**: `True` if the Filter object represents a valid filter.
     """
@@ -5768,7 +5766,7 @@ def helicsFilterGetName(filter: HelicsFilter) -> str:
 
     **Parameters**
 
-    * **`filter`** - The given filter.
+    - **`filter`** - The given filter.
 
     **Returns**: A string with the name of the filter.
     """
@@ -5777,36 +5775,36 @@ def helicsFilterGetName(filter: HelicsFilter) -> str:
     return ffi.string(result).decode()
 
 
-def helicsFilterSet(filter: HelicsFilter, prop: str, val: float):
+def helicsFilterSet(filter: HelicsFilter, property: str, value: float):
     """
     Set a property on a filter.
 
     **Parameters**
 
-    * **`filter`** - The filter to modify.
-    * **`prop`** - A string containing the property to set.
-    * **`val`** - A numerical value for the property.
+    - **`filter`** - The filter to modify.
+    - **`property`** - A string containing the property to set.
+    - **`value`** - A numerical value for the property.
     """
     f = loadSym("helicsFilterSet")
     err = helicsErrorInitialize()
-    f(filter.handle, cstring(prop), cdouble(val), err)
+    f(filter.handle, cstring(property), cdouble(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFilterSetString(filter: HelicsFilter, prop: str, val: str):
+def helicsFilterSetString(filter: HelicsFilter, property: str, value: str):
     """
     Set a string property on a filter.
 
     **Parameters**
 
-    * **`filter`** - The filter to modify.
-    * **`prop`** - A string containing the property to set.
-    * **`val`** - A string containing the new value.
+    - **`filter`** - The filter to modify.
+    - **`property`** - A string containing the property to set.
+    - **`value`** - A string containing the new value.
     """
     f = loadSym("helicsFilterSetString")
     err = helicsErrorInitialize()
-    f(filter.handle, cstring(prop), cstring(val), err)
+    f(filter.handle, cstring(property), cstring(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -5818,8 +5816,8 @@ def helicsFilterAddDestinationTarget(filter: HelicsFilter, dest: str):
 
     **Parameters**
 
-    * **`filter`** - The given filter to add a destination target to.
-    * **`dest`** - The name of the endpoint to add as a destination target.
+    - **`filter`** - The given filter to add a destination target to.
+    - **`dest`** - The name of the endpoint to add as a destination target.
     """
     f = loadSym("helicsFilterAddDestinationTarget")
     err = helicsErrorInitialize()
@@ -5835,8 +5833,8 @@ def helicsFilterAddSourceTarget(filter: HelicsFilter, source_name: str):
 
     **Parameters**
 
-    * **`filter`** - The given filter.
-    * **`source_name`** - The name of the endpoint to add as a source target.
+    - **`filter`** - The given filter.
+    - **`source_name`** - The name of the endpoint to add as a source target.
     """
     f = loadSym("helicsFilterAddSourceTarget")
     err = helicsErrorInitialize()
@@ -5854,8 +5852,8 @@ def helicsFilterAddDeliveryEndpoint(filter: HelicsFilter, delivery_endpoint: str
 
     **Parameters**
 
-    * **`filter`** - The given filter.
-    * **`delivery_endpoint`** - The name of the endpoint to deliver messages to.
+    - **`filter`** - The given filter.
+    - **`delivery_endpoint`** - The name of the endpoint to deliver messages to.
     """
     f = loadSym("helicsFilterAddDeliveryEndpoint")
     err = helicsErrorInitialize()
@@ -5870,8 +5868,8 @@ def helicsFilterRemoveTarget(filter: HelicsFilter, target_name: str):
 
     **Parameters**
 
-    * **`filter`** - The given filter.
-    * **`target_name`** - The named endpoint to remove as a target.
+    - **`filter`** - The given filter.
+    - **`target_name`** - The named endpoint to remove as a target.
     """
     f = loadSym("helicsFilterRemoveTarget")
     err = helicsErrorInitialize()
@@ -5886,8 +5884,8 @@ def helicsFilterRemoveDeliveryEndpoint(filter: HelicsFilter, delivery_endpoint: 
 
     **Parameters**
 
-    * **`filter`** - The given filter (must be a cloning filter).
-    * **`delivery_endpoint`** - A string with the delivery endpoint to remove.
+    - **`filter`** - The given filter (must be a cloning filter).
+    - **`delivery_endpoint`** - A string with the delivery endpoint to remove.
     """
     f = loadSym("helicsFilterRemoveDeliveryEndpoint")
     err = helicsErrorInitialize()
@@ -5902,7 +5900,7 @@ def helicsFilterGetInfo(filter: HelicsFilter) -> str:
 
     **Parameters**
 
-    * **`filter`** - The given filter.
+    - **`filter`** - The given filter.
 
     **Returns**: A string with the info field string.
     """
@@ -5917,8 +5915,8 @@ def helicsFilterSetInfo(filter: HelicsFilter, info: str):
 
     **Parameters**
 
-    * **`filter`** - The given filter.
-    * **`info`** - The string to set.
+    - **`filter`** - The given filter.
+    - **`info`** - The string to set.
     """
     f = loadSym("helicsFilterSetInfo")
     err = helicsErrorInitialize()
@@ -5933,9 +5931,9 @@ def helicsFilterSetOption(filter: HelicsFilter, option: HelicsHandleOption, valu
 
     **Parameters**
 
-    * **`filter`** - The given filter.
-    * **`option`** - The option to set `helics.HelicsHandleOption`.
-    * **`value`** - The value of the option commonly 0 for false 1 for true.
+    - **`filter`** - The given filter.
+    - **`option`** - The option to set `helics.HelicsHandleOption`.
+    - **`value`** - The value of the option commonly 0 for false 1 for true.
     """
     f = loadSym("helicsFilterSetOption")
     err = helicsErrorInitialize()
@@ -5950,8 +5948,8 @@ def helicsFilterGetOption(filter: HelicsFilter, option: HelicsHandleOption) -> i
 
     **Parameters**
 
-    * **`filter`** - The given filter to query.
-    * **`option`** - The option to query `helics.HelicsHandleOption`.
+    - **`filter`** - The given filter to query.
+    - **`option`** - The option to query `helics.HelicsHandleOption`.
 
     **Returns**: `int`.
     """
@@ -5968,10 +5966,10 @@ def helicsFederateRegisterSubscription(fed: HelicsFederate, key: str, units: str
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a subscription, must have been created with `helics.helicsCreateValueFederate` or
+    - **`fed`** - The `helics.HelicsFederate` in which to create a subscription, must have been created with `helics.helicsCreateValueFederate` or
     `helics.helicsCreateCombinationFederate`.
-    * **`key`** - The identifier matching a publication to get a subscription for.
-    * **`units`** - A string listing the units of the subscription (optional).
+    - **`key`** - The identifier matching a publication to get a subscription for.
+    - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsSubscription`.
     """
@@ -5991,10 +5989,10 @@ def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: Helic
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`key`** - The identifier for the publication the global publication key will be prepended with the federate name.
-    * **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
-    * **`units`** - A string listing the units of the subscription (optional).
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`key`** - The identifier for the publication the global publication key will be prepended with the federate name.
+    - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
+    - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6014,10 +6012,10 @@ def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: s
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`key`** - The identifier for the publication.
-    * **`type`** - A string labeling the type of the publication.
-    * **`units`** - A string listing the units of the subscription (optional).
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`key`** - The identifier for the publication.
+    - **`type`** - A string labeling the type of the publication.
+    - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6037,10 +6035,10 @@ def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type:
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`key`** - The identifier for the publication.
-    * **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
-    * **`units`** - A string listing the units of the subscription (optional).
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`key`** - The identifier for the publication.
+    - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
+    - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6060,10 +6058,10 @@ def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, t
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`key`** - The identifier for the publication.
-    * **`type`** - A string describing the expected type of the publication.
-    * **`units`** - A string listing the units of the subscription (optional).
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`key`** - The identifier for the publication.
+    - **`type`** - A string describing the expected type of the publication.
+    - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6084,10 +6082,10 @@ def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataT
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create an input.
-    * **`key`** - The identifier for the publication the global input key will be prepended with the federate name.
-    * **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
-    * **`units`** - A string listing the units of the input (optional).
+    - **`fed`** - The `helics.HelicsFederate` in which to create an input.
+    - **`key`** - The identifier for the publication the global input key will be prepended with the federate name.
+    - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
+    - **`units`** - A string listing the units of the input (optional).
 
     **Returns**: `helics.HelicsInput`.
     """
@@ -6108,10 +6106,10 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, un
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create an input.
-    * **`key`** - The identifier for the input.
-    * **`type`** - A string describing the expected type of the input.
-    * **`units`** - A string listing the units of the input maybe NULL.
+    - **`fed`** - The `helics.HelicsFederate` in which to create an input.
+    - **`key`** - The identifier for the input.
+    - **`type`** - A string describing the expected type of the input.
+    - **`units`** - A string listing the units of the input maybe NULL.
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6131,10 +6129,10 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: Helic
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`key`** - The identifier for the publication.
-    * **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
-    * **`units`** - A string listing the units of the subscription maybe NULL.
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`key`** - The identifier for the publication.
+    - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
+    - **`units`** - A string listing the units of the subscription maybe NULL.
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6154,10 +6152,10 @@ def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: s
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`key`** - The identifier for the publication.
-    * **`type`** - A string defining the type of the input.
-    * **`units`** - A string listing the units of the subscription maybe NULL.
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`key`** - The identifier for the publication.
+    - **`type`** - A string defining the type of the input.
+    - **`units`** - A string listing the units of the subscription maybe NULL.
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6176,8 +6174,8 @@ def helicsFederateGetPublication(fed: HelicsFederate, key: str) -> HelicsPublica
 
     **Parameters**
 
-    * **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    * **`key`** - The name of the publication.
+    - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
+    - **`key`** - The name of the publication.
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6196,8 +6194,8 @@ def helicsFederateGetPublicationByIndex(fed: HelicsFederate, index: int) -> Heli
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`index`** - The index of the publication to get.
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`index`** - The index of the publication to get.
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -6216,8 +6214,8 @@ def helicsFederateGetInput(fed: HelicsFederate, key: str) -> HelicsInput:
 
     **Parameters**
 
-    * **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    * **`key`** - The name of the input.
+    - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
+    - **`key`** - The name of the input.
 
     **Returns**: `helics.HelicsInput`.
     """
@@ -6236,8 +6234,8 @@ def helicsFederateGetInputByIndex(fed: HelicsFederate, index: int) -> HelicsInpu
 
     **Parameters**
 
-    * **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    * **`index`** - The index of the publication to get.
+    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
+    - **`index`** - The index of the publication to get.
 
     **Returns**: `helics.HelicsInput`
     """
@@ -6256,8 +6254,8 @@ def helicsFederateGetSubscription(fed: HelicsFederate, key: str) -> HelicsInput:
 
     **Parameters**
 
-    * **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    * **`key`** - The name of the publication that a subscription is targeting.
+    - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
+    - **`key`** - The name of the publication that a subscription is targeting.
 
     **Returns**: `helics.HelicsInput`
     """
@@ -6276,7 +6274,7 @@ def helicsFederateClearUpdates(fed: HelicsFederate):
 
     **Parameters**
 
-    * **`fed`** - The value `helics.HelicsFederate` for which to clear update flags.
+    - **`fed`** - The value `helics.HelicsFederate` for which to clear update flags.
     """
     f = loadSym("helicsFederateClearUpdates")
     f(fed.handle)
@@ -6288,8 +6286,8 @@ def helicsFederateRegisterFromPublicationJSON(fed: HelicsFederate, json: str):
 
     **Parameters**
 
-    * **`fed`** - The value `helics.HelicsFederate` to use to register the publications.
-    * **`json`** - The JSON publication string.
+    - **`fed`** - The value `helics.HelicsFederate` to use to register the publications.
+    - **`json`** - The JSON publication string.
     """
     f = loadSym("helicsFederateRegisterFromPublicationJSON")
     err = helicsErrorInitialize()
@@ -6304,8 +6302,8 @@ def helicsFederatePublishJSON(fed: HelicsFederate, json: str):
 
     **Parameters**
 
-    * **`fed`** - The value `helics.HelicsFederate` through which to publish the data.
-    * **`json`** - The publication file name or literal JSON data string.
+    - **`fed`** - The value `helics.HelicsFederate` through which to publish the data.
+    - **`json`** - The publication file name or literal JSON data string.
     """
     f = loadSym("helicsFederatePublishJSON")
     err = helicsErrorInitialize()
@@ -6323,7 +6321,7 @@ def helicsPublicationIsValid(pub: HelicsPublication) -> bool:
 
     **Parameters**
 
-    * **`pub`** - The publication to check
+    - **`pub`** - The publication to check
 
     **Returns**: `True` if the publication is a valid publication.
     """
@@ -6338,9 +6336,8 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`data`** - A pointer to the raw data.
-    * **`inputDataLength`** - The size in bytes of the data to publish.
+    - **`pub`** - The publication to publish for.
+    - **`data`** - A pointer to the raw data.
     """
     f = loadSym("helicsPublicationPublishRaw")
     err = helicsErrorInitialize()
@@ -6362,8 +6359,8 @@ def helicsPublicationPublishString(pub: HelicsPublication, string: str):
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`str`** - The string to publish.
+    - **`pub`** - The publication to publish for.
+    - **`string`** - The string to publish.
     """
     f = loadSym("helicsPublicationPublishString")
     err = helicsErrorInitialize()
@@ -6372,82 +6369,82 @@ def helicsPublicationPublishString(pub: HelicsPublication, string: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishInteger(pub: HelicsPublication, val: int):
+def helicsPublicationPublishInteger(pub: HelicsPublication, value: int):
     """
     Publish an integer value.
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`val`** - The numerical value to publish.
+    - **`pub`** - The publication to publish for.
+    - **`value`** - The numerical value to publish.
     """
     f = loadSym("helicsPublicationPublishInteger")
     err = helicsErrorInitialize()
-    f(pub.handle, val, err)
+    f(pub.handle, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishBoolean(pub: HelicsPublication, val: bool):
+def helicsPublicationPublishBoolean(pub: HelicsPublication, value: bool):
     """
     Publish a Boolean Value.
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`val`** - The boolean value to publish.
+    - **`pub`** - The publication to publish for.
+    - **`value`** - The boolean value to publish.
     """
     f = loadSym("helicsPublicationPublishBoolean")
     err = helicsErrorInitialize()
-    f(pub.handle, val, err)
+    f(pub.handle, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishDouble(pub: HelicsPublication, val: float):
+def helicsPublicationPublishDouble(pub: HelicsPublication, value: float):
     """
     Publish a double floating point value.
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`val`** - The numerical value to publish.
+    - **`pub`** - The publication to publish for.
+    - **`value`** - The numerical value to publish.
     """
     f = loadSym("helicsPublicationPublishDouble")
     err = helicsErrorInitialize()
-    f(pub.handle, cdouble(val), err)
+    f(pub.handle, cdouble(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishTime(pub: HelicsPublication, val: HelicsTime):
+def helicsPublicationPublishTime(pub: HelicsPublication, value: HelicsTime):
     """
     Publish a time value.
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`val`** - The numerical value to publish.
+    - **`pub`** - The publication to publish for.
+    - **`value`** - The numerical value to publish.
     """
     f = loadSym("helicsPublicationPublishTime")
     err = helicsErrorInitialize()
-    f(pub.handle, val, err)
+    f(pub.handle, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishChar(pub: HelicsPublication, val: str):
+def helicsPublicationPublishChar(pub: HelicsPublication, value: str):
     """
     Publish a single character.
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`val`** - The numerical value to publish.
+    - **`pub`** - The publication to publish for.
+    - **`value`** - The numerical value to publish.
     """
     f = loadSym("helicsPublicationPublishChar")
     err = helicsErrorInitialize()
-    f(pub.handle, cchar(val), err)
+    f(pub.handle, cchar(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -6458,9 +6455,9 @@ def helicsPublicationPublishComplex(pub: HelicsPublication, real: float, imag: f
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`real`** - `float` number or `complex` number
-    * **`imag`** - `float` number
+    - **`pub`** - The publication to publish for.
+    - **`real`** - `float` number or `complex` number
+    - **`imag`** - `float` number
     """
     c = complex(real, imag)
     f = loadSym("helicsPublicationPublishComplex")
@@ -6476,8 +6473,8 @@ def helicsPublicationPublishVector(pub: HelicsPublication, vectorInput: List[flo
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`vectorInput`** - A pointer to an array of double data.
+    - **`pub`** - The publication to publish for.
+    - **`vectorInput`** - A pointer to an array of double data.
     """
     f = loadSym("helicsPublicationPublishVector")
     err = helicsErrorInitialize()
@@ -6487,19 +6484,19 @@ def helicsPublicationPublishVector(pub: HelicsPublication, vectorInput: List[flo
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsPublicationPublishNamedPoint(pub: HelicsPublication, string: str, val: float):
+def helicsPublicationPublishNamedPoint(pub: HelicsPublication, string: str, value: float):
     """
     Publish a named point.
 
     **Parameters**
 
-    * **`pub`** - The publication to publish for.
-    * **`str`** - A string for the name to publish.
-    * **`val`** - A double for the value to publish.
+    - **`pub`** - The publication to publish for.
+    - **`string`** - A string for the name to publish.
+    - **`value`** - A double for the value to publish.
     """
     f = loadSym("helicsPublicationPublishNamedPoint")
     err = helicsErrorInitialize()
-    f(pub.handle, cstring(string), cdouble(val), err)
+    f(pub.handle, cstring(string), cdouble(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -6510,8 +6507,8 @@ def helicsPublicationAddTarget(pub: HelicsPublication, target_name: str):
 
     **Parameters**
 
-    * **`pub`** - The publication to add the target for.
-    * **`target_name`** - The name of an input that the data should be sent to.
+    - **`pub`** - The publication to add the target for.
+    - **`target_name`** - The name of an input that the data should be sent to.
     """
     f = loadSym("helicsPublicationAddTarget")
     err = helicsErrorInitialize()
@@ -6526,7 +6523,7 @@ def helicsInputIsValid(ipt: HelicsInput) -> bool:
 
     **Parameters**
 
-    * **`ipt`** - The input to check
+    - **`ipt`** - The input to check
 
     **Returns**: `True` if the Input object represents a valid input.
     """
@@ -6541,8 +6538,8 @@ def helicsInputAddTarget(ipt: HelicsInput, target_name: str):
 
     **Parameters**
 
-    * **`ipt`** - The named input to modify.
-    * **`target_name`** - The name of a publication that an input should subscribe to.
+    - **`ipt`** - The named input to modify.
+    - **`target_name`** - The name of a publication that an input should subscribe to.
     """
     f = loadSym("helicsInputAddTarget")
     err = helicsErrorInitialize()
@@ -6569,7 +6566,7 @@ def helicsInputGetRawValue(ipt: HelicsInput) -> bytes:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: Raw string data.
     """
@@ -6602,7 +6599,7 @@ def helicsInputGetString(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: A string data
     """
@@ -6624,7 +6621,7 @@ def helicsInputGetInteger(ipt: HelicsInput) -> int:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: An int64_t value with the current value of the input.
     """
@@ -6643,7 +6640,7 @@ def helicsInputGetBoolean(ipt: HelicsInput) -> bool:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: A boolean value of current input value.
     """
@@ -6662,7 +6659,7 @@ def helicsInputGetDouble(ipt: HelicsInput) -> float:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: The double value of the input.
     """
@@ -6681,7 +6678,7 @@ def helicsInputGetTime(ipt: HelicsInput) -> HelicsTime:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: The resulting time value.
     """
@@ -6700,7 +6697,7 @@ def helicsInputGetChar(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: The resulting character value.
     """
@@ -6720,7 +6717,7 @@ def helicsInputGetComplexObject(ipt: HelicsInput) -> Tuple[float, float]:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: `complex`.
     """
@@ -6740,7 +6737,7 @@ def helicsInputGetComplex(ipt: HelicsInput) -> Tuple[float, float]:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the data for.
+    - **`ipt`** - The input to get the data for.
 
     **Returns**: a pair of floating point values that represent the real and imag values
     """
@@ -6773,7 +6770,7 @@ def helicsInputGetVector(ipt: HelicsInput) -> List[float]:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the result for.
+    - **`ipt`** - The input to get the result for.
 
     **Returns**: a list of floating point values
     """
@@ -6795,7 +6792,7 @@ def helicsInputGetNamedPoint(ipt: HelicsInput) -> Tuple[str, float]:
 
     **Parameters**
 
-    * **`ipt`** - The input to get the result for.
+    - **`ipt`** - The input to get the result for.
 
     **Returns**: a string and a double value for the named point
     """
@@ -6804,12 +6801,12 @@ def helicsInputGetNamedPoint(ipt: HelicsInput) -> Tuple[str, float]:
     maxStringLen = helicsInputGetStringSize(ipt) + 1024
     outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen=maxStringLen))
     actualLength = ffi.new("int[1]")
-    val = ffi.new("double[1]")
-    f(ipt.handle, outputString, maxStringLen, actualLength, val, err)
+    value = ffi.new("double[1]")
+    f(ipt.handle, outputString, maxStringLen, actualLength, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return ffi.string(outputString, maxlen=actualLength[0]).decode(), val[0]
+        return ffi.string(outputString, maxlen=actualLength[0]).decode(), value[0]
 
 
 def helicsInputSetDefaultRaw(ipt: HelicsInput, data: bytes):
@@ -6821,8 +6818,8 @@ def helicsInputSetDefaultRaw(ipt: HelicsInput, data: bytes):
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`data`** - A pointer to the raw data to use for the default.
+    - **`ipt`** - The input to set the default for.
+    - **`data`** - A pointer to the raw data to use for the default.
     """
     f = loadSym("helicsInputSetDefaultRaw")
     err = helicsErrorInitialize()
@@ -6844,8 +6841,8 @@ def helicsInputSetDefaultString(ipt: HelicsInput, string: str):
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`str`** - A pointer to the default string.
+    - **`ipt`** - The input to set the default for.
+    - **`string`** - A pointer to the default string.
     """
     f = loadSym("helicsInputSetDefaultString")
     err = helicsErrorInitialize()
@@ -6854,82 +6851,82 @@ def helicsInputSetDefaultString(ipt: HelicsInput, string: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultInteger(ipt: HelicsInput, val: int):
+def helicsInputSetDefaultInteger(ipt: HelicsInput, value: int):
     """
     Set the default as an integer.
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`val`** - The default integer.
+    - **`ipt`** - The input to set the default for.
+    - **`value`** - The default integer.
     """
     f = loadSym("helicsInputSetDefaultInteger")
     err = helicsErrorInitialize()
-    f(ipt.handle, val, err)
+    f(ipt.handle, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultBoolean(ipt: HelicsInput, val: bool):
+def helicsInputSetDefaultBoolean(ipt: HelicsInput, value: bool):
     """
     Set the default as a boolean.
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`val`** - The default boolean value.
+    - **`ipt`** - The input to set the default for.
+    - **`value`** - The default boolean value.
     """
     f = loadSym("helicsInputSetDefaultBoolean")
     err = helicsErrorInitialize()
-    f(ipt.handle, val, err)
+    f(ipt.handle, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultTime(ipt: HelicsInput, val: HelicsTime):
+def helicsInputSetDefaultTime(ipt: HelicsInput, value: HelicsTime):
     """
     Set the default as a time.
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`val`** - The default time value.
+    - **`ipt`** - The input to set the default for.
+    - **`value`** - The default time value.
     """
     f = loadSym("helicsInputSetDefaultTime")
     err = helicsErrorInitialize()
-    f(ipt.handle, val, err)
+    f(ipt.handle, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultChar(ipt: HelicsInput, val: str):
+def helicsInputSetDefaultChar(ipt: HelicsInput, value: str):
     """
     Set the default as a char.
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`val`** - The default char value.
+    - **`ipt`** - The input to set the default for.
+    - **`value`** - The default char value.
     """
     f = loadSym("helicsInputSetDefaultChar")
     err = helicsErrorInitialize()
-    f(ipt.handle, cchar(val), err)
+    f(ipt.handle, cchar(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultDouble(ipt: HelicsInput, val: float):
+def helicsInputSetDefaultDouble(ipt: HelicsInput, value: float):
     """
     Set the default as a double.
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`val`** - The default double value.
+    - **`ipt`** - The input to set the default for.
+    - **`value`** - The default double value.
     """
     f = loadSym("helicsInputSetDefaultDouble")
     err = helicsErrorInitialize()
-    f(ipt.handle, val, err)
+    f(ipt.handle, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -6940,9 +6937,9 @@ def helicsInputSetDefaultComplex(ipt: HelicsInput, real: float, imag: float = 0)
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`real`** - The default real value.
-    * **`imag`** - The default imaginary value.
+    - **`ipt`** - The input to set the default for.
+    - **`real`** - The default real value.
+    - **`imag`** - The default imaginary value.
     """
     c = complex(real, imag)
     f = loadSym("helicsInputSetDefaultComplex")
@@ -6958,9 +6955,8 @@ def helicsInputSetDefaultVector(ipt: HelicsInput, vectorInput: List[float]):
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`vectorInput`** - A pointer to an array of double data.
-    * **`vectorLength`** - The number of points to publish.
+    - **`ipt`** - The input to set the default for.
+    - **`vectorInput`** - A pointer to an array of double data.
     """
     f = loadSym("helicsInputSetDefaultVector")
     err = helicsErrorInitialize()
@@ -6970,19 +6966,19 @@ def helicsInputSetDefaultVector(ipt: HelicsInput, vectorInput: List[float]):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputSetDefaultNamedPoint(ipt: HelicsInput, string: str, val: float):
+def helicsInputSetDefaultNamedPoint(ipt: HelicsInput, string: str, value: float):
     """
     Set the default as a `NamedPoint`.
 
     **Parameters**
 
-    * **`ipt`** - The input to set the default for.
-    * **`str`** - A pointer to a string representing the name.
-    * **`val`** - A double value for the value of the named point.
+    - **`ipt`** - The input to set the default for.
+    - **`string`** - A pointer to a string representing the name.
+    - **`value`** - A double value for the value of the named point.
     """
     f = loadSym("helicsInputSetDefaultNamedPoint")
     err = helicsErrorInitialize()
-    f(ipt.handle, cstring(string), cdouble(val), err)
+    f(ipt.handle, cstring(string), cdouble(value), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -6993,7 +6989,7 @@ def helicsInputGetType(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to query
+    - **`ipt`** - The input to query
 
     **Returns**: A string with the type information.
     """
@@ -7008,7 +7004,7 @@ def helicsInputGetPublicationType(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to query
+    - **`ipt`** - The input to query
 
     **Returns**: A string with the type information.
     """
@@ -7023,7 +7019,7 @@ def helicsPublicationGetType(pub: HelicsPublication) -> str:
 
     **Parameters**
 
-    * **`pub`** - The publication to query
+    - **`pub`** - The publication to query
 
     **Returns**: A string with the publication type information.
     """
@@ -7038,7 +7034,7 @@ def helicsInputGetKey(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to query
+    - **`ipt`** - The input to query
 
     **Returns**: A string with the key information.
     """
@@ -7065,7 +7061,7 @@ def helicsPublicationGetKey(pub: HelicsPublication) -> str:
 
     **Parameters**
 
-    * **`pub`** - The publication to query.
+    - **`pub`** - The publication to query.
 
     **Returns**: A string with the units information.
     """
@@ -7080,7 +7076,7 @@ def helicsInputGetUnits(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to query.
+    - **`ipt`** - The input to query.
 
     **Returns**: A string with the units information.
     """
@@ -7095,7 +7091,7 @@ def helicsInputGetInjectionUnits(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to query.
+    - **`ipt`** - The input to query.
 
     **Returns**: A string with the units information.
     """
@@ -7111,7 +7107,7 @@ def helicsInputGetExtractionUnits(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to query.
+    - **`ipt`** - The input to query.
 
     **Returns**: A string with the units information.
     """
@@ -7126,7 +7122,7 @@ def helicsPublicationGetUnits(pub: HelicsPublication) -> str:
 
     **Parameters**
 
-    * **`pub`** - The publication to query.
+    - **`pub`** - The publication to query.
 
     **Returns**: A string with the units information.
     """
@@ -7141,7 +7137,7 @@ def helicsInputGetInfo(ipt: HelicsInput) -> str:
 
     **Parameters**
 
-    * **`ipt`** - The input to query.
+    - **`ipt`** - The input to query.
 
     **Returns**: A string with the info field string.
     """
@@ -7156,8 +7152,8 @@ def helicsInputSetInfo(ipt: HelicsInput, info: str):
 
     **Parameters**
 
-    * **`ipt`** - The input to query.
-    * **`info`** - The string to set.
+    - **`ipt`** - The input to query.
+    - **`info`** - The string to set.
     """
     f = loadSym("helicsInputSetInfo")
     err = helicsErrorInitialize()
@@ -7172,7 +7168,7 @@ def helicsPublicationGetInfo(pub: HelicsPublication) -> str:
 
     **Parameters**
 
-    * **`pub`** - The publication to query.
+    - **`pub`** - The publication to query.
 
     **Returns**: A string with the info field string.
     """
@@ -7187,8 +7183,8 @@ def helicsPublicationSetInfo(pub: HelicsPublication, info: str):
 
     **Parameters**
 
-    * **`pub`** - The publication to set the info field for.
-    * **`info`** - The string to set.
+    - **`pub`** - The publication to set the info field for.
+    - **`info`** - The string to set.
     """
     f = loadSym("helicsPublicationSetInfo")
     err = helicsErrorInitialize()
@@ -7203,8 +7199,8 @@ def helicsInputGetOption(ipt: HelicsInput, option: HelicsHandleOption) -> int:
 
     **Parameters**
 
-    * **`ipt`** - The input to query.
-    * **`option`** - Integer representation of the option in question see `helics.HelicsHandleOption`.
+    - **`ipt`** - The input to query.
+    - **`option`** - Integer representation of the option in question see `helics.HelicsHandleOption`.
 
     **Returns**: An integer value with the current value of the given option.
     """
@@ -7219,9 +7215,9 @@ def helicsInputSetOption(ipt: HelicsInput, option: HelicsHandleOption, value: in
 
     **Parameters**
 
-    * **`ipt`** - The input to query.
-    * **`option`** - The option to set for the input `helics.HelicsHandleOption`.
-    * **`value`** - The value to set the option to.
+    - **`ipt`** - The input to query.
+    - **`option`** - The option to set for the input `helics.HelicsHandleOption`.
+    - **`value`** - The value to set the option to.
     """
     f = loadSym("helicsInputSetOption")
     err = helicsErrorInitialize()
@@ -7236,8 +7232,8 @@ def helicsPublicationGetOption(pub: HelicsPublication, option: HelicsHandleOptio
 
     **Parameters**
 
-    * **`pub`** - The publication to query.
-    * **`option`** - The value to query see `helics.HelicsHandleOption`.
+    - **`pub`** - The publication to query.
+    - **`option`** - The value to query see `helics.HelicsHandleOption`.
 
     **Returns**: A string with the info field string.
     """
@@ -7246,19 +7242,19 @@ def helicsPublicationGetOption(pub: HelicsPublication, option: HelicsHandleOptio
     return result
 
 
-def helicsPublicationSetOption(pub: HelicsPublication, option: HelicsHandleOption, val: int):
+def helicsPublicationSetOption(pub: HelicsPublication, option: HelicsHandleOption, value: int):
     """
     Set the value of an option for a publication.
 
     **Parameters**
 
-    * **`pub`** - The publication to query.
-    * **`option`** - Integer code for the option to set `helics.HelicsHandleOption`.
-    * **`val`** - The value to set the option to.
+    - **`pub`** - The publication to query.
+    - **`option`** - Integer code for the option to set `helics.HelicsHandleOption`.
+    - **`value`** - The value to set the option to.
     """
     f = loadSym("helicsPublicationSetOption")
     err = helicsErrorInitialize()
-    f(pub.handle, HelicsHandleOption(option), val, err)
+    f(pub.handle, HelicsHandleOption(option), value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -7269,8 +7265,8 @@ def helicsPublicationSetMinimumChange(pub: HelicsPublication, tolerance: float):
 
     **Parameters**
 
-    * **`pub`** - The publication to modify.
-    * **`tolerance`** - The tolerance level for publication, values changing less than this value will not be published.
+    - **`pub`** - The publication to modify.
+    - **`tolerance`** - The tolerance level for publication, values changing less than this value will not be published.
     """
     f = loadSym("helicsPublicationSetMinimumChange")
     err = helicsErrorInitialize()
@@ -7285,8 +7281,8 @@ def helicsInputSetMinimumChange(ipt: HelicsInput, tolerance: float):
 
     **Parameters**
 
-    * **`ipt`** - The input to modify.
-    * **`tolerance`** - The tolerance level for registering an update, values changing less than this value will not show asbeing updated.
+    - **`ipt`** - The input to modify.
+    - **`tolerance`** - The tolerance level for registering an update, values changing less than this value will not show asbeing updated.
     """
     f = loadSym("helicsInputSetMinimumChange")
     err = helicsErrorInitialize()
@@ -7345,7 +7341,7 @@ def helicsFederateGetInputCount(fed: HelicsFederate) -> int:
     return result
 
 
-def helicsFederateSetLoggingCallback(fed: HelicsFederate, logger, userdata):
+def helicsFederateSetLoggingCallback(fed: HelicsFederate, logger, user_data):
     """
     Set the logging callback for a `helics.HelicsFederate`
 
@@ -7354,13 +7350,13 @@ def helicsFederateSetLoggingCallback(fed: HelicsFederate, logger, userdata):
 
     # Parameters
 
-    * **`fed`**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`, `helics.helicsCreateMessageFederate` or `helics.helicsCreateCombinationFederate`
-    * **`logger`**: a callback with signature void(int, const char *, const char *, void *); the function arguments are loglevel, an identifier string, and a message string, and a pointer to user data
-    * **`userdata`**: a pointer to user data that is passed to the function when executing
+    - **`fed`**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`, `helics.helicsCreateMessageFederate` or `helics.helicsCreateCombinationFederate`
+    - **`logger`**: a callback with signature void(int, const char *, const char *, void *); the function arguments are loglevel, an identifier string, and a message string, and a pointer to user data
+    - **`user_data`**: a pointer to user data that is passed to the function when executing
     """
     f = loadSym("helicsFederateSetLoggingCallback")
     err = helicsErrorInitialize()
-    f(fed.handle, logger, userdata, err)
+    f(fed.handle, logger, user_data, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -7384,8 +7380,8 @@ def helicsBrokerSetTimeBarrier(broker: HelicsBroker, barrier_time: HelicsTime):
 
     # Parameters
 
-    * **`broker`**: the `helics.HelicsBroker`
-    * **`barrier_time`**: the barrier time
+    - **`broker`**: the `helics.HelicsBroker`
+    - **`barrier_time`**: the barrier time
     """
     f = loadSym("helicsBrokerSetTimeBarrier")
     err = helicsErrorInitialize()

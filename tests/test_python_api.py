@@ -375,6 +375,8 @@ def test_python_api2():
 
     assert fed.core.query("broker", "something") == "#invalid"
 
+    fed.add_dependency("hello")
+
     fed.core.disconnect()
 
     assert fed.core.wait_for_disconnect()
