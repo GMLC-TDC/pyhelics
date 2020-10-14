@@ -1830,7 +1830,82 @@ class HelicsValueFederate(HelicsFederate):
 
 
 class HelicsMessageFederate(HelicsFederate):
-    pass
+    def __init__(self, handle):
+        super(HelicsMessageFederate, self).__init__(handle)
+        self.endpoints = []
+
+    def register_endpoint(self, name: str, kind: str = "") -> HelicsEndpoint:
+        """
+        Register an endpoint.
+
+        Call is only valid in startup mode
+
+        **`name`**: the name of the endpoint
+        **`type`**: the defined type of the interface for endpoint checking if requested
+
+        Returns: an Endpoint Object
+        """
+        ep = helicsFederateRegisterEndpoint(self, name, type)
+        self.endpoints.append(ep)
+        return ep
+
+    def register_global_endpoint(self, name: str, kind: str = "") -> HelicsEndpoint:
+        """
+        Register an endpoint directly without prepending the federate name.
+
+        **`name`**: the name of the endpoint
+        **`type`**: the defined type of the interface for endpoint checking if requested
+
+        Returns: an Endpoint Object
+        """
+        ep = helicsFederateRegisterGlobalEndpoint(self, name, kind)
+        self.endpoints.append(ep)
+        return ep
+
+    def get_endpoint_by_name(self, name: str) -> HelicsEndpoint:
+        """
+        Get an Endpoint from its name.
+
+        **Parameters**
+
+        **`name`**: the name of the endpoint to retrieve.
+
+        Returns: an Endpoint
+        """
+        return helicsFederateGetEndpoint(self, name)
+
+    def get_endpoint_by_index(self, index: int) -> HelicsEndpoint:
+        """
+        Get an Endpoint from an index.
+
+        **Parameters**
+
+        **`index`**: the index of the endpoint to retrieve index is 0 based
+
+        Return an Endpoint
+        """
+        return helicsFederateGetEndpointByIndex(self, index)
+
+    def hasMessage(self) -> bool:
+        """Checks if federate has any messages"""
+        return helicsFederateHasMessage(self)
+
+    @property
+    def n_pending_messages(self):
+        """Returns the number of pending receives for all endpoints."""
+        return helicsFederatePendingMessages(self)
+
+    def get_message(self) -> HelicsMessage:
+        """Get a packet for any endpoints in the federate."""
+        return helicsFederateGetMessage(self)
+
+    def create_message(self) -> HelicsMessage:
+        """Create a message object."""
+        return helicsFederateCreateMessage(self)
+
+    def n_endpoints(self) -> int:
+        """Get the number of registered endpoints"""
+        return helicsFederateGetEndpointCount(self)
 
 
 class HelicsCombinationFederate(HelicsFederate):
