@@ -346,6 +346,7 @@ def test_python_api2():
     assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] is False
 
     assert fed.flag["TERMINATE_ON_ERROR"] is False
+    fed.flag["TERMINATE_ON_ERROR"] = False
 
     assert fed.flag[h.HELICS_FLAG_OBSERVER.value] is False
     assert fed.flag[h.HELICS_FLAG_UNINTERRUPTIBLE.value] is False
@@ -464,6 +465,8 @@ def test_python_api4():
 
     fi.broker_port = 8929
     fi.local_port = 8229
+
+    fi.broker_init = "-f 3"
 
     fi.set_flag_option(h.HelicsFederateFlag.TERMINATE_ON_ERROR, True)
     fi.set_property(h.HelicsProperty.TIME_DELTA, 1.0)
