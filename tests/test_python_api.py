@@ -539,6 +539,9 @@ def test_python_api7():
 
     assert fed.is_async_operation_completed() is False
 
+    fed.finalize_async()
+    fed.finalize_complete()
+
     fed.core.disconnect()
     assert fed.core.wait_for_disconnect()
     del fed
