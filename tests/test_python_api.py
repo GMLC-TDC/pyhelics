@@ -169,6 +169,9 @@ def test_python_api1():
     message.data = "random-data"
     assert message.raw_data == b"random-data"
 
+    message.raw_data = b"random-data-random"
+    assert message.data == "random-data-random"
+
     message.message_id = 100
     message.source = "earth"
     message.destination = "moon"
