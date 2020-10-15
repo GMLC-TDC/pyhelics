@@ -15,13 +15,13 @@ def test_python_api0():
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
     fedinfo = h.helicsCreateFederateInfo()
     assert "HelicsFederateInfo()" in repr(fedinfo)
-    fedinfo.core_name = "TestFilter"
+    fedinfo.core_name = "TestFederate"
     fedinfo.core_type = "zmq"
     fedinfo.core_init = "-f 1 --broker=mainbroker"
-    mFed = h.helicsCreateCombinationFederate("TestFilter", fedinfo)
+    mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
     assert (
-        """HelicsCombinationFederate(name = "TestFilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
+        """HelicsCombinationFederate(name = "TestFederate", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
         in repr(mFed)
     )
 
@@ -29,7 +29,7 @@ def test_python_api0():
     _ = mFed.register_global_endpoint("ep2")
 
     pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
-    assert """HelicsPublication(key = "TestFilter/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
+    assert """HelicsPublication(key = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
 
     sub = mFed.register_subscription("subscription", "custom-units")
     assert (
@@ -63,13 +63,13 @@ def test_python_api1():
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
     fedinfo = h.helicsCreateFederateInfo()
     assert "HelicsFederateInfo()" in repr(fedinfo)
-    fedinfo.core_name = "TestFilter"
+    fedinfo.core_name = "TestFederate"
     fedinfo.core_type = "zmq"
     fedinfo.core_init = "-f 1 --broker=mainbroker"
-    mFed = h.helicsCreateCombinationFederate("TestFilter", fedinfo)
+    mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
     assert (
-        """HelicsCombinationFederate(name = "TestFilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
+        """HelicsCombinationFederate(name = "TestFederate", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
         in repr(mFed)
     )
 
@@ -77,11 +77,11 @@ def test_python_api1():
     _ = mFed.register_global_endpoint("ep2")
 
     pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
-    assert """HelicsPublication(key = "TestFilter/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
+    assert """HelicsPublication(key = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
 
-    sub = mFed.register_subscription("TestFilter/publication", "custom-units")
+    sub = mFed.register_subscription("TestFederate/publication", "custom-units")
     assert (
-        """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "TestFilter/publication", info = "")"""
+        """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "TestFederate/publication", info = "")"""
         in repr(sub)
     )
     assert (
@@ -120,32 +120,32 @@ def test_python_api1():
 
     assert (
         """{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 1, 'BUFFER_DATA' = 0, 'STRICT_TYPE_CHECKING' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = 0, 'CLEAR_PRIORITY_LIST' = 0, 'CONNECTIONS' = 0 }"""
-        in repr(mFed.publications["TestFilter/publication"].option)
+        in repr(mFed.publications["TestFederate/publication"].option)
     )
-    mFed.publications["TestFilter/publication"].option["CONNECTION_REQUIRED"] = 1
-    assert mFed.publications["TestFilter/publication"].option["CONNECTION_REQUIRED"] == 1
+    mFed.publications["TestFederate/publication"].option["CONNECTION_REQUIRED"] = 1
+    assert mFed.publications["TestFederate/publication"].option["CONNECTION_REQUIRED"] == 1
 
     mFed.enter_executing_mode()
 
     data = "random-data"
 
-    mFed.endpoints["TestFilter/ep1"].default_destination = "ep2"
-    mFed.endpoints["TestFilter/ep1"].info = "information"
+    mFed.endpoints["TestFederate/ep1"].default_destination = "ep2"
+    mFed.endpoints["TestFederate/ep1"].info = "information"
 
-    assert mFed.endpoints["TestFilter/ep1"].default_destination == "ep2"
-    assert mFed.endpoints["TestFilter/ep1"].info == "information"
+    assert mFed.endpoints["TestFederate/ep1"].default_destination == "ep2"
+    assert mFed.endpoints["TestFederate/ep1"].info == "information"
 
-    mFed.endpoints["TestFilter/ep1"].send_data(data, "ep2", 1.0)
+    mFed.endpoints["TestFederate/ep1"].send_data(data, "ep2", 1.0)
 
-    mFed.publications["TestFilter/publication"].publish("first-time")
+    mFed.publications["TestFederate/publication"].publish("first-time")
 
     assert mFed.request_time(2.0) == 1.0
 
-    assert mFed.subscriptions["TestFilter/publication"].bytes == b"first-time"
+    assert mFed.subscriptions["TestFederate/publication"].bytes == b"first-time"
 
     assert mFed.has_message()
 
-    assert mFed.endpoints["TestFilter/ep1"].has_message() is False
+    assert mFed.endpoints["TestFederate/ep1"].has_message() is False
 
     assert mFed.endpoints["ep2"].has_message()
 
@@ -157,12 +157,12 @@ def test_python_api1():
     assert message.raw_data == b"random-data"
     assert len(message.raw_data) == 11
     assert message.original_destination == ""
-    assert message.original_source == "TestFilter/ep1"
-    assert message.source == "TestFilter/ep1"
+    assert message.original_source == "TestFederate/ep1"
+    assert message.source == "TestFederate/ep1"
     assert message.time == 1.0
 
     assert (
-        """HelicsMessage(source = "TestFilter/ep1", destination = "ep2", original_source = "TestFilter/ep1", original_destination = "", time = 1.0, id = 55, message = "random-data")"""
+        """HelicsMessage(source = "TestFederate/ep1", destination = "ep2", original_source = "TestFederate/ep1", original_destination = "", time = 1.0, id = 55, message = "random-data")"""
         in repr(message)
     )
 
@@ -196,32 +196,32 @@ def test_python_api1():
     message.flag[1] = True
     assert message.flag[1] is True
 
-    mFed.publications["TestFilter/publication"].publish(1)
+    mFed.publications["TestFederate/publication"].publish(1)
 
     assert mFed.request_next_step() == 2.0
 
-    assert mFed.subscriptions["TestFilter/publication"].string == "1"
+    assert mFed.subscriptions["TestFederate/publication"].string == "1"
 
-    mFed.endpoints["TestFilter/ep1"].send_data(message, "ep2")
-    mFed.endpoints["TestFilter/ep1"].send_data(message, "ep2", 1.0)
+    mFed.endpoints["TestFederate/ep1"].send_data(message, "ep2")
+    mFed.endpoints["TestFederate/ep1"].send_data(message, "ep2", 1.0)
 
-    mFed.publications["TestFilter/publication"].publish(1 + 2j)
+    mFed.publications["TestFederate/publication"].publish(1 + 2j)
 
     assert mFed.request_next_step() == 3.0
 
-    assert mFed.subscriptions["TestFilter/publication"].string == "1+2j"
+    assert mFed.subscriptions["TestFederate/publication"].string == "1+2j"
 
-    mFed.publications["TestFilter/publication"].publish([1, 2, 3, 4, 5])
+    mFed.publications["TestFederate/publication"].publish([1, 2, 3, 4, 5])
 
     assert mFed.request_next_step() == 4.0
 
-    assert mFed.subscriptions["TestFilter/publication"].vector == [1.0, 2.0, 3.0, 4.0, 5.0]
+    assert mFed.subscriptions["TestFederate/publication"].vector == [1.0, 2.0, 3.0, 4.0, 5.0]
 
-    mFed.publications["TestFilter/publication"].publish(False)
+    mFed.publications["TestFederate/publication"].publish(False)
 
     assert mFed.request_next_step() == 5.0
 
-    assert mFed.subscriptions["TestFilter/publication"].boolean is False
+    assert mFed.subscriptions["TestFederate/publication"].boolean is False
     m = mFed.create_message()
     assert (
         """HelicsMessage(source = "", destination = "", original_source = "", original_destination = "", time = 0.0, id = 0, message = "")"""
