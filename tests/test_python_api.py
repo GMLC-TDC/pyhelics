@@ -199,6 +199,9 @@ def test_python_api1():
 
     assert mFed.subscriptions["TestFilter/publication"].string == "1"
 
+    mFed.endpoints["TestFilter/ep1"].send_data(message, "ep2")
+    mFed.endpoints["TestFilter/ep1"].send_data(message, "ep2", 1.0)
+
     mFed.publications["TestFilter/publication"].publish(1 + 2j)
 
     assert mFed.request_next_step() == 3.0
