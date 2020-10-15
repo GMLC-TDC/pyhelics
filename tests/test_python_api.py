@@ -497,3 +497,55 @@ def test_python_api5():
 
     h.helicsCleanupLibrary()
     h.helicsCloseLibrary()
+
+
+def test_python_api6():
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
+    fi = h.helicsCreateFederateInfo()
+
+    fed = h.helicsCreateCombinationFederate("test1", fi)
+
+    fed.enter_initializing_mode()
+    fed.enter_executing_mode()
+
+    fed.core.disconnect()
+    assert fed.core.wait_for_disconnect()
+    del fed
+
+    broker.disconnect()
+    assert broker.wait_for_disconnect()
+    del broker
+
+    h.helicsCleanupLibrary()
+    h.helicsCloseLibrary()
+
+
+def test_python_api7():
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
+    fi = h.helicsCreateFederateInfo()
+
+    fed = h.helicsCreateCombinationFederate("test1", fi)
+
+    # TODO: is_async_operation_completed
+    assert fed.is_async_operation_completed() is False
+
+    fed.enter_initializing_mode_async()
+    fed.enter_initializing_mode_complete()
+
+    assert fed.is_async_operation_completed() is False
+
+    fed.enter_executing_mode_async()
+    fed.enter_executing_mode_complete()
+
+    assert fed.is_async_operation_completed() is False
+
+    fed.core.disconnect()
+    assert fed.core.wait_for_disconnect()
+    del fed
+
+    broker.disconnect()
+    assert broker.wait_for_disconnect()
+    del broker
+
+    h.helicsCleanupLibrary()
+    h.helicsCloseLibrary()
