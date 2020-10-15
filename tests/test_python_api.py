@@ -224,6 +224,12 @@ def test_python_api1():
     mFed.info = "hello-world"
     assert mFed.info == "hello-world"
 
+    m = mFed.endpoints["ep2"].create_message()
+    assert (
+        """HelicsMessage(source = "", destination = "", original_source = "", original_destination = "", time = 0.0, id = 0, message = "")"""
+        in repr(m)
+    )
+
     mFed.finalize()
 
     del mFed
