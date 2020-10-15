@@ -1873,7 +1873,7 @@ class HelicsFederate(_HelicsCHandle):
         elif level == logging.DEBUG:
             helicsFederateLogDebugMessage(self, message)
         else:
-            helicsFederateLogLevelMessage(self, HelicsLogLevel(level))
+            helicsFederateLogLevelMessage(self, HelicsLogLevel(level), message)
 
 
 class _InputOptionAccessor(_HelicsCHandle):

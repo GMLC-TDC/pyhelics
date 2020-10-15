@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import pytest as pt
 import helics as h
+import logging
 
 
 def test_python_api0():
@@ -560,6 +561,12 @@ def test_python_api7():
 
     fed.local_error(0, "local")
     fed.global_error(0, "global")
+
+    fed.log_message("error", logging.ERROR)
+    fed.log_message("warn", logging.WARN)
+    fed.log_message("info", logging.INFO)
+    fed.log_message("debug", logging.DEBUG)
+    fed.log_message("summary", h.HELICS_LOG_LEVEL_SUMMARY)
 
     fed.finalize_async()
     fed.finalize_complete()
