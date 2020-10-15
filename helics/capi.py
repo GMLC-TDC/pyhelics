@@ -1799,7 +1799,7 @@ class HelicsFederate(_HelicsCHandle):
 
         - **`filter_name`**: the name of the filter.
 
-        Returns: a reference to a filter object which could be invalid if filterName is not valid.
+        Returns: a reference to a filter object which could be invalid if `filter_name` is not valid.
         """
         return helicsFederateGetFilter(self, filter_name)
 
@@ -1811,7 +1811,7 @@ class HelicsFederate(_HelicsCHandle):
 
         - **`index`**: the index of a filter.
 
-        Returns: A reference to a filter object which could be invalid if filterName is not valid.
+        Returns: A reference to a filter object which could be invalid if `filter_name` is not valid.
         """
         return helicsFederateGetFilterByIndex(self, filter_index)
 
