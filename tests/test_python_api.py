@@ -42,6 +42,7 @@ def test_python_api0():
         in repr(sub.option)
     )
     sub.option["CONNECTION_REQUIRED"] = 1
+    sub.option[h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED] = 1
     assert sub.option["CONNECTION_REQUIRED"] == 1
 
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
