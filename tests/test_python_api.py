@@ -22,7 +22,7 @@ def test_python_api0():
     mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
     assert (
-        """HelicsCombinationFederate(name = "TestFederate", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
+        """HelicsCombinationFederate(name = "TestFederate", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_subscriptions = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
         in repr(mFed)
     )
 
@@ -73,7 +73,7 @@ def test_python_api1():
     mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
     assert (
-        """HelicsCombinationFederate(name = "TestFederate", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_inputs = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
+        """HelicsCombinationFederate(name = "TestFederate", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_subscriptions = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
         in repr(mFed)
     )
 
@@ -271,7 +271,7 @@ def test_python_api2():
     fed.core.set_ready_to_init()
 
     assert "n_publications = 0" in repr(fed)
-    assert "n_inputs = 0" in repr(fed)
+    assert "n_subscriptions = 0" in repr(fed)
     assert "n_endpoints = 0" in repr(fed)
     assert "n_filters = 0" in repr(fed)
 

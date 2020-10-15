@@ -1457,6 +1457,11 @@ class HelicsFederate(_HelicsCHandle):
         self.flag = _FederateFlagAccessor(self.handle)
         self._separator = "/"
 
+        self.publications = {}
+        self.subscriptions = {}
+        self.endpoints = {}
+        self.filters = {}
+
     def __repr__(self):
         name = self.name
         state = str(self.state)
@@ -1464,9 +1469,9 @@ class HelicsFederate(_HelicsCHandle):
         n_publications = self.n_publications
         n_endpoints = self.n_endpoints
         n_filters = self.n_filters
-        n_inputs = self.n_inputs
+        n_subscriptions = self.n_inputs
         n_pending_messages = self.n_pending_messages
-        return """<helics.{class_name}(name = "{name}", state = {state}, current_time = {current_time}, n_publications = {n_publications}, n_inputs = {n_inputs}, n_endpoints = {n_endpoints}, n_filters = {n_filters}, n_pending_messages = {n_pending_messages}) at {id}>""".format(
+        return """<helics.{class_name}(name = "{name}", state = {state}, current_time = {current_time}, n_publications = {n_publications}, n_subscriptions = {n_subscriptions}, n_endpoints = {n_endpoints}, n_filters = {n_filters}, n_pending_messages = {n_pending_messages}) at {id}>""".format(
             class_name=self.__class__.__name__,
             name=name,
             state=state,
@@ -1474,7 +1479,7 @@ class HelicsFederate(_HelicsCHandle):
             n_publications=n_publications,
             n_endpoints=n_endpoints,
             n_filters=n_filters,
-            n_inputs=n_inputs,
+            n_subscriptions=n_subscriptions,
             n_pending_messages=n_pending_messages,
             id=hex(id(self)),
         )
@@ -1769,7 +1774,9 @@ class HelicsFederate(_HelicsCHandle):
         - **`kind`**: the type of the filter to register.
         - **`filter_name`**: the name of the filter.
         """
-        return helicsFederateRegisterFilter(self, kind, filter_name)
+        filter = helicsFederateRegisterFilter(self, kind, filter_name)
+        self.filters[filter.name] = filter
+        return filter
 
     def register_cloning_filter(self, delivery_endpoint: str) -> HelicsCloningFilter:
         """
@@ -1783,7 +1790,9 @@ class HelicsFederate(_HelicsCHandle):
 
         Returns: A `HelicsCloningFilter` object.
         """
-        return helicsFederateRegisterCloningFilter(self, delivery_endpoint)
+        filter = helicsFederateRegisterCloningFilter(self, delivery_endpoint)
+        self.filters[filter.name] = filter
+        return filter
 
     def register_global_filter(self, kind: HelicsFilterType, filter_name: str) -> HelicsFilter:
         """
@@ -1796,7 +1805,9 @@ class HelicsFederate(_HelicsCHandle):
         - **`kind`**: the type of the filter to register.
         - **`filter_name`**: the name of the filter.
         """
-        return helicsFederateRegisterGlobalFilter(self, kind, filter_name)
+        filter = helicsFederateRegisterGlobalFilter(self, kind, filter_name)
+        self.filters[filter.name] = filter
+        return filter
 
     def register_global_cloning_filter(self, delivery_endpoint: str) -> HelicsCloningFilter:
         """
@@ -1810,7 +1821,9 @@ class HelicsFederate(_HelicsCHandle):
 
         Returns: A CloningFilter object.
         """
-        return helicsFederateRegisterGlobalCloningFilter(self, delivery_endpoint)
+        filter = helicsFederateRegisterGlobalCloningFilter(self, delivery_endpoint)
+        self.filters[filter.name] = filter
+        return filter
 
     def get_filter_by_name(self, filter_name):
         """
@@ -2151,11 +2164,6 @@ class HelicsPublication(_HelicsCHandle):
 
 
 class HelicsValueFederate(HelicsFederate):
-    def __init__(self, handle):
-        super(HelicsValueFederate, self).__init__(handle)
-        self.publications = {}
-        self.subscriptions = {}
-
     def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
         """
         Register a publication.
@@ -2317,7 +2325,6 @@ class HelicsValueFederate(HelicsFederate):
 class HelicsMessageFederate(HelicsFederate):
     def __init__(self, handle):
         super(HelicsMessageFederate, self).__init__(handle)
-        self.endpoints = {}
 
     def register_endpoint(self, name: str, kind: str = "") -> HelicsEndpoint:
         """
