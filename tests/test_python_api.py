@@ -547,6 +547,8 @@ def test_python_api7():
     fed.request_time_complete()
     assert fed.current_time == 4.0
 
+    assert fed.query("hello", "world") == "#invalid"
+
     fed.finalize_async()
     fed.finalize_complete()
 
