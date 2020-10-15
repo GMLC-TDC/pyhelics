@@ -387,6 +387,9 @@ def test_python_api2():
     fed.register_filter(h.HelicsFilterType.DELAY, "")
     fed.register_cloning_filter("")
 
+    fed.register_global_filter(h.HelicsFilterType.DELAY, "")
+    fed.register_global_cloning_filter("")
+
     fed.core.set_global("hello", "world")
 
     assert fed.core.query("broker", "something") == "#invalid"
