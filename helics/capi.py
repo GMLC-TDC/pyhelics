@@ -1849,7 +1849,7 @@ class HelicsFederate(_HelicsCHandle):
         - **`error_code`**: an error code to give to the error.
         - **`error_string`**: a string message associated with the error.
         """
-        helicsFederateLocalError(self, error_code)
+        helicsFederateLocalError(self, error_code, error_string)
 
     def global_error(self, error_code: int, error_string: str):
         """
@@ -1860,7 +1860,7 @@ class HelicsFederate(_HelicsCHandle):
         - **`error_code`**: an error code to give to the error.
         - **`error_string`**: a string message associated with the error.
         """
-        helicsFederateGlobalError(self, error_code)
+        helicsFederateGlobalError(self, error_code, error_string)
 
     def log_message(self, message: str, level: HelicsLogLevel):
         """Log an message."""

@@ -558,6 +558,9 @@ def test_python_api7():
 
     assert fed.query("hello", "world") == "#invalid"
 
+    fed.local_error(0, "local")
+    fed.global_error(0, "global")
+
     fed.finalize_async()
     fed.finalize_complete()
 
