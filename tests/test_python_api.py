@@ -539,6 +539,9 @@ def test_python_api7():
 
     assert fed.is_async_operation_completed() is False
 
+    fed.request_time_advance(2.0)
+    assert fed.current_time == 2.0
+
     fed.finalize_async()
     fed.finalize_complete()
 
