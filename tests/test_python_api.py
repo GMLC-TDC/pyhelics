@@ -542,6 +542,11 @@ def test_python_api7():
     fed.request_time_advance(2.0)
     assert fed.current_time == 2.0
 
+    fed.request_time_async(4.0)
+    assert fed.current_time == 2.0
+    fed.request_time_complete()
+    assert fed.current_time == 4.0
+
     fed.finalize_async()
     fed.finalize_complete()
 
