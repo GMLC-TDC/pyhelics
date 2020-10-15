@@ -428,7 +428,7 @@ def test_python_api3():
     cloning_filter1 = core1.register_cloning_filter("ep3")
 
     cloning_filter1.remove_delivery_endpoint("ep3")
-    cloning_filter1.add_delivery_endpoint("ep2")
+    cloning_filter1.add_delivery_endpoint("ep3")
 
     assert core1.is_connected()
     core1.set_ready_to_init()
