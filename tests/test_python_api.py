@@ -46,6 +46,9 @@ def test_python_api0():
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
     assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
 
+    mFed.property["TIME_DELTA"] = 1.0
+    assert mFed.property["TIME_DELTA"] == 1.0
+
     with pt.raises(h.HelicsException):
         mFed.enter_executing_mode()
 
