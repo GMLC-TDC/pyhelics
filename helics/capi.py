@@ -1204,7 +1204,53 @@ class HelicsEndpoint(_HelicsCHandle):
             helicsEndpointSendToAt(self, destination, time, data)
 
 
+class _FederateInfoFlagAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        raise AttributeError("Unable to get {index}".format(index=index))
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = helicsGetFlagIndex(index)
+        else:
+            idx = HelicsFederateFlag(index)
+        return helicsFederateInfoSetFlagOption(self, idx, value)
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
+class _FederateInfoPropertyAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        raise AttributeError("Unable to get {index}".format(index=index))
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = helicsGetPropertyIndex(index)
+        else:
+            idx = HelicsProperty(index)
+        if "TIME_" in idx.name:
+            return helicsFederateInfoSetTimeProperty(self, idx, value)
+        elif "INT_" in idx.name:
+            return helicsFederateInfoSetIntegerProperty(self, index, value)
+
+    def __repr__(self):
+        lst = []
+        for p in HelicsProperty:
+            lst.append("'{}' = {}".format(p.name, self[p]))
+        return "<{{ {} }}>".format(", ".join(lst))
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index")
+
+
 class HelicsFederateInfo(_HelicsCHandle):
+    def __init__(self, handle):
+        # Python2 compatible super
+        super(HelicsFederateInfo, self).__init__(handle)
+
+        self.property = _FederateInfoPropertyAccessor(self.handle)
+        self.flag = _FederateInfoFlagAccessor(self.handle)
+
     def __repr__(self):
         return """<helics.{class_name}() at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
 
@@ -1313,31 +1359,6 @@ class HelicsFederateInfo(_HelicsCHandle):
     @broker_port.setter
     def broker_port(self, broker_port: int):
         helicsFederateInfoSetBrokerPort(self, broker_port)
-
-    def set_flag_option(self, flag: HelicsFederateFlag, value: bool = True):
-        """
-        Set a flag.
-
-        **`flag`**: `helics.HelicsFederateFlag`
-        **`value`**: the bool value of the flag
-        """
-        helicsFederateInfoSetFlagOption(self, flag, value)
-
-    def set_property(self, index, value):
-        """
-        Set an federate or core property.
-
-        **`index`**: HelicsProperty
-        **`value`**: the value to set the property to
-        """
-        if type(index) == str:
-            idx = helicsGetPropertyIndex(index)
-        else:
-            idx = HelicsProperty(index)
-        if "TIME_" in idx.name:
-            return helicsFederateInfoSetTimeProperty(self, idx, value)
-        elif "INT_" in idx.name:
-            return helicsFederateInfoSetIntegerProperty(self, index, value)
 
 
 class _PublicationOptionAccessor(_HelicsCHandle):

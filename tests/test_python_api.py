@@ -260,7 +260,7 @@ def test_python_api2():
 
     fi = h.helicsCreateFederateInfo()
     fi.core_init = "--federates 1"
-    fi.set_property(h.HELICS_PROPERTY_INT_LOG_LEVEL, 2)
+    fi.property[h.HELICS_PROPERTY_INT_LOG_LEVEL] = 2
 
     fed = h.helicsCreateCombinationFederate("test1", fi)
 
@@ -478,9 +478,9 @@ def test_python_api4():
 
     fi.broker_init = "-f 3"
 
-    fi.set_flag_option(h.HelicsFederateFlag.TERMINATE_ON_ERROR, True)
-    fi.set_property(h.HelicsProperty.TIME_DELTA, 1.0)
-    fi.set_property("TIME_DELTA", 1.0)
+    fi.flag[h.HelicsFederateFlag.TERMINATE_ON_ERROR] = True
+    fi.property[h.HelicsProperty.TIME_DELTA] = 1.0
+    fi.property["TIME_DELTA"] = 1.0
 
 
 def test_python_api5():
