@@ -457,6 +457,7 @@ def test_python_api3():
 
 def test_python_api4():
     fi = h.helicsCreateFederateInfo()
+    fi.separator = "_"
     fi.broker = "broker test"
 
     fi.broker_key = "hello-world"
