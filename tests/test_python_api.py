@@ -529,6 +529,12 @@ def test_python_api7():
 
     fed = h.helicsCreateCombinationFederate("test1", fi)
 
+    _ = fed.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter")
+
+    assert fed.get_filter_by_name("core1SourceFilter").name == fed.get_filter_by_index(0).name
+
+    fed.set_global("hello", "world")
+
     # TODO: is_async_operation_completed
     assert fed.is_async_operation_completed() is False
 
