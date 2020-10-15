@@ -474,3 +474,26 @@ def test_python_api4():
     fi.set_flag_option(h.HelicsFederateFlag.TERMINATE_ON_ERROR, True)
     fi.set_property(h.HelicsProperty.TIME_DELTA, 1.0)
     fi.set_property("TIME_DELTA", 1.0)
+
+
+def test_python_api5():
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
+    fi = h.helicsCreateFederateInfo()
+
+    fed = h.helicsCreateCombinationFederate("test1", fi)
+    with pt.raises(h.HelicsException):
+        fed.register_interfaces("unknownfile.json")
+
+    fed.core.disconnect()
+
+    assert fed.core.wait_for_disconnect()
+
+    del fed
+
+    broker.disconnect()
+    assert broker.wait_for_disconnect()
+
+    del broker
+
+    h.helicsCleanupLibrary()
+    h.helicsCloseLibrary()
