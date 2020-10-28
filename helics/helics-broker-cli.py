@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
+import time
 
 import helics as h
 
@@ -15,6 +16,13 @@ def create_broker(number_of_federates: int = 2):
 
     if broker.is_connected():
         print("Broker created and connected")
+
+    print(broker)
+
+    while broker.is_connected():
+        time.sleep(1)
+
+    broker.disconnect()
 
 
 def print_help():
