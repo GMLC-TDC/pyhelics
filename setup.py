@@ -139,9 +139,9 @@ setup(
     python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*",
     install_requires=install_requires,
     extras_require={
-        "tests": ["pytest", "pytest-ordering", "pytest-cov"],
+        "tests": ["pytest", "pytest-ordering", "pytest-cov", "pytest-runner"],
         "docs": ["mkdocs", "inari[mkdocs]", "mkdocs-material", "black", "pygments", "pymdown-extensions"],
     },
-    setup_requires=["pytest-runner", "cffi>=1.0.0"],
+    setup_requires=["cffi>=1.0.0"],
     cmdclass={"download": HELICSDownloadCommand},
 )
