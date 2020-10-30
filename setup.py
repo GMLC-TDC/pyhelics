@@ -142,6 +142,5 @@ setup(
         "tests": ["pytest", "pytest-ordering", "pytest-cov", "pytest-runner"],
         "docs": ["mkdocs", "inari[mkdocs]", "mkdocs-material", "black", "pygments", "pymdown-extensions"],
     },
-    setup_requires=["cffi>=1.0.0"],
     cmdclass={"download": HELICSDownloadCommand},
 )
