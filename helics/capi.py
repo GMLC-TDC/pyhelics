@@ -3481,7 +3481,7 @@ def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: HelicsFederate
     """
     f = loadSym("helicsFederateInfoSetFlagOption")
     err = helicsErrorInitialize()
-    f(fi.handle, HelicsFederateFlag(flag), value, err)
+    f(fi.handle, flag, value, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
