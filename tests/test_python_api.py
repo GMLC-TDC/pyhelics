@@ -285,12 +285,8 @@ def test_python_api2():
     assert fed.property["OUTPUT_DELAY"] == 0.0
     assert fed.property["MAX_ITERATIONS"] == 50
     assert fed.property["LOG_LEVEL"] == 2
-    # TODO: change this test when helics version is updated
-    with pt.raises(h.HelicsException):
-        assert fed.property["FILE_LOG_LEVEL"] == 1
-    # TODO: change this test when helics version is updated
-    with pt.raises(h.HelicsException):
-        assert fed.property["CONSOLE_LOG_LEVEL"] == 1
+    assert fed.property["FILE_LOG_LEVEL"] == 2
+    assert fed.property["CONSOLE_LOG_LEVEL"] == 2
 
     fed.property[h.HELICS_PROPERTY_INT_LOG_LEVEL] = 5
 
