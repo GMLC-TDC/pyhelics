@@ -14,6 +14,7 @@ from setuptools import setup, Command
 from setuptools.dist import Distribution
 
 import re
+import sys
 import os
 import platform
 import tarfile
@@ -98,7 +99,10 @@ class HELICSDownloadCommand(Command):
                 shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
 
 
-install_requires = ["cffi>=1.0.0", "enum34==1.1.8"]
+install_requires = ["cffi>=1.0.0"]
+
+if sys.version_info < (3, 4):
+    install_requires.append("enum34==1.1.8")
 
 setup(
     name="helics",
