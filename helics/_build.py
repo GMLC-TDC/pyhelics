@@ -10,17 +10,17 @@ PYHELICS_INSTALL = os.getenv("PYHELICS_INSTALL", os.path.join(os.path.dirname(os
 
 files = [
     "helics_enums.h",
-    "shared_api_library/api-data.h",
-    "shared_api_library/helics.h",
-    "shared_api_library/helics_export.h",
-    "shared_api_library/MessageFederate.h",
-    "shared_api_library/MessageFilters.h",
-    "shared_api_library/ValueFederate.h",
-    "shared_api_library/helicsCallbacks.h",
+    os.path.join("shared_api_library", "api-data.h"),
+    os.path.join("shared_api_library", "helics.h"),
+    os.path.join("shared_api_library", "helics_export.h"),
+    os.path.join("shared_api_library", "MessageFederate.h"),
+    os.path.join("shared_api_library", "MessageFilters.h"),
+    os.path.join("shared_api_library", "ValueFederate.h"),
+    os.path.join("shared_api_library", "helicsCallbacks.h"),
 ]
 IGNOREBLOCK = False
 for file in files:
-    with open(os.path.join(PYHELICS_INSTALL, "include/helics", file)) as f:
+    with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
         lines = []
         for line in f:
             if line.startswith("#ifdef __cplusplus"):
