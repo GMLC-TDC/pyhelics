@@ -48,7 +48,7 @@ for file in files:
 
 if platform.system() == "Windows":
     for file in os.listdir(os.path.join(PYHELICS_INSTALL, "bin")):
-        if "helicsSharedLib" in file:
+        if "helicsShared" in file:
             try:
                 lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "bin", file))
                 break
@@ -58,6 +58,8 @@ if platform.system() == "Windows":
         try:
             lib = ffi.dlopen("helicsShared.dll")
         except OSError as e:
+            from .vcredist import VcRedist
+
             raise OSError(
                 str(e)
                 + "\n\nRECOMMENDATION: When using Python / Anaconda on Windows, users must manually install the latest version of Visual C++ Redistributable for Visual Studio 2019. See https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads for links. If this problem persists after installing Visual C++ Redistributable, please open an issue on https://github.com/GMLC-TDC/HELICS."
