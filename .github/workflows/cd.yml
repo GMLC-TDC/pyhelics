@@ -41,7 +41,6 @@ jobs:
     - name: Build python3 wheel
       run: |
         python setup.py bdist_wheel --plat-name=${{ matrix.target }}
-        pip install dist/helics-*-py3-none-${{ matrix.target }}.whl
 
     - name: Set up Python2
       uses: actions/setup-python@v2
@@ -58,7 +57,6 @@ jobs:
         rm helics/capi.py
         mv tmp helics/capi.py
         python setup.py bdist_wheel --plat-name=${{ matrix.target }}
-        pip install dist/helics-*-py2-none-${{ matrix.target }}.whl
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
