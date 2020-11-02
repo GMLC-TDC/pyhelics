@@ -29,11 +29,9 @@ By default, when you install from PyPI, the version number of the package will m
 For example, if you run the following:
 
 ```
-pip install helics==2.6.0.post0.dev0
+pip install helics
 ```
 
-You will get the tagged release of this python package: [helics-v2.6.0.post0.dev0](https://github.com/GMLC-TDC/pyhelics/releases/tag/v2.6.0.post0.dev0).
-
-You will also get precompiled binaries of [HELICS-v2.6.0](https://github.com/GMLC-TDC/HELICS/releases/tag/v2.6.0) for your platform if they exist.
+You will also get precompiled binaries of [HELICS](https://github.com/GMLC-TDC/HELICS/releases/latest) for your platform if they exist.
 If they don't exist, a source distribution will be installed in which case the user must provide the location of the binaries.
 For more information, see <https://python.helics.org/installation>.

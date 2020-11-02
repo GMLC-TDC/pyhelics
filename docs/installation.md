@@ -22,19 +22,17 @@ $ pip install helics --upgrade
 You can install a specific version by using the following:
 
 ```bash
-$ pip install helics==2.6.0.post0
+$ pip install helics
 ```
 
 By default, when you install from PyPI, the version number of the package will match the version of HELICS that is installed.
 For example, if you run the following:
 
 ```bash
-$ pip install helics==2.6.0.post0.dev0
+$ pip install helics
 ```
 
-You will get the tagged release of this python package: [helics-v2.6.0.post0.dev0](https://github.com/GMLC-TDC/pyhelics/releases/tag/v2.6.0.post0.dev0).
-
-You will also get precompiled binaries of [HELICS-v2.6.0](https://github.com/GMLC-TDC/HELICS/releases/tag/v2.6.0) for your platform if they exist.
+You will also get precompiled binaries of [HELICS](https://github.com/GMLC-TDC/HELICS/releases/latest) for your platform if they exist.
 If they don't exist, a source distribution will be installed in which case the user must provide the location of the binaries.
 See the next section for more information about how to do that.
 
@@ -62,10 +60,10 @@ Traceback (most recent call last):
 You can install `helics` using `pip`.
 
 ```bash
-$ pip install helics==2.6.0.post0.dev0
-pip install helics==2.6.0.post0.dev0
-Collecting helics==2.6.0.post0.dev0
-  Downloading helics-2.6.0.post0.dev0-py3-none-macosx_10_9_x86_64.whl (6.6 MB)
+$ pip install helics
+pip install helics
+Collecting helics
+  Downloading helics-2.6.1.post0-py3-none-macosx_10_9_x86_64.whl (6.6 MB)
      |████████████████████████████████| 6.6 MB 2.3 MB/s
 Collecting enum34>=1.1.10
   Using cached enum34-1.1.10-py3-none-any.whl (11 kB)
@@ -74,17 +72,17 @@ Collecting cffi>=1.0.0
 Collecting pycparser
   Using cached pycparser-2.20-py2.py3-none-any.whl (112 kB)
 Installing collected packages: enum34, pycparser, cffi, helics
-Successfully installed cffi-1.14.3 enum34-1.1.10 helics-2.6.0.post0.dev0 pycparser-2.20
+Successfully installed cffi-1.14.3 enum34-1.1.10 helics-2.6.1.post0 pycparser-2.20
 ```
 
 Now that you have installed the python package, you can check that it works:
 
 ```bash
 $ python -c "import helics; print(helics.helicsGetVersion())"
-2.6.0 (2020-08-20)
+2.6.1 (2020-10-15)
 ```
 
-This installs the Python package `helics-2.6.0.post0.dev0` and it comes with precompiled binaries for HELICS version 2.6.0 that we released on 2020-08-20.
+This installs the Python package `helics-2.6.1.post0` and it comes with precompiled binaries for HELICS version 2.6.1 that we released on 2020-10-15.
 
 Let's say you've made modification to the HELICS library or compiled it with some different flags.
 Or you are interested in a using an older version of HELICS.
@@ -164,8 +162,8 @@ helics_installation
 │  └── helics
 ├── lib
 │  ├── cmake
-│  ├── libhelicsSharedLib.2.6.0.dylib
-│  ├── libhelicsSharedLib.2.dylib -> libhelicsSharedLib.2.6.0.dylib
+│  ├── libhelicsSharedLib.2.6.1.dylib
+│  ├── libhelicsSharedLib.2.dylib -> libhelicsSharedLib.2.6.1.dylib
 │  ├── libhelicsSharedLib.dylib -> libhelicsSharedLib.2.dylib
 │  ├── libzmq.5.2.2.dylib
 │  ├── libzmq.5.dylib -> libzmq.5.2.2.dylib
