@@ -102,7 +102,7 @@ class HELICSDownloadCommand(Command):
 install_requires = ["cffi>=1.0.0", "strip-hints"]
 
 if sys.version_info < (3, 4):
-    install_requires.append("enum34==1.1.8")
+    install_requires.append("enum34")
 
 setup(
     name="helics",
