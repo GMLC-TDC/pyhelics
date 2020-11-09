@@ -203,6 +203,8 @@ class HelicsFederateFlag(IntEnum):
     ENABLE_INIT_ENTRY = 47  # HelicsFederateFlags
     IGNORE_TIME_MISMATCH_WARNINGS = 67  # HelicsFederateFlags
     TERMINATE_ON_ERROR = 72  # HelicsFederateFlags
+    FORCE_LOGGING_FLUSH = 88  # HelicsFederateFlags
+    DUMPLOG = 89  # HelicsFederateFlags
 
 
 HELICS_FLAG_OBSERVER = HelicsFederateFlag.OBSERVER
@@ -222,6 +224,8 @@ HELICS_FLAG_DELAY_INIT_ENTRY = HelicsFederateFlag.DELAY_INIT_ENTRY
 HELICS_FLAG_ENABLE_INIT_ENTRY = HelicsFederateFlag.ENABLE_INIT_ENTRY
 HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
 HELICS_FLAG_TERMINATE_ON_ERROR = HelicsFederateFlag.TERMINATE_ON_ERROR
+HELICS_FLAG_FORCE_LOGGING_FLUSH = HelicsFederateFlag.FORCE_LOGGING_FLUSH
+HELICS_FLAG_DUMPLOG = HelicsFederateFlag.DUMPLOG
 
 helics_flag_observer = HelicsFederateFlag.OBSERVER
 helics_flag_uninterruptible = HelicsFederateFlag.UNINTERRUPTIBLE
@@ -1199,9 +1203,9 @@ class HelicsEndpoint(_HelicsCHandle):
         if type(data) == HelicsMessage:
             helicsEndpointSendMessage(self, data)
         elif time is None:
-            helicsEndpointSendTo(self, destination, data)
+            helicsEndpointSendBytesTo(self, destination, data)
         else:
-            helicsEndpointSendToAt(self, destination, time, data)
+            helicsEndpointSendBytesToAt(self, destination, time, data)
 
 
 class _FederateInfoFlagAccessor(_HelicsCHandle):
@@ -1501,7 +1505,7 @@ class HelicsFederate(_HelicsCHandle):
 
     @property
     def core(self) -> HelicsCore:
-        return helicsFederateGetCoreObject(self)
+        return helicsFederateGetCore(self)
 
     @property
     def n_publications(self) -> int:
@@ -3825,6 +3829,25 @@ def helicsFederateGetState(fed: HelicsFederate) -> HelicsFederateState:
         return HelicsFederateState(result)
 
 
+def helicsFederateGetCore(fed: HelicsFederate) -> HelicsCore:
+    """
+    Get the `helics.HelicsCore` associated with a federate.
+
+    **Parameters**
+
+    - **`fed`** - `helics.HelicsFederate`.
+
+    **Returns**: `helics.HelicsCore`.
+    """
+    f = loadSym("helicsFederateGetCore")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsCore(result)
+
+
 def helicsFederateGetCoreObject(fed: HelicsFederate) -> HelicsCore:
     """
     Get the `helics.HelicsCore` associated with a federate.
@@ -3835,13 +3858,8 @@ def helicsFederateGetCoreObject(fed: HelicsFederate) -> HelicsCore:
 
     **Returns**: `helics.HelicsCore`.
     """
-    f = loadSym("helicsFederateGetCoreObject")
-    err = helicsErrorInitialize()
-    result = f(fed.handle, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    else:
-        return HelicsCore(result)
+    warnings.warn("helics.helicsFederateGetCoreObject is deprecated. Use `helicsFederateGetCore` instead.")
+    return helicsFederateGetCore(fed)
 
 
 def helicsFederateRequestTime(fed: HelicsFederate, request_time: HelicsTime) -> HelicsTime:
@@ -4672,7 +4690,7 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
     return ffi.string(result).decode()
 
 
-def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: bytes):
+def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, dest: str, data: bytes):
     """
     Send a message to the specified destination.
 
@@ -4682,7 +4700,7 @@ def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: bytes):
     - **`dest`** - The target destination.
     - **`data`** - The data to send.
     """
-    f = loadSym("helicsEndpointSendMessageRaw")
+    f = loadSym("helicsEndpointSendBytesTo")
     err = helicsErrorInitialize()
     if isinstance(data, str):
         data = data.encode()
@@ -4691,31 +4709,13 @@ def helicsEndpointSendTo(endpoint: HelicsEndpoint, dst: str, data: bytes):
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dst), data, inputDataLength, err)
+    f(endpoint.handle, cstring(dest), data, inputDataLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
-    """
-    Send a message to the specified destination.
-
-    **Parameters**
-
-    - **`endpoint`** - The endpoint to send the data from.
-    - **`dest`** - The target destination.
-    - **`data`** - The data to send.
-
-    **DEPRECATED**
-
-    Use `helicsEndpointSendTo` instead
-    """
-    warnings.warn("This function is deprecated. Use `helicsEndpointSendTo` instead.")
-    helicsEndpointSendTo(endpoint, dest, data)
-
-
-def helicsEndpointSendToAt(
-    endpoint: HelicsEndpoint, dst: str, time: HelicsTime, data: str,
+def helicsEndpointSendBytesToAt(
+    endpoint: HelicsEndpoint, dest: str, time: HelicsTime, data: str,
 ):
     """
     Send a message at a specific time to the specified destination.
@@ -4730,7 +4730,7 @@ def helicsEndpointSendToAt(
     f = loadSym("helicsEndpointSendEventRaw")
     err = helicsErrorInitialize()
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dst), cstring(data), inputDataLength, time, err)
+    f(endpoint.handle, cstring(dest), cstring(data), inputDataLength, time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4750,10 +4750,10 @@ def helicsEndpointSendEventRaw(
 
     **DEPRECATED**
 
-    Use `helicsEndpointSendToAt` instead.
+    Use `helicsEndpointSendBytesToAt` instead.
     """
-    warnings.warn("This function is deprecated. Use `helicsEndpointSendToAt` instead.")
-    helicsEndpointSendToAt(endpoint, dest, time, data)
+    warnings.warn("This function is deprecated. Use `helicsEndpointSendBytesToAt` instead.")
+    helicsEndpointSendBytesToAt(endpoint, dest, time, data)
 
 
 def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMessage):
@@ -4795,7 +4795,7 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
     - **`endpoint`** - The endpoint to send the data from.
     - **`message`** - The actual message to send which will be copied.
     """
-    f = loadSym("helicsEndpointSendMessageObject")
+    f = loadSym("helicsEndpointSendMessage")
     err = helicsErrorInitialize()
     f(endpoint.handle, message.handle, err)
     if err.error_code != 0:
@@ -4898,7 +4898,7 @@ def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     **Returns**: A message object.
     """
-    f = loadSym("helicsEndpointGetMessageObject")
+    f = loadSym("helicsEndpointGetMessage")
     return HelicsMessage(f(endpoint.handle))
 
 
@@ -4913,7 +4913,7 @@ def helicsEndpointCreateMessageObject(endpoint: HelicsEndpoint) -> HelicsMessage
 
     **DEPRECATED**
     """
-    warnings.warn("This function has been deprecated. Use helicsEndpointCreateMessage instead")
+    warnings.warn("This function has been deprecated. Use `helicsEndpointCreateMessage` instead.")
     return helicsEndpointCreateMessage(endpoint)
 
 
@@ -4926,7 +4926,7 @@ def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     - **`endpoint`** - The endpoint object to associate the message with.
     """
-    f = loadSym("helicsEndpointCreateMessageObject")
+    f = loadSym("helicsEndpointCreateMessage")
     err = helicsErrorInitialize()
     result = f(endpoint.handle, err)
     if err.error_code != 0:
@@ -4946,7 +4946,7 @@ def helicsFederateGetMessageObject(fed: HelicsFederate) -> HelicsMessage:
 
     **DEPRECATED**
     """
-    warnings.warn("This function has been deprecated. Use helicsFederateCreateMessage instead")
+    warnings.warn("This function has been deprecated. Use `helicsFederateCreateMessage` instead.")
     return helicsFederateGetMessage(fed)
 
 
@@ -4959,7 +4959,7 @@ def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
 
     **Returns**: A `helics.HelicsMessage` which references the data in the message.
     """
-    f = loadSym("helicsFederateGetMessageObject")
+    f = loadSym("helicsFederateGetMessage")
     result = f(fed.handle)
     return HelicsMessage(result)
 
@@ -4975,7 +4975,7 @@ def helicsFederateCreateMessageObject(fed: HelicsFederate) -> HelicsMessage:
 
     **DEPRECATED**
     """
-    warnings.warn("This function has been deprecated. Use helicsFederateCreateMessage instead")
+    warnings.warn("This function has been deprecated. Use `helicsFederateCreateMessage` instead.")
     return helicsFederateCreateMessage(fed)
 
 
@@ -4988,7 +4988,7 @@ def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessage:
 
     - **`fed`** - the `helics.HelicsFederate` to associate the message with.
     """
-    f = loadSym("helicsFederateCreateMessageObject")
+    f = loadSym("helicsFederateCreateMessage")
     err = helicsErrorInitialize()
     result = f(fed.handle, err)
     if err.error_code != 0:
@@ -5545,18 +5545,18 @@ def helicsMessageAppendData(message: HelicsMessage, data: bytes):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsMessageCopy(source_message: HelicsMessage, dest_message: HelicsMessage):
+def helicsMessageCopy(source_message: HelicsMessage, destination_message: HelicsMessage):
     """
     Copy a message object.
 
     **Parameters**
 
     - **`source_message`** - The message object to copy from.
-    - **`dest_message`** - The message object to copy to.
+    - **`destination_message`** - The message object to copy to.
     """
     f = loadSym("helicsMessageCopy")
     err = helicsErrorInitialize()
-    f(source_message, dest_message, err)
+    f(source_message, destination_message, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -7414,5 +7414,193 @@ def helicsBrokerSetTimeBarrier(broker: HelicsBroker, barrier_time: HelicsTime):
     f = loadSym("helicsBrokerSetTimeBarrier")
     err = helicsErrorInitialize()
     f(broker.handle, barrier_time, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateSendCommand(fed: HelicsFederate, target: str, command: str):
+    f = loadSym("helicsFederateSendCommand")
+    err = helicsErrorInitialize()
+    f(fed.handle, cstring(target), cstring(command), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateGetCommand(fed: HelicsFederate) -> str:
+    f = loadSym("helicsFederateGetCommand")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return ffi.string(result).decode()
+
+
+def helicsFederateGetCommandSource(fed: HelicsFederate) -> str:
+    f = loadSym("helicsFederateGetCommandSource")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return ffi.string(result).decode()
+
+
+def helicsFederateWaitCommand(fed: HelicsFederate) -> str:
+    f = loadSym("helicsFederateWaitCommand")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return ffi.string(result).decode()
+
+
+def helicsCoreSendCommand(core, target, command, err):
+    f = loadSym("helicsCoreSendCommand")
+    err = helicsErrorInitialize()
+    f(core.handle, cstring(target), cstring(command), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsBrokerSendCommand(broker, target, command, err):
+    f = loadSym("helicsBrokerSendCommand")
+    err = helicsErrorInitialize()
+    f(broker.handle, cstring(target), cstring(command), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateRegisterTargetedEndpoint(fed: HelicsFederate, name: str, type: str):
+    """
+    Create an targeted endpoint.
+    The endpoint becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for endpoints.
+
+    # Parameters
+
+    - **`fed`** - The `helics.HelicsFederate` in which to create an endpoint must have been created with helicsCreateMessageFederate or helicsCreateCombinationFederate.
+    - **`name`** - The identifier for the endpoint. This will be prepended with the federate name for the global identifier.
+    - **`type`** - A string describing the expected type of the publication (optional).
+
+    **Returns**: `helics.HelicsEndpoint`.
+    """
+    f = loadSym("helicsFederateRegisterTargetedEndpoint")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, cstring(name), cstring(type), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsEndpoint(result)
+
+
+def helicsFederateRegisterGlobalTargetedEndpoint(fed: HelicsFederate, name: str, type: str):
+    """
+    Create a globally targeted endpoint.
+    The endpoint becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for endpoints.
+
+    # Parameters
+
+    - **`fed`** - The `helics.HelicsFederate` in which to create an endpoint must have been created with helicsCreateMessageFederate or helicsCreateCombinationFederate.
+    - **`name`** - The identifier for the endpoint. This will be prepended with the federate name for the global identifier.
+    - **`type`** - A string describing the expected type of the publication (optional).
+    **Returns**: `helics.HelicsEndpoint`.
+    """
+    f = loadSym("helicsFederateGlobalRegisterTargetedEndpoint")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, cstring(name), cstring(type), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsEndpoint(result)
+
+
+def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, dest: str, data: bytes):
+    """
+    **DEPRECATED**
+    Use helicsEndpointSendBytesTo instead
+    """
+    warnings.warn("This function has been deprecated. Use `helicsEndpointSendBytesTo` instead.")
+    return helicsEndpointSendBytesTo(endpoint, dest, data)
+
+
+def helicsEndpointAddSourceTarget(endpoint: HelicsEndpoint, source_name: str):
+    """
+    Add a source target to a endpoint.
+    All messages coming from a source are copied to the delivery address(es).
+
+    # Parameters
+
+    - **`endpoint`** - The given endpoint.
+    - **`source_name`** - The name of the endpoint to add as a source target.
+    """
+    f = loadSym("helicsEndpointAddSourceTarget")
+    err = helicsErrorInitialize()
+    f(filter.handle, cstring(source_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointAddDestinationTarget(endpoint: HelicsEndpoint, destination_name: str):
+    """
+    Add a destination target to a endpoint.
+    All messages coming from a source are copied to the delivery address(es).
+
+    # Parameters
+
+    - **`endpoint`** - The given endpoint.
+    - **`source_name`** - The name of the endpoint to add as a source target.
+    """
+    f = loadSym("helicsEndpointAddDestinationTarget")
+    err = helicsErrorInitialize()
+    f(filter.handle, cstring(destination_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointRemoveTarget(endpoint: HelicsEndpoint, target: str):
+    """
+    Remove target from endpoint
+
+    # Parameters
+
+    - **`endpoint`** - The given endpoint.
+    - **`target_name`** - The name of the endpoint to remove.
+    """
+    f = loadSym("helicsEndpointAddRemoveTarget")
+    err = helicsErrorInitialize()
+    f(filter.handle, cstring(target), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointAddSourceFilter(endpoint: HelicsEndpoint, filter_name: str):
+    """
+    Add source filter to endpoint
+
+    # Parameters
+
+    - **`endpoint`** - The endpoint.
+    - **`filter_name`** - The name of the filter.
+    """
+    f = loadSym("helicsEndpointAddSourceFilter")
+    err = helicsErrorInitialize()
+    f(endpoint.handle, cstring(filter_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointAddDestinationFilter(endpoint: HelicsEndpoint, filter_name: str):
+    """
+    Add destination filter to endpoint
+
+    # Parameters
+
+    - **`endpoint`** - The endpoint.
+    - **`filter_name`** - The name of the filter.
+    """
+    f = loadSym("helicsEndpointAddDestinationFilter")
+    err = helicsErrorInitialize()
+    f(endpoint.handle, cstring(filter_name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
