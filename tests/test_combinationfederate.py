@@ -36,8 +36,6 @@ def test_combination_federate():
     assert h.helicsInputGetExtractionUnits(ipt) == ""
     assert h.helicsSubscriptionGetKey(ipt) == "comboFed/pub2"
 
-    h.helicsEndpointClearMessages(ept)
-
     h.helicsFederateDestroy(cfed)
     h.helicsBrokerDestroy(broker)
     h.helicsCloseLibrary()

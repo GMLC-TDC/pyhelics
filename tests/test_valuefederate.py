@@ -501,9 +501,9 @@ def test_valuefederate_default_value_tests():
     h.helicsPublicationAddTarget(pub, "Testfed0/key7")
     h.helicsPublicationAddTarget(pub, "Testfed0/key8")
 
-    h.helicsInputSetDefaultRaw(inp_raw1, "")
+    h.helicsInputSetDefaultBytes(inp_raw1, "")
     data = "this is a string"
-    h.helicsInputSetDefaultRaw(inp_raw2, data)
+    h.helicsInputSetDefaultBytes(inp_raw2, data)
 
     h.helicsInputSetDefaultBoolean(inp_bool, True)
 

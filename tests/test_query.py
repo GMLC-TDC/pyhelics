@@ -30,9 +30,9 @@ def test_query_federate_tests():
 
     q1 = h.helicsCreateQuery("Testfed0", "publications")
     res = h.helicsQueryCoreExecute(q1, core)
-    assert res == "[pub1;Testfed0/pub2]"
-    # res = h.helicsQueryExecute(q1, vFed2)
-    # assert res == "[pub1;Testfed0/pub2]"
+    assert res == ["pub1", "Testfed0/pub2"]
+    res = h.helicsQueryExecute(q1, vFed2)
+    assert res == ["pub1", "Testfed0/pub2"]
     h.helicsQueryFree(q1)
 
     # q1 = h.helicsCreateQuery("Testfed1", "isinit")
@@ -67,10 +67,10 @@ def test_query_broker_tests():
     name1 = h.helicsFederateGetName(vFed1)
     name2 = h.helicsFederateGetName(vFed2)
 
-    assert f"[{name1};{name2}]" == res
+    assert [name1, name2] == res
 
     res = h.helicsQueryExecute(q1, vFed1)
-    assert f"[{name1};{name2}]" == res
+    assert [name1, name2] == res
 
     h.helicsFederateEnterInitializingModeAsync(vFed1)
     h.helicsFederateEnterInitializingMode(vFed2)

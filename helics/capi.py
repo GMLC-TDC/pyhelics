@@ -1001,7 +1001,7 @@ class HelicsBroker(_HelicsCHandle):
 
 class _MessageFlagAccessor(_HelicsCHandle):
     def __getitem__(self, index):
-        return helicsMessageCheckFlag(self, index)
+        return helicsMessageGetFlagOption(self, index)
 
     def __setitem__(self, index: int, value: bool):
         return helicsMessageSetFlagOption(self, index, value)
@@ -1110,7 +1110,7 @@ class HelicsMessage(_HelicsCHandle):
 
     @property
     def raw_data(self) -> bytes:
-        return helicsMessageGetRawData(self)
+        return helicsMessageGetBytes(self)
 
     @raw_data.setter
     def raw_data(self, v: bytes):
@@ -1161,7 +1161,7 @@ class HelicsEndpoint(_HelicsCHandle):
     @property
     def n_pending_messages(self) -> int:
         """Returns the number of pending receives for endpoint."""
-        return helicsEndpointPendingMessages(self)
+        return helicsEndpointPendingMessagesCount(self)
 
     @property
     def name(self) -> str:
@@ -1526,7 +1526,7 @@ class HelicsFederate(_HelicsCHandle):
     @property
     def n_pending_messages(self):
         """Returns the number of pending receives for all endpoints."""
-        return helicsFederatePendingMessages(self)
+        return helicsFederatePendingMessagesCount(self)
 
     @property
     def separator(self):
@@ -1982,7 +1982,7 @@ class HelicsInput(_HelicsCHandle):
         Set the default value as a vector of doubles
         """
         if isinstance(data, bytes):
-            helicsInputSetDefaultRaw(self, data)
+            helicsInputSetDefaultBytes(self, data)
         elif isinstance(data, str):
             helicsInputSetDefaultString(self, data)
         elif isinstance(data, int):
@@ -2001,7 +2001,7 @@ class HelicsInput(_HelicsCHandle):
     @property
     def bytes(self) -> bytes:
         """Get a raw value as a character vector."""
-        return helicsInputGetRawValue(self)
+        return helicsInputGetBytes(self)
 
     @property
     def string(self) -> str:
@@ -2123,7 +2123,7 @@ class HelicsPublication(_HelicsCHandle):
         publish a boolean value
         """
         if isinstance(data, bytes):
-            helicsPublicationPublishRaw(self, data)
+            helicsPublicationPublishBytes(self, data)
         elif isinstance(data, str):
             helicsPublicationPublishString(self, data)
         elif isinstance(data, int):
@@ -4412,7 +4412,7 @@ def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> str:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return ffi.string(result).decode()
+        return json.loads(ffi.string(result).decode())
 
 
 def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> str:
@@ -4433,7 +4433,7 @@ def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> str:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return ffi.string(result).decode()
+        return json.loads(ffi.string(result).decode())
 
 
 def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> str:
@@ -4454,7 +4454,7 @@ def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> str:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return ffi.string(result).decode()
+        return json.loads(ffi.string(result).decode())
 
 
 def helicsQueryExecuteAsync(query: HelicsQuery, fed: HelicsFederate):
@@ -4709,7 +4709,7 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, dest: str, data: bytes):
             """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
         )
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dest), data, inputDataLength, err)
+    f(endpoint.handle, data, inputDataLength, cstring(dest), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4727,10 +4727,10 @@ def helicsEndpointSendBytesToAt(
     - **`data`** - The data to send.
     - **`time`** - The time the message should be sent.
     """
-    f = loadSym("helicsEndpointSendEventRaw")
+    f = loadSym("helicsEndpointSendBytesToAt")
     err = helicsErrorInitialize()
     inputDataLength = len(data)
-    f(endpoint.handle, cstring(dest), cstring(data), inputDataLength, time, err)
+    f(endpoint.handle, cstring(data), inputDataLength, cstring(dest), time, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4848,7 +4848,7 @@ def helicsEndpointHasMessage(endpoint: HelicsEndpoint) -> bool:
     return result == 1
 
 
-def helicsFederatePendingMessages(fed: HelicsFederate) -> int:
+def helicsFederatePendingMessagesCount(fed: HelicsFederate) -> int:
     """
     Returns the number of pending receives for the specified destination endpoint.
 
@@ -4856,11 +4856,11 @@ def helicsFederatePendingMessages(fed: HelicsFederate) -> int:
 
     - **`fed`** - The federate to get the number of waiting messages from.
     """
-    f = loadSym("helicsFederatePendingMessages")
+    f = loadSym("helicsFederatePendingMessagesCount")
     return f(fed.handle)
 
 
-def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
+def helicsEndpointPendingMessagesCount(endpoint: HelicsEndpoint) -> int:
     """
     Returns the number of pending receives for all endpoints of a particular federate.
 
@@ -4868,7 +4868,7 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
 
     - **`endpoint`** - The endpoint to query.
     """
-    f = loadSym("helicsEndpointPendingMessages")
+    f = loadSym("helicsEndpointPendingMessagesCount")
     return f(endpoint.handle)
 
 
@@ -5008,20 +5008,6 @@ def helicsFederateClearMessages(fed: HelicsFederate):
     """
     f = loadSym("helicsFederateClearMessages")
     f(fed.handle)
-
-
-def helicsEndpointClearMessages(endpoint: HelicsEndpoint):
-    """
-    Clear all message from an endpoint.
-
-    _**Deprecated: Use `helics.helicsFederateClearMessages` to free all messages, or `helics.helicsMessageFree` to clear an individual message.
-
-    **Parameters**
-
-    - **`endpoint`** - The endpoint object to operate on.
-    """
-    f = loadSym("helicsEndpointClearMessages")
-    f(endpoint.handle)
 
 
 def helicsEndpointGetType(endpoint: HelicsEndpoint) -> str:
@@ -5240,7 +5226,7 @@ def helicsMessageGetMessageID(message: HelicsMessage) -> int:
     return result
 
 
-def helicsMessageCheckFlag(message: HelicsMessage, flag: int) -> bool:
+def helicsMessageGetFlagOption(message: HelicsMessage, flag: int) -> bool:
     """
     Check if a flag is set on a message.
 
@@ -5251,12 +5237,12 @@ def helicsMessageCheckFlag(message: HelicsMessage, flag: int) -> bool:
 
     **Returns**: The flags associated with a message.
     """
-    f = loadSym("helicsMessageCheckFlag")
+    f = loadSym("helicsMessageGetFlagOption")
     result = f(message.handle, flag)
     return result == 1
 
 
-def helicsMessageGetRawDataSize(message: HelicsMessage) -> int:
+def helicsMessageGetByteCount(message: HelicsMessage) -> int:
     """
     Get the size of the data payload in bytes.
 
@@ -5266,12 +5252,12 @@ def helicsMessageGetRawDataSize(message: HelicsMessage) -> int:
 
     **Returns**: The size of the data payload.
     """
-    f = loadSym("helicsMessageGetRawDataSize")
+    f = loadSym("helicsMessageGetByteCount")
     result = f(message.handle)
     return result
 
 
-def helicsMessageGetRawData(message: HelicsMessage) -> bytes:
+def helicsMessageGetBytes(message: HelicsMessage) -> bytes:
     """
     Get the raw data for a message object.
 
@@ -5281,9 +5267,9 @@ def helicsMessageGetRawData(message: HelicsMessage) -> bytes:
 
     **Returns**: Raw string data.
     """
-    f = loadSym("helicsMessageGetRawData")
+    f = loadSym("helicsMessageGetBytes")
     err = helicsErrorInitialize()
-    maxMessageLen = helicsMessageGetRawDataSize(message) + 1024
+    maxMessageLen = helicsMessageGetByteCount(message) + 1024
     data = ffi.new("char[{maxMessageLen}]".format(maxMessageLen=maxMessageLen))
     actualSize = ffi.new("int[1]")
     f(message.handle, data, maxMessageLen, actualSize, err)
@@ -5292,7 +5278,7 @@ def helicsMessageGetRawData(message: HelicsMessage) -> bytes:
     return ffi.string(data, maxlen=actualSize[0])
 
 
-def helicsMessageGetRawDataPointer(message: HelicsMessage) -> pointer:
+def helicsMessageGetBytesPointer(message: HelicsMessage) -> pointer:
     """
     Get a pointer to the raw data of a message.
 
@@ -5302,7 +5288,7 @@ def helicsMessageGetRawDataPointer(message: HelicsMessage) -> pointer:
 
     **Returns**: A pointer to the raw data in memory, the pointer may be NULL if the message is not a valid message.
     """
-    f = loadSym("helicsMessageGetRawDataPointer")
+    f = loadSym("helicsMessageGetBytesPointer")
     result = f(message.handle)
     return result
 
@@ -6358,7 +6344,7 @@ def helicsPublicationIsValid(pub: HelicsPublication) -> bool:
     return result == 1
 
 
-def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
+def helicsPublicationPublishBytes(pub: HelicsPublication, data: bytes):
     """
     Publish raw data from a char * and length.
 
@@ -6367,7 +6353,7 @@ def helicsPublicationPublishRaw(pub: HelicsPublication, data: bytes):
     - **`pub`** - The publication to publish for.
     - **`data`** - A pointer to the raw data.
     """
-    f = loadSym("helicsPublicationPublishRaw")
+    f = loadSym("helicsPublicationPublishBytes")
     err = helicsErrorInitialize()
     if isinstance(data, str):
         data = data.encode()
@@ -6576,19 +6562,19 @@ def helicsInputAddTarget(ipt: HelicsInput, target_name: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsInputGetRawValueSize(ipt: HelicsInput) -> int:
+def helicsInputGetByteCount(ipt: HelicsInput) -> int:
     """
     Data can be returned in a number of formats,  for instance if data is published as a double it can be returned as a string and vice versa,  not all translations make that much sense but they do work.
     Get the size of the raw value for subscription.
 
     **Returns**: The size of the raw data/string in bytes.
     """
-    f = loadSym("helicsInputGetRawValueSize")
+    f = loadSym("helicsInputGetByteCount")
     result = f(ipt.handle)
     return result
 
 
-def helicsInputGetRawValue(ipt: HelicsInput) -> bytes:
+def helicsInputGetBytes(ipt: HelicsInput) -> bytes:
     """
     Get the raw data for the latest value of a subscription.
 
@@ -6598,9 +6584,9 @@ def helicsInputGetRawValue(ipt: HelicsInput) -> bytes:
 
     **Returns**: Raw string data.
     """
-    f = loadSym("helicsInputGetRawValue")
+    f = loadSym("helicsInputGetBytes")
     err = helicsErrorInitialize()
-    maxDataLen = helicsInputGetRawValueSize(ipt) + 1024
+    maxDataLen = helicsInputGetByteCount(ipt) + 1024
     data = ffi.new("char[{maxDataLen}]".format(maxDataLen=maxDataLen))
     actualSize = ffi.new("int[1]")
     f(ipt.handle, data, maxDataLen, actualSize, err)
@@ -6837,7 +6823,7 @@ def helicsInputGetNamedPoint(ipt: HelicsInput) -> Tuple[str, float]:
         return ffi.string(outputString, maxlen=actualLength[0]).decode(), value[0]
 
 
-def helicsInputSetDefaultRaw(ipt: HelicsInput, data: bytes):
+def helicsInputSetDefaultBytes(ipt: HelicsInput, data: bytes):
     """
 
     Default Value functions.
@@ -6849,7 +6835,7 @@ def helicsInputSetDefaultRaw(ipt: HelicsInput, data: bytes):
     - **`ipt`** - The input to set the default for.
     - **`data`** - A pointer to the raw data to use for the default.
     """
-    f = loadSym("helicsInputSetDefaultRaw")
+    f = loadSym("helicsInputSetDefaultBytes")
     err = helicsErrorInitialize()
     if isinstance(data, str):
         data = data.encode()

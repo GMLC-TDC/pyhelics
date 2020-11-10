@@ -123,7 +123,7 @@ def test_message_federate_send(mFed):
     assert h.helicsMessageGetMessageID(message) == 55
     assert h.helicsMessageIsValid(message) is True
     assert h.helicsMessageGetString(message) == "random-data"
-    assert h.helicsMessageGetRawDataSize(message) == 11
+    assert h.helicsMessageGetByteCount(message) == 11
     assert h.helicsMessageGetOriginalDestination(message) == ""
     assert h.helicsMessageGetOriginalSource(message) == "TestA Federate/ep1"
     assert h.helicsMessageGetSource(message) == "TestA Federate/ep1"
@@ -199,13 +199,13 @@ def test_messagefederate_test_message_federate_send(mFed):
     assert h.helicsMessageGetMessageID(message) == 55
     assert h.helicsMessageIsValid(message) is True
     assert h.helicsMessageGetString(message) == "random-data"
-    assert h.helicsMessageGetRawDataSize(message) == 11
+    assert h.helicsMessageGetByteCount(message) == 11
     assert h.helicsMessageGetOriginalDestination(message) == ""
     assert h.helicsMessageGetOriginalSource(message) == "TestA Federate/ep1"
     assert h.helicsMessageGetSource(message) == "TestA Federate/ep1"
     assert h.helicsMessageGetTime(message) == 1.0
     # @test_broken False
-    # assert h.helicsMessageGetRawData(message) == None
+    # assert h.helicsMessageGetBytes(message) == None
 
 
 def test_messagefederate_send_receive_2fed_multisend():
@@ -242,10 +242,10 @@ def test_messagefederate_send_receive_2fed_multisend():
     assert granted_time == 1.0
     assert complete_time == 1.0
 
-    res = h.helicsEndpointPendingMessages(epid2)
+    res = h.helicsEndpointPendingMessagesCount(epid2)
     assert res == 3
 
-    res = h.helicsFederatePendingMessages(mFed2)
+    res = h.helicsFederatePendingMessagesCount(mFed2)
     assert res == 3
 
     assert h.helicsEndpointGetDefaultDestination(epid1) == "ep2"
@@ -284,12 +284,12 @@ def test_messagefederate_message_object_tests(mFed):
     assert h.helicsEndpointHasMessage(epid2) is True
 
     msg = h.helicsEndpointGetMessage(epid2)
-    assert h.helicsMessageGetRawDataSize(msg) == 500
+    assert h.helicsMessageGetByteCount(msg) == 500
     # TODO: segfaults
-    # print(h.helicsMessageGetRawData(msg))
+    # print(h.helicsMessageGetBytes(msg))
     # @test_broken False
     # segfaults
-    # rawdata = h.helicsMessageGetRawDataPointer(msg)
+    # rawdata = h.helicsMessageGetBytesPointer(msg)
     # assert Char(unsafe_load(Ptr{Cchar}(rdata), 245)) == 'a'
 
     h.helicsFederateFinalize(mFed)
@@ -297,9 +297,9 @@ def test_messagefederate_message_object_tests(mFed):
     assert h.helicsFederateGetState(mFed) == h.HELICS_STATE_FINALIZE
 
     h.helicsMessageSetFlagOption(msg, 7, True)
-    assert h.helicsMessageCheckFlag(msg, 7) is True
+    assert h.helicsMessageGetFlagOption(msg, 7) is True
     h.helicsMessageClearFlags(msg)
-    assert h.helicsMessageCheckFlag(msg, 7) is False
+    assert h.helicsMessageGetFlagOption(msg, 7) is False
 
     h.helicsEndpointSetDefaultDestination(epid1, "ep2")
 
@@ -347,7 +347,7 @@ def test_messagefederate_timing_tests():
     assert tres == 0.1
 
     # m = h.helicsEndpointGetMessage(ept1)
-    # @show h.helicsMessageGetRawData(m)
+    # @show h.helicsMessageGetBytes(m)
     # TODO: null pointer received from C
 
     gtime = h.helicsFederateRequestTimeComplete(vFed2)

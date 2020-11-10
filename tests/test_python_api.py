@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import json
 
 CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
@@ -145,7 +146,11 @@ def test_python_api1():
 
     assert mFed.request_time(2.0) == 1.0
 
-    assert mFed.subscriptions["TestFederate/publication"].bytes == b"first-time"
+    assert mFed.has_message()
+
+    assert mFed.subscriptions["TestFederate/publication"].string == "first-time"
+    with pt.raises(AssertionError):
+        assert mFed.subscriptions["TestFederate/publication"].bytes == b"first-time"
 
     assert mFed.has_message()
 
@@ -213,7 +218,8 @@ def test_python_api1():
 
     assert mFed.request_next_step() == 3.0
 
-    assert mFed.subscriptions["TestFederate/publication"].string == "1+2j"
+    assert mFed.subscriptions["TestFederate/publication"].string == "[1,2]"
+    assert mFed.subscriptions["TestFederate/publication"].complex == 1 + 2j
 
     mFed.publications["TestFederate/publication"].publish([1, 2, 3, 4, 5])
 
@@ -256,7 +262,7 @@ def test_python_api2():
     broker.data_link("hello", "world")
     broker.add_destination_filter_to_endpoint("hello", "world")
     broker.add_source_filter_to_endpoint("hello", "world")
-    assert broker.query("hello", "world") == "#invalid"
+    assert broker.query("hello", "world") == {"error": {"code": 404, "message": "query not valid"}}
 
     fi = h.helicsCreateFederateInfo()
     fi.core_init = "--federates 1"
@@ -392,7 +398,7 @@ def test_python_api2():
 
     fed.core.set_global("hello", "world")
 
-    assert fed.core.query("broker", "something") == "#invalid"
+    assert broker.query("broker", "something") == {"error": {"code": 400, "message": "unrecognized broker query"}}
 
     fed.add_dependency("hello")
 
@@ -556,7 +562,7 @@ def test_python_api7():
     fed.request_time_complete()
     assert fed.current_time == 4.0
 
-    assert fed.query("hello", "world") == "#invalid"
+    assert broker.query("hello", "world") == {"error": {"code": 404, "message": "query not valid"}}
 
     fed.local_error(0, "local")
     fed.global_error(0, "global")

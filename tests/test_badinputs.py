@@ -34,7 +34,7 @@ def test_bad_input_message_federate_message():
         h.helicsEndpointSendMessage(ept1, mess0)
 
     h.helicsFederateRequestNextStep(mFed1)
-    cnt = h.helicsEndpointPendingMessages(ept1)
+    cnt = h.helicsEndpointPendingMessagesCount(ept1)
     assert cnt == 0
 
     h.helicsFederateFinalize(mFed1)
@@ -142,7 +142,7 @@ def test_bad_input_type_publication_2_tests():
 
     # @test_throws h.HELICSErrorInvalidFunctionCall
     with pt.raises(h.HelicsException):
-        h.helicsPublicationPublishRaw(pubid, string.encode())
+        h.helicsPublicationPublishBytes(pubid, string.encode())
     # @test_throws h.HELICSErrorInvalidFunctionCall
     with pt.raises(h.HelicsException):
         h.helicsPublicationPublishString(pubid, string)
@@ -193,9 +193,9 @@ def test_bad_input_tests_raw_tests():
 
     h.helicsFederateEnterExecutingMode(vFed1)
 
-    h.helicsPublicationPublishRaw(pubid, b"hello world")
+    h.helicsPublicationPublishBytes(pubid, b"hello world")
     h.helicsFederateRequestNextStep(vFed1)
-    s = h.helicsInputGetRawValue(subid)
+    s = h.helicsInputGetBytes(subid)
     assert s == b"hello world"
 
     h.helicsPublicationPublishDouble(pubid, 27)
@@ -242,7 +242,7 @@ def test_bad_input_duplicate_publication_and_input_pathways():
     assert str[0] == "2"
     assert str[1] == "7"
 
-    messages = h.helicsFederatePendingMessages(vFed1)
+    messages = h.helicsFederatePendingMessagesCount(vFed1)
     assert messages == 0
 
     h.helicsFederateFinalize(vFed1)

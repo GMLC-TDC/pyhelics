@@ -293,7 +293,7 @@ def test_misc_api():
 
     returnTime = h.helicsFederateRequestTimeComplete(fed1)
     assert returnTime == 1.0
-    ep2MsgCount = h.helicsEndpointPendingMessages(ep2)
+    ep2MsgCount = h.helicsEndpointPendingMessagesCount(ep2)
     assert ep2MsgCount == 2
     ep2HasMsg = h.helicsEndpointHasMessage(ep2)
     assert ep2HasMsg == 1
@@ -306,7 +306,7 @@ def test_misc_api():
     assert h.helicsMessageGetDestination(msg2) == "Ep2"
     assert h.helicsMessageGetOriginalDestination(msg2) == "Ep2"
 
-    fed1MsgCount = h.helicsFederatePendingMessages(fed1)
+    fed1MsgCount = h.helicsFederatePendingMessagesCount(fed1)
     assert fed1MsgCount == 1
 
     assert h.helicsFederateHasMessage(fed1) == 1
@@ -336,7 +336,7 @@ def test_misc_api():
     # assert h.helicsInputGetBoolean(sub5) == True
     # assert h.helicsInputGetString(sub3) == "Mayhem"
 
-    sub3ValueSize = h.helicsInputGetRawValueSize(sub3)
+    sub3ValueSize = h.helicsInputGetBytes(sub3)
     # assert sub3ValueSize == 6
 
     # assert h.helicsInputGetVector(sub6) == [4.5, 56.5]

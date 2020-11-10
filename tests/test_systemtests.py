@@ -83,6 +83,7 @@ def test_other_tests_core_creation(broker):
     h.helicsCoreDisconnect(cr)
 
 
+@pt.mark.skip("Query for global doesn't return json. See https://github.com/GMLC-TDC/HELICS/issues/1712")
 def test_system_broker_global_value():
     brk = h.helicsCreateBroker("ipc", "gbrokerc", "--root")
     globalVal = "this is a string constant that functions as a global"
@@ -102,6 +103,7 @@ def test_system_broker_global_value():
     h.helicsBrokerFree(brk)
 
 
+@pt.mark.skip("Query for global doesn't return json. See https://github.com/GMLC-TDC/HELICS/issues/1712")
 def test_system_test_core_global_value1():
 
     brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
@@ -126,6 +128,7 @@ def test_system_test_core_global_value1():
     h.helicsCloseLibrary()
 
 
+@pt.mark.skip("Query for global doesn't return json. See https://github.com/GMLC-TDC/HELICS/issues/1712")
 def test_system_test_core_global_value2():
     brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
 
@@ -151,6 +154,7 @@ def test_system_test_core_global_value2():
     assert h.helicsBrokerIsConnected(brk) == False
 
 
+@pt.mark.skip("Query for global doesn't return json. See https://github.com/GMLC-TDC/HELICS/issues/1712")
 def test_system_test_broker_global_value():
 
     brk = h.helicsCreateBroker("inproc", "gbroker", "--root")
@@ -172,6 +176,7 @@ def test_system_test_broker_global_value():
     assert h.helicsBrokerIsConnected(brk) is False
 
 
+@pt.mark.skip("Query for global doesn't return json. See https://github.com/GMLC-TDC/HELICS/issues/1712")
 def test_system_test_federate_global_value():
 
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
