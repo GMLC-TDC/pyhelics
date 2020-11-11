@@ -209,7 +209,7 @@ def test_system_test_federate_global_value():
     while h.helicsQueryIsCompleted(q2) is False:
         time.sleep(0.20)
     res = h.helicsQueryExecuteComplete(q2)
-    assert res == "false"
+    assert str(res).lower() == "false"
 
     h.helicsFederateFinalize(fed)
 

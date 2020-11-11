@@ -566,8 +566,8 @@ def test_filter_test_types_clone_test_connections():
 
     q = h.helicsCreateQuery("", "filtered_endpoints")
     filteredEndpoints = h.helicsQueryExecute(q, sFed)
-    assert "srcFilters" in filteredEndpoints
-    assert "(cloning)" in filteredEndpoints
+    assert "srcFilters" in str(filteredEndpoints)
+    assert "(cloning)" in str(filteredEndpoints)
     h.helicsQueryFree(q)
 
     state = h.helicsFederateGetState(sFed)
@@ -705,7 +705,7 @@ def test_filter_test_types_clone_test_dest_connections():
 
     q = h.helicsCreateQuery("", "filtered_endpoints")
     filteredEndpoints = h.helicsQueryExecute(q, dFed)
-    assert "cloningdestFilter" in filteredEndpoints
+    assert "cloningdestFilter" in str(filteredEndpoints)
     h.helicsQueryFree(q)
 
     state = h.helicsFederateGetState(sFed)
@@ -761,11 +761,22 @@ def test_filter_test_types_clone_test_dest_connections():
     destroyBroker(broker)
 
 
-@h.ffi.callback("void logger(helics_message_object, void* userData)")
-def filterFunc1(mess, userData):
-    m = h.HelicsMessage(mess)
-    time = h.helicsMessageGetTime(m)
-    h.helicsMessageSetTime(m, time + 2.5)
+try:
+
+    @h.ffi.callback("void logger(helics_message_object, void* userData)")
+    def filterFunc1(mess, userData):
+        m = h.HelicsMessage(mess)
+        time = h.helicsMessageGetTime(m)
+        h.helicsMessageSetTime(m, time + 2.5)
+
+
+except:
+
+    @h.ffi.callback("void logger(helics_message, void* userData)")
+    def filterFunc1(mess, userData):
+        m = h.HelicsMessage(mess)
+        time = h.helicsMessageGetTime(m)
+        h.helicsMessageSetTime(m, time + 2.5)
 
 
 class UserData(object):
