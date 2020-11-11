@@ -4718,8 +4718,8 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination
     **Parameters**
 
     - **`endpoint`** - The endpoint to send the data from.
-    - **`destination`** - The target destination.
     - **`data`** - The data to send.
+    - **`destination`** - The target destination.
     """
     try:
         f = loadSym("helicsEndpointSendBytesTo")
@@ -4736,7 +4736,7 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination
         f(endpoint.handle, data, inputDataLength, cstring(destination), err)
         if err.error_code != 0:
             raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    except:
+    except AttributeError:
         f = loadSym("helicsEndpointSendMessageRaw")
         err = helicsErrorInitialize()
         if isinstance(data, str):
@@ -4778,8 +4778,8 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
     **Parameters**
 
     - **`endpoint`** - The endpoint to send the data from.
-    - **`destination`** - The target destination.
     - **`data`** - The data to send.
+    - **`destination`** - The target destination.
     - **`time`** - The time the message should be sent.
     """
     try:
@@ -4789,7 +4789,7 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
         f(endpoint.handle, cstring(data), inputDataLength, cstring(destination), time, err)
         if err.error_code != 0:
             raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    except:
+    except AttributeError:
         f = loadSym("helicsEndpointSendEventRaw")
         err = helicsErrorInitialize()
         inputDataLength = len(data)
@@ -4955,7 +4955,7 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
     return helicsEndpointPendingMessagesCount(endpoint)
 
 
-def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
+def helicsEndpointPendingMessagesCount(endpoint: HelicsEndpoint) -> int:
     """
     Returns the number of pending receives for all endpoints of a particular federate.
 
@@ -4965,7 +4965,7 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
     """
     try:
         f = loadSym("helicsEndpointPendingMessagesCount")
-    except:
+    except AttributeError:
         f = loadSym("helicsEndpointPendingMessages")
     return f(endpoint.handle)
 
@@ -7774,15 +7774,6 @@ def helicsFederateRegisterGlobalTargetedEndpoint(fed: HelicsFederate, name: str,
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsEndpoint(result)
-
-
-def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, destination: str, data: bytes):
-    """
-    **DEPRECATED**
-    Use helicsEndpointSendBytesTo instead
-    """
-    warnings.warn("This function has been deprecated. Use `helicsEndpointSendBytesTo` instead.")
-    return helicsEndpointSendBytesTo(endpoint, data, destination)
 
 
 def helicsEndpointAddSourceTarget(endpoint: HelicsEndpoint, source_name: str):
