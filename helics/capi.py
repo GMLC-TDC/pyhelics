@@ -2003,7 +2003,7 @@ class HelicsInput(_HelicsCHandle):
     @property
     def bytes(self) -> bytes:
         """Get a raw value as a character vector."""
-        return helicsInputGetRawValue(self)
+        return helicsInputGetBytes(self)
 
     @property
     def string(self) -> str:
