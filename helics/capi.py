@@ -2572,7 +2572,7 @@ def helicsCoreIsValid(core: HelicsCore) -> bool:
     return result == 1
 
 
-def helicsCreateBroker(type: str, name: str, init_string: str) -> HelicsBroker:
+def helicsCreateBroker(type: str, name: str = "", init_string: str = "") -> HelicsBroker:
     """
     Create a broker object
 
