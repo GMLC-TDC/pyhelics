@@ -1535,7 +1535,7 @@ class HelicsFederate(_HelicsCHandle):
     @property
     def n_pending_messages(self):
         """Returns the number of pending receives for all endpoints."""
-        return helicsFederatePendingMessages(self)
+        return helicsFederatePendingMessagesCount(self)
 
     @property
     def separator(self):
