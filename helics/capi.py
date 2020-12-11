@@ -930,6 +930,13 @@ class HelicsBroker(_HelicsCHandle):
         return helicsBrokerGetIdentifier(self)
 
     @property
+    def name(self):
+        """
+        Get the local identification for the broker.
+        """
+        return helicsBrokerGetIdentifier(self)
+
+    @property
     def address(self):
         """
         Get the connection address for the broker.
