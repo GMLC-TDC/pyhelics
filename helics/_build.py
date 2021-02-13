@@ -57,7 +57,10 @@ if platform.system() == "Windows":
                 pass
     else:
         try:
-            lib = ffi.dlopen("helicsShared.dll")
+            try:
+                lib = ffi.dlopen("helicsShared.dll")
+            except:
+                lib = ffi.dlopen("helics.dll")
         except OSError as e:
             from .vcredist import VcRedist
 
