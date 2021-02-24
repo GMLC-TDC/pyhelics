@@ -39,5 +39,6 @@ def test_combination_federate():
     h.helicsEndpointClearMessages(ept)
 
     h.helicsFederateDestroy(cfed)
+    h.helicsFederateFree(cfed)
     h.helicsBrokerDestroy(broker)
     h.helicsCloseLibrary()
