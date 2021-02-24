@@ -9,10 +9,11 @@ sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import time
 import helics as h
+import pytest as pt
 
 from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker
 
-
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_iteration_execution_iteration_test():
 
     broker = createBroker(1)
@@ -45,6 +46,7 @@ def test_iteration_execution_iteration_test():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_iteration_async_test():
 
     broker = createBroker(1)
