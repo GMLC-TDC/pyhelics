@@ -10,16 +10,24 @@ from os.path import dirname
 from os.path import join
 from os.path import splitext
 
-from setuptools import setup, Command
-from setuptools.dist import Distribution
-
 import re
 import sys
 import os
+import struct
+import shutil
 import platform
 import tarfile
-import shutil
-import struct
+import subprocess
+import shlex
+
+from setuptools import setup, Extension, Command
+from setuptools.dist import Distribution
+from setuptools.command.build_ext import build_ext
+
+try:
+    from wheel.bdist_wheel import bdist_wheel
+except ImportError:
+    bdist_wheel = None
 
 try:
     from urllib2 import urlopen
@@ -32,18 +40,17 @@ def read(*names, **kwargs):
         return fh.read()
 
 
-class BinaryDistribution(Distribution):
-    def is_pure(self):
-        return False
-
-
 PYHELICS_VERSION = read(os.path.join(os.path.dirname(__file__), "helics", "_version.py"), encoding="utf-8")
 PYHELICS_VERSION = PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
-
 
 HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+
+HELICS_SOURCE = os.path.join(CURRENT_DIRECTORY, "./_source")
+PYHELICS_INSTALL = os.path.join(CURRENT_DIRECTORY, "./helics/install")
+
+DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(version=HELICS_VERSION)
 
 
 def create_default_url():
@@ -99,10 +106,134 @@ class HELICSDownloadCommand(Command):
                 shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
 
 
+class CMakeExtension(Extension):
+    def __init__(self, name, sourcedir=HELICS_SOURCE):
+        Extension.__init__(self, name, sources=[])
+        self.sourcedir = sourcedir
+
+
+class HELICSBdistWheel(bdist_wheel):
+    def get_tag(self):
+        rv = super().get_tag()
+        return ("py2.py3", "none",) + rv[2:]
+
+
+class HELICSCMakeBuild(build_ext):
+    def run(self):
+        try:
+            out = subprocess.check_output(["cmake", "--version"])
+        except OSError:
+            raise RuntimeError("CMake must be installed to build the following extensions: " + ", ".join(e.name for e in self.extensions))
+
+        cmake_version = re.search(r"version\s*([\d.]+)", out.decode().lower()).group(1)
+        cmake_version = [int(i) for i in cmake_version.split(".")]
+        if cmake_version < [3, 5, 1]:
+            raise RuntimeError("CMake >= 3.5.1 is required to build helics")
+
+        for ext in self.extensions:
+            self.build_extension(ext)
+
+    def build_extension(self, ext):
+        self.helics_url = DOWNLOAD_URL
+        self.helics_source = HELICS_SOURCE
+        if not os.path.exists(PYHELICS_INSTALL):
+            r = urlopen(self.helics_url)
+            if r.getcode() == 200:
+                content = io.BytesIO(r.read())
+                content.seek(0)
+                with tarfile.open(fileobj=content) as tf:
+                    tf.extractall(self.helics_source)
+        else:
+            return
+
+        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        # required for auto - detection of auxiliary "native" libs
+        if not extdir.endswith(os.path.sep):
+            extdir += os.path.sep
+
+        cmake_args = [
+            "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DCMAKE_INSTALL_PREFIX={}".format(PYHELICS_INSTALL),
+        ]
+
+        cfg = "Debug" if self.debug else "Release"
+        build_args = ["--config", cfg]
+
+        if platform.system() == "Windows":
+            cmake_args += ["-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir)]
+            if sys.maxsize > 2 ** 32:
+                cmake_args += ["-A", "x64"]
+                build_args += ["--", "/m"]
+        else:
+            cmake_args += ["-DCMAKE_BUILD_TYPE=" + cfg]
+            build_args += ["--", "-j8"]
+
+        env = os.environ.copy()
+        if not os.path.exists(self.build_temp):
+            os.makedirs(self.build_temp)
+        subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
+        cmd = " ".join(["cmake", "--build", ".", "--target", "install"] + build_args)
+        print(cmd)
+        subprocess.check_call(shlex.split(cmd), cwd=self.build_temp)
+
+        files = [
+            "helics_enums.h",
+            os.path.join("shared_api_library", "api-data.h"),
+            os.path.join("shared_api_library", "helics.h"),
+            os.path.join("shared_api_library", "helics_export.h"),
+            os.path.join("shared_api_library", "MessageFederate.h"),
+            os.path.join("shared_api_library", "MessageFilters.h"),
+            os.path.join("shared_api_library", "ValueFederate.h"),
+            os.path.join("shared_api_library", "helicsCallbacks.h"),
+        ]
+        IGNOREBLOCK = False
+        for file in files:
+            with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
+                lines = []
+                for line in f:
+                    if line.startswith("#ifdef __cplusplus"):
+                        IGNOREBLOCK = True
+                        continue
+                    if IGNOREBLOCK is True and line.startswith("#endif"):
+                        IGNOREBLOCK = False
+                        continue
+                    if IGNOREBLOCK is True:
+                        continue
+                    if line.startswith("#"):
+                        continue
+                    lines.append(line)
+                data = "\n".join(lines)
+                data = data.replace("HELICS_EXPORT", "")
+                data = data.replace("HELICS_DEPRECATED_EXPORT", "")
+            with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file), "w") as f:
+                f.write(data)
+
+
 install_requires = ["cffi>=1.0.0", "strip-hints"]
 
 if sys.version_info < (3, 4):
     install_requires.append("enum34")
+
+cmdclass = {"build_ext": HELICSCMakeBuild, "download": HELICSDownloadCommand}
+
+if bdist_wheel is not None:
+
+    class HelicsBdistWheel(bdist_wheel):
+        def get_tag(self):
+            rv = bdist_wheel.get_tag(self)
+            if platform.python_version().startswith("2"):
+                return ("py2", "none") + rv[2:]
+            else:
+                return ("py3", "none") + rv[2:]
+
+    cmdclass["bdist_wheel"] = HelicsBdistWheel
+
+
+class BinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
+
 
 setup(
     name="helics",
@@ -110,14 +241,17 @@ setup(
     license="MIT",
     description="Python HELICS bindings",
     long_description=read("README.md"),
+    long_description_content_type="text/markdown",
     author="Dheepak Krishnamurthy",
     author_email="me@kdheepak.com",
     url="https://github.com/GMLC-TDC/pyhelics",
     packages=["helics"],
+    distclass=BinaryDistribution,
     py_modules=[splitext(basename(path))[0] for path in glob("helics/*.py")],
     # data_files=[("helics", ["install/include/helics/chelics.h"])],
+    # cffi_modules=['helics/helics_build.py:ffibuilder'],
     package_data={"helics": ["install/*"]},
-    distclass=BinaryDistribution,
+    ext_modules=[CMakeExtension("helics")],
     include_package_data=True,
     zip_safe=False,
     classifiers=[
@@ -146,5 +280,5 @@ setup(
         "tests": ["pytest", "pytest-ordering", "pytest-cov", "pytest-runner"],
         "docs": ["mkdocs", "inari[mkdocs]", "mkdocs-material", "black", "pygments", "pymdown-extensions"],
     },
-    cmdclass={"download": HELICSDownloadCommand},
+    cmdclass=cmdclass,
 )

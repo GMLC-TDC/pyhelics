@@ -22,6 +22,7 @@ jobs:
     - name: Download helics library and run pip install
       run: |
         python setup.py download
+        python setup.py build_ext
         pip install -e "."
     - name: Run pytests
       run: |
