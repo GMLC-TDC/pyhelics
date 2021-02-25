@@ -88,7 +88,7 @@ jobs:
         path: dist/*
 
   publish-helics:
-    needs: [build, build-sdist]
+    needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
     if: github.event.action == 'published' || endsWith(github.ref, 'master')
     steps:
