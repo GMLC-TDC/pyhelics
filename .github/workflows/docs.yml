@@ -19,7 +19,6 @@ jobs:
           python -m pip install -U pip install wheel setuptools
           python setup.py download
           pip install -e ".[docs]"
-          python setup.py download
       - name: Run Black
         run: |
           python -m black -l 80 helics/__init__.py

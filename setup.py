@@ -101,6 +101,37 @@ class HELICSDownloadCommand(Command):
             shutil.move(dirname, self.pyhelics_install)
             if platform.system() == "Linux":
                 shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
+            files = [
+                "helics_enums.h",
+                os.path.join("shared_api_library", "api-data.h"),
+                os.path.join("shared_api_library", "helics.h"),
+                os.path.join("shared_api_library", "helics_export.h"),
+                os.path.join("shared_api_library", "MessageFederate.h"),
+                os.path.join("shared_api_library", "MessageFilters.h"),
+                os.path.join("shared_api_library", "ValueFederate.h"),
+                os.path.join("shared_api_library", "helicsCallbacks.h"),
+            ]
+            IGNOREBLOCK = False
+            for file in files:
+                with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
+                    lines = []
+                    for line in f:
+                        if line.startswith("#ifdef __cplusplus"):
+                            IGNOREBLOCK = True
+                            continue
+                        if IGNOREBLOCK is True and line.startswith("#endif"):
+                            IGNOREBLOCK = False
+                            continue
+                        if IGNOREBLOCK is True:
+                            continue
+                        if line.startswith("#"):
+                            continue
+                        lines.append(line)
+                    data = "\n".join(lines)
+                    data = data.replace("HELICS_EXPORT", "")
+                    data = data.replace("HELICS_DEPRECATED_EXPORT", "")
+                with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file), "w") as f:
+                    f.write(data)
 
 
 class CMakeExtension(Extension):
