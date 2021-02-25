@@ -24,10 +24,7 @@ from setuptools import setup, Extension, Command
 from setuptools.dist import Distribution
 from setuptools.command.build_ext import build_ext
 
-try:
-    from wheel.bdist_wheel import bdist_wheel
-except ImportError:
-    bdist_wheel = None
+from wheel.bdist_wheel import bdist_wheel
 
 try:
     from urllib2 import urlopen
@@ -153,6 +150,7 @@ class HELICSCMakeBuild(build_ext):
 
         cmake_args = [
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
+            "-DHELICS_DISABLE_GIT_OPERATIONS=OFF",
             "-DCMAKE_BUILD_TYPE=Release",
             "-DCMAKE_INSTALL_PREFIX={}".format(PYHELICS_INSTALL),
         ]
