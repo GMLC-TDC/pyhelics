@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macOS-latest, ubuntu-latest ]
+        os: [ macOS-latest, ubuntu-latest, windows-latest ]
         python-version: [ '3.8','3.7','3.6' ]
     steps:
     - uses: actions/checkout@v2
@@ -117,6 +117,11 @@ jobs:
 
     - name: Download helics header files and build sdist
       run: |
+        python setup.py download
+        rm -rf helics/install/bin
+        rm -rf helics/install/lib || true
+        rm -rf helics/install/lib64 || true
+        rm -rf helics/install/share || true
         python setup.py sdist
 
     - name: Upload artifacts
