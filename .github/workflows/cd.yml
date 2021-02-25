@@ -1,6 +1,11 @@
 name: CD
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+    tags:
+        - v*
 
 jobs:
   build-wheels:
@@ -99,6 +104,7 @@ jobs:
         path: dist
 
     - name: Publish package to TestPyPI
+      if: startsWith(github.ref, 'refs/tags/')
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__
@@ -106,12 +112,14 @@ jobs:
         repository_url: https://test.pypi.org/legacy/
 
     - name: Publish package to PyPI
+      if: startsWith(github.ref, 'refs/tags/')
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__
         password: ${{ secrets.PYPI_PASSWORD }}
 
     - name: GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: 'dist/*'
