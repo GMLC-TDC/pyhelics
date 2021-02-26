@@ -23,14 +23,13 @@ jobs:
       run: |
         python setup.py download
         python setup.py build_ext
-        pip install -e "."
-    - name: Run pytests
+        pip install -e ".[tests]"
+    - name: Install pytest dependencies
       run: |
-        pip install pytest pytest-ordering pytest-cov
-        pytest -vvv
+        pip install pytest pytest-ordering pytest-cov pytest-runner
     - name: Generate coverage report
       run: |
-        pytest --cov=./ --cov-report=xml:unit.coverage.xml
+        pytest -vvv --cov=./ --cov-report=xml:unit.coverage.xml
     - name: Upload unit test coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
