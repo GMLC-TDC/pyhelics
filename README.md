@@ -7,6 +7,7 @@
 [![](https://img.shields.io/pypi/pyversions/helics)](https://pypi.org/project/helics/)
 [![](https://img.shields.io/pypi/wheel/helics)](https://pypi.org/project/helics/)
 [![](https://img.shields.io/pypi/v/helics)](https://pypi.org/project/helics/)
+[![](https://img.shields.io/pypi/dm/helics)](https://pypi.org/project/helics/)
 
 Python HELICS bindings
 
