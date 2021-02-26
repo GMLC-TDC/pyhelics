@@ -95,7 +95,6 @@ jobs:
   publish-helics:
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
-    if: github.event.action == 'published' || endsWith(github.ref, 'master')
     steps:
     - name: Get the built packages
       uses: actions/download-artifact@v1
