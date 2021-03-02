@@ -50,24 +50,24 @@ PYHELICS_INSTALL = os.path.join(CURRENT_DIRECTORY, "./helics/install")
 DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(version=HELICS_VERSION)
 
 
-def create_default_url():
+def create_default_url(helics_version):
     if platform.system() == "Darwin":
         default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
-            helics_version=HELICS_VERSION
+            helics_version=helics_version
         )
     elif platform.system() == "Windows":
         if struct.calcsize("P") * 8 == 32:
             default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
-                helics_version=HELICS_VERSION
+                helics_version=helics_version
             )
         else:
             default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
-                helics_version=HELICS_VERSION
+                helics_version=helics_version
             )
 
     elif platform.system() == "Linux":
         default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
-            helics_version=HELICS_VERSION
+            helics_version=helics_version
         )
     else:
         raise NotImplementedError("Unsupported platform {}".format(platform.system()))
@@ -82,7 +82,7 @@ class HELICSDownloadCommand(Command):
     ]
 
     def initialize_options(self):
-        self.helics_url = create_default_url()
+        self.helics_url = create_default_url(HELICS_VERSION)
         self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
         if os.path.exists(self.pyhelics_install):
             shutil.rmtree(self.pyhelics_install)
