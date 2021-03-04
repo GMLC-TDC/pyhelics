@@ -4838,7 +4838,7 @@ def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMes
     **DEPRECATED**
     """
     warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
-    return helicsEndpointSendMessage(endpoint)
+    return helicsEndpointSendMessage(endpoint, message)
 
 
 def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: HelicsMessage):
@@ -4853,7 +4853,7 @@ def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: H
     **DEPRECATED**
     """
     warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
-    return helicsEndpointSendMessage(endpoint)
+    return helicsEndpointSendMessage(endpoint, message)
 
 
 def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
