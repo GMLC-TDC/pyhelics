@@ -670,7 +670,7 @@ helics_state_pending_iterative_time = HelicsFederateState.PENDING_ITERATIVE_TIME
 helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
 
 
-class _HelicsCHandle:
+class _HelicsCHandle(object):
     def __init__(self, handle):
         self.handle = handle
 
