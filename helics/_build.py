@@ -10,6 +10,7 @@ HELICS_INSTALL = os.getenv("HELICS_INSTALL", os.path.join(os.path.dirname(os.pat
 PYHELICS_INSTALL = os.getenv("PYHELICS_INSTALL", HELICS_INSTALL)
 
 files = [
+    "helics_api.h",
     "helics_enums.h",
     os.path.join("shared_api_library", "api-data.h"),
     os.path.join("shared_api_library", "helics.h"),
@@ -21,6 +22,8 @@ files = [
 ]
 IGNOREBLOCK = False
 for file in files:
+    if not os.path.isfile(os.path.join(PYHELICS_INSTALL, "include", "helics", file)):
+        continue
     with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
         lines = []
         for line in f:
