@@ -773,7 +773,7 @@ try:
 
 except:
 
-    @h.ffi.callback("void logger(helics_message, void* userData)")
+    @h.ffi.callback("void logger(HelicsMessage, void* userData)")
     def filterFunc1(mess, userData):
         m = h.HelicsMessage(mess)
         time = h.helicsMessageGetTime(m)

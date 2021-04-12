@@ -2464,7 +2464,10 @@ def helicsErrorInitialize() -> HelicsError:
     """
     f = loadSym("helicsErrorInitialize")
     result = f()
-    return ffi.new("helics_error *", result)
+    try:
+        return ffi.new("HelicsError *", result)
+    except:
+        return ffi.new("helics_error *", result)
 
 
 def helicsErrorClear(err: HelicsError):
