@@ -2040,7 +2040,9 @@ class HelicsInput(_HelicsCHandle):
     @property
     def complex(self) -> complex:
         """Get the value as a complex number."""
-        r, i = helicsInputGetComplex(self)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            r, i = helicsInputGetComplex(self)
         return complex(r, i)
 
     @property
