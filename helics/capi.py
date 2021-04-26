@@ -2,6 +2,7 @@
 import logging
 import warnings
 import json
+import cffi
 
 from enum import IntEnum, unique
 
@@ -2472,7 +2473,7 @@ def helicsErrorInitialize() -> HelicsError:
     result = f()
     try:
         return ffi.new("HelicsError *", result)
-    except:
+    except cffi.CDefError:
         return ffi.new("helics_error *", result)
 
 
@@ -3960,7 +3961,11 @@ def helicsFederateRequestTimeIterative(
     """
     f = loadSym("helicsFederateRequestTimeIterative")
     err = helicsErrorInitialize()
-    out_iterate = ffi.new("helics_iteration_result *")
+    try:
+        out_iterate = ffi.new("HelicsIterationResult *")
+    except cffi.CDefError:
+        out_iterate = ffi.new("helics_iteration_result *")
+
     result = f(fed.handle, request_time, HelicsIterationRequest(iterate), out_iterate, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
@@ -4032,7 +4037,10 @@ def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> Tuple[Hel
     """
     f = loadSym("helicsFederateRequestTimeIterativeComplete")
     err = helicsErrorInitialize()
-    out_iterate = ffi.new("helics_iteration_result *")
+    try:
+        out_iterate = ffi.new("HelicsIterationResult *")
+    except cffi.CDefError:
+        out_iterate = ffi.new("helics_iteration_result *")
     result = f(fed.handle, out_iterate, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
