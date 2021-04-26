@@ -6,7 +6,11 @@ import json
 from enum import IntEnum, unique
 
 try:
-    from typing import List, Tuple, Union
+    from typing import Dict, List, Tuple, Union, Any
+
+    JSONType = Union[
+        Dict[str, Any], List[dict, Any],
+    ]
 except ImportError:
     pass
 
@@ -4411,7 +4415,7 @@ def helicsCreateQuery(target_name: str, query_string: str) -> HelicsQuery:
     return HelicsQuery(result)
 
 
-def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> str:
+def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> JSONType:
     """
     Execute a query.
     The call will block until the query finishes which may require communication or other delays.
@@ -4433,10 +4437,11 @@ def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> str:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
-def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> Union[str, dict]:
+def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> JSONType:
     """
     Execute a query directly on a core.
     The call will block until the query finishes which may require communication or other delays.
@@ -4458,10 +4463,11 @@ def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> Union[str, d
         try:
             return json.loads(s)
         except json.JSONDecodeError:
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
-def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> str:
+def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> JSONType:
     """
     Execute a query directly on a broker.
     The call will block until the query finishes which may require communication or other delays.
@@ -4483,6 +4489,7 @@ def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> str:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
@@ -4502,7 +4509,7 @@ def helicsQueryExecuteAsync(query: HelicsQuery, fed: HelicsFederate):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsQueryExecuteComplete(query: HelicsQuery) -> str:
+def helicsQueryExecuteComplete(query: HelicsQuery) -> JSONType:
     """
     Complete the return from a query called with `helics.helicsExecuteQueryAsync`.
     The function will block until the query completes `isQueryComplete` can be called to determine if a query has completed or not.
@@ -4523,6 +4530,7 @@ def helicsQueryExecuteComplete(query: HelicsQuery) -> str:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
