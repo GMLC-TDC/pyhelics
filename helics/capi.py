@@ -9,7 +9,7 @@ try:
     from typing import Dict, List, Tuple, Union, Any
 
     JSONType = Union[
-        Dict[str, Any], List[dict, Any],
+        Dict[str, Any], List[dict],
     ]
 except ImportError:
     pass
