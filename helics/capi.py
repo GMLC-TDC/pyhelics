@@ -874,7 +874,7 @@ class HelicsCore(_HelicsCHandle):
         """
         helicsCoreSetGlobal(self, name, value)
 
-    def query(self, target: str, query: str) -> str:
+    def query(self, target: str, query: str) -> JSONType:
         """
         Make a query of the core.
 
@@ -994,7 +994,7 @@ class HelicsBroker(_HelicsCHandle):
         """
         helicsBrokerAddDestinationFilterToEndpoint(self, filter, target)
 
-    def query(self, target: str, query: str) -> str:
+    def query(self, target: str, query: str) -> JSONType:
         """
         Make a query of the broker.
 
@@ -1762,7 +1762,7 @@ class HelicsFederate(_HelicsCHandle):
         granted_time, status = helicsFederateRequestTimeIterativeComplete(self)
         return granted_time, status
 
-    def query(self, target: str, query: str) -> str:
+    def query(self, target: str, query: str) -> JSONType:
         """
         Make a query of the federate.
 
