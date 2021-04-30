@@ -2472,9 +2472,9 @@ def helicsErrorInitialize() -> HelicsError:
     f = loadSym("helicsErrorInitialize")
     result = f()
     try:
-        return ffi.new("HelicsError *", result)
-    except cffi.CDefError:
         return ffi.new("helics_error *", result)
+    except cffi.CDefError:
+        return ffi.new("HelicsError *", result)
 
 
 def helicsErrorClear(err: HelicsError):
@@ -3962,9 +3962,9 @@ def helicsFederateRequestTimeIterative(
     f = loadSym("helicsFederateRequestTimeIterative")
     err = helicsErrorInitialize()
     try:
-        out_iterate = ffi.new("HelicsIterationResult *")
-    except cffi.CDefError:
         out_iterate = ffi.new("helics_iteration_result *")
+    except cffi.CDefError:
+        out_iterate = ffi.new("HelicsIterationResult *")
 
     result = f(fed.handle, request_time, HelicsIterationRequest(iterate), out_iterate, err)
     if err.error_code != 0:
@@ -4038,9 +4038,9 @@ def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> Tuple[Hel
     f = loadSym("helicsFederateRequestTimeIterativeComplete")
     err = helicsErrorInitialize()
     try:
-        out_iterate = ffi.new("HelicsIterationResult *")
-    except cffi.CDefError:
         out_iterate = ffi.new("helics_iteration_result *")
+    except cffi.CDefError:
+        out_iterate = ffi.new("HelicsIterationResult *")
     result = f(fed.handle, out_iterate, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
@@ -4750,21 +4750,6 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination
     - **`destination`** - The target destination.
     """
     try:
-        f = loadSym("helicsEndpointSendBytesTo")
-        err = helicsErrorInitialize()
-        if isinstance(data, str):
-            data = data.encode()
-        if not isinstance(data, bytes):
-            raise HelicsException(
-                """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(
-                    t=type(data)
-                )
-            )
-        inputDataLength = len(data)
-        f(endpoint.handle, data, inputDataLength, cstring(destination), err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    except AttributeError:
         f = loadSym("helicsEndpointSendMessageRaw")
         err = helicsErrorInitialize()
         if isinstance(data, str):
@@ -4777,6 +4762,21 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination
             )
         inputDataLength = len(data)
         f(endpoint.handle, cstring(destination), data, inputDataLength, err)
+        if err.error_code != 0:
+            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    except AttributeError:
+        f = loadSym("helicsEndpointSendBytesTo")
+        err = helicsErrorInitialize()
+        if isinstance(data, str):
+            data = data.encode()
+        if not isinstance(data, bytes):
+            raise HelicsException(
+                """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(
+                    t=type(data)
+                )
+            )
+        inputDataLength = len(data)
+        f(endpoint.handle, data, inputDataLength, cstring(destination), err)
         if err.error_code != 0:
             raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4811,17 +4811,17 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
     - **`time`** - The time the message should be sent.
     """
     try:
-        f = loadSym("helicsEndpointSendBytesToAt")
-        err = helicsErrorInitialize()
-        inputDataLength = len(data)
-        f(endpoint.handle, cstring(data), inputDataLength, cstring(destination), time, err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    except AttributeError:
         f = loadSym("helicsEndpointSendEventRaw")
         err = helicsErrorInitialize()
         inputDataLength = len(data)
         f(endpoint.handle, cstring(destination), cstring(data), inputDataLength, time, err)
+        if err.error_code != 0:
+            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    except AttributeError:
+        f = loadSym("helicsEndpointSendBytesToAt")
+        err = helicsErrorInitialize()
+        inputDataLength = len(data)
+        f(endpoint.handle, cstring(data), inputDataLength, cstring(destination), time, err)
         if err.error_code != 0:
             raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4951,9 +4951,9 @@ def helicsFederatePendingMessagesCount(fed: HelicsFederate) -> int:
     - **`fed`** - The federate to get the number of waiting messages from.
     """
     try:
-        f = loadSym("helicsFederatePendingMessagesCount")
-    except AttributeError:
         f = loadSym("helicsFederatePendingMessages")
+    except AttributeError:
+        f = loadSym("helicsFederatePendingMessagesCount")
     return f(fed.handle)
 
 
@@ -4992,9 +4992,9 @@ def helicsEndpointPendingMessagesCount(endpoint: HelicsEndpoint) -> int:
     - **`endpoint`** - The endpoint to query.
     """
     try:
-        f = loadSym("helicsEndpointPendingMessagesCount")
-    except AttributeError:
         f = loadSym("helicsEndpointPendingMessages")
+    except AttributeError:
+        f = loadSym("helicsEndpointPendingMessagesCount")
     return f(endpoint.handle)
 
 
@@ -5161,6 +5161,7 @@ def helicsEndpointClearMessages(endpoint: HelicsEndpoint):
     **DEPRECATED**
     """
     try:
+        warnings.warn("This function is deprecated. Clearing is handled at the federate level.")
         f = loadSym("helicsEndpointClearMessages")
         f(endpoint.handle)
     except AttributeError:
@@ -5395,9 +5396,9 @@ def helicsMessageGetFlagOption(message: HelicsMessage, flag: int) -> bool:
     **Returns**: The flags associated with a message.
     """
     try:
-        f = loadSym("helicsMessageGetFlagOption")
-    except AttributeError:
         f = loadSym("helicsMessageCheckFlag")
+    except AttributeError:
+        f = loadSym("helicsMessageGetFlagOption")
     result = f(message.handle, flag)
     return result == 1
 
@@ -5430,9 +5431,9 @@ def helicsMessageGetByteCount(message: HelicsMessage) -> int:
     **Returns**: The size of the data payload.
     """
     try:
-        f = loadSym("helicsMessageGetByteCount")
-    except AttributeError:
         f = loadSym("helicsMessageGetRawDataSize")
+    except AttributeError:
+        f = loadSym("helicsMessageGetByteCount")
     result = f(message.handle)
     return result
 
@@ -5480,9 +5481,9 @@ def helicsMessageGetBytes(message: HelicsMessage) -> bytes:
     **Returns**: Raw string data.
     """
     try:
-        f = loadSym("helicsMessageGetBytes")
-    except AttributeError:
         f = loadSym("helicsMessageGetRawData")
+    except AttributeError:
+        f = loadSym("helicsMessageGetBytes")
     err = helicsErrorInitialize()
     maxMessageLen = helicsMessageGetByteCount(message) + 1024
     data = ffi.new("char[{maxMessageLen}]".format(maxMessageLen=maxMessageLen))
@@ -5520,9 +5521,9 @@ def helicsMessageGetBytesPointer(message: HelicsMessage) -> pointer:
     **Returns**: A pointer to the raw data in memory, the pointer may be NULL if the message is not a valid message.
     """
     try:
-        f = loadSym("helicsMessageGetBytesPointer")
-    except AttributeError:
         f = loadSym("helicsMessageGetRawDataPointer")
+    except AttributeError:
+        f = loadSym("helicsMessageGetBytesPointer")
     result = f(message.handle)
     return result
 
@@ -6603,9 +6604,9 @@ def helicsPublicationPublishBytes(pub: HelicsPublication, data: bytes):
     - **`data`** - A pointer to the raw data.
     """
     try:
-        f = loadSym("helicsPublicationPublishBytes")
-    except AttributeError:
         f = loadSym("helicsPublicationPublishRaw")
+    except AttributeError:
+        f = loadSym("helicsPublicationPublishBytes")
     err = helicsErrorInitialize()
     if isinstance(data, str):
         data = data.encode()
@@ -6835,9 +6836,9 @@ def helicsInputGetByteCount(ipt: HelicsInput) -> int:
     **Returns**: The size of the raw data/string in bytes.
     """
     try:
-        f = loadSym("helicsInputGetByteCount")
-    except AttributeError:
         f = loadSym("helicsInputGetRawValueSize")
+    except AttributeError:
+        f = loadSym("helicsInputGetByteCount")
     result = f(ipt.handle)
     return result
 
@@ -6869,9 +6870,9 @@ def helicsInputGetBytes(ipt: HelicsInput) -> bytes:
     **Returns**: Raw string data.
     """
     try:
-        f = loadSym("helicsInputGetBytes")
-    except AttributeError:
         f = loadSym("helicsInputGetRawValue")
+    except AttributeError:
+        f = loadSym("helicsInputGetBytes")
     err = helicsErrorInitialize()
     maxDataLen = helicsInputGetByteCount(ipt) + 1024
     data = ffi.new("char[{maxDataLen}]".format(maxDataLen=maxDataLen))
@@ -7141,9 +7142,9 @@ def helicsInputSetDefaultBytes(ipt: HelicsInput, data: bytes):
     - **`data`** - A pointer to the raw data to use for the default.
     """
     try:
-        f = loadSym("helicsInputSetDefaultBytes")
-    except AttributeError:
         f = loadSym("helicsInputSetDefaultRaw")
+    except AttributeError:
+        f = loadSym("helicsInputSetDefaultBytes")
     err = helicsErrorInitialize()
     if isinstance(data, str):
         data = data.encode()
