@@ -42,6 +42,8 @@ for file in files:
         data = data.replace("HELICS_EXPORT", "")
         data = data.replace("HELICS_DEPRECATED_EXPORT", "")
         ffi.cdef(data)
+        if file.endswith("helics_api.h"):
+            break
 
 # ffi.set_source(
 #     "_py_helics",

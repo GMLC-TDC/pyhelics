@@ -1356,9 +1356,9 @@ class HelicsFederateInfo(_HelicsCHandle):
 
     @broker_key.setter
     def broker_key(self, broker_key):
-        """Set the broker key to use.
+        """Set the broker name to use.
 
-        **`broker_key`**: a string with the broker key information
+        **`broker_key`**: a string with the broker name information
         """
         helicsFederateInfoSetBrokerKey(self, broker_key)
 
@@ -1959,16 +1959,16 @@ class HelicsInput(_HelicsCHandle):
         self.option = _InputOptionAccessor(self.handle)
 
     def __repr__(self):
-        key = self.key
+        name = self.name
         units = self.units
         injection_units = self.injection_units
         publication_type = self.publication_type
         type = self.type
         target = self.target
         info = self.info
-        return """<helics.{class_name}(key = "{key}", units = "{units}", injection_units = "{injection_units}", publication_type = "{publication_type}", type = "{type}", target = "{target}", info = "{info}") at {id}>""".format(
+        return """<helics.{class_name}(name = "{name}", units = "{units}", injection_units = "{injection_units}", publication_type = "{publication_type}", type = "{type}", target = "{target}", info = "{info}") at {id}>""".format(
             class_name=self.__class__.__name__,
-            key=key,
+            name=name,
             units=units,
             injection_units=injection_units,
             publication_type=publication_type,
@@ -2071,7 +2071,14 @@ class HelicsInput(_HelicsCHandle):
     def key(self) -> str:
         """get the Name/Key for the input
         the name is the local name if given, key is the full key name."""
+        warnings.warn("This function is deprecated. Use the `HelicsInput.name` attribute instead.")
         return helicsInputGetKey(self)
+
+    @property
+    def name(self) -> str:
+        """get the Name/Key for the input
+        the name is the local name if given, key is the full key name."""
+        return helicsInputGetName(self)
 
     @property
     def units(self) -> str:
@@ -2096,7 +2103,7 @@ class HelicsInput(_HelicsCHandle):
     @property
     def target(self) -> str:
         """Get an associated target."""
-        return helicsSubscriptionGetKey(self)
+        return helicsSubscriptionGetTarget(self)
 
     @property
     def info(self) -> str:
@@ -2115,12 +2122,12 @@ class HelicsPublication(_HelicsCHandle):
         self.option = _PublicationOptionAccessor(self.handle)
 
     def __repr__(self):
-        key = self.key
+        name = self.name
         type = self.type
         info = self.info
         units = self.units
-        return """<helics.{class_name}(key = "{key}", type = "{type}", units = "{units}", info = "{info}") at {id}>""".format(
-            class_name=self.__class__.__name__, key=key, type=type, units=units, info=info, id=hex(id(self))
+        return """<helics.{class_name}(name = "{name}", type = "{type}", units = "{units}", info = "{info}") at {id}>""".format(
+            class_name=self.__class__.__name__, name=name, type=type, units=units, info=info, id=hex(id(self))
         )
 
     def is_valid(self) -> bool:
@@ -2160,7 +2167,13 @@ class HelicsPublication(_HelicsCHandle):
     @property
     def key(self) -> str:
         """Get the key for the publication."""
-        return helicsPublicationGetKey(self)
+        warnings.warn("This function is deprecated. Use the `HelicsPublication.name` attribute instead.")
+        return helicsPublicationGetName(self)
+
+    @property
+    def name(self) -> str:
+        """Get the key for the publication."""
+        return helicsPublicationGetName(self)
 
     @property
     def units(self) -> str:
@@ -2202,7 +2215,7 @@ class HelicsValueFederate(HelicsFederate):
             pub = helicsFederateRegisterTypePublication(self, name, kind, units)
         else:
             pub = helicsFederateRegisterPublication(self, name, HelicsDataType(kind), units)
-        self.publications[pub.key] = pub
+        self.publications[pub.name] = pub
         return pub
 
     def register_global_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
@@ -2223,7 +2236,7 @@ class HelicsValueFederate(HelicsFederate):
             pub = helicsFederateRegisterGlobalTypePublication(self, name, kind, units)
         else:
             pub = helicsFederateRegisterGlobalPublication(self, name, HelicsDataType(kind), units)
-        self.publications[pub.key] = pub
+        self.publications[pub.name] = pub
         return pub
 
     def register_from_publication_json(self, data: Union[dict, str]) -> HelicsPublication:
@@ -2241,7 +2254,7 @@ class HelicsValueFederate(HelicsFederate):
         else:
             data = json.dumps(data)
         pub = helicsFederateRegisterFromPublicationJSON(self, data)
-        self.publications["{}".format(pub.key)] = pub
+        self.publications["{}".format(pub.name)] = pub
         return pub
 
     def get_publication_by_name(self, name: str) -> HelicsPublication:
@@ -4896,18 +4909,18 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsEndpointSubscribe(endpoint: HelicsEndpoint, key: str):
+def helicsEndpointSubscribe(endpoint: HelicsEndpoint, name: str):
     """
     Subscribe an endpoint to a publication.
 
     **Parameters**
 
     - **`endpoint`** - The endpoint to use.
-    - **`key`** - The name of the publication.
+    - **`name`** - The name of the publication.
     """
     f = loadSym("helicsEndpointSubscribe")
     err = helicsErrorInitialize()
-    f(endpoint.handle, cstring(key), err)
+    f(endpoint.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -6207,7 +6220,7 @@ def helicsFilterGetOption(filter: HelicsFilter, option: HelicsHandleOption) -> i
     return result
 
 
-def helicsFederateRegisterSubscription(fed: HelicsFederate, key: str, units: str = "") -> HelicsInput:
+def helicsFederateRegisterSubscription(fed: HelicsFederate, name: str, units: str = "") -> HelicsInput:
     """
     Functions related to value federates for the C api.
     Create a subscription.
@@ -6217,21 +6230,21 @@ def helicsFederateRegisterSubscription(fed: HelicsFederate, key: str, units: str
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a subscription, must have been created with `helics.helicsCreateValueFederate` or
     `helics.helicsCreateCombinationFederate`.
-    - **`key`** - The identifier matching a publication to get a subscription for.
+    - **`name`** - The identifier matching a publication to get a subscription for.
     - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsSubscription`.
     """
     f = loadSym("helicsFederateRegisterSubscription")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsInput(result)
 
 
-def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsPublication:
+def helicsFederateRegisterPublication(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsPublication:
     """
     Register a publication with a known type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6239,7 +6252,7 @@ def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: Helic
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication the global publication key will be prepended with the federate name.
+    - **`name`** - The identifier for the publication the global publication name will be prepended with the federate name.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the subscription (optional).
 
@@ -6247,14 +6260,14 @@ def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: Helic
     """
     f = loadSym("helicsFederateRegisterPublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), HelicsDataType(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), HelicsDataType(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsPublication:
+def helicsFederateRegisterTypePublication(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsPublication:
     """
     Register a publication with a defined type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6262,7 +6275,7 @@ def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: s
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A string labeling the type of the publication.
     - **`units`** - A string listing the units of the subscription (optional).
 
@@ -6270,14 +6283,14 @@ def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: s
     """
     f = loadSym("helicsFederateRegisterTypePublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type: HelicsDataType, units: str = "") -> HelicsPublication:
+def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, name: str, type: HelicsDataType, units: str = "") -> HelicsPublication:
     """
     Register a global named publication with an arbitrary type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6285,7 +6298,7 @@ def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type:
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the subscription (optional).
 
@@ -6293,14 +6306,14 @@ def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type:
     """
     f = loadSym("helicsFederateRegisterGlobalPublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), HelicsDataType(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), HelicsDataType(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsPublication:
+def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsPublication:
     """
     Register a global publication with a defined type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6308,7 +6321,7 @@ def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, t
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A string describing the expected type of the publication.
     - **`units`** - A string listing the units of the subscription (optional).
 
@@ -6316,14 +6329,14 @@ def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, t
     """
     f = loadSym("helicsFederateRegisterGlobalTypePublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsInput:
+def helicsFederateRegisterInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsInput:
     """
     Register a named input.
     The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
@@ -6332,7 +6345,7 @@ def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataT
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create an input.
-    - **`key`** - The identifier for the publication the global input key will be prepended with the federate name.
+    - **`name`** - The identifier for the publication the global input name will be prepended with the federate name.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the input (optional).
 
@@ -6340,14 +6353,14 @@ def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataT
     """
     f = loadSym("helicsFederateRegisterInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), HelicsDataType(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), HelicsDataType(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsInput(result)
 
 
-def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsInput:
+def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
     """
     Register an input with a defined type.
     The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
@@ -6356,7 +6369,7 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, un
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create an input.
-    - **`key`** - The identifier for the input.
+    - **`name`** - The identifier for the input.
     - **`type`** - A string describing the expected type of the input.
     - **`units`** - A string listing the units of the input maybe NULL.
 
@@ -6364,14 +6377,14 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, un
     """
     f = loadSym("helicsFederateRegisterTypeInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsInput(result)
 
 
-def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsPublication:
+def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsPublication:
     """
     Register a global named input.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6379,7 +6392,7 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: Helic
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the subscription maybe NULL.
 
@@ -6387,14 +6400,14 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: Helic
     """
     f = loadSym("helicsFederateRegisterGlobalInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), HelicsDataType(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), HelicsDataType(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsInput:
+def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
     """
     Register a global publication with an arbitrary type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6402,7 +6415,7 @@ def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: s
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A string defining the type of the input.
     - **`units`** - A string listing the units of the subscription maybe NULL.
 
@@ -6410,27 +6423,27 @@ def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: s
     """
     f = loadSym("helicsFederateRegisterGlobalTypeInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsInput(result)
 
 
-def helicsFederateGetPublication(fed: HelicsFederate, key: str) -> HelicsPublication:
+def helicsFederateGetPublication(fed: HelicsFederate, name: str) -> HelicsPublication:
     """
-    Get a `helics.HelicsPublication` from a key.
+    Get a `helics.HelicsPublication` from a name.
 
     **Parameters**
 
     - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    - **`key`** - The name of the publication.
+    - **`name`** - The name of the publication.
 
     **Returns**: `helics.HelicsPublication`.
     """
     f = loadSym("helicsFederateGetPublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), err)
+    result = f(fed.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -6457,20 +6470,20 @@ def helicsFederateGetPublicationByIndex(fed: HelicsFederate, index: int) -> Heli
         return HelicsPublication(result)
 
 
-def helicsFederateGetInput(fed: HelicsFederate, key: str) -> HelicsInput:
+def helicsFederateGetInput(fed: HelicsFederate, name: str) -> HelicsInput:
     """
-    Get an input object from a key.
+    Get an input object from a name.
 
     **Parameters**
 
     - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    - **`key`** - The name of the input.
+    - **`name`** - The name of the input.
 
     **Returns**: `helics.HelicsInput`.
     """
     f = loadSym("helicsFederateGetInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), err)
+    result = f(fed.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -6497,20 +6510,20 @@ def helicsFederateGetInputByIndex(fed: HelicsFederate, index: int) -> HelicsInpu
         return HelicsInput(result)
 
 
-def helicsFederateGetSubscription(fed: HelicsFederate, key: str) -> HelicsInput:
+def helicsFederateGetSubscription(fed: HelicsFederate, name: str) -> HelicsInput:
     """
     Get an input object from a subscription target.
 
     **Parameters**
 
     - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    - **`key`** - The name of the publication that a subscription is targeting.
+    - **`name`** - The name of the publication that a subscription is targeting.
 
     **Returns**: `helics.HelicsInput`
     """
     f = loadSym("helicsFederateGetSubscription")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), err)
+    result = f(fed.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -7353,34 +7366,64 @@ def helicsPublicationGetType(pub: HelicsPublication) -> str:
 
 def helicsInputGetKey(ipt: HelicsInput) -> str:
     """
-    Get the key of an input.
+    Get the name of an input.
 
     **Parameters**
 
     - **`ipt`** - The input to query
 
-    **Returns**: A string with the key information.
+    **Returns**: A string with the name information.
     """
-    f = loadSym("helicsInputGetKey")
+    warnings.warn("This is deprecated. Use `helicsInputGetName` instead.")
+    return helicsInputGetName(ipt)
+
+
+def helicsInputGetName(ipt: HelicsInput) -> str:
+    """
+    Get the name of an input.
+
+    **Parameters**
+
+    - **`ipt`** - The input to query
+
+    **Returns**: A string with the name information.
+    """
+    try:
+        f = loadSym("helicsInputGetKey")
+    except:
+        f = loadSym("helicsInputGetName")
     result = f(ipt.handle)
     return ffi.string(result).decode()
 
 
 def helicsSubscriptionGetKey(ipt: HelicsInput) -> str:
     """
-    Get the key of a subscription.
+    Get the name of a subscription.
 
-    **Returns**: A string with the subscription key.
+    **Returns**: A string with the subscription name.
     """
-    f = loadSym("helicsSubscriptionGetKey")
+    warnings.warn("This is deprecated. Use `helicsPublicationGetName` instead.")
+    return helicsSubscriptionGetTarget(ipt)
+
+
+def helicsSubscriptionGetTarget(ipt: HelicsInput) -> str:
+    """
+    Get the target of a subscription.
+
+    **Returns**: A string with the subscription target.
+    """
+    try:
+        f = loadSym("helicsSubscriptionGetKey")
+    except:
+        f = loadSym("helicsSubscriptionGetTarget")
     result = f(ipt.handle)
     return ffi.string(result).decode()
 
 
 def helicsPublicationGetKey(pub: HelicsPublication) -> str:
     """
-    Get the key of a publication.
-    This will be the global key used to identify the publication to the federation.
+    Get the name of a publication.
+    This will be the global name used to identify the publication to the federation.
 
     **Parameters**
 
@@ -7388,7 +7431,25 @@ def helicsPublicationGetKey(pub: HelicsPublication) -> str:
 
     **Returns**: A string with the units information.
     """
-    f = loadSym("helicsPublicationGetKey")
+    warnings.warn("This is deprecated. Use `helicsPublicationGetName` instead.")
+    return helicsPublicationGetName(pub)
+
+
+def helicsPublicationGetName(pub: HelicsPublication) -> str:
+    """
+    Get the name of a publication.
+    This will be the global name used to identify the publication to the federation.
+
+    **Parameters**
+
+    - **`pub`** - The publication to query.
+
+    **Returns**: A string with the units information.
+    """
+    try:
+        f = loadSym("helicsPublicationGetKey")
+    except AttributeError:
+        f = loadSym("helicsPublicationGetName")
     result = f(pub.handle)
     return ffi.string(result).decode()
 

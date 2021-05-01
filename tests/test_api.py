@@ -200,15 +200,15 @@ def test_misc_api():
     pub7 = h.helicsFederateRegisterGlobalPublication(fed1, "pub7", h.HELICS_DATA_TYPE_NAMED_POINT, "")
     sub7 = h.helicsFederateRegisterSubscription(fed1, "pub7", "")
 
-    assert """helics.HelicsPublication(key = "pub1", type = "double", units = "", info = "")""" in repr(pub1)
-    assert """helics.HelicsPublication(key = "pub2", type = "complex", units = "", info = "")""" in repr(pub2)
-    assert """helics.HelicsPublication(key = "fed1/pub3", type = "string", units = "", info = "")""" in repr(pub3)
-    assert """helics.HelicsPublication(key = "fed1/pub4", type = "int", units = "", info = "")""" in repr(pub4)
-    assert """helics.HelicsPublication(key = "pub5", type = "boolean", units = "", info = "")""" in repr(pub5)
-    assert """helics.HelicsPublication(key = "pub6", type = "double_vector", units = "", info = "")""" in repr(pub6)
-    assert """helics.HelicsPublication(key = "pub7", type = "named_point", units = "", info = "")""" in repr(pub7)
+    assert """helics.HelicsPublication(name = "pub1", type = "double", units = "", info = "")""" in repr(pub1)
+    assert """helics.HelicsPublication(name = "pub2", type = "complex", units = "", info = "")""" in repr(pub2)
+    assert """helics.HelicsPublication(name = "fed1/pub3", type = "string", units = "", info = "")""" in repr(pub3)
+    assert """helics.HelicsPublication(name = "fed1/pub4", type = "int", units = "", info = "")""" in repr(pub4)
+    assert """helics.HelicsPublication(name = "pub5", type = "boolean", units = "", info = "")""" in repr(pub5)
+    assert """helics.HelicsPublication(name = "pub6", type = "double_vector", units = "", info = "")""" in repr(pub6)
+    assert """helics.HelicsPublication(name = "pub7", type = "named_point", units = "", info = "")""" in repr(pub7)
     assert (
-        """helics.HelicsInput(key = "_input_18", units = "", injection_units = "", publication_type = "", type = "", target = "pub7", info = "")"""
+        """helics.HelicsInput(name = "_input_18", units = "", injection_units = "", publication_type = "", type = "", target = "pub7", info = "")"""
         in repr(sub7)
     )
 
@@ -236,7 +236,7 @@ def test_misc_api():
     h.helicsFederateEnterExecutingModeComplete(fed1)
 
     assert (
-        """helics.HelicsInput(key = "_input_18", units = "", injection_units = "", publication_type = "named_point", type = "", target = "pub7", info = "")"""
+        """helics.HelicsInput(name = "_input_18", units = "", injection_units = "", publication_type = "named_point", type = "", target = "pub7", info = "")"""
         in repr(sub7)
     )
 
