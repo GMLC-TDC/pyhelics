@@ -30,11 +30,11 @@ def test_python_api0():
     _ = mFed.register_global_endpoint("ep2")
 
     pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
-    assert """HelicsPublication(key = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
+    assert """HelicsPublication(name = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
 
     sub = mFed.register_subscription("subscription", "custom-units")
     assert (
-        """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "subscription", info = "")"""
+        """HelicsInput(name = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "subscription", info = "")"""
         in repr(sub)
     )
     assert (
@@ -81,11 +81,11 @@ def test_python_api1():
     _ = mFed.register_global_endpoint("ep2")
 
     pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
-    assert """HelicsPublication(key = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
+    assert """HelicsPublication(name = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
 
     sub = mFed.register_subscription("TestFederate/publication", "custom-units")
     assert (
-        """HelicsInput(key = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "TestFederate/publication", info = "")"""
+        """HelicsInput(name = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "TestFederate/publication", info = "")"""
         in repr(sub)
     )
     assert (
