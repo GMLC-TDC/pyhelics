@@ -47,6 +47,23 @@ pointer = int
 
 
 @unique
+class HelicsSequencingMode(IntEnum):
+
+    """
+    Enumeration of sequencing modes for queries
+    fast is the default, meaning the query travels along priority channels and takes precedence of over
+    existing messages; ordered means it follows normal priority patterns and will be ordered along with
+    existing messages
+
+    - **FAST** = 0
+    - **ORDERED** = 1
+    """
+
+    FAST = 0
+    ORDERED = 1
+
+
+@unique
 class HelicsCoreType(IntEnum):
     """
     - **DEFAULT**      = 0
@@ -994,7 +1011,7 @@ class HelicsBroker(_HelicsCHandle):
         """
         helicsBrokerAddDestinationFilterToEndpoint(self, filter, target)
 
-    def query(self, target: str, query: str) -> JSONType:
+    def query(self, target: str, query: str, mode: HelicsSequencingMode = HelicsSequencingMode.FAST) -> JSONType:
         """
         Make a query of the broker.
 
@@ -1008,6 +1025,9 @@ class HelicsBroker(_HelicsCHandle):
         Returns: a string with the value requested. This is either going to be a vector of strings value or a JSON string stored in the first element of the vector. The string "#invalid" is returned if the query was not valid.
         """
         q = helicsCreateQuery(target, query)
+        if mode != HelicsSequencingMode.FAST:
+            err = helicsErrorInitialize()
+            helicsQuerySetOrdering(q, mode, err)
         result = helicsQueryBrokerExecute(q, self)
         helicsQueryFree(q)
         return result
@@ -7934,5 +7954,19 @@ def helicsEndpointAddDestinationFilter(endpoint: HelicsEndpoint, filter_name: st
     f = loadSym("helicsEndpointAddDestinationFilter")
     err = helicsErrorInitialize()
     f(endpoint.handle, cstring(filter_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsQuerySetOrdering(query: HelicsQuery, mode: int):
+    """
+    Update the ordering mode of the query, fast runs on priority channels, ordered goes on normal channels but goes in sequence
+    # Parameters
+    - **`query`**: The query object to change the order for.
+    - **`mode`**: 0 for fast, 1 for ordered.
+    """
+    f = loadSym("helicsQuerySetOrdering")
+    err = helicsErrorInitialize()
+    f(query.handle, mode, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
