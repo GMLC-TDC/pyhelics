@@ -164,7 +164,6 @@ def test_misc_api():
 
     sub1 = h.helicsFederateRegisterSubscription(fed1, "pub1")
     sub2 = h.helicsFederateRegisterSubscription(fed1, "pub2")
-    h.helicsInputAddTarget(sub2, "Ep2")
     pub3 = h.helicsFederateRegisterPublication(fed1, "pub3", h.HELICS_DATA_TYPE_STRING, "")
 
     pub1KeyString = h.helicsPublicationGetKey(pub1)
@@ -294,9 +293,17 @@ def test_misc_api():
     returnTime = h.helicsFederateRequestTimeComplete(fed1)
     assert returnTime == 1.0
     ep2MsgCount = h.helicsEndpointPendingMessages(ep2)
-    assert ep2MsgCount == 2
+    assert ep2MsgCount == 0
     ep2HasMsg = h.helicsEndpointHasMessage(ep2)
-    assert ep2HasMsg == 1
+    assert ep2HasMsg == 0
+
+    ep2MsgCount = h.helicsEndpointPendingMessagesCount(ep2)
+    assert ep2MsgCount == 0
+
+    returnTime = h.helicsFederateRequestTime(fed1, 3.0)
+    assert returnTime == 3.0
+    ep2MsgCount = h.helicsEndpointPendingMessagesCount(ep2)
+    assert ep2MsgCount == 2
 
     msg2 = h.helicsEndpointGetMessage(ep2)
     assert h.helicsMessageGetTime(msg2) == 1.0
@@ -320,26 +327,24 @@ def test_misc_api():
     assert h.helicsMessageGetOriginalDestination(msg3) == "Ep2"
 
     sub1Updated = h.helicsInputIsUpdated(sub1)
-    # TODO: figure out why this test is broken
-    assert sub1Updated is False
+    assert sub1Updated is True
 
-    # TODO: figure out why this test is broken
-    assert h.helicsInputLastUpdateTime(sub2) == 0.0
+    assert h.helicsInputLastUpdateTime(sub2) == 3.0
 
-    # assert h.helicsInputGetComplex(sub2) == 5.6 - 0.67j
+    assert h.helicsInputGetComplex(sub2) == (5.6, -0.67)
 
-    # assert h.helicsInputGetDouble(sub1) == 457.234
-    # assert h.helicsInputGetInteger(sub4) == 1
+    assert h.helicsInputGetDouble(sub1) == 457.234
+    assert h.helicsInputGetInteger(sub4) == 1
     sub7PointString, sub7DoubleValue = h.helicsInputGetNamedPoint(sub7)
-    # assert sub7PointString == "Blah Blah"
+    assert sub7PointString == "Blah Blah"
     assert sub7DoubleValue == 20.0
-    # assert h.helicsInputGetBoolean(sub5) == True
-    # assert h.helicsInputGetString(sub3) == "Mayhem"
+    assert h.helicsInputGetBoolean(sub5) == True
+    assert h.helicsInputGetString(sub3) == "Mayhem"
 
     sub3ValueSize = h.helicsInputGetRawValueSize(sub3)
-    # assert sub3ValueSize == 6
+    assert sub3ValueSize == 6
 
-    # assert h.helicsInputGetVector(sub6) == [4.5, 56.5]
+    assert h.helicsInputGetVector(sub6) == [4.5, 56.5]
 
     h.helicsFederateFinalize(fed1)
     h.helicsFederateFinalize(fed2)
