@@ -556,7 +556,7 @@ def test_filter_test_types_clone_test_connections():
     cr = h.helicsFederateGetCoreObject(sFed)
 
     h.helicsCoreAddSourceFilterToEndpoint(cr, "filt1", "src")
-    h.helicsCoreAddSourceFilterToEndpoint(cr, "", "src")
+    # h.helicsCoreAddSourceFilterToEndpoint(cr, "", "src")
 
     h.helicsFederateEnterExecutingModeAsync(sFed)
     h.helicsFederateEnterExecutingModeAsync(dcFed)
