@@ -1175,7 +1175,7 @@ class HelicsEndpoint(_HelicsCHandle):
     @property
     def n_pending_messages(self) -> int:
         """Returns the number of pending receives for endpoint."""
-        return helicsEndpointPendingMessages(self)
+        return helicsEndpointPendingMessagesCount(self)
 
     @property
     def name(self) -> str:
