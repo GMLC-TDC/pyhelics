@@ -1,0 +1,654 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
+    
+    
+      
+        <title>Installation - PyHELICS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bde7dde4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#installation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="PyHELICS" class="md-header__button md-logo" aria-label="PyHELICS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PyHELICS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Installation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/GMLC-TDC/pyhelics/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="PyHELICS" class="md-nav__button md-logo" aria-label="PyHELICS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    PyHELICS
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/GMLC-TDC/pyhelics/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Installation
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#install-from-pypi-recommended" class="md-nav__link">
+    Install from PyPI (recommended)
+  </a>
+  
+    <nav class="md-nav" aria-label="Install from PyPI (recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-version-of-helics" class="md-nav__link">
+    Custom version of HELICS
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-source" class="md-nav__link">
+    From Source
+  </a>
+  
+    <nav class="md-nav" aria-label="From Source">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#download" class="md-nav__link">
+    Download
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pythonic-interface/" class="md-nav__link">
+        Pythonic API
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration-helics2-helics3/" class="md-nav__link">
+        Migration v2 -> v3
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#install-from-pypi-recommended" class="md-nav__link">
+    Install from PyPI (recommended)
+  </a>
+  
+    <nav class="md-nav" aria-label="Install from PyPI (recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-version-of-helics" class="md-nav__link">
+    Custom version of HELICS
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-source" class="md-nav__link">
+    From Source
+  </a>
+  
+    <nav class="md-nav" aria-label="From Source">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#download" class="md-nav__link">
+    Download
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
+<p>This package uses <code>cffi</code> to interface with the HELICS library.
+The source for this package contains only pure python code.</p>
+<p>Python helics packages with version numbers greater than <code>v2.6.0</code> use this new cffi interface.
+Versions equal to and prior to <code>v2.6.0</code> used swig to generate the Python API.</p>
+<h2 id="install-from-pypi-recommended">Install from PyPI (recommended)<a class="headerlink" href="#install-from-pypi-recommended" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>$ pip install helics
+</code></pre></div>
+<p>This will give you the latest version of the python helics interface.
+If you already have helics installed, you can upgrade to the latest version by using the following:</p>
+<div class="highlight"><pre><span></span><code>$ pip install helics --upgrade
+</code></pre></div>
+<p>You can install a specific version by using the following:</p>
+<div class="highlight"><pre><span></span><code>$ pip install helics
+</code></pre></div>
+<p>By default, when you install from PyPI, the version number of the package will match the version of HELICS that is installed.
+For example, if you run the following:</p>
+<div class="highlight"><pre><span></span><code>$ pip install helics
+</code></pre></div>
+<p>You will also get precompiled binaries of <a href="https://github.com/GMLC-TDC/HELICS/releases/latest">HELICS</a> for your platform if they exist.
+If they don&rsquo;t exist, a source distribution will be installed in which case the user must provide the location of the binaries.
+See the next section for more information about how to do that.</p>
+<h3 id="custom-version-of-helics">Custom version of HELICS<a class="headerlink" href="#custom-version-of-helics" title="Permanent link">&para;</a></h3>
+<p>The python package in this repository uses a environment variable called <code>PYHELICS_INSTALL</code> to choose the location of the precompiled binaries of the C HELICS library.
+If you wish to change the version of HELICS used, you can set this environment variable to point to the location of an HELICS installation.</p>
+<p>For example, let&rsquo;s say as a user you want to use HELICS in a Conda environment.</p>
+<div class="highlight"><pre><span></span><code>$ conda create -n helics-py3-env <span class="nv">python</span><span class="o">=</span><span class="m">3</span> -y
+$ conda activate helics-py3-env
+</code></pre></div>
+<p>Running <code>import helics</code> in python in this environment throws an error because python package hasn&rsquo;t been installed yet.</p>
+<div class="highlight"><pre><span></span><code>$ python -c <span class="s1">&#39;import helics&#39;</span>
+Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+  File <span class="s2">&quot;&lt;string&gt;&quot;</span>, line <span class="m">1</span>, <span class="k">in</span> &lt;module&gt;
+  ModuleNotFoundError: No module named <span class="s1">&#39;helics&#39;</span>
+</code></pre></div>
+<p>You can install <code>helics</code> using <code>pip</code>.</p>
+<div class="highlight"><pre><span></span><code>$ pip install helics
+pip install helics
+Collecting helics
+  Downloading helics-2.6.1.post0-py3-none-macosx_10_9_x86_64.whl <span class="o">(</span><span class="m">6</span>.6 MB<span class="o">)</span>
+     <span class="p">|</span>████████████████████████████████<span class="p">|</span> <span class="m">6</span>.6 MB <span class="m">2</span>.3 MB/s
+Collecting enum34&gt;<span class="o">=</span><span class="m">1</span>.1.10
+  Using cached enum34-1.1.10-py3-none-any.whl <span class="o">(</span><span class="m">11</span> kB<span class="o">)</span>
+Collecting cffi&gt;<span class="o">=</span><span class="m">1</span>.0.0
+  Using cached cffi-1.14.3-2-cp38-cp38-macosx_10_9_x86_64.whl <span class="o">(</span><span class="m">176</span> kB<span class="o">)</span>
+Collecting pycparser
+  Using cached pycparser-2.20-py2.py3-none-any.whl <span class="o">(</span><span class="m">112</span> kB<span class="o">)</span>
+Installing collected packages: enum34, pycparser, cffi, helics
+Successfully installed cffi-1.14.3 enum34-1.1.10 helics-2.6.1.post0 pycparser-2.20
+</code></pre></div>
+<p>Now that you have installed the python package, you can check that it works:</p>
+<div class="highlight"><pre><span></span><code>$ python -c <span class="s2">&quot;import helics; print(helics.helicsGetVersion())&quot;</span>
+<span class="m">2</span>.6.1 <span class="o">(</span><span class="m">2020</span>-10-15<span class="o">)</span>
+</code></pre></div>
+<p>This installs the Python package <code>helics-2.6.1.post0</code> and it comes with precompiled binaries for HELICS version 2.6.1 that we released on 2020-10-15.</p>
+<p>Let&rsquo;s say you&rsquo;ve made modification to the HELICS library or compiled it with some different flags.
+Or you are interested in a using an older version of HELICS.
+You can do that with this python package by changing the <code>PYHELICS_INSTALL</code> environment variable.</p>
+<p>As an example, if you want to use the Python package with HELICS v2.5.2, you can clone the git repository for HELICS, build from source and install it to any location.
+In this example, I chose to install it in <code>~/local/helics-v2.5.2</code>.</p>
+<div class="highlight"><pre><span></span><code>$ git clone https://github.com/GMLC-TDC/HELICS
+$ <span class="nb">cd</span> HELICS
+$ git checkout v2.5.2
+$ mkdir -p build
+$ cmake -DCMAKE_INSTALL_PREFIX<span class="o">=</span>~/local/helics-v2.5.2 ..
+$ make -j8 <span class="o">&amp;&amp;</span> make install
+</code></pre></div>
+<p>Now in bash, you can set the environment variable:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">export</span> <span class="nv">PYHELICS_INSTALL</span><span class="o">=</span>~/local/helics-v2.5.2
+</code></pre></div>
+<p>Now when you <code>import helics</code> and print the version you&rsquo;ll get <code>2.5.2 (2020-06-14)</code>.</p>
+<div class="highlight"><pre><span></span><code>$ python -c <span class="s2">&quot;import helics; print(helics.helicsGetVersion())&quot;</span>
+<span class="m">2</span>.5.2 <span class="o">(</span><span class="m">2020</span>-06-14<span class="o">)</span>
+</code></pre></div>
+<p>If you want to build from source and use the <code>develop</code> branch:</p>
+<div class="highlight"><pre><span></span><code>$ git checkout develop
+$ git submodule update
+$ cmake -DCMAKE_INSTALL_PREFIX<span class="o">=</span>~/local/helics-develop ..
+$ make -j8 <span class="o">&amp;&amp;</span> make install
+$ <span class="nb">export</span> <span class="nv">PYHELICS_INSTALL</span><span class="o">=</span>~/local/helics-develop
+$ python -c <span class="s2">&quot;import helics; print(helics.helicsGetVersion())&quot;</span>
+<span class="m">2</span>.6.0-develop-g3a460f1f <span class="o">(</span><span class="m">2020</span>-09-24<span class="o">)</span>
+</code></pre></div>
+<p>The Python HELICS cffi interface is tested with the latest version of HELICS.
+If you find any issues with earlier versions of HELICS, please report them on <a href="https://github.com/GMLC-TDC/HELICS/issues">https://github.com/GMLC-TDC/HELICS/issues</a>.</p>
+<h2 id="from-source">From Source<a class="headerlink" href="#from-source" title="Permanent link">&para;</a></h2>
+<h3 id="download">Download<a class="headerlink" href="#download" title="Permanent link">&para;</a></h3>
+<p>In order to run this package, you will need to download HELICS.</p>
+<p>You can use this package to download HELICS.</p>
+<div class="highlight"><pre><span></span><code>$ git clone https://github.com/GMLC-TDC/pyhelics
+$ <span class="nb">cd</span> pyhelics
+$ python setup.py download
+</code></pre></div>
+<p>Alternatively, you can install HELICS in any way you like and point this package to the correct installation.
+You can do this by setting the <code>PYHELICS_INSTALL</code> environment variable, as described in the previous section.
+The path to the installation must be the root of the installation.</p>
+<p>On Linux or Mac, add the following to your <code>~/.bashrc</code>.</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">export</span> <span class="nv">PYHELICS_INSTALL</span><span class="o">=</span><span class="s2">&quot;/path/to/helics_installation&quot;</span>
+</code></pre></div>
+<p>where</p>
+<div class="highlight"><pre><span></span><code>$ tree /path/to/helics_installation
+
+helics_installation
+├── include
+│  └── helics
+├── lib
+│  ├── cmake
+│  ├── libhelicsSharedLib.2.6.1.dylib
+│  ├── libhelicsSharedLib.2.dylib -&gt; libhelicsSharedLib.2.6.1.dylib
+│  ├── libhelicsSharedLib.dylib -&gt; libhelicsSharedLib.2.dylib
+│  ├── libzmq.5.2.2.dylib
+│  ├── libzmq.5.dylib -&gt; libzmq.5.2.2.dylib
+│  ├── libzmq.dylib -&gt; libzmq.5.dylib
+│  └── pkgconfig
+└── share
+   ├── doc
+      ├── helics
+         └── man
+</code></pre></div>
+<p>On Windows, follow instructions online to set a user environment variable to the path of the HELICS installation.
+You can also use <code>set PYHELICS_INSTALL="C:\path\to\helics_installation"</code> in a command line session.</p>
+<h3 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h3>
+<p>Next, you can install pyhelics by either using <code>pip</code> or setting your <code>PYTHONPATH</code></p>
+<div class="highlight"><pre><span></span><code>$ git clone https://github.com/GMLC-TDC/pyhelics
+$ <span class="nb">cd</span> pyhelics
+$ python -m pip install -e .
+</code></pre></div>
+<p>This will install <code>pyhelics</code>.</p>
+<p>Run the following to ensure that everything is working as expected.</p>
+<div class="highlight"><pre><span></span><code>import helics as h
+print(h.__file__) # this should print the path to the __init__.py file in the pyhelics repository
+print(h.helicsGetVersion()) # this should print the version of the HELICS library in the PYHELICS_INSTALL environment or the latest version of HELICS
+</code></pre></div>
+<p>See <a href="../migration-helics2-helics3/">Migration from HELICS2 to HELICS3</a> for more information on changes between this version and the SWIG version of the HELICS library.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href=".." class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Home
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../usage/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Usage
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
+      
+    
+  </body>
+</html>
