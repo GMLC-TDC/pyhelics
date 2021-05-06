@@ -26,8 +26,6 @@ if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
 else:
     HELICS_VERSION = 3
 
-print(HELICS_VERSION)
-
 import signal
 import sys
 
