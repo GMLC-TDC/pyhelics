@@ -20,6 +20,14 @@ from . import _build
 lib = _build.lib
 ffi = _build.ffi
 
+
+if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
+    HELICS_VERSION = 2
+else:
+    HELICS_VERSION = 3
+
+print(HELICS_VERSION)
+
 import signal
 import sys
 
@@ -2504,9 +2512,9 @@ def helicsErrorInitialize() -> HelicsError:
     """
     f = loadSym("helicsErrorInitialize")
     result = f()
-    try:
+    if HELICS_VERSION == 2:
         return ffi.new("helics_error *", result)
-    except cffi.CDefError:
+    else:
         return ffi.new("HelicsError *", result)
 
 
@@ -3905,9 +3913,9 @@ def helicsFederateGetCore(fed: HelicsFederate) -> HelicsCore:
 
     **Returns**: `helics.HelicsCore`.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsFederateGetCoreObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsFederateGetCore")
     err = helicsErrorInitialize()
     result = f(fed.handle, err)
@@ -3994,9 +4002,9 @@ def helicsFederateRequestTimeIterative(
     """
     f = loadSym("helicsFederateRequestTimeIterative")
     err = helicsErrorInitialize()
-    try:
+    if HELICS_VERSION == 2:
         out_iterate = ffi.new("helics_iteration_result *")
-    except cffi.CDefError:
+    else:
         out_iterate = ffi.new("HelicsIterationResult *")
 
     result = f(fed.handle, request_time, HelicsIterationRequest(iterate), out_iterate, err)
@@ -4070,9 +4078,9 @@ def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> Tuple[Hel
     """
     f = loadSym("helicsFederateRequestTimeIterativeComplete")
     err = helicsErrorInitialize()
-    try:
+    if HELICS_VERSION == 2:
         out_iterate = ffi.new("helics_iteration_result *")
-    except cffi.CDefError:
+    else:
         out_iterate = ffi.new("HelicsIterationResult *")
     result = f(fed.handle, out_iterate, err)
     if err.error_code != 0:
@@ -4782,36 +4790,24 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination
     - **`data`** - The data to send.
     - **`destination`** - The target destination.
     """
-    try:
+    err = helicsErrorInitialize()
+    if isinstance(data, str):
+        data = data.encode()
+    if not isinstance(data, bytes):
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
+    inputDataLength = len(data)
+
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointSendMessageRaw")
-        err = helicsErrorInitialize()
-        if isinstance(data, str):
-            data = data.encode()
-        if not isinstance(data, bytes):
-            raise HelicsException(
-                """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(
-                    t=type(data)
-                )
-            )
-        inputDataLength = len(data)
         f(endpoint.handle, cstring(destination), data, inputDataLength, err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointSendBytesTo")
-        err = helicsErrorInitialize()
-        if isinstance(data, str):
-            data = data.encode()
-        if not isinstance(data, bytes):
-            raise HelicsException(
-                """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(
-                    t=type(data)
-                )
-            )
-        inputDataLength = len(data)
         f(endpoint.handle, data, inputDataLength, cstring(destination), err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, destination: str, data: bytes):
@@ -4843,20 +4839,18 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
     - **`destination`** - The target destination.
     - **`time`** - The time the message should be sent.
     """
-    try:
+    err = helicsErrorInitialize()
+    inputDataLength = len(data)
+
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointSendEventRaw")
-        err = helicsErrorInitialize()
-        inputDataLength = len(data)
         f(endpoint.handle, cstring(destination), cstring(data), inputDataLength, time, err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointSendBytesToAt")
-        err = helicsErrorInitialize()
-        inputDataLength = len(data)
         f(endpoint.handle, cstring(data), inputDataLength, cstring(destination), time, err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsEndpointSendEventRaw(
@@ -4919,9 +4913,9 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
     - **`endpoint`** - The endpoint to send the data from.
     - **`message`** - The actual message to send which will be copied.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointSendMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointSendMessage")
     err = helicsErrorInitialize()
     f(endpoint.handle, message.handle, err)
@@ -4983,9 +4977,9 @@ def helicsFederatePendingMessagesCount(fed: HelicsFederate) -> int:
 
     - **`fed`** - The federate to get the number of waiting messages from.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsFederatePendingMessages")
-    except AttributeError:
+    else:
         f = loadSym("helicsFederatePendingMessagesCount")
     return f(fed.handle)
 
@@ -5024,9 +5018,9 @@ def helicsEndpointPendingMessagesCount(endpoint: HelicsEndpoint) -> int:
 
     - **`endpoint`** - The endpoint to query.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointPendingMessages")
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointPendingMessagesCount")
     return f(endpoint.handle)
 
@@ -5057,9 +5051,9 @@ def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     **Returns**: A message object.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointGetMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointGetMessage")
     return HelicsMessage(f(endpoint.handle))
 
@@ -5088,9 +5082,9 @@ def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     - **`endpoint`** - The endpoint object to associate the message with.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointCreateMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointCreateMessage")
     err = helicsErrorInitialize()
     result = f(endpoint.handle, err)
@@ -5124,9 +5118,9 @@ def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
 
     **Returns**: A `helics.HelicsMessage` which references the data in the message.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsFederateGetMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsFederateGetMessage")
     result = f(fed.handle)
     return HelicsMessage(result)
@@ -5156,9 +5150,9 @@ def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessage:
 
     - **`fed`** - the `helics.HelicsFederate` to associate the message with.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsFederateCreateMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsFederateCreateMessage")
     err = helicsErrorInitialize()
     result = f(fed.handle, err)
@@ -5193,11 +5187,11 @@ def helicsEndpointClearMessages(endpoint: HelicsEndpoint):
 
     **DEPRECATED**
     """
-    try:
+    if HELICS_VERSION == 2:
         warnings.warn("This function is deprecated. Clearing is handled at the federate level.")
         f = loadSym("helicsEndpointClearMessages")
         f(endpoint.handle)
-    except AttributeError:
+    else:
         warnings.warn("This function is deprecated. Clearing is handled at the federate level.")
 
 
@@ -5428,9 +5422,9 @@ def helicsMessageGetFlagOption(message: HelicsMessage, flag: int) -> bool:
 
     **Returns**: The flags associated with a message.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsMessageCheckFlag")
-    except AttributeError:
+    else:
         f = loadSym("helicsMessageGetFlagOption")
     result = f(message.handle, flag)
     return result == 1
@@ -5463,9 +5457,9 @@ def helicsMessageGetByteCount(message: HelicsMessage) -> int:
 
     **Returns**: The size of the data payload.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsMessageGetRawDataSize")
-    except AttributeError:
+    else:
         f = loadSym("helicsMessageGetByteCount")
     result = f(message.handle)
     return result
@@ -5513,9 +5507,9 @@ def helicsMessageGetBytes(message: HelicsMessage) -> bytes:
 
     **Returns**: Raw string data.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsMessageGetRawData")
-    except AttributeError:
+    else:
         f = loadSym("helicsMessageGetBytes")
     err = helicsErrorInitialize()
     maxMessageLen = helicsMessageGetByteCount(message) + 1024
@@ -5553,9 +5547,9 @@ def helicsMessageGetBytesPointer(message: HelicsMessage) -> pointer:
 
     **Returns**: A pointer to the raw data in memory, the pointer may be NULL if the message is not a valid message.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsMessageGetRawDataPointer")
-    except AttributeError:
+    else:
         f = loadSym("helicsMessageGetBytesPointer")
     result = f(message.handle)
     return result
@@ -6636,9 +6630,9 @@ def helicsPublicationPublishBytes(pub: HelicsPublication, data: bytes):
     - **`pub`** - The publication to publish for.
     - **`data`** - A pointer to the raw data.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsPublicationPublishRaw")
-    except AttributeError:
+    else:
         f = loadSym("helicsPublicationPublishBytes")
     err = helicsErrorInitialize()
     if isinstance(data, str):
@@ -6868,9 +6862,9 @@ def helicsInputGetByteCount(ipt: HelicsInput) -> int:
 
     **Returns**: The size of the raw data/string in bytes.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsInputGetRawValueSize")
-    except AttributeError:
+    else:
         f = loadSym("helicsInputGetByteCount")
     result = f(ipt.handle)
     return result
@@ -6902,9 +6896,9 @@ def helicsInputGetBytes(ipt: HelicsInput) -> bytes:
 
     **Returns**: Raw string data.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsInputGetRawValue")
-    except AttributeError:
+    else:
         f = loadSym("helicsInputGetBytes")
     err = helicsErrorInitialize()
     maxDataLen = helicsInputGetByteCount(ipt) + 1024
@@ -7174,9 +7168,9 @@ def helicsInputSetDefaultBytes(ipt: HelicsInput, data: bytes):
     - **`ipt`** - The input to set the default for.
     - **`data`** - A pointer to the raw data to use for the default.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsInputSetDefaultRaw")
-    except AttributeError:
+    else:
         f = loadSym("helicsInputSetDefaultBytes")
     err = helicsErrorInitialize()
     if isinstance(data, str):
@@ -7408,9 +7402,9 @@ def helicsInputGetName(ipt: HelicsInput) -> str:
 
     **Returns**: A string with the name information.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsInputGetKey")
-    except:
+    else:
         f = loadSym("helicsInputGetName")
     result = f(ipt.handle)
     return ffi.string(result).decode()
@@ -7432,9 +7426,9 @@ def helicsSubscriptionGetTarget(ipt: HelicsInput) -> str:
 
     **Returns**: A string with the subscription target.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsSubscriptionGetKey")
-    except:
+    else:
         f = loadSym("helicsSubscriptionGetTarget")
     result = f(ipt.handle)
     return ffi.string(result).decode()
@@ -7466,9 +7460,9 @@ def helicsPublicationGetName(pub: HelicsPublication) -> str:
 
     **Returns**: A string with the units information.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsPublicationGetKey")
-    except AttributeError:
+    else:
         f = loadSym("helicsPublicationGetName")
     result = f(pub.handle)
     return ffi.string(result).decode()
