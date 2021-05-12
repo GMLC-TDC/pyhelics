@@ -2,7 +2,6 @@
 import logging
 import warnings
 import json
-import cffi
 
 from enum import IntEnum, unique
 
@@ -2223,6 +2222,17 @@ class HelicsPublication(_HelicsCHandle):
 
 
 class HelicsValueFederate(HelicsFederate):
+    def __init__(self, handle):
+        super(HelicsValueFederate, self).__init__(handle)
+
+        for i in range(0, self.n_publications):
+            pub = self.get_publication_by_index(i)
+            self.publications[pub.name] = pub
+
+        for i in range(0, self.n_inputs):
+            sub = self.get_subscription_by_index(i)
+            self.subscriptions[sub.target] = sub
+
     def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
         """
         Register a publication.
