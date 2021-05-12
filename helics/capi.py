@@ -7414,7 +7414,7 @@ def helicsSubscriptionGetKey(ipt: HelicsInput) -> str:
 
     **Returns**: A string with the subscription name.
     """
-    warnings.warn("This is deprecated. Use `helicsPublicationGetName` instead.")
+    warnings.warn("This is deprecated. Use `helicsSubscriptionGetTarget` instead.")
     return helicsSubscriptionGetTarget(ipt)
 
 
