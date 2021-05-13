@@ -239,7 +239,7 @@ class HELICSCMakeBuild(build_ext):
                 f.write(data)
 
 
-install_requires = ["cffi>=1.0.0", "strip-hints"]
+install_requires = ["cffi>=1.0.0", "strip-hints", "helics-apps"]
 
 if sys.version_info < (3, 4):
     install_requires.append("enum34")
