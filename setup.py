@@ -210,6 +210,7 @@ class HELICSCMakeBuild(build_ext):
         subprocess.check_call(shlex.split(cmd), cwd=self.build_temp)
 
         files = [
+            "helics_api.h",
             "helics_enums.h",
             os.path.join("shared_api_library", "api-data.h"),
             os.path.join("shared_api_library", "helics.h"),
@@ -222,6 +223,8 @@ class HELICSCMakeBuild(build_ext):
         IGNOREBLOCK = False
         for file in files:
             with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
+                if not os.path.isfile(os.path.join(PYHELICS_INSTALL, "include", "helics", file)):
+                    continue
                 lines = []
                 for line in f:
                     if line.startswith("#ifdef __cplusplus"):
@@ -241,8 +244,8 @@ class HELICSCMakeBuild(build_ext):
             with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file), "w") as f:
                 f.write(data)
 
-        self.library_dirs.append(os.path.join(self.pyhelics_install, "lib"))
-        self.include_dirs.append(os.path.join(self.pyhelics_install, "include"))
+        self.library_dirs.append(os.path.join(PYHELICS_INSTALL, "lib"))
+        self.include_dirs.append(os.path.join(PYHELICS_INSTALL, "include"))
         super(build_ext, self).run()
 
 
