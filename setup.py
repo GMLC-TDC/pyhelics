@@ -83,8 +83,7 @@ class HELICSDownloadCommand(Command):
 
     def initialize_options(self):
         self.helics_url = create_default_url(HELICS_VERSION)
-        if self.pyhelics_install is None:
-            self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
+        self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
         if os.path.exists(self.pyhelics_install):
             shutil.rmtree(self.pyhelics_install)
 
@@ -134,7 +133,7 @@ class HELICSDownloadCommand(Command):
                     data = "\n".join(lines)
                     data = data.replace("HELICS_EXPORT", "")
                     data = data.replace("HELICS_DEPRECATED_EXPORT", "")
-                with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file), "w") as f:
+                with open(os.path.join(self.pyhelics_install, "include", "helics", file), "w") as f:
                     f.write(data)
 
 
@@ -241,6 +240,10 @@ class HELICSCMakeBuild(build_ext):
                 data = data.replace("HELICS_DEPRECATED_EXPORT", "")
             with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file), "w") as f:
                 f.write(data)
+
+        self.library_dirs.append(os.path.join(self.pyhelics_install, "lib"))
+        self.include_dirs.append(os.path.join(self.pyhelics_install, "include"))
+        super(build_ext, self).run()
 
 
 install_requires = ["cffi>=1.0.0", "strip-hints"]
