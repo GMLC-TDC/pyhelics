@@ -83,7 +83,8 @@ class HELICSDownloadCommand(Command):
 
     def initialize_options(self):
         self.helics_url = create_default_url(HELICS_VERSION)
-        self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
+        if self.pyhelics_install is None:
+            self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
         if os.path.exists(self.pyhelics_install):
             shutil.rmtree(self.pyhelics_install)
 
@@ -102,6 +103,7 @@ class HELICSDownloadCommand(Command):
             if platform.system() == "Linux":
                 shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
             files = [
+                "helics_api.h",
                 "helics_enums.h",
                 os.path.join("shared_api_library", "api-data.h"),
                 os.path.join("shared_api_library", "helics.h"),
@@ -113,7 +115,9 @@ class HELICSDownloadCommand(Command):
             ]
             IGNOREBLOCK = False
             for file in files:
-                with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
+                if not os.path.isfile(os.path.join(self.pyhelics_install, "include", "helics", file)):
+                    continue
+                with open(os.path.join(self.pyhelics_install, "include", "helics", file)) as f:
                     lines = []
                     for line in f:
                         if line.startswith("#ifdef __cplusplus"):
@@ -239,7 +243,7 @@ class HELICSCMakeBuild(build_ext):
                 f.write(data)
 
 
-install_requires = ["cffi>=1.0.0", "strip-hints", "helics-apps"]
+install_requires = ["cffi>=1.0.0", "strip-hints"]
 
 if sys.version_info < (3, 4):
     install_requires.append("enum34")
