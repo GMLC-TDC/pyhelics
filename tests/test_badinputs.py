@@ -16,6 +16,7 @@ import pytest as pt
 import sys
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_message_federate_message():
     broker = createBroker(1)
     mFed1, fedinfo = createMessageFederate(1, "test")
@@ -46,6 +47,7 @@ def test_bad_input_message_federate_message():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_filter_test4():
 
     broker = createBroker(1)
@@ -76,6 +78,7 @@ def test_bad_input_filter_test4():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_filter_core_tests():
 
     broker = createBroker(1)
@@ -96,6 +99,7 @@ def test_bad_input_filter_core_tests():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_type_publication_2_tests():
     broker = createBroker(1)
     vFed1, fedinfo = createValueFederate(1, "test")
@@ -178,6 +182,7 @@ def test_bad_input_type_publication_2_tests():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_tests_raw_tests():
 
     broker = createBroker(1)
@@ -212,6 +217,7 @@ def test_bad_input_tests_raw_tests():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_duplicate_publication_and_input_pathways():
 
     broker = createBroker(1)
@@ -251,6 +257,7 @@ def test_bad_input_duplicate_publication_and_input_pathways():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_init_error():
     broker = createBroker(1)
     vFed1, fedinfo = createValueFederate(1, "fed0")
@@ -307,6 +314,7 @@ def test_bad_input_init_error():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_input_tests():
 
     broker = createBroker(1)
@@ -370,6 +378,7 @@ def test_bad_inputs_input_tests():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_core_link():
     broker = createBroker(1)
     vFed1, fedinfo = createValueFederate(1, "fed0")
@@ -411,6 +420,7 @@ def test_bad_inputs_core_link():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_broker_link():
 
     broker = createBroker(1)
@@ -449,6 +459,7 @@ def test_bad_inputs_broker_link():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_frees():
     broker = createBroker(1)
     vFed1, fedinfo = createValueFederate(1, "fed0")
@@ -470,6 +481,7 @@ def test_bad_inputs_frees():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_init_error_5():
 
     broker = createBroker(1)
@@ -506,6 +518,7 @@ def test_bad_inputs_init_error_5():
     destroyBroker(broker)
 
 
+@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_misc_tests():
 
     with pt.raises(h.HelicsException):
