@@ -6,7 +6,7 @@ This document will describe the path to migrate your python code from HELICS ver
 
 [See this commit for a diff of all the changes](https://github.com/GMLC-TDC/pyhelics/commit/366a4c5cb7fdfe44e48a85acdde0be43d56df3a3).
 
-You can also see the [tests](https://github.com/GMLC-TDC/pyhelics/tree/master/tests) folder on github for more examples on how to use the various functions.
+You can also see the [tests](https://github.com/GMLC-TDC/pyhelics/tree/main/tests) folder on github for more examples on how to use the various functions.
 
 See [the Pythonic Interface](./pythonic-interface.md) for all the new functionality that is available in pyhelics.
 
