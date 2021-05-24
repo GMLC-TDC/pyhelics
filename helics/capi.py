@@ -7982,21 +7982,30 @@ def helicsLoadSignalHandler():
     f()
 
 
-@ffi.callback("void handler(int)")
-def handler(code: int):
-    helicsAbort(code, "User pressed Ctrl-C")
-    helicsCloseLibrary()
-    raise HelicsException("User pressed Ctrl-C")
-
-
-def helicsLoadSignalHandlerCallback():
-    f = loadSym("helicsLoadSignalHandlerCallback")
-    f(handler)
-
-
-helicsLoadSignalHandlerCallback()
-
-
 def helicsAbort(error_code: int, message: str):
     f = loadSym("helicsAbort")
     f(error_code, cstring(message))
+
+
+try:
+
+    @ffi.callback("int handler(int)")
+    def _handle_helicsCallBack(code: int):
+        helicsAbort(code, "User pressed Ctrl-C")
+        return 0
+
+
+except Exception as _:
+    _handle_helicsCallBack = None
+
+
+def helicsLoadSignalHandlerCallback():
+    if _handle_helicsCallBack is not None:
+        try:
+            f = loadSym("helicsLoadSignalHandlerCallback")
+            f(_handle_helicsCallBack)
+        except Exception as _:
+            pass
+
+
+helicsLoadSignalHandlerCallback()
