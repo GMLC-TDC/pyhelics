@@ -2395,6 +2395,10 @@ class HelicsMessageFederate(HelicsFederate):
     def __init__(self, handle):
         super(HelicsMessageFederate, self).__init__(handle)
 
+        for i in range(0, self.n_endpoints):
+            end = self.get_endpoint_by_index(i)
+            self.endpoints[end.name] = end
+
     def register_endpoint(self, name: str, kind: str = "") -> HelicsEndpoint:
         """
         Register an endpoint.
