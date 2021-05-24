@@ -598,3 +598,18 @@ def test_python_api7():
 
     h.helicsCleanupLibrary()
     h.helicsCloseLibrary()
+
+
+def test_python_api8():
+
+    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
+
+    cfed = h.helicsCreateCombinationFederateFromConfig(os.path.join(CURRENT_DIRECTORY, "combinationfederate.json"))
+
+    assert len(cfed.endpoints) == 2
+    assert len(cfed.subscriptions) == 2
+
+    h.helicsFederateDestroy(cfed)
+    h.helicsFederateFree(cfed)
+    h.helicsBrokerDestroy(broker)
+    h.helicsCloseLibrary()
