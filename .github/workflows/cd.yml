@@ -26,10 +26,6 @@ jobs:
             target: win_amd64
             python3-version: '3.8'
             python2-version: '2.7'
-          - os: windows-latest
-            target: win_amd32
-            python3-version: '3.8'
-            python2-version: '2.7'
     steps:
     - uses: actions/checkout@v2
 
@@ -60,7 +56,6 @@ jobs:
         python -m pip install -U pip install wheel setuptools cffi strip-hints
 
     - name: Build python2 wheel
-      if: ${{ matrix.target }} == win_amd32
       run: |
         strip-hints helics/capi.py > tmp
         rm helics/capi.py
