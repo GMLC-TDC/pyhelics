@@ -27,7 +27,7 @@ jobs:
             python3-version: '3.8'
             python2-version: '2.7'
           - os: windows-latest
-            target: win_amd32
+            target: win32
             python3-version: '3.8'
             python2-version: '2.7'
     steps:

@@ -56,7 +56,7 @@ def create_default_url(helics_version, plat_name=""):
             helics_version=helics_version
         )
     elif "win" in plat_name.lower():
-        if "amd32" in plat_name.lower():
+        if "win32" in plat_name.lower():
             default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
                 helics_version=helics_version
             )
