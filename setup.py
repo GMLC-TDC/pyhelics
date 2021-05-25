@@ -50,8 +50,26 @@ PYHELICS_INSTALL = os.path.join(CURRENT_DIRECTORY, "./helics/install")
 DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(version=HELICS_VERSION)
 
 
-def create_default_url(helics_version):
-    if platform.system() == "Darwin":
+def create_default_url(helics_version, plat_name=""):
+    if "macos" in plat_name.lower():
+        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
+            helics_version=helics_version
+        )
+    elif "win" in plat_name.lower():
+        if "amd32" in plat_name.lower():
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
+                helics_version=helics_version
+            )
+        else:
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
+                helics_version=helics_version
+            )
+
+    elif "linux" in plat_name.lower():
+        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+            helics_version=helics_version
+        )
+    elif platform.system() == "Darwin":
         default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
             helics_version=helics_version
         )
@@ -64,6 +82,7 @@ def create_default_url(helics_version):
             default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
                 helics_version=helics_version
             )
+
     elif platform.system() == "Linux":
         default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
             helics_version=helics_version
@@ -78,30 +97,30 @@ class HELICSDownloadCommand(Command):
     description = "Download helics libraries dependency"
     user_options = [
         ("pyhelics-install=", None, "path to pyhelics install folder"),
-        ("platform=", None, "platform name (Windows, Linux or MacOS)"),
+        ("plat-name=", None, "platform name to embed in generated filenames"),
     ]
 
     def initialize_options(self):
         self.plat_name = ""
         self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
-        self.platform = platform.system()
         if os.path.exists(self.pyhelics_install):
             shutil.rmtree(self.pyhelics_install)
 
     def finalize_options(self):
         pass
 
-    def extract(self, url, install_location):
-        r = urlopen(url)
+    def run(self):
+        self.helics_url = create_default_url(HELICS_VERSION, self.plat_name)
+        r = urlopen(self.helics_url)
         if r.getcode() == 200:
             content = io.BytesIO(r.read())
             content.seek(0)
             with tarfile.open(fileobj=content) as tf:
                 dirname = tf.getnames()[0].partition("/")[0]
                 tf.extractall()
-            shutil.move(dirname, install_location)
-            if self.platform == "Linux":
-                shutil.move(os.path.join(install_location, "lib64"), os.path.join(install_location, "lib"))
+            shutil.move(dirname, self.pyhelics_install)
+            if platform.system() == "Linux":
+                shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
             files = [
                 "helics_api.h",
                 "helics_enums.h",
@@ -115,9 +134,9 @@ class HELICSDownloadCommand(Command):
             ]
             IGNOREBLOCK = False
             for file in files:
-                if not os.path.isfile(os.path.join(install_location, "include", "helics", file)):
+                if not os.path.isfile(os.path.join(self.pyhelics_install, "include", "helics", file)):
                     continue
-                with open(os.path.join(install_location, "include", "helics", file)) as f:
+                with open(os.path.join(self.pyhelics_install, "include", "helics", file)) as f:
                     lines = []
                     for line in f:
                         if line.startswith("#ifdef __cplusplus"):
@@ -134,16 +153,8 @@ class HELICSDownloadCommand(Command):
                     data = "\n".join(lines)
                     data = data.replace("HELICS_EXPORT", "")
                     data = data.replace("HELICS_DEPRECATED_EXPORT", "")
-                with open(os.path.join(install_location, "include", "helics", file), "w") as f:
+                with open(os.path.join(self.pyhelics_install, "include", "helics", file), "w") as f:
                     f.write(data)
-
-    def run(self):
-        self.helics_url = create_default_url(HELICS_VERSION)
-        if self.platform == "Windows":
-            self.extract(self.helics_url.replace("win32", "win64"), self.pyhelics_install)
-            self.extract(self.helics_url.replace("win64", "win32"), "{}32".format(self.pyhelics_install))
-        else:
-            self.extract(self.helics_url, self.pyhelics_install)
 
 
 class CMakeExtension(Extension):

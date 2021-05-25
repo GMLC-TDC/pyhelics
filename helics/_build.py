@@ -2,14 +2,11 @@
 import cffi
 import os
 import platform
-import sys
 
 ffi = cffi.FFI()
 
 
 HELICS_INSTALL = os.getenv("HELICS_INSTALL", os.path.join(os.path.dirname(os.path.abspath(__file__)), "install"))
-if platform.system() == "Windows" and not (sys.maxsize > 2 ** 32):
-    HELICS_INSTALL = "{}32".format(HELICS_INSTALL)
 PYHELICS_INSTALL = os.getenv("PYHELICS_INSTALL", HELICS_INSTALL)
 
 files = [
