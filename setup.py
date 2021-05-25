@@ -50,8 +50,26 @@ PYHELICS_INSTALL = os.path.join(CURRENT_DIRECTORY, "./helics/install")
 DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(version=HELICS_VERSION)
 
 
-def create_default_url(helics_version):
-    if platform.system() == "Darwin":
+def create_default_url(helics_version, plat_name=""):
+    if "macos" in plat_name.lower():
+        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
+            helics_version=helics_version
+        )
+    elif "win" in plat_name.lower():
+        if "amd32" in plat_name.lower():
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
+                helics_version=helics_version
+            )
+        else:
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
+                helics_version=helics_version
+            )
+
+    elif "linux" in plat_name.lower():
+        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+            helics_version=helics_version
+        )
+    elif platform.system() == "Darwin":
         default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
             helics_version=helics_version
         )
@@ -79,10 +97,11 @@ class HELICSDownloadCommand(Command):
     description = "Download helics libraries dependency"
     user_options = [
         ("pyhelics-install=", None, "path to pyhelics install folder"),
+        ("plat-name=", None, "platform name to embed in generated filenames"),
     ]
 
     def initialize_options(self):
-        self.helics_url = create_default_url(HELICS_VERSION)
+        self.plat_name = ""
         self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
         if os.path.exists(self.pyhelics_install):
             shutil.rmtree(self.pyhelics_install)
@@ -91,6 +110,7 @@ class HELICSDownloadCommand(Command):
         pass
 
     def run(self):
+        self.helics_url = create_default_url(HELICS_VERSION, self.plat_name)
         r = urlopen(self.helics_url)
         if r.getcode() == 200:
             content = io.BytesIO(r.read())
@@ -141,12 +161,6 @@ class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=HELICS_SOURCE):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = sourcedir
-
-
-class HELICSBdistWheel(bdist_wheel):
-    def get_tag(self):
-        rv = super().get_tag()
-        return ("py2.py3", "none",) + rv[2:]
 
 
 class HELICSCMakeBuild(build_ext):
@@ -256,17 +270,17 @@ if sys.version_info < (3, 4):
 
 cmdclass = {"build_ext": HELICSCMakeBuild, "download": HELICSDownloadCommand}
 
-if bdist_wheel is not None:
 
-    class HelicsBdistWheel(bdist_wheel):
-        def get_tag(self):
-            rv = bdist_wheel.get_tag(self)
-            if platform.python_version().startswith("2"):
-                return ("py2", "none") + rv[2:]
-            else:
-                return ("py3", "none") + rv[2:]
+class HelicsBdistWheel(bdist_wheel):
+    def get_tag(self):
+        rv = bdist_wheel.get_tag(self)
+        if platform.python_version().startswith("2"):
+            return ("py2", "none") + rv[2:]
+        else:
+            return ("py3", "none") + rv[2:]
 
-    cmdclass["bdist_wheel"] = HelicsBdistWheel
+
+cmdclass["bdist_wheel"] = HelicsBdistWheel
 
 
 class BinaryDistribution(Distribution):
