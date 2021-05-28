@@ -236,9 +236,9 @@ class HELICSCMakeBuild(build_ext):
         ]
         IGNOREBLOCK = False
         for file in files:
+            if not os.path.isfile(os.path.join(extdir, "include", "helics", file)):
+                continue
             with open(os.path.join(extdir, "include", "helics", file)) as f:
-                if not os.path.isfile(os.path.join(extdir, "include", "helics", file)):
-                    continue
                 lines = []
                 for line in f:
                     if line.startswith("#ifdef __cplusplus"):
