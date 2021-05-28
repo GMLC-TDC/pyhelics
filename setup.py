@@ -258,10 +258,6 @@ class HELICSCMakeBuild(build_ext):
             with open(os.path.join(extdir, "include", "helics", file), "w") as f:
                 f.write(data)
 
-        self.library_dirs.append(os.path.join(extdir, "lib"))
-        self.include_dirs.append(os.path.join(extdir, "include"))
-        super(build_ext, self).run()
-
 
 install_requires = ["helics-apps", "cffi>=1.0.0", "strip-hints"]
 
