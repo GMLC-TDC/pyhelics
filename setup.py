@@ -192,15 +192,15 @@ class HELICSCMakeBuild(build_ext):
             return
 
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        extdir = os.path.join(extdir, "helics", "install")
         # required for auto - detection of auxiliary "native" libs
         if not extdir.endswith(os.path.sep):
             extdir += os.path.sep
 
         cmake_args = [
-            "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
             "-DHELICS_DISABLE_GIT_OPERATIONS=OFF",
             "-DCMAKE_BUILD_TYPE=Release",
-            "-DCMAKE_INSTALL_PREFIX={}".format(PYHELICS_INSTALL),
+            "-DCMAKE_INSTALL_PREFIX={}".format(extdir),
         ]
 
         cfg = "Debug" if self.debug else "Release"
@@ -213,7 +213,7 @@ class HELICSCMakeBuild(build_ext):
                 build_args += ["--", "/m"]
         else:
             cmake_args += ["-DCMAKE_BUILD_TYPE=" + cfg]
-            build_args += ["--", "-j8"]
+            build_args += ["--", "-j"]
 
         env = os.environ.copy()
         if not os.path.exists(self.build_temp):
@@ -236,8 +236,8 @@ class HELICSCMakeBuild(build_ext):
         ]
         IGNOREBLOCK = False
         for file in files:
-            with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
-                if not os.path.isfile(os.path.join(PYHELICS_INSTALL, "include", "helics", file)):
+            with open(os.path.join(extdir, "include", "helics", file)) as f:
+                if not os.path.isfile(os.path.join(extdir, "include", "helics", file)):
                     continue
                 lines = []
                 for line in f:
@@ -255,11 +255,11 @@ class HELICSCMakeBuild(build_ext):
                 data = "\n".join(lines)
                 data = data.replace("HELICS_EXPORT", "")
                 data = data.replace("HELICS_DEPRECATED_EXPORT", "")
-            with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file), "w") as f:
+            with open(os.path.join(extdir, "include", "helics", file), "w") as f:
                 f.write(data)
 
-        self.library_dirs.append(os.path.join(PYHELICS_INSTALL, "lib"))
-        self.include_dirs.append(os.path.join(PYHELICS_INSTALL, "include"))
+        self.library_dirs.append(os.path.join(extdir, "lib"))
+        self.include_dirs.append(os.path.join(extdir, "include"))
         super(build_ext, self).run()
 
 
