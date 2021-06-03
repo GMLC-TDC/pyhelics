@@ -76,7 +76,11 @@ if platform.system() == "Windows":
         if lib is None:
             raise Exception("Unable to load helics shared library")
 elif platform.system() == "Darwin":
-    for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
+    if os.path.isdir(os.path.join(PYHELICS_INSTALL, "lib64")):
+        lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
+    else:
+        lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
+    for file in os.listdir(lib_folder):
         if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".dylib"):
             lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
             break
@@ -88,7 +92,11 @@ elif platform.system() == "Darwin":
         if lib is None:
             raise Exception("Unable to load helics shared library")
 elif platform.system() == "Linux":
-    for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
+    if os.path.isdir(os.path.join(PYHELICS_INSTALL, "lib64")):
+        lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
+    else:
+        lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
+    for file in os.listdir(lib_folder):
         if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".so"):
             lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
             break
