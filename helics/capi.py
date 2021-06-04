@@ -903,6 +903,17 @@ class HelicsCore(_HelicsCHandle):
         helicsQueryFree(q)
         return result
 
+    def global_error(self, error_code: int, error_string: str):
+        """
+        Generate a global error to terminate the federation.
+
+        **Parameters**
+
+        - **`error_code`**: an error code to give to the error.
+        - **`error_string`**: a string message associated with the error.
+        """
+        helicsCoreGlobalError(self, error_code, error_string)
+
 
 class HelicsBroker(_HelicsCHandle):
     def __repr__(self):
@@ -1024,6 +1035,17 @@ class HelicsBroker(_HelicsCHandle):
         result = helicsQueryBrokerExecute(q, self)
         helicsQueryFree(q)
         return result
+
+    def global_error(self, error_code: int, error_string: str):
+        """
+        Generate a global error to terminate the federation.
+
+        **Parameters**
+
+        - **`error_code`**: an error code to give to the error.
+        - **`error_string`**: a string message associated with the error.
+        """
+        helicsBrokerGlobalError(self, error_code, error_string)
 
 
 class _MessageFlagAccessor(_HelicsCHandle):
@@ -3632,6 +3654,22 @@ def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string
     """
     f = loadSym("helicsFederateGlobalError")
     f(fed.handle, error_code, cstring(error_string))
+
+
+def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
+    f = loadSym("helicsBrokerGlobalError")
+    err = helicsErrorInitialize()
+    f(broker.handler, error_code, error_string, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsCoreGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
+    f = loadSym("helicsCoreGlobalError")
+    err = helicsErrorInitialize()
+    f(broker.handler, error_code, error_string, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateLocalError(fed: HelicsFederate, error_code: int, error_string: str):
@@ -7977,22 +8015,6 @@ def helicsLoadSignalHandler():
 def helicsAbort(error_code: int, message: str):
     f = loadSym("helicsAbort")
     f(error_code, cstring(message))
-
-
-def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
-    f = loadSym("helicsBrokerGlobalError")
-    err = helicsErrorInitialize()
-    f(broker.handler, error_code, error_string, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-
-
-def helicsCoreGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
-    f = loadSym("helicsCoreGlobalError")
-    err = helicsErrorInitialize()
-    f(broker.handler, error_code, error_string, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 try:
