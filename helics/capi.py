@@ -25,18 +25,6 @@ if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
 else:
     HELICS_VERSION = 3
 
-import signal
-import sys
-
-
-def signal_handler(sig, frame):
-    helicsCloseLibrary()
-    print("User pressed 'CTRL-C'. Exiting ...")
-    sys.exit(0)
-
-
-signal.signal(signal.SIGINT, signal_handler)
-
 HELICS_TIME_ZERO = 0.0  # definition of time zero-the beginning of simulation
 HELICS_TIME_EPSILON = 1.0e-9  # definition of the minimum time resolution
 HELICS_TIME_INVALID = -1.785e39  # definition of an invalid time that has no meaning
