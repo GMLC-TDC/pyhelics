@@ -7979,6 +7979,22 @@ def helicsAbort(error_code: int, message: str):
     f(error_code, cstring(message))
 
 
+def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
+    f = loadSym("helicsBrokerGlobalError")
+    err = helicsErrorInitialize()
+    f(broker.handler, error_code, error_string, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsCoreGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
+    f = loadSym("helicsCoreGlobalError")
+    err = helicsErrorInitialize()
+    f(broker.handler, error_code, error_string, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 try:
 
     @ffi.callback("int handler(int)")
