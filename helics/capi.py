@@ -7976,3 +7976,40 @@ def helicsQuerySetOrdering(query: HelicsQuery, mode: int):
     f(query.handle, mode, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsLoadSignalHandler():
+    """
+    Load a signal handler that handles Ctrl-C and shuts down the library
+    """
+    f = loadSym("helicsLoadSignalHandler")
+    f()
+
+
+def helicsAbort(error_code: int, message: str):
+    f = loadSym("helicsAbort")
+    f(error_code, cstring(message))
+
+
+try:
+
+    @ffi.callback("int handler(int)")
+    def _handle_helicsCallBack(code: int):
+        helicsAbort(code, "User pressed Ctrl-C")
+        return 0
+
+
+except Exception as _:
+    _handle_helicsCallBack = None
+
+
+def helicsLoadSignalHandlerCallback():
+    if _handle_helicsCallBack is not None:
+        try:
+            f = loadSym("helicsLoadSignalHandlerCallback")
+            f(_handle_helicsCallBack)
+        except Exception as _:
+            pass
+
+
+helicsLoadSignalHandlerCallback()
