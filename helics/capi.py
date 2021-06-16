@@ -263,29 +263,58 @@ helics_flag_force_logging_flush = HelicsFederateFlag.FORCE_LOGGING_FLUSH
 helics_flag_dumplog = HelicsFederateFlag.DUMPLOG
 
 
-@unique
-class HelicsLogLevel(IntEnum):
-    """
-    - **NO_PRINT**    = -1
-    - **ERROR**       = 0
-    - **WARNING**     = 1
-    - **SUMMARY**     = 2
-    - **CONNECTIONS** = 3
-    - **INTERFACES**  = 4
-    - **TIMING**      = 5
-    - **DATA**        = 6
-    - **TRACE**       = 7
-    """
+if HELICS_VERSION == 2:
 
-    NO_PRINT = -1  # HelicsLogLevels
-    ERROR = 0  # HelicsLogLevels
-    WARNING = 1  # HelicsLogLevels
-    SUMMARY = 2  # HelicsLogLevels
-    CONNECTIONS = 3  # HelicsLogLevels
-    INTERFACES = 4  # HelicsLogLevels
-    TIMING = 5  # HelicsLogLevels
-    DATA = 6  # HelicsLogLevels
-    TRACE = 7  # HelicsLogLevels
+    @unique
+    class HelicsLogLevel(IntEnum):
+        """
+        - **NO_PRINT**    = -1
+        - **ERROR**       = 0
+        - **WARNING**     = 1
+        - **SUMMARY**     = 2
+        - **CONNECTIONS** = 3
+        - **INTERFACES**  = 4
+        - **TIMING**      = 5
+        - **DATA**        = 6
+        - **TRACE**       = 7
+        """
+
+        NO_PRINT = -1  # HelicsLogLevels
+        ERROR = 0  # HelicsLogLevels
+        WARNING = 1  # HelicsLogLevels
+        SUMMARY = 2  # HelicsLogLevels
+        CONNECTIONS = 3  # HelicsLogLevels
+        INTERFACES = 4  # HelicsLogLevels
+        TIMING = 5  # HelicsLogLevels
+        DATA = 6  # HelicsLogLevels
+        TRACE = 7  # HelicsLogLevels
+
+
+else:
+
+    @unique
+    class HelicsLogLevel(IntEnum):
+        """
+        - **NO_PRINT**    = -4
+        - **ERROR**       = 0
+        - **WARNING**     = 3
+        - **SUMMARY**     = 6
+        - **CONNECTIONS** = 9
+        - **INTERFACES**  = 12
+        - **TIMING**      = 15
+        - **DATA**        = 18
+        - **TRACE**       = 21
+        """
+
+        NO_PRINT = -4  # HelicsLogLevels
+        ERROR = 0  # HelicsLogLevels
+        WARNING = 3  # HelicsLogLevels
+        SUMMARY = 6  # HelicsLogLevels
+        CONNECTIONS = 9  # HelicsLogLevels
+        INTERFACES = 12  # HelicsLogLevels
+        TIMING = 15  # HelicsLogLevels
+        DATA = 18  # HelicsLogLevels
+        TRACE = 21  # HelicsLogLevels
 
 
 HELICS_LOG_LEVEL_NO_PRINT = HelicsLogLevel.NO_PRINT

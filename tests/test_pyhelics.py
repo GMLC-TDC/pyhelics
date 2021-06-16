@@ -12,7 +12,8 @@ import helics as h
 
 
 def test_helicsGetVersion():
+    print(h.helicsGetVersion())
     try:
-        assert h.helicsGetVersion().startswith("2.7.0")
+        assert h.helicsGetVersion().startswith("2")
     except Exception:
-        assert h.helicsGetVersion().startswith("3.0.0-alpha.2")
+        assert h.helicsGetVersion().startswith("3")
