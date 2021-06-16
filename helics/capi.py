@@ -1692,6 +1692,27 @@ class HelicsFederate(_HelicsCHandle):
             helicsFederateEnterExecutingModeComplete(self)
         return out_iterate
 
+    def disconnect(self):
+        """
+        Terminate the simulation.
+
+        Call is will block until the disconnect has been acknowledged, no commands that interact with the core may be called after this function function.
+        """
+        helicsFederateDisconnect(self)
+
+    def disconnect_async(self):
+        """
+        Terminate the simulation in a non-blocking call.
+        `self.disconnect_complete()` must be called after this call to complete the disconnect procedure.
+        """
+        helicsFederateDisconnectAsync(self)
+
+    def disconnect_complete(self):
+        """
+        Complete the asynchronous terminate pair.
+        """
+        helicsFederateDisconnectComplete(self)
+
     def finalize(self):
         """
         Terminate the simulation.
@@ -3691,29 +3712,62 @@ def helicsFederateFinalize(fed: HelicsFederate):
     """
     Finalize the federate. This function halts all communication in the federate and disconnects it from the core.
     """
-    f = loadSym("helicsFederateFinalize")
-    err = helicsErrorInitialize()
-    f(fed.handle, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    warnings.warn("This function is deprecated. Use `helicsFederateDisconnect` instead.")
+    helicsFederateDisconnect(fed)
 
 
 def helicsFederateFinalizeAsync(fed: HelicsFederate):
     """
     Finalize the federate in an async call.
     """
-    f = loadSym("helicsFederateFinalizeAsync")
+    warnings.warn("This function is deprecated. Use `helicsFederateDisconnectAsync` instead.")
+    helicsFederateDisconnectAsync(fed)
+
+
+def helicsFederateFinalizeComplete(fed: HelicsFederate):
+    """
+    Complete the asynchronous disconnect call.
+    """
+    warnings.warn("This function is deprecated. Use `helicsFederateDisconnectComplete` instead.")
+    helicsFederateDisconnectComplete(fed)
+
+
+def helicsFederateDisconnect(fed: HelicsFederate):
+    """
+    Disconnect the federate. This function halts all communication in the federate and disconnects it from the core.
+    """
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsFederateFinalize")
+    else:
+        f = loadSym("helicsFederateDisconnect")
     err = helicsErrorInitialize()
     f(fed.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateFinalizeComplete(fed: HelicsFederate):
+def helicsFederateDisconnectAsync(fed: HelicsFederate):
     """
-    Complete the asynchronous finalize call.
+    Disconnect the federate in an async call.
     """
-    f = loadSym("helicsFederateFinalizeComplete")
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsFederateFinalizeAsync")
+    else:
+        f = loadSym("helicsFederateDisconnectAsync")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateDisconnectComplete(fed: HelicsFederate):
+    """
+    Complete the asynchronous disconnect call.
+    """
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsFederateFinalizeComplete")
+    else:
+        f = loadSym("helicsFederateDisconnectComplete")
     err = helicsErrorInitialize()
     f(fed.handle, err)
     if err.error_code != 0:
