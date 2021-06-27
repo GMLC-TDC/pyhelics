@@ -256,7 +256,7 @@ def test_python_api1():
 
 def test_python_api2():
 
-    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel 1")
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel=warning")
     assert broker.is_connected()
 
     broker.set_global("hello", "world")

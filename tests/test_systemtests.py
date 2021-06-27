@@ -260,7 +260,7 @@ def test_system_tests_federate_logging():
     h.helicsFederateInfoSetCoreName(fi, "clogf")
     fed = h.helicsCreateValueFederate("f1", fi)
     h.helicsFederateSetLogFile(fed, lfile)
-    h.helicsFederateLogLevelMessage(fed, 7, "hello")
+    h.helicsFederateLogLevelMessage(fed, h.HELICS_LOG_LEVEL_TRACE, "hello")
     h.helicsFederateLogErrorMessage(fed, "hello")
     h.helicsFederateLogDebugMessage(fed, "hello")
     h.helicsFederateLogWarningMessage(fed, "hello")

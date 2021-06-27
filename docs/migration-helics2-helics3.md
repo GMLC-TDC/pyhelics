@@ -92,10 +92,8 @@ The following functions have been renamed and the argument order has been update
 
 The following functions have been renamed:
 
-- `helicsFederatePendingMessages` -> `helicsFederatePendingMessagesCount`
-- `helicsEndpointPendingMessages` -> `helicsEndpointPendingMessagesCount`
-
-
+- `helicsFederatePendingMessages` -> `helicsFederatePendingMessageCount`
+- `helicsEndpointPendingMessages` -> `helicsEndpointPendingMessageCount`
 
 ### Enumerations
 

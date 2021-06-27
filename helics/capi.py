@@ -437,6 +437,7 @@ class HelicsProperty(IntEnum):
     INT_LOG_LEVEL = 271  # HelicsProperties
     INT_FILE_LOG_LEVEL = 272  # HelicsProperties
     INT_CONSOLE_LOG_LEVEL = 274  # HelicsProperties
+    INVALID_OPTION_INDEX = -101  # HelicsProperties
 
 
 HELICS_PROPERTY_TIME_DELTA = HelicsProperty.TIME_DELTA
@@ -451,6 +452,7 @@ HELICS_PROPERTY_INT_MAX_ITERATIONS = HelicsProperty.INT_MAX_ITERATIONS
 HELICS_PROPERTY_INT_LOG_LEVEL = HelicsProperty.INT_LOG_LEVEL
 HELICS_PROPERTY_INT_FILE_LOG_LEVEL = HelicsProperty.INT_FILE_LOG_LEVEL
 HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+HELICS_PROPERTY_INVALID_OPTION_INDEX = HelicsProperty.INVALID_OPTION_INDEX
 
 helics_property_time_delta = HelicsProperty.TIME_DELTA
 helics_property_time_period = HelicsProperty.TIME_PERIOD
@@ -464,6 +466,7 @@ helics_property_int_max_iterations = HelicsProperty.INT_MAX_ITERATIONS
 helics_property_int_log_level = HelicsProperty.INT_LOG_LEVEL
 helics_property_int_file_log_level = HelicsProperty.INT_FILE_LOG_LEVEL
 helics_property_int_console_log_level = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+helics_property_invalid_option_index = HelicsProperty.INVALID_OPTION_INDEX
 
 
 @unique
@@ -1239,7 +1242,7 @@ class HelicsEndpoint(_HelicsCHandle):
     @property
     def n_pending_messages(self) -> int:
         """Returns the number of pending receives for endpoint."""
-        return helicsEndpointPendingMessagesCount(self)
+        return helicsEndpointPendingMessageCount(self)
 
     @property
     def name(self) -> str:
@@ -1604,7 +1607,7 @@ class HelicsFederate(_HelicsCHandle):
     @property
     def n_pending_messages(self):
         """Returns the number of pending receives for all endpoints."""
-        return helicsFederatePendingMessagesCount(self)
+        return helicsFederatePendingMessageCount(self)
 
     @property
     def separator(self):
@@ -3542,7 +3545,7 @@ def helicsGetPropertyIndex(value: str) -> HelicsProperty:
     """
     f = loadSym("helicsGetPropertyIndex")
     result = f(cstring(value))
-    if result == -1:
+    if result == -1 or result == -101:
         raise HelicsException("[-1] Unknown property index for flag `{value}`".format(value=value))
     else:
         return HelicsProperty(result)
@@ -3560,7 +3563,7 @@ def helicsGetFlagIndex(value: str) -> HelicsFederateFlag:
     """
     f = loadSym("helicsGetFlagIndex")
     result = f(cstring(value))
-    if result == -1:
+    if result == -1 or result == -101:
         raise HelicsException("[-1] Unknown property index for flag `{value}`".format(value=value))
     else:
         return HelicsFederateFlag(result)
@@ -3579,7 +3582,7 @@ def helicsGetOptionIndex(value: str) -> HelicsHandleOption:
     """
     f = loadSym("helicsGetOptionIndex")
     result = f(cstring(value))
-    if result == -1:
+    if result == -1 or result == -101:
         raise HelicsException("[-1] Unknown option index for flag `{value}`".format(value=value))
     else:
         return HelicsHandleOption(result)
@@ -3598,8 +3601,8 @@ def helicsGetOptionValue(value: str) -> int:
     """
     f = loadSym("helicsGetOptionValue")
     result = f(cstring(value))
-    if result == -1:
-        raise HelicsException("[-1] Unknown option valud for flag `{value}`".format(value=value))
+    if result == -1 or result == -101:
+        raise HelicsException("[-1] Unknown option value for flag `{value}`".format(value=value))
     else:
         return result
 
@@ -3703,7 +3706,13 @@ def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string
     - **`error_string`** - A string describing the error.
     """
     f = loadSym("helicsFederateGlobalError")
-    f(fed.handle, error_code, cstring(error_string))
+    if HELICS_VERSION == 2:
+        f(fed.handle, error_code, cstring(error_string))
+    else:
+        err = helicsErrorInitialize()
+        f(fed.handle, error_code, cstring(error_string), err)
+        if err.error_code != 0:
+            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
@@ -3734,7 +3743,13 @@ def helicsFederateLocalError(fed: HelicsFederate, error_code: int, error_string:
     - **`error_string`** - A string describing the error.
     """
     f = loadSym("helicsFederateLocalError")
-    f(fed.handle, error_code, cstring(error_string))
+    if HELICS_VERSION == 2:
+        f(fed.handle, error_code, cstring(error_string))
+    else:
+        err = helicsErrorInitialize()
+        f(fed.handle, error_code, cstring(error_string), err)
+        if err.error_code != 0:
+            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateFinalize(fed: HelicsFederate):
@@ -5090,7 +5105,7 @@ def helicsEndpointHasMessage(endpoint: HelicsEndpoint) -> bool:
     return result == 1
 
 
-def helicsFederatePendingMessagesCount(fed: HelicsFederate) -> int:
+def helicsFederatePendingMessageCount(fed: HelicsFederate) -> int:
     """
     Returns the number of pending receives for the specified destination endpoint.
 
@@ -5101,7 +5116,7 @@ def helicsFederatePendingMessagesCount(fed: HelicsFederate) -> int:
     if HELICS_VERSION == 2:
         f = loadSym("helicsFederatePendingMessages")
     else:
-        f = loadSym("helicsFederatePendingMessagesCount")
+        f = loadSym("helicsFederatePendingMessageCount")
     return f(fed.handle)
 
 
@@ -5115,8 +5130,8 @@ def helicsFederatePendingMessages(fed: HelicsFederate) -> int:
 
     **DEPRECATED**
     """
-    warnings.warn("This function has been deprecated. Use `helicsFederatePendingMessagesCount` instead.")
-    return helicsFederatePendingMessagesCount(fed)
+    warnings.warn("This function has been deprecated. Use `helicsFederatePendingMessageCount` instead.")
+    return helicsFederatePendingMessageCount(fed)
 
 
 def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
@@ -5127,11 +5142,11 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
 
     - **`endpoint`** - The endpoint to query.
     """
-    warnings.warn("This function has been deprecated. Use `helicsEndpointPendingMessagesCount` instead.")
-    return helicsEndpointPendingMessagesCount(endpoint)
+    warnings.warn("This function has been deprecated. Use `helicsEndpointPendingMessageCount` instead.")
+    return helicsEndpointPendingMessageCount(endpoint)
 
 
-def helicsEndpointPendingMessagesCount(endpoint: HelicsEndpoint) -> int:
+def helicsEndpointPendingMessageCount(endpoint: HelicsEndpoint) -> int:
     """
     Returns the number of pending receives for all endpoints of a particular federate.
 
@@ -5142,7 +5157,7 @@ def helicsEndpointPendingMessagesCount(endpoint: HelicsEndpoint) -> int:
     if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointPendingMessages")
     else:
-        f = loadSym("helicsEndpointPendingMessagesCount")
+        f = loadSym("helicsEndpointPendingMessageCount")
     return f(endpoint.handle)
 
 
