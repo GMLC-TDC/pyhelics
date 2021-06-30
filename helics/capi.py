@@ -1390,7 +1390,7 @@ class HelicsFederateInfo(_HelicsCHandle):
 
     @property
     def core_type(self):
-        raise AttributeError("Unreadable attribute `broker_init`")
+        raise AttributeError("Unreadable attribute `core_type`")
 
     @core_type.setter
     def core_type(self, core_type):
