@@ -774,7 +774,7 @@ class _FilterOptionAccessor(_HelicsCHandle):
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
+        raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
 class HelicsFilter(_HelicsCHandle):
@@ -1086,8 +1086,7 @@ class HelicsBroker(_HelicsCHandle):
         """
         q = helicsCreateQuery(target, query)
         if mode != HelicsSequencingMode.FAST:
-            err = helicsErrorInitialize()
-            helicsQuerySetOrdering(q, mode, err)
+            helicsQuerySetOrdering(q, mode)
         result = helicsQueryBrokerExecute(q, self)
         helicsQueryFree(q)
         return result
@@ -1121,7 +1120,7 @@ class _MessageFlagAccessor(_HelicsCHandle):
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
+        raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
 class HelicsMessage(_HelicsCHandle):
@@ -1325,7 +1324,7 @@ class _FederateInfoFlagAccessor(_HelicsCHandle):
         return helicsFederateInfoSetFlagOption(self, idx, value)
 
     def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
+        raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
 class _FederateInfoPropertyAccessor(_HelicsCHandle):
@@ -1349,7 +1348,7 @@ class _FederateInfoPropertyAccessor(_HelicsCHandle):
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
+        raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
 class HelicsFederateInfo(_HelicsCHandle):
@@ -1492,7 +1491,7 @@ class _PublicationOptionAccessor(_HelicsCHandle):
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
+        raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
 class _FederateFlagAccessor(_HelicsCHandle):
@@ -1522,7 +1521,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
+        raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
 class _FederatePropertyAccessor(_HelicsCHandle):
@@ -1553,7 +1552,7 @@ class _FederatePropertyAccessor(_HelicsCHandle):
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
+        raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
 class HelicsFederate(_HelicsCHandle):
@@ -2059,7 +2058,7 @@ class _InputOptionAccessor(_HelicsCHandle):
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
-        raise NotImplementedError("Cannot delete index")
+        raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
 class HelicsInput(_HelicsCHandle):
@@ -2115,7 +2114,7 @@ class HelicsInput(_HelicsCHandle):
         elif isinstance(data, float):
             helicsInputSetDefaultDouble(self, data)
         elif isinstance(data, complex):
-            helicsInputSetDefaultComplex(self, data)
+            helicsInputSetDefaultComplex(self, data.real, data.imag)
         elif isinstance(data, list):
             helicsInputSetDefaultVector(self, data)
         else:
@@ -2263,7 +2262,7 @@ class HelicsPublication(_HelicsCHandle):
         elif isinstance(data, float):
             helicsPublicationPublishDouble(self, data)
         elif isinstance(data, complex):
-            helicsPublicationPublishComplex(self, data)
+            helicsPublicationPublishComplex(self, data.real, data.imag)
         elif isinstance(data, list):
             helicsPublicationPublishVector(self, data)
         elif isinstance(data, tuple):
@@ -2359,7 +2358,7 @@ class HelicsValueFederate(HelicsFederate):
         self.publications[pub.name] = pub
         return pub
 
-    def register_from_publication_json(self, data: Union[dict, str]) -> HelicsPublication:
+    def register_from_publication_json(self, data: Union[dict, str]):
         """
         Register publications from a JSON output file or string.
 
@@ -2373,9 +2372,10 @@ class HelicsValueFederate(HelicsFederate):
                 data = json.loads(data)
         else:
             data = json.dumps(data)
-        pub = helicsFederateRegisterFromPublicationJSON(self, data)
-        self.publications["{}".format(pub.name)] = pub
-        return pub
+        helicsFederateRegisterFromPublicationJSON(self, data)
+        for i in range(0, self.n_publications):
+            pub = self.get_publication_by_index(i)
+            self.publications[pub.name] = pub
 
     def get_publication_by_name(self, name: str) -> HelicsPublication:
         """Get publication by name."""
@@ -2566,7 +2566,7 @@ def cdouble(d: float) -> float:
     return d
 
 
-def cchar(c: str) -> str:
+def cchar(c: str) -> bytes:
     # Convert python str to cchar
     return c.encode()
 
@@ -2602,7 +2602,7 @@ def helicsGetCompilerVersion() -> str:
     return ffi.string(result).decode()
 
 
-def helicsErrorInitialize() -> HelicsError:
+def helicsErrorInitialize():
     """
     Return an initialized error object.
     """
@@ -3739,15 +3739,15 @@ def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string
 def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
     f = loadSym("helicsBrokerGlobalError")
     err = helicsErrorInitialize()
-    f(broker.handler, error_code, error_string, err)
+    f(broker.handle, error_code, error_string, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsCoreGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
+def helicsCoreGlobalError(core: HelicsCore, error_code: int, error_string: str):
     f = loadSym("helicsCoreGlobalError")
     err = helicsErrorInitialize()
-    f(broker.handler, error_code, error_string, err)
+    f(core.handle, error_code, error_string, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4997,14 +4997,22 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
     - **`time`** - The time the message should be sent.
     """
     err = helicsErrorInitialize()
+
+    if isinstance(data, str):
+        data = data.encode()
+    if not isinstance(data, bytes):
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
+
     inputDataLength = len(data)
 
     if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointSendEventRaw")
-        f(endpoint.handle, cstring(destination), cstring(data), inputDataLength, time, err)
+        f(endpoint.handle, cstring(destination), data, inputDataLength, time, err)
     else:
         f = loadSym("helicsEndpointSendBytesToAt")
-        f(endpoint.handle, cstring(data), inputDataLength, cstring(destination), time, err)
+        f(endpoint.handle, data, inputDataLength, cstring(destination), time, err)
 
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
@@ -6038,7 +6046,7 @@ def helicsFederateRegisterGlobalFilter(fed: HelicsFederate, type: HelicsFilterTy
         return HelicsFilter(result)
 
 
-def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> HelicsFilter:
+def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> HelicsCloningFilter:
     """
     Create a cloning Filter on the specified federate.
     Cloning filters copy a message and send it to multiple locations, source and destination can be added through other functions.
@@ -6048,7 +6056,7 @@ def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> Helic
     - **`fed`** - The federate to register through.
     - **`name`** - The name of the filter (can be NULL).
 
-    **Returns**: `helics.HelicsFilter`.
+    **Returns**: `helics.HelicsCloningFilter`.
     """
     f = loadSym("helicsFederateRegisterCloningFilter")
     err = helicsErrorInitialize()
@@ -6059,7 +6067,7 @@ def helicsFederateRegisterCloningFilter(fed: HelicsFederate, name: str) -> Helic
         return HelicsCloningFilter(result)
 
 
-def helicsFederateRegisterGlobalCloningFilter(fed: HelicsFederate, name: str) -> HelicsFilter:
+def helicsFederateRegisterGlobalCloningFilter(fed: HelicsFederate, name: str) -> HelicsCloningFilter:
     """
     Create a global cloning Filter on the specified federate.
     Cloning filters copy a message and send it to multiple locations, source and destination can be added through other functions.
@@ -6102,7 +6110,7 @@ def helicsCoreRegisterFilter(core: HelicsCore, type: HelicsFilterType, name: str
         return HelicsFilter(result)
 
 
-def helicsCoreRegisterCloningFilter(core: HelicsCore, name: str) -> HelicsFilter:
+def helicsCoreRegisterCloningFilter(core: HelicsCore, name: str) -> HelicsCloningFilter:
     """
     Create a cloning Filter on the specified core.
     Cloning filters copy a message and send it to multiple locations, source and destination can be added through other functions.
@@ -6120,7 +6128,7 @@ def helicsCoreRegisterCloningFilter(core: HelicsCore, name: str) -> HelicsFilter
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsFilter(result)
+        return HelicsCloningFilter(result)
 
 
 def helicsFederateGetFilterCount(fed: HelicsFederate) -> int:
@@ -8047,7 +8055,7 @@ def helicsEndpointAddSourceTarget(endpoint: HelicsEndpoint, source_name: str):
     """
     f = loadSym("helicsEndpointAddSourceTarget")
     err = helicsErrorInitialize()
-    f(filter.handle, cstring(source_name), err)
+    f(endpoint.handle, cstring(source_name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -8062,7 +8070,7 @@ def helicsEndpointAddDestinationTarget(endpoint: HelicsEndpoint, destination_nam
     """
     f = loadSym("helicsEndpointAddDestinationTarget")
     err = helicsErrorInitialize()
-    f(filter.handle, cstring(destination_name), err)
+    f(endpoint.handle, cstring(destination_name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -8076,7 +8084,7 @@ def helicsEndpointRemoveTarget(endpoint: HelicsEndpoint, target: str):
     """
     f = loadSym("helicsEndpointAddRemoveTarget")
     err = helicsErrorInitialize()
-    f(filter.handle, cstring(target), err)
+    f(endpoint.handle, cstring(target), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
