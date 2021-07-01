@@ -2,6 +2,7 @@
 import logging
 import warnings
 import json
+import weakref
 
 from enum import IntEnum, unique
 
@@ -717,9 +718,33 @@ helics_state_pending_iterative_time = HelicsFederateState.PENDING_ITERATIVE_TIME
 helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
 
 
+def generate_cleanup_callback(obj):
+
+    if issubclass(obj.__class__, HelicsFederate):
+        f = loadSym("helicsFederateFree")
+    elif issubclass(obj.__class__, HelicsFederateInfo):
+        f = loadSym("helicsFederateInfoFree")
+    elif issubclass(obj.__class__, HelicsBroker):
+        f = loadSym("helicsBrokerFree")
+    elif issubclass(obj.__class__, HelicsCore):
+        f = loadSym("helicsCoreFree")
+    elif issubclass(obj.__class__, HelicsQuery):
+        f = loadSym("helicsQueryFree")
+    # elif issubclass(obj.__class__, HelicsMessage):
+    #     f = loadSym("helicsMessageFree")
+    else:
+        f = lambda handle: None
+
+    def cleanup(handle):
+        f(handle)
+
+    return cleanup
+
+
 class _HelicsCHandle(object):
     def __init__(self, handle):
         self.handle = handle
+        self._finalizer = weakref.finalize(self, generate_cleanup_callback(self), self.handle)
 
 
 class _FilterOptionAccessor(_HelicsCHandle):
@@ -828,8 +853,8 @@ class HelicsCore(_HelicsCHandle):
             class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
 
-    def __del__(self):
-        helicsCoreFree(self)
+    # def __del__(self):
+    #     helicsCoreFree(self)
 
     @property
     def identifier(self) -> str:
@@ -955,8 +980,8 @@ class HelicsBroker(_HelicsCHandle):
             class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
         )
 
-    def __del__(self):
-        helicsBrokerFree(self)
+    # def __del__(self):
+    #     helicsBrokerFree(self)
 
     def is_connected(self):
         """Check if the broker is connected."""
@@ -1125,6 +1150,9 @@ class HelicsMessage(_HelicsCHandle):
             id=hex(id(self)),
         )
 
+    # def __del__(self):
+    #     helicsMessageFree(self)
+
     def append(self, data: bytes):
         helicsMessageAppendData(self, data)
 
@@ -1208,6 +1236,8 @@ class HelicsMessage(_HelicsCHandle):
 
 class HelicsQuery(_HelicsCHandle):
     pass
+    # def __del__(self):
+    #     helicsQueryFree(self)
 
 
 class HelicsEndpoint(_HelicsCHandle):
@@ -1569,8 +1599,8 @@ class HelicsFederate(_HelicsCHandle):
             id=hex(id(self)),
         )
 
-    def __del__(self):
-        helicsFederateFree(self)
+    # def __del__(self):
+    #     helicsFederateFree(self)
 
     @property
     def name(self) -> str:
