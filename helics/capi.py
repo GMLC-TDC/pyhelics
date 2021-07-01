@@ -730,8 +730,9 @@ def generate_cleanup_callback(obj):
         f = loadSym("helicsCoreFree")
     elif isinstance(obj, HelicsQuery):
         f = loadSym("helicsQueryFree")
-    elif isinstance(obj, HelicsMessage):
-        f = loadSym("helicsMessageFree")
+    # TODO: uncomment when helicsMessageFree segfault bug is fixed.
+    # elif isinstance(obj, HelicsMessage):
+    #     f = loadSym("helicsMessageFree")
     else:
 
         def f(handle):
