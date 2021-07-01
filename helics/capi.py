@@ -719,7 +719,7 @@ helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
 
 
 def generate_cleanup_callback(obj):
-
+    t = type(obj)
     if isinstance(obj, HelicsFederate):
         f = loadSym("helicsFederateFree")
     elif isinstance(obj, HelicsFederateInfo):
@@ -730,13 +730,12 @@ def generate_cleanup_callback(obj):
         f = loadSym("helicsCoreFree")
     elif isinstance(obj, HelicsQuery):
         f = loadSym("helicsQueryFree")
-    # TODO: uncomment when helicsMessageFree segfault bug is fixed.
-    # elif isinstance(obj, HelicsMessage):
-    #     f = loadSym("helicsMessageFree")
+    elif isinstance(obj, HelicsMessage):
+        f = loadSym("helicsMessageFree")
     else:
 
         def f(handle):
-            pass
+            warnings.warn("Trying to finalize unknown object of type: {}".format(t))
 
     def cleanup(handle):
         f(handle)
@@ -746,10 +745,11 @@ def generate_cleanup_callback(obj):
 
 
 class _HelicsCHandle(object):
-    def __init__(self, handle):
+    def __init__(self, handle, cleanup=True):
         self.handle = handle
-        cleanup_callback = generate_cleanup_callback(self)
-        self._finalizer = weakref.finalize(self, cleanup_callback, self.handle)
+        if cleanup:
+            cleanup_callback = generate_cleanup_callback(self)
+            self._finalizer = weakref.finalize(self, cleanup_callback, self.handle)
 
 
 class _FilterOptionAccessor(_HelicsCHandle):
@@ -779,8 +779,8 @@ class _FilterOptionAccessor(_HelicsCHandle):
 
 class HelicsFilter(_HelicsCHandle):
     def __init__(self, handle):
-        super(HelicsFilter, self).__init__(handle)
-        self.option = _FilterOptionAccessor(self.handle)
+        super(HelicsFilter, self).__init__(handle, cleanup=False)
+        self.option = _FilterOptionAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
         name = self.name
@@ -1127,7 +1127,7 @@ class _MessageFlagAccessor(_HelicsCHandle):
 class HelicsMessage(_HelicsCHandle):
     def __init__(self, handle):
         super(HelicsMessage, self).__init__(handle)
-        self.flag = _MessageFlagAccessor(self.handle)
+        self.flag = _MessageFlagAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
         source = self.source
@@ -1357,8 +1357,8 @@ class HelicsFederateInfo(_HelicsCHandle):
         # Python2 compatible super
         super(HelicsFederateInfo, self).__init__(handle)
 
-        self.property = _FederateInfoPropertyAccessor(self.handle)
-        self.flag = _FederateInfoFlagAccessor(self.handle)
+        self.property = _FederateInfoPropertyAccessor(self.handle, cleanup=False)
+        self.flag = _FederateInfoFlagAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
         return """<helics.{class_name}() at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
@@ -1562,8 +1562,8 @@ class HelicsFederate(_HelicsCHandle):
         super(HelicsFederate, self).__init__(handle)
 
         self._exec_async_iterate = False
-        self.property = _FederatePropertyAccessor(self.handle)
-        self.flag = _FederateFlagAccessor(self.handle)
+        self.property = _FederatePropertyAccessor(self.handle, cleanup=False)
+        self.flag = _FederateFlagAccessor(self.handle, cleanup=False)
         self._separator = "/"
 
         self.publications = {}
@@ -2064,8 +2064,8 @@ class _InputOptionAccessor(_HelicsCHandle):
 
 class HelicsInput(_HelicsCHandle):
     def __init__(self, handle):
-        super(HelicsInput, self).__init__(handle)
-        self.option = _InputOptionAccessor(self.handle)
+        super(HelicsInput, self).__init__(handle, cleanup=False)
+        self.option = _InputOptionAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
         name = self.name
@@ -2227,8 +2227,8 @@ class HelicsInput(_HelicsCHandle):
 
 class HelicsPublication(_HelicsCHandle):
     def __init__(self, handle):
-        super(HelicsPublication, self).__init__(handle)
-        self.option = _PublicationOptionAccessor(self.handle)
+        super(HelicsPublication, self).__init__(handle, cleanup=False)
+        self.option = _PublicationOptionAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
         name = self.name
@@ -4826,7 +4826,7 @@ def helicsFederateRegisterEndpoint(fed: HelicsFederate, name: str, type: str) ->
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsEndpoint(result)
+        return HelicsEndpoint(result, cleanup=False)
 
 
 def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: str = "") -> HelicsEndpoint:
@@ -4848,7 +4848,7 @@ def helicsFederateRegisterGlobalEndpoint(fed: HelicsFederate, name: str, type: s
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsEndpoint(result)
+        return HelicsEndpoint(result, cleanup=False)
 
 
 def helicsFederateGetEndpoint(fed: HelicsFederate, name: str) -> HelicsEndpoint:
@@ -4868,7 +4868,7 @@ def helicsFederateGetEndpoint(fed: HelicsFederate, name: str) -> HelicsEndpoint:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsEndpoint(result)
+        return HelicsEndpoint(result, cleanup=False)
 
 
 def helicsFederateGetEndpointByIndex(fed: HelicsFederate, index: int) -> HelicsEndpoint:
@@ -4888,7 +4888,7 @@ def helicsFederateGetEndpointByIndex(fed: HelicsFederate, index: int) -> HelicsE
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsEndpoint(result)
+        return HelicsEndpoint(result, cleanup=False)
 
 
 def helicsEndpointIsValid(endpoint: HelicsEndpoint) -> bool:
@@ -8015,7 +8015,7 @@ def helicsFederateRegisterTargetedEndpoint(fed: HelicsFederate, name: str, type:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsEndpoint(result)
+        return HelicsEndpoint(result, cleanup=False)
 
 
 def helicsFederateRegisterGlobalTargetedEndpoint(fed: HelicsFederate, name: str, type: str):
@@ -8034,7 +8034,7 @@ def helicsFederateRegisterGlobalTargetedEndpoint(fed: HelicsFederate, name: str,
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsEndpoint(result)
+        return HelicsEndpoint(result, cleanup=False)
 
 
 def helicsEndpointAddSourceTarget(endpoint: HelicsEndpoint, source_name: str):
