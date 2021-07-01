@@ -740,6 +740,7 @@ def generate_cleanup_callback(obj):
 
     def cleanup(handle):
         f(handle)
+        helicsCleanupLibrary()
 
     return cleanup
 
