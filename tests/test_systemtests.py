@@ -92,12 +92,12 @@ def test_system_broker_global_value():
     res = h.helicsQueryBrokerExecute(q, brk)
     assert globalVal in str(res)
     h.helicsBrokerSetGlobal(brk, "testglobal2", globalVal2)
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
     q = h.helicsCreateQuery("global", "testglobal2")
     res = h.helicsQueryBrokerExecute(q, brk)
     assert globalVal2 in str(res)
     h.helicsBrokerDisconnect(brk)
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
     assert h.helicsBrokerIsConnected(brk) is False
     h.helicsBrokerFree(brk)
 
@@ -140,14 +140,14 @@ def test_system_test_core_global_value2():
     res = h.helicsQueryCoreExecute(q, cr)
     assert globalVal in str(res)
     h.helicsCoreSetGlobal(cr, "testglobal2", globalVal2)
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
     q = h.helicsCreateQuery("global", "testglobal2")
     res = h.helicsQueryCoreExecute(q, cr)
     assert globalVal2 in str(res)
     h.helicsBrokerDisconnect(brk)
     h.helicsCoreDisconnect(cr)
 
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
     assert h.helicsBrokerIsConnected(brk) == False
 
 
@@ -162,13 +162,14 @@ def test_system_test_broker_global_value():
     assert globalVal in str(res)
 
     h.helicsBrokerSetGlobal(brk, "testglobal2", globalVal2)
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
+
     q = h.helicsCreateQuery("global", "testglobal2")
     res = h.helicsQueryBrokerExecute(q, brk)
     assert globalVal2 in str(res)
 
     h.helicsBrokerDisconnect(brk)
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
     assert h.helicsBrokerIsConnected(brk) is False
 
 
@@ -186,8 +187,8 @@ def test_system_test_federate_global_value():
 
     fi2 = h.helicsFederateInfoClone(fi)
 
-    h.helicsFederateInfoFree(fi2)
-    h.helicsFederateInfoFree(fi)
+    # h.helicsFederateInfoFree(fi2)
+    # h.helicsFederateInfoFree(fi)
 
     globalVal = "this is a string constant that functions as a global"
     globalVal2 = "this is a second string constant that functions as a global"
@@ -196,7 +197,7 @@ def test_system_test_federate_global_value():
     res = h.helicsQueryExecute(q, fed)
     assert globalVal in str(res)
     h.helicsFederateSetGlobal(fed, "testglobal2", globalVal2)
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
     q = h.helicsCreateQuery("global", "testglobal2")
     h.helicsQueryExecuteAsync(q, fed)
     while h.helicsQueryIsCompleted(q) is False:
@@ -216,8 +217,8 @@ def test_system_test_federate_global_value():
     h.helicsCoreDisconnect(cr)
     h.helicsBrokerDisconnect(brk)
 
-    h.helicsQueryFree(q)
-    h.helicsQueryFree(q2)
+    # h.helicsQueryFree(q)
+    # h.helicsQueryFree(q2)
     assert h.helicsBrokerIsConnected(brk) is False
 
     h.helicsBrokerDisconnect(brk)
@@ -268,7 +269,7 @@ def test_system_tests_federate_logging():
     h.helicsCoreSetLogFile(core, lfile)
     h.helicsCoreDisconnect(core)
     h.helicsFederateFinalize(fed)
-    h.helicsFederateInfoFree(fi)
+    # h.helicsFederateInfoFree(fi)
     h.helicsCloseLibrary()
 
     assert isfile(lfile)
@@ -287,7 +288,7 @@ def test_federate_tests_federateGeneratedLocalError():
 
     fed1 = h.helicsCreateValueFederate("fed0", fi)
 
-    h.helicsFederateInfoFree(fi)
+    # h.helicsFederateInfoFree(fi)
     h.helicsFederateEnterExecutingMode(fed1)
 
     h.helicsFederateRequestTime(fed1, 2.0)
@@ -314,7 +315,7 @@ def test_federate_tests_federateGeneratedGlobalError():
 
     fed1 = h.helicsCreateValueFederate("fed0", fi)
 
-    h.helicsFederateInfoFree(fi)
+    # h.helicsFederateInfoFree(fi)
     h.helicsFederateEnterExecutingMode(fed1)
 
     h.helicsFederateRequestTime(fed1, 2.0)

@@ -59,6 +59,6 @@ while currenttime <= 100:
 
 h.helicsFederateFinalize(vfed)
 
-h.helicsFederateFree(vfed)
+# h.helicsFederateFree(vfed)
 h.helicsCloseLibrary()
 print("PI RECEIVER: Federate finalized")
