@@ -758,14 +758,14 @@ class _FilterOptionAccessor(_HelicsCHandle):
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsFilterGetOption(self, idx)
+        return helicsFilterGetOption(HelicsFilter(self.handle), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsFilterSetOption(self, idx, value)
+        return helicsFilterSetOption(HelicsFilter(self.handle), idx, value)
 
     def __repr__(self):
         lst = []
@@ -1105,10 +1105,10 @@ class HelicsBroker(_HelicsCHandle):
 
 class _MessageFlagAccessor(_HelicsCHandle):
     def __getitem__(self, index):
-        return helicsMessageCheckFlag(self, index)
+        return helicsMessageCheckFlag(HelicsMessage(self.handle), index)
 
     def __setitem__(self, index: int, value: bool):
-        return helicsMessageSetFlagOption(self, index, value)
+        return helicsMessageSetFlagOption(HelicsMessage(self.handle), index, value)
 
     def __repr__(self):
         lst = []
@@ -6383,7 +6383,7 @@ def helicsFilterSetOption(filter: HelicsFilter, option: HelicsHandleOption, valu
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFilterGetOption(filter: HelicsFilter, option: HelicsHandleOption) -> int:
+def helicsFilterGetOption(filter: Union[HelicsFilter], option: HelicsHandleOption) -> int:
     """
     Get a handle option for the filter.
 
