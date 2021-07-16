@@ -53,9 +53,9 @@ def test_filter_type_tests_registration():
     h.helicsFederateEnterExecutingModeAsync(fFed)
     h.helicsFederateEnterExecutingMode(mFed)
     h.helicsFederateEnterExecutingModeComplete(fFed)
-    h.helicsFederateFinalizeAsync(mFed)
-    h.helicsFederateFinalize(fFed)
-    h.helicsFederateFinalizeComplete(mFed)
+    h.helicsFederateDisconnectAsync(mFed)
+    h.helicsFederateDisconnect(fFed)
+    h.helicsFederateDisconnectComplete(mFed)
 
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
@@ -103,9 +103,9 @@ def test_filter_type_tests_info():
     h.helicsFederateEnterExecutingMode(mFed)
     h.helicsFederateEnterExecutingModeComplete(fFed)
 
-    h.helicsFederateFinalizeAsync(mFed)
-    h.helicsFederateFinalize(fFed)
-    h.helicsFederateFinalizeComplete(mFed)
+    h.helicsFederateDisconnectAsync(mFed)
+    h.helicsFederateDisconnect(fFed)
+    h.helicsFederateDisconnectComplete(mFed)
 
     destroyFederate(fFed, fedinfo1)
     destroyFederate(mFed, fedinfo2)
@@ -162,7 +162,7 @@ def test_filter_type_tests_message_filter_function():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "port2", data)
+    h.helicsEndpointSendBytesTo(p1, data, "port2")
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
     h.helicsFederateRequestTime(fFed, 1.0)
@@ -184,14 +184,14 @@ def test_filter_type_tests_message_filter_function():
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
     assert h.helicsMessageGetTime(m2) == 2.5
 
     h.helicsFederateRequestTime(mFed, 3.0)
     h.helicsFederateRequestTimeComplete(fFed)
-    h.helicsFederateFinalizeAsync(mFed)
-    h.helicsFederateFinalize(fFed)
-    h.helicsFederateFinalizeComplete(mFed)
+    h.helicsFederateDisconnectAsync(mFed)
+    h.helicsFederateDisconnect(fFed)
+    h.helicsFederateDisconnectComplete(mFed)
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -224,7 +224,7 @@ def test_filter_test_types_function_mobj():
     assert state == h.HELICS_STATE_EXECUTION
 
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "port2", data)
+    h.helicsEndpointSendBytesTo(p1, data, "port2")
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
     h.helicsFederateRequestTime(fFed, 1.0)
@@ -247,14 +247,14 @@ def test_filter_test_types_function_mobj():
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
     assert h.helicsMessageGetTime(m2) == 2.5
 
     h.helicsFederateRequestTime(mFed, 3.0)
     h.helicsFederateRequestTimeComplete(fFed)
-    h.helicsFederateFinalizeAsync(mFed)
-    h.helicsFederateFinalize(fFed)
-    h.helicsFederateFinalizeComplete(mFed)
+    h.helicsFederateDisconnectAsync(mFed)
+    h.helicsFederateDisconnect(fFed)
+    h.helicsFederateDisconnectComplete(mFed)
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -290,7 +290,7 @@ def test_filter_test_types_function_two_stage():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "port2", data)
+    h.helicsEndpointSendBytesTo(p1, data, "port2")
 
     h.helicsFederateRequestTimeAsync(mFed, 0.0)
     h.helicsFederateRequestTimeAsync(fFed, 1.0)
@@ -315,16 +315,16 @@ def test_filter_test_types_function_two_stage():
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
     assert h.helicsMessageGetTime(m2) == 2.5
 
     h.helicsFederateRequestTimeComplete(fFed)
     h.helicsFederateRequestTimeComplete(fFed2)
-    h.helicsFederateFinalizeAsync(mFed)
-    h.helicsFederateFinalizeAsync(fFed)
-    h.helicsFederateFinalize(fFed2)
-    h.helicsFederateFinalizeComplete(mFed)
-    h.helicsFederateFinalizeComplete(fFed)
+    h.helicsFederateDisconnectAsync(mFed)
+    h.helicsFederateDisconnectAsync(fFed)
+    h.helicsFederateDisconnect(fFed2)
+    h.helicsFederateDisconnectComplete(mFed)
+    h.helicsFederateDisconnectComplete(fFed)
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -361,7 +361,7 @@ def test_filter_test_types_function2():
     assert state == h.HELICS_STATE_EXECUTION
 
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "port2", data)
+    h.helicsEndpointSendBytesTo(p1, data, "port2")
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
     h.helicsFederateRequestTime(fFed, 1.0)
@@ -370,7 +370,7 @@ def test_filter_test_types_function2():
     res = h.helicsFederateHasMessage(mFed)
     assert res is False
 
-    h.helicsEndpointSendMessageRaw(p2, "port1", data)
+    h.helicsEndpointSendBytesTo(p2, data, "port1")
     h.helicsFederateRequestTimeAsync(mFed, 2.0)
     h.helicsFederateRequestTime(fFed, 2.0)
     h.helicsFederateRequestTimeComplete(mFed)
@@ -386,16 +386,16 @@ def test_filter_test_types_function2():
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
     assert h.helicsMessageGetTime(m2) == 2.5
 
     assert h.helicsEndpointHasMessage(p1) is False
 
     h.helicsFederateRequestTime(mFed, 4.0)
     assert h.helicsEndpointHasMessage(p1) is True
-    h.helicsFederateFinalizeAsync(mFed)
-    h.helicsFederateFinalize(fFed)
-    h.helicsFederateFinalizeComplete(mFed)
+    h.helicsFederateDisconnectAsync(mFed)
+    h.helicsFederateDisconnect(fFed)
+    h.helicsFederateDisconnectComplete(mFed)
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -432,7 +432,7 @@ def test_filter_test_types_message_filter_function3():
     assert state == h.HELICS_STATE_EXECUTION
 
     data = "hello world".encode()
-    h.helicsEndpointSendMessageRaw(p1, "port2", data)
+    h.helicsEndpointSendBytesTo(p1, data, "port2")
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
     h.helicsFederateRequestTime(fFed, 1.0)
@@ -440,7 +440,7 @@ def test_filter_test_types_message_filter_function3():
 
     assert h.helicsFederateHasMessage(mFed) is False
 
-    h.helicsEndpointSendMessageRaw(p2, "port1", data)
+    h.helicsEndpointSendBytesTo(p2, data, "port1")
     h.helicsFederateRequestTimeAsync(mFed, 2.0)
     h.helicsFederateRequestTime(fFed, 2.0)
     h.helicsFederateRequestTimeComplete(mFed)
@@ -458,12 +458,12 @@ def test_filter_test_types_message_filter_function3():
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
     assert h.helicsMessageGetTime(m2) == 2.5
 
     assert h.helicsEndpointHasMessage(p1) is True
-    h.helicsFederateFinalize(mFed)
-    h.helicsFederateFinalize(fFed)
+    h.helicsFederateDisconnect(mFed)
+    h.helicsFederateDisconnect(fFed)
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -501,7 +501,7 @@ def test_filter_test_types_clone_test():
     assert state == h.HELICS_STATE_EXECUTION
 
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "dest", data)
+    h.helicsEndpointSendBytesTo(p1, data, "dest")
 
     h.helicsFederateRequestTimeAsync(sFed, 1.0)
     h.helicsFederateRequestTimeAsync(dcFed, 1.0)
@@ -515,7 +515,7 @@ def test_filter_test_types_clone_test():
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "dest"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
 
     assert h.helicsFederateHasMessage(dcFed)
 
@@ -524,13 +524,13 @@ def test_filter_test_types_clone_test():
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "cm"
     assert h.helicsMessageGetOriginalDestination(m2) == "dest"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
 
-    h.helicsFederateFinalizeAsync(sFed)
-    h.helicsFederateFinalizeAsync(dFed)
-    h.helicsFederateFinalize(dcFed)
-    h.helicsFederateFinalizeComplete(sFed)
-    h.helicsFederateFinalizeComplete(dFed)
+    h.helicsFederateDisconnectAsync(sFed)
+    h.helicsFederateDisconnectAsync(dFed)
+    h.helicsFederateDisconnect(dcFed)
+    h.helicsFederateDisconnectComplete(sFed)
+    h.helicsFederateDisconnectComplete(dFed)
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -553,7 +553,7 @@ def test_filter_test_types_clone_test_connections():
 
     f1 = h.helicsFederateRegisterGlobalCloningFilter(dcFed, "filt1")
     h.helicsFilterAddDeliveryEndpoint(f1, "cm")
-    cr = h.helicsFederateGetCoreObject(sFed)
+    cr = h.helicsFederateGetCore(sFed)
 
     h.helicsCoreAddSourceFilterToEndpoint(cr, "filt1", "src")
     h.helicsCoreAddSourceFilterToEndpoint(cr, "", "src")
@@ -573,7 +573,7 @@ def test_filter_test_types_clone_test_connections():
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "dest", data)
+    h.helicsEndpointSendBytesTo(p1, data, "dest")
 
     h.helicsFederateRequestTimeAsync(sFed, 1.0)
     h.helicsFederateRequestTimeAsync(dcFed, 1.0)
@@ -587,7 +587,7 @@ def test_filter_test_types_clone_test_connections():
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "dest"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
 
     assert h.helicsFederateHasMessage(dcFed) is True
 
@@ -596,13 +596,13 @@ def test_filter_test_types_clone_test_connections():
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "cm"
     assert h.helicsMessageGetOriginalDestination(m2) == "dest"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
 
-    h.helicsFederateFinalizeAsync(sFed)
-    h.helicsFederateFinalizeAsync(dFed)
-    h.helicsFederateFinalize(dcFed)
-    h.helicsFederateFinalizeComplete(sFed)
-    h.helicsFederateFinalizeComplete(dFed)
+    h.helicsFederateDisconnectAsync(sFed)
+    h.helicsFederateDisconnectAsync(dFed)
+    h.helicsFederateDisconnect(dcFed)
+    h.helicsFederateDisconnectComplete(sFed)
+    h.helicsFederateDisconnectComplete(dFed)
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -637,7 +637,7 @@ def test_filter_test_types_clone_test_broker_connections():
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "dest", data)
+    h.helicsEndpointSendBytesTo(p1, data, "dest")
 
     h.helicsFederateRequestTimeAsync(sFed, 1.0)
     h.helicsFederateRequestTimeAsync(dcFed, 1.0)
@@ -651,7 +651,7 @@ def test_filter_test_types_clone_test_broker_connections():
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "dest"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
 
     assert h.helicsFederateHasMessage(dcFed) is True
 
@@ -660,13 +660,13 @@ def test_filter_test_types_clone_test_broker_connections():
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "cm"
     assert h.helicsMessageGetOriginalDestination(m2) == "dest"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
 
-    h.helicsFederateFinalizeAsync(sFed)
-    h.helicsFederateFinalizeAsync(dFed)
-    h.helicsFederateFinalize(dcFed)
-    h.helicsFederateFinalizeComplete(sFed)
-    h.helicsFederateFinalizeComplete(dFed)
+    h.helicsFederateDisconnectAsync(sFed)
+    h.helicsFederateDisconnectAsync(dFed)
+    h.helicsFederateDisconnect(dcFed)
+    h.helicsFederateDisconnectComplete(sFed)
+    h.helicsFederateDisconnectComplete(dFed)
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -690,7 +690,7 @@ def test_filter_test_types_clone_test_dest_connections():
     f1 = h.helicsFederateRegisterGlobalCloningFilter(dcFed, "filt1")
     h.helicsFilterAddDeliveryEndpoint(f1, "cm")
 
-    cr = h.helicsFederateGetCoreObject(sFed)
+    cr = h.helicsFederateGetCore(sFed)
 
     h.helicsCoreAddDestinationFilterToEndpoint(cr, "filt1", "dest")
 
@@ -712,16 +712,16 @@ def test_filter_test_types_clone_test_dest_connections():
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "dest", data)
+    h.helicsEndpointSendBytesTo(p1, data, "dest")
 
-    h.helicsFederateFinalize(sFed)
+    h.helicsFederateDisconnect(sFed)
 
     # TODO: implement threading
 
     # auto dFedExec = [&]() {
     #     h.helicsFederateRequestTime(dFed, 1.0)
     #     m2 = h.helicsEndpointGetMessage(p2)
-    #     h.helicsFederateFinalize(dFed, "")
+    #     h.helicsFederateDisconnect(dFed, "")
     # }
 
     # h.helics_message m3
@@ -733,7 +733,7 @@ def test_filter_test_types_clone_test_dest_connections():
     #         h.helicsFederateRequestTime(dcFed, 4.0)
     #     }
     #     m3 = h.helicsEndpointGetMessage(p3)
-    #     h.helicsFederateFinalize(dcFed)
+    #     h.helicsFederateDisconnect(dcFed)
     # }
 
     # auto threaddFed = std::thread(dFedExec)
@@ -848,7 +848,7 @@ def test_filter_callback_test():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "port2", data)
+    h.helicsEndpointSendBytesTo(p1, data, "port2")
 
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
     h.helicsFederateRequestTime(fFed, 1.0)
@@ -870,14 +870,14 @@ def test_filter_callback_test():
     assert h.helicsMessageGetSource(m2) == "port1"
     assert h.helicsMessageGetOriginalSource(m2) == "port1"
     assert h.helicsMessageGetDestination(m2) == "port2"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
     assert h.helicsMessageGetTime(m2) == 2.5
 
     h.helicsFederateRequestTime(mFed, 3.0)
     h.helicsFederateRequestTimeComplete(fFed)
-    h.helicsFederateFinalizeAsync(mFed)
-    h.helicsFederateFinalize(fFed)
-    h.helicsFederateFinalizeComplete(mFed)
+    h.helicsFederateDisconnectAsync(mFed)
+    h.helicsFederateDisconnect(fFed)
+    h.helicsFederateDisconnectComplete(mFed)
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -912,7 +912,7 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
     data = "".join(["a" for _ in range(0, 500)]).encode()
-    h.helicsEndpointSendMessageRaw(p1, "dest", data)
+    h.helicsEndpointSendBytesTo(p1, data, "dest")
 
     h.helicsFederateRequestTimeAsync(sFed, 1.0)
     h.helicsFederateRequestTimeAsync(dcFed, 1.0)
@@ -927,10 +927,10 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     assert h.helicsMessageGetSource(m2) == "src"
     assert h.helicsMessageGetOriginalSource(m2) == "src"
     assert h.helicsMessageGetDestination(m2) == "dest"
-    assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    assert h.helicsMessageGetByteCount(m2) == len(data)
 
-    h.helicsFederateFinalizeAsync(sFed)
-    h.helicsFederateFinalizeAsync(dFed)
+    h.helicsFederateDisconnectAsync(sFed)
+    h.helicsFederateDisconnectAsync(dFed)
 
     # TODO: figure out why this test fails on CI
     # @test_broken False
@@ -945,13 +945,13 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     # assert h.helicsMessageGetOriginalSource(m2) == "src"
     # assert h.helicsMessageGetDestination(m2) == "cm"
     # assert h.helicsMessageGetOriginalDestination(m2) == "dest"
-    # assert h.helicsMessageGetRawDataSize(m2) == len(data)
+    # assert h.helicsMessageGetByteCount(m2) == len(data)
 
     # _ = h.helicsFederateHasMessage(dcFed)
 
-    h.helicsFederateFinalize(dcFed)
-    h.helicsFederateFinalizeComplete(sFed)
-    h.helicsFederateFinalizeComplete(dFed)
+    h.helicsFederateDisconnect(dcFed)
+    h.helicsFederateDisconnectComplete(sFed)
+    h.helicsFederateDisconnectComplete(dFed)
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_FINALIZE
 
@@ -970,5 +970,5 @@ def test_filter_test_file_load():
     assert name == "filterFed"
 
     assert h.helicsFederateGetEndpointCount(mFed) == 3
-    h.helicsFederateFinalize(mFed)
+    h.helicsFederateDisconnect(mFed)
     h.helicsCloseLibrary()

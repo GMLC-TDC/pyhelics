@@ -41,7 +41,7 @@ def test_iteration_execution_iteration_test():
 
     assert val2 == val
 
-    h.helicsFederateFinalize(vFed1)
+    h.helicsFederateDisconnect(vFed1)
     destroyFederate(vFed1, fedinfo)
     destroyBroker(broker)
 
