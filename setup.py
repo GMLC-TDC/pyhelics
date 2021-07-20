@@ -41,6 +41,7 @@ PYHELICS_VERSION = read(os.path.join(os.path.dirname(__file__), "helics", "_vers
 PYHELICS_VERSION = PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
 
 HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
+HELICS_VERSION = "{}-beta".format(HELICS_VERSION)
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
@@ -50,8 +51,26 @@ PYHELICS_INSTALL = os.path.join(CURRENT_DIRECTORY, "./helics/install")
 DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(version=HELICS_VERSION)
 
 
-def create_default_url(helics_version):
-    if platform.system() == "Darwin":
+def create_default_url(helics_version, plat_name=""):
+    if "macos" in plat_name.lower():
+        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
+            helics_version=helics_version
+        )
+    elif "win" in plat_name.lower():
+        if "win32" in plat_name.lower():
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
+                helics_version=helics_version
+            )
+        else:
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
+                helics_version=helics_version
+            )
+
+    elif "linux" in plat_name.lower():
+        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+            helics_version=helics_version
+        )
+    elif platform.system() == "Darwin":
         default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
             helics_version=helics_version
         )
@@ -79,10 +98,11 @@ class HELICSDownloadCommand(Command):
     description = "Download helics libraries dependency"
     user_options = [
         ("pyhelics-install=", None, "path to pyhelics install folder"),
+        ("plat-name=", None, "platform name to embed in generated filenames"),
     ]
 
     def initialize_options(self):
-        self.helics_url = create_default_url(HELICS_VERSION)
+        self.plat_name = ""
         self.pyhelics_install = os.path.join(CURRENT_DIRECTORY, "./helics/install")
         if os.path.exists(self.pyhelics_install):
             shutil.rmtree(self.pyhelics_install)
@@ -91,6 +111,7 @@ class HELICSDownloadCommand(Command):
         pass
 
     def run(self):
+        self.helics_url = create_default_url(HELICS_VERSION, self.plat_name)
         r = urlopen(self.helics_url)
         if r.getcode() == 200:
             content = io.BytesIO(r.read())
@@ -102,6 +123,7 @@ class HELICSDownloadCommand(Command):
             if platform.system() == "Linux":
                 shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
             files = [
+                "helics_api.h",
                 "helics_enums.h",
                 os.path.join("shared_api_library", "api-data.h"),
                 os.path.join("shared_api_library", "helics.h"),
@@ -113,7 +135,9 @@ class HELICSDownloadCommand(Command):
             ]
             IGNOREBLOCK = False
             for file in files:
-                with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
+                if not os.path.isfile(os.path.join(self.pyhelics_install, "include", "helics", file)):
+                    continue
+                with open(os.path.join(self.pyhelics_install, "include", "helics", file)) as f:
                     lines = []
                     for line in f:
                         if line.startswith("#ifdef __cplusplus"):
@@ -130,7 +154,7 @@ class HELICSDownloadCommand(Command):
                     data = "\n".join(lines)
                     data = data.replace("HELICS_EXPORT", "")
                     data = data.replace("HELICS_DEPRECATED_EXPORT", "")
-                with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file), "w") as f:
+                with open(os.path.join(self.pyhelics_install, "include", "helics", file), "w") as f:
                     f.write(data)
 
 
@@ -138,12 +162,6 @@ class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=HELICS_SOURCE):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = sourcedir
-
-
-class HELICSBdistWheel(bdist_wheel):
-    def get_tag(self):
-        rv = super().get_tag()
-        return ("py2.py3", "none",) + rv[2:]
 
 
 class HELICSCMakeBuild(build_ext):
@@ -175,15 +193,15 @@ class HELICSCMakeBuild(build_ext):
             return
 
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        extdir = os.path.join(extdir, "helics", "install")
         # required for auto - detection of auxiliary "native" libs
         if not extdir.endswith(os.path.sep):
             extdir += os.path.sep
 
         cmake_args = [
-            "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
             "-DHELICS_DISABLE_GIT_OPERATIONS=OFF",
             "-DCMAKE_BUILD_TYPE=Release",
-            "-DCMAKE_INSTALL_PREFIX={}".format(PYHELICS_INSTALL),
+            "-DCMAKE_INSTALL_PREFIX={}".format(extdir),
         ]
 
         cfg = "Debug" if self.debug else "Release"
@@ -196,7 +214,7 @@ class HELICSCMakeBuild(build_ext):
                 build_args += ["--", "/m"]
         else:
             cmake_args += ["-DCMAKE_BUILD_TYPE=" + cfg]
-            build_args += ["--", "-j8"]
+            build_args += ["--", "-j"]
 
         env = os.environ.copy()
         if not os.path.exists(self.build_temp):
@@ -207,6 +225,7 @@ class HELICSCMakeBuild(build_ext):
         subprocess.check_call(shlex.split(cmd), cwd=self.build_temp)
 
         files = [
+            "helics_api.h",
             "helics_enums.h",
             os.path.join("shared_api_library", "api-data.h"),
             os.path.join("shared_api_library", "helics.h"),
@@ -218,7 +237,9 @@ class HELICSCMakeBuild(build_ext):
         ]
         IGNOREBLOCK = False
         for file in files:
-            with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
+            if not os.path.isfile(os.path.join(extdir, "include", "helics", file)):
+                continue
+            with open(os.path.join(extdir, "include", "helics", file)) as f:
                 lines = []
                 for line in f:
                     if line.startswith("#ifdef __cplusplus"):
@@ -235,28 +256,28 @@ class HELICSCMakeBuild(build_ext):
                 data = "\n".join(lines)
                 data = data.replace("HELICS_EXPORT", "")
                 data = data.replace("HELICS_DEPRECATED_EXPORT", "")
-            with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file), "w") as f:
+            with open(os.path.join(extdir, "include", "helics", file), "w") as f:
                 f.write(data)
 
 
-install_requires = ["cffi>=1.0.0", "strip-hints"]
+install_requires = ["helics-apps", "cffi>=1.0.0", "strip-hints"]
 
 if sys.version_info < (3, 4):
     install_requires.append("enum34")
 
 cmdclass = {"build_ext": HELICSCMakeBuild, "download": HELICSDownloadCommand}
 
-if bdist_wheel is not None:
 
-    class HelicsBdistWheel(bdist_wheel):
-        def get_tag(self):
-            rv = bdist_wheel.get_tag(self)
-            if platform.python_version().startswith("2"):
-                return ("py2", "none") + rv[2:]
-            else:
-                return ("py3", "none") + rv[2:]
+class HelicsBdistWheel(bdist_wheel):
+    def get_tag(self):
+        rv = bdist_wheel.get_tag(self)
+        if platform.python_version().startswith("2"):
+            return ("py2", "none") + rv[2:]
+        else:
+            return ("py3", "none") + rv[2:]
 
-    cmdclass["bdist_wheel"] = HelicsBdistWheel
+
+cmdclass["bdist_wheel"] = HelicsBdistWheel
 
 
 class BinaryDistribution(Distribution):

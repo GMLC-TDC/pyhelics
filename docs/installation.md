@@ -200,3 +200,11 @@ print(h.helicsGetVersion()) # this should print the version of the HELICS librar
 ```
 
 See [Migration from HELICS2 to HELICS3](./migration-helics2-helics3.md) for more information on changes between this version and the SWIG version of the HELICS library.
+
+### Linking HELICS library
+
+If you are interested in using the HELICS libraries that are installed along with Python with another application, you can find them in the location that is printed by running the following:
+
+```bash
+$ python -c 'import helics as h; print(h._build.PYHELICS_INSTALL)'
+```

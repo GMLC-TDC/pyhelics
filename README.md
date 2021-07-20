@@ -3,7 +3,7 @@
 [![](https://github.com/GMLC-TDC/pyhelics/workflows/CI/badge.svg)](https://github.com/GMLC-TDC/pyhelics/actions)
 [![](https://badges.gitter.im/GMLC-TDC/pyhelics.png)](https://gitter.im/GMLC-TDC/HELICS)
 [![](https://img.shields.io/badge/docs-ready-blue.svg)](https://python.helics.org)
-[![](https://codecov.io/gh/GMLC-TDC/pyhelics/branch/master/graph/badge.svg)](https://codecov.io/gh/GMLC-TDC/pyhelics)
+[![](https://codecov.io/gh/GMLC-TDC/pyhelics/branch/main/graph/badge.svg)](https://codecov.io/gh/GMLC-TDC/pyhelics)
 [![](https://img.shields.io/pypi/pyversions/helics)](https://pypi.org/project/helics/)
 [![](https://img.shields.io/pypi/wheel/helics)](https://pypi.org/project/helics/)
 [![](https://img.shields.io/pypi/v/helics)](https://pypi.org/project/helics/)
@@ -37,5 +37,5 @@ pip install helics
 ```
 
 You will also get precompiled binaries of [HELICS](https://github.com/GMLC-TDC/HELICS/releases/latest) for your platform if they exist.
-If they don't exist, a source distribution will be installed in which case the user must provide the location of the binaries.
+If they don't exist, a source distribution will attempt to be built and installed. The user can also provide the location of the binaries if they wish to do so.
 For more information, see <https://python.helics.org/installation>.

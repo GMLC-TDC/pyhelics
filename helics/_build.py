@@ -10,6 +10,7 @@ HELICS_INSTALL = os.getenv("HELICS_INSTALL", os.path.join(os.path.dirname(os.pat
 PYHELICS_INSTALL = os.getenv("PYHELICS_INSTALL", HELICS_INSTALL)
 
 files = [
+    "helics_api.h",
     "helics_enums.h",
     os.path.join("shared_api_library", "api-data.h"),
     os.path.join("shared_api_library", "helics.h"),
@@ -21,6 +22,8 @@ files = [
 ]
 IGNOREBLOCK = False
 for file in files:
+    if not os.path.isfile(os.path.join(PYHELICS_INSTALL, "include", "helics", file)):
+        continue
     with open(os.path.join(PYHELICS_INSTALL, "include", "helics", file)) as f:
         lines = []
         for line in f:
@@ -39,6 +42,8 @@ for file in files:
         data = data.replace("HELICS_EXPORT", "")
         data = data.replace("HELICS_DEPRECATED_EXPORT", "")
         ffi.cdef(data)
+        if file.endswith("helics_api.h"):
+            break
 
 # ffi.set_source(
 #     "_py_helics",
@@ -71,7 +76,11 @@ if platform.system() == "Windows":
         if lib is None:
             raise Exception("Unable to load helics shared library")
 elif platform.system() == "Darwin":
-    for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
+    if os.path.isdir(os.path.join(PYHELICS_INSTALL, "lib64")):
+        lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
+    else:
+        lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
+    for file in os.listdir(lib_folder):
         if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".dylib"):
             lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
             break
@@ -83,7 +92,11 @@ elif platform.system() == "Darwin":
         if lib is None:
             raise Exception("Unable to load helics shared library")
 elif platform.system() == "Linux":
-    for file in os.listdir(os.path.join(PYHELICS_INSTALL, "lib")):
+    if os.path.isdir(os.path.join(PYHELICS_INSTALL, "lib64")):
+        lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
+    else:
+        lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
+    for file in os.listdir(lib_folder):
         if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".so"):
             lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
             break

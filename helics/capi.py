@@ -6,7 +6,11 @@ import json
 from enum import IntEnum, unique
 
 try:
-    from typing import List, Tuple, Union
+    from typing import Dict, List, Tuple, Union, Any
+
+    JSONType = Union[
+        Dict[str, Any], List[dict],
+    ]
 except ImportError:
     pass
 
@@ -15,17 +19,11 @@ from . import _build
 lib = _build.lib
 ffi = _build.ffi
 
-import signal
-import sys
 
-
-def signal_handler(sig, frame):
-    helicsCloseLibrary()
-    print("User pressed 'CTRL-C'. Exiting ...")
-    sys.exit(0)
-
-
-signal.signal(signal.SIGINT, signal_handler)
+if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
+    HELICS_VERSION = 2
+else:
+    HELICS_VERSION = 3
 
 HELICS_TIME_ZERO = 0.0  # definition of time zero-the beginning of simulation
 HELICS_TIME_EPSILON = 1.0e-9  # definition of the minimum time resolution
@@ -39,6 +37,23 @@ helics_time_maxtime = HELICS_TIME_MAXTIME
 
 HelicsTime = float
 pointer = int
+
+
+@unique
+class HelicsSequencingMode(IntEnum):
+
+    """
+    Enumeration of sequencing modes for queries
+    fast is the default, meaning the query travels along priority channels and takes precedence of over
+    existing messages; ordered means it follows normal priority patterns and will be ordered along with
+    existing messages
+
+    - **FAST** = 0
+    - **ORDERED** = 1
+    """
+
+    FAST = 0
+    ORDERED = 1
 
 
 @unique
@@ -248,29 +263,58 @@ helics_flag_force_logging_flush = HelicsFederateFlag.FORCE_LOGGING_FLUSH
 helics_flag_dumplog = HelicsFederateFlag.DUMPLOG
 
 
-@unique
-class HelicsLogLevel(IntEnum):
-    """
-    - **NO_PRINT**    = -1
-    - **ERROR**       = 0
-    - **WARNING**     = 1
-    - **SUMMARY**     = 2
-    - **CONNECTIONS** = 3
-    - **INTERFACES**  = 4
-    - **TIMING**      = 5
-    - **DATA**        = 6
-    - **TRACE**       = 7
-    """
+if HELICS_VERSION == 2:
 
-    NO_PRINT = -1  # HelicsLogLevels
-    ERROR = 0  # HelicsLogLevels
-    WARNING = 1  # HelicsLogLevels
-    SUMMARY = 2  # HelicsLogLevels
-    CONNECTIONS = 3  # HelicsLogLevels
-    INTERFACES = 4  # HelicsLogLevels
-    TIMING = 5  # HelicsLogLevels
-    DATA = 6  # HelicsLogLevels
-    TRACE = 7  # HelicsLogLevels
+    @unique
+    class HelicsLogLevel(IntEnum):
+        """
+        - **NO_PRINT**    = -1
+        - **ERROR**       = 0
+        - **WARNING**     = 1
+        - **SUMMARY**     = 2
+        - **CONNECTIONS** = 3
+        - **INTERFACES**  = 4
+        - **TIMING**      = 5
+        - **DATA**        = 6
+        - **TRACE**       = 7
+        """
+
+        NO_PRINT = -1  # HelicsLogLevels
+        ERROR = 0  # HelicsLogLevels
+        WARNING = 1  # HelicsLogLevels
+        SUMMARY = 2  # HelicsLogLevels
+        CONNECTIONS = 3  # HelicsLogLevels
+        INTERFACES = 4  # HelicsLogLevels
+        TIMING = 5  # HelicsLogLevels
+        DATA = 6  # HelicsLogLevels
+        TRACE = 7  # HelicsLogLevels
+
+
+else:
+
+    @unique
+    class HelicsLogLevel(IntEnum):
+        """
+        - **NO_PRINT**    = -4
+        - **ERROR**       = 0
+        - **WARNING**     = 3
+        - **SUMMARY**     = 6
+        - **CONNECTIONS** = 9
+        - **INTERFACES**  = 12
+        - **TIMING**      = 15
+        - **DATA**        = 18
+        - **TRACE**       = 21
+        """
+
+        NO_PRINT = -4  # HelicsLogLevels
+        ERROR = 0  # HelicsLogLevels
+        WARNING = 3  # HelicsLogLevels
+        SUMMARY = 6  # HelicsLogLevels
+        CONNECTIONS = 9  # HelicsLogLevels
+        INTERFACES = 12  # HelicsLogLevels
+        TIMING = 15  # HelicsLogLevels
+        DATA = 18  # HelicsLogLevels
+        TRACE = 21  # HelicsLogLevels
 
 
 HELICS_LOG_LEVEL_NO_PRINT = HelicsLogLevel.NO_PRINT
@@ -393,6 +437,7 @@ class HelicsProperty(IntEnum):
     INT_LOG_LEVEL = 271  # HelicsProperties
     INT_FILE_LOG_LEVEL = 272  # HelicsProperties
     INT_CONSOLE_LOG_LEVEL = 274  # HelicsProperties
+    INVALID_OPTION_INDEX = -101  # HelicsProperties
 
 
 HELICS_PROPERTY_TIME_DELTA = HelicsProperty.TIME_DELTA
@@ -407,6 +452,7 @@ HELICS_PROPERTY_INT_MAX_ITERATIONS = HelicsProperty.INT_MAX_ITERATIONS
 HELICS_PROPERTY_INT_LOG_LEVEL = HelicsProperty.INT_LOG_LEVEL
 HELICS_PROPERTY_INT_FILE_LOG_LEVEL = HelicsProperty.INT_FILE_LOG_LEVEL
 HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+HELICS_PROPERTY_INVALID_OPTION_INDEX = HelicsProperty.INVALID_OPTION_INDEX
 
 helics_property_time_delta = HelicsProperty.TIME_DELTA
 helics_property_time_period = HelicsProperty.TIME_PERIOD
@@ -420,6 +466,7 @@ helics_property_int_max_iterations = HelicsProperty.INT_MAX_ITERATIONS
 helics_property_int_log_level = HelicsProperty.INT_LOG_LEVEL
 helics_property_int_file_log_level = HelicsProperty.INT_FILE_LOG_LEVEL
 helics_property_int_console_log_level = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+helics_property_invalid_option_index = HelicsProperty.INVALID_OPTION_INDEX
 
 
 @unique
@@ -670,7 +717,7 @@ helics_state_pending_iterative_time = HelicsFederateState.PENDING_ITERATIVE_TIME
 helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
 
 
-class _HelicsCHandle:
+class _HelicsCHandle(object):
     def __init__(self, handle):
         self.handle = handle
 
@@ -869,7 +916,7 @@ class HelicsCore(_HelicsCHandle):
         """
         helicsCoreSetGlobal(self, name, value)
 
-    def query(self, target: str, query: str) -> str:
+    def query(self, target: str, query: str) -> JSONType:
         """
         Make a query of the core.
 
@@ -887,6 +934,17 @@ class HelicsCore(_HelicsCHandle):
         result = helicsQueryCoreExecute(q, self)
         helicsQueryFree(q)
         return result
+
+    def global_error(self, error_code: int, error_string: str):
+        """
+        Generate a global error to terminate the federation.
+
+        **Parameters**
+
+        - **`error_code`**: an error code to give to the error.
+        - **`error_string`**: a string message associated with the error.
+        """
+        helicsCoreGlobalError(self, error_code, error_string)
 
 
 class HelicsBroker(_HelicsCHandle):
@@ -989,7 +1047,7 @@ class HelicsBroker(_HelicsCHandle):
         """
         helicsBrokerAddDestinationFilterToEndpoint(self, filter, target)
 
-    def query(self, target: str, query: str) -> str:
+    def query(self, target: str, query: str, mode: HelicsSequencingMode = HelicsSequencingMode.FAST) -> JSONType:
         """
         Make a query of the broker.
 
@@ -1003,9 +1061,23 @@ class HelicsBroker(_HelicsCHandle):
         Returns: a string with the value requested. This is either going to be a vector of strings value or a JSON string stored in the first element of the vector. The string "#invalid" is returned if the query was not valid.
         """
         q = helicsCreateQuery(target, query)
+        if mode != HelicsSequencingMode.FAST:
+            err = helicsErrorInitialize()
+            helicsQuerySetOrdering(q, mode, err)
         result = helicsQueryBrokerExecute(q, self)
         helicsQueryFree(q)
         return result
+
+    def global_error(self, error_code: int, error_string: str):
+        """
+        Generate a global error to terminate the federation.
+
+        **Parameters**
+
+        - **`error_code`**: an error code to give to the error.
+        - **`error_string`**: a string message associated with the error.
+        """
+        helicsBrokerGlobalError(self, error_code, error_string)
 
 
 class _MessageFlagAccessor(_HelicsCHandle):
@@ -1170,7 +1242,7 @@ class HelicsEndpoint(_HelicsCHandle):
     @property
     def n_pending_messages(self) -> int:
         """Returns the number of pending receives for endpoint."""
-        return helicsEndpointPendingMessages(self)
+        return helicsEndpointPendingMessageCount(self)
 
     @property
     def name(self) -> str:
@@ -1351,9 +1423,9 @@ class HelicsFederateInfo(_HelicsCHandle):
 
     @broker_key.setter
     def broker_key(self, broker_key):
-        """Set the broker key to use.
+        """Set the broker name to use.
 
-        **`broker_key`**: a string with the broker key information
+        **`broker_key`**: a string with the broker name information
         """
         helicsFederateInfoSetBrokerKey(self, broker_key)
 
@@ -1535,7 +1607,7 @@ class HelicsFederate(_HelicsCHandle):
     @property
     def n_pending_messages(self):
         """Returns the number of pending receives for all endpoints."""
-        return helicsFederatePendingMessagesCount(self)
+        return helicsFederatePendingMessageCount(self)
 
     @property
     def separator(self):
@@ -1652,6 +1724,27 @@ class HelicsFederate(_HelicsCHandle):
             helicsFederateEnterExecutingModeComplete(self)
         return out_iterate
 
+    def disconnect(self):
+        """
+        Terminate the simulation.
+
+        Call is will block until the disconnect has been acknowledged, no commands that interact with the core may be called after this function function.
+        """
+        helicsFederateDisconnect(self)
+
+    def disconnect_async(self):
+        """
+        Terminate the simulation in a non-blocking call.
+        `self.disconnect_complete()` must be called after this call to complete the disconnect procedure.
+        """
+        helicsFederateDisconnectAsync(self)
+
+    def disconnect_complete(self):
+        """
+        Complete the asynchronous terminate pair.
+        """
+        helicsFederateDisconnectComplete(self)
+
     def finalize(self):
         """
         Terminate the simulation.
@@ -1760,7 +1853,7 @@ class HelicsFederate(_HelicsCHandle):
         granted_time, status = helicsFederateRequestTimeIterativeComplete(self)
         return granted_time, status
 
-    def query(self, target: str, query: str) -> str:
+    def query(self, target: str, query: str) -> JSONType:
         """
         Make a query of the federate.
 
@@ -1957,16 +2050,16 @@ class HelicsInput(_HelicsCHandle):
         self.option = _InputOptionAccessor(self.handle)
 
     def __repr__(self):
-        key = self.key
+        name = self.name
         units = self.units
         injection_units = self.injection_units
         publication_type = self.publication_type
         type = self.type
         target = self.target
         info = self.info
-        return """<helics.{class_name}(key = "{key}", units = "{units}", injection_units = "{injection_units}", publication_type = "{publication_type}", type = "{type}", target = "{target}", info = "{info}") at {id}>""".format(
+        return """<helics.{class_name}(name = "{name}", units = "{units}", injection_units = "{injection_units}", publication_type = "{publication_type}", type = "{type}", target = "{target}", info = "{info}") at {id}>""".format(
             class_name=self.__class__.__name__,
-            key=key,
+            name=name,
             units=units,
             injection_units=injection_units,
             publication_type=publication_type,
@@ -2043,7 +2136,9 @@ class HelicsInput(_HelicsCHandle):
     @property
     def complex(self) -> complex:
         """Get the value as a complex number."""
-        r, i = helicsInputGetComplex(self)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            r, i = helicsInputGetComplex(self)
         return complex(r, i)
 
     @property
@@ -2067,7 +2162,14 @@ class HelicsInput(_HelicsCHandle):
     def key(self) -> str:
         """get the Name/Key for the input
         the name is the local name if given, key is the full key name."""
+        warnings.warn("This function is deprecated. Use the `HelicsInput.name` attribute instead.")
         return helicsInputGetKey(self)
+
+    @property
+    def name(self) -> str:
+        """get the Name/Key for the input
+        the name is the local name if given, key is the full key name."""
+        return helicsInputGetName(self)
 
     @property
     def units(self) -> str:
@@ -2092,7 +2194,7 @@ class HelicsInput(_HelicsCHandle):
     @property
     def target(self) -> str:
         """Get an associated target."""
-        return helicsSubscriptionGetKey(self)
+        return helicsSubscriptionGetTarget(self)
 
     @property
     def info(self) -> str:
@@ -2111,12 +2213,12 @@ class HelicsPublication(_HelicsCHandle):
         self.option = _PublicationOptionAccessor(self.handle)
 
     def __repr__(self):
-        key = self.key
+        name = self.name
         type = self.type
         info = self.info
         units = self.units
-        return """<helics.{class_name}(key = "{key}", type = "{type}", units = "{units}", info = "{info}") at {id}>""".format(
-            class_name=self.__class__.__name__, key=key, type=type, units=units, info=info, id=hex(id(self))
+        return """<helics.{class_name}(name = "{name}", type = "{type}", units = "{units}", info = "{info}") at {id}>""".format(
+            class_name=self.__class__.__name__, name=name, type=type, units=units, info=info, id=hex(id(self))
         )
 
     def is_valid(self) -> bool:
@@ -2156,7 +2258,13 @@ class HelicsPublication(_HelicsCHandle):
     @property
     def key(self) -> str:
         """Get the key for the publication."""
-        return helicsPublicationGetKey(self)
+        warnings.warn("This function is deprecated. Use the `HelicsPublication.name` attribute instead.")
+        return helicsPublicationGetName(self)
+
+    @property
+    def name(self) -> str:
+        """Get the key for the publication."""
+        return helicsPublicationGetName(self)
 
     @property
     def units(self) -> str:
@@ -2180,6 +2288,17 @@ class HelicsPublication(_HelicsCHandle):
 
 
 class HelicsValueFederate(HelicsFederate):
+    def __init__(self, handle):
+        super(HelicsValueFederate, self).__init__(handle)
+
+        for i in range(0, self.n_publications):
+            pub = self.get_publication_by_index(i)
+            self.publications[pub.name] = pub
+
+        for i in range(0, self.n_inputs):
+            sub = self.get_subscription_by_index(i)
+            self.subscriptions[sub.target] = sub
+
     def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
         """
         Register a publication.
@@ -2198,7 +2317,7 @@ class HelicsValueFederate(HelicsFederate):
             pub = helicsFederateRegisterTypePublication(self, name, kind, units)
         else:
             pub = helicsFederateRegisterPublication(self, name, HelicsDataType(kind), units)
-        self.publications[pub.key] = pub
+        self.publications[pub.name] = pub
         return pub
 
     def register_global_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
@@ -2219,7 +2338,7 @@ class HelicsValueFederate(HelicsFederate):
             pub = helicsFederateRegisterGlobalTypePublication(self, name, kind, units)
         else:
             pub = helicsFederateRegisterGlobalPublication(self, name, HelicsDataType(kind), units)
-        self.publications[pub.key] = pub
+        self.publications[pub.name] = pub
         return pub
 
     def register_from_publication_json(self, data: Union[dict, str]) -> HelicsPublication:
@@ -2237,7 +2356,7 @@ class HelicsValueFederate(HelicsFederate):
         else:
             data = json.dumps(data)
         pub = helicsFederateRegisterFromPublicationJSON(self, data)
-        self.publications["{}".format(pub.key)] = pub
+        self.publications["{}".format(pub.name)] = pub
         return pub
 
     def get_publication_by_name(self, name: str) -> HelicsPublication:
@@ -2341,6 +2460,10 @@ class HelicsValueFederate(HelicsFederate):
 class HelicsMessageFederate(HelicsFederate):
     def __init__(self, handle):
         super(HelicsMessageFederate, self).__init__(handle)
+
+        for i in range(0, self.n_endpoints):
+            end = self.get_endpoint_by_index(i)
+            self.endpoints[end.name] = end
 
     def register_endpoint(self, name: str, kind: str = "") -> HelicsEndpoint:
         """
@@ -2467,7 +2590,10 @@ def helicsErrorInitialize() -> HelicsError:
     """
     f = loadSym("helicsErrorInitialize")
     result = f()
-    return ffi.new("helics_error *", result)
+    if HELICS_VERSION == 2:
+        return ffi.new("helics_error *", result)
+    else:
+        return ffi.new("HelicsError *", result)
 
 
 def helicsErrorClear(err: HelicsError):
@@ -3422,7 +3548,7 @@ def helicsGetPropertyIndex(value: str) -> HelicsProperty:
     """
     f = loadSym("helicsGetPropertyIndex")
     result = f(cstring(value))
-    if result == -1:
+    if result == -1 or result == -101:
         raise HelicsException("[-1] Unknown property index for flag `{value}`".format(value=value))
     else:
         return HelicsProperty(result)
@@ -3440,7 +3566,7 @@ def helicsGetFlagIndex(value: str) -> HelicsFederateFlag:
     """
     f = loadSym("helicsGetFlagIndex")
     result = f(cstring(value))
-    if result == -1:
+    if result == -1 or result == -101:
         raise HelicsException("[-1] Unknown property index for flag `{value}`".format(value=value))
     else:
         return HelicsFederateFlag(result)
@@ -3459,7 +3585,7 @@ def helicsGetOptionIndex(value: str) -> HelicsHandleOption:
     """
     f = loadSym("helicsGetOptionIndex")
     result = f(cstring(value))
-    if result == -1:
+    if result == -1 or result == -101:
         raise HelicsException("[-1] Unknown option index for flag `{value}`".format(value=value))
     else:
         return HelicsHandleOption(result)
@@ -3478,8 +3604,8 @@ def helicsGetOptionValue(value: str) -> int:
     """
     f = loadSym("helicsGetOptionValue")
     result = f(cstring(value))
-    if result == -1:
-        raise HelicsException("[-1] Unknown option valud for flag `{value}`".format(value=value))
+    if result == -1 or result == -101:
+        raise HelicsException("[-1] Unknown option value for flag `{value}`".format(value=value))
     else:
         return result
 
@@ -3583,7 +3709,29 @@ def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string
     - **`error_string`** - A string describing the error.
     """
     f = loadSym("helicsFederateGlobalError")
-    f(fed.handle, error_code, cstring(error_string))
+    if HELICS_VERSION == 2:
+        f(fed.handle, error_code, cstring(error_string))
+    else:
+        err = helicsErrorInitialize()
+        f(fed.handle, error_code, cstring(error_string), err)
+        if err.error_code != 0:
+            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
+    f = loadSym("helicsBrokerGlobalError")
+    err = helicsErrorInitialize()
+    f(broker.handler, error_code, error_string, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsCoreGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
+    f = loadSym("helicsCoreGlobalError")
+    err = helicsErrorInitialize()
+    f(broker.handler, error_code, error_string, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateLocalError(fed: HelicsFederate, error_code: int, error_string: str):
@@ -3598,36 +3746,75 @@ def helicsFederateLocalError(fed: HelicsFederate, error_code: int, error_string:
     - **`error_string`** - A string describing the error.
     """
     f = loadSym("helicsFederateLocalError")
-    f(fed.handle, error_code, cstring(error_string))
+    if HELICS_VERSION == 2:
+        f(fed.handle, error_code, cstring(error_string))
+    else:
+        err = helicsErrorInitialize()
+        f(fed.handle, error_code, cstring(error_string), err)
+        if err.error_code != 0:
+            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateFinalize(fed: HelicsFederate):
     """
     Finalize the federate. This function halts all communication in the federate and disconnects it from the core.
     """
-    f = loadSym("helicsFederateFinalize")
-    err = helicsErrorInitialize()
-    f(fed.handle, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    warnings.warn("This function is deprecated. Use `helicsFederateDisconnect` instead.")
+    helicsFederateDisconnect(fed)
 
 
 def helicsFederateFinalizeAsync(fed: HelicsFederate):
     """
     Finalize the federate in an async call.
     """
-    f = loadSym("helicsFederateFinalizeAsync")
+    warnings.warn("This function is deprecated. Use `helicsFederateDisconnectAsync` instead.")
+    helicsFederateDisconnectAsync(fed)
+
+
+def helicsFederateFinalizeComplete(fed: HelicsFederate):
+    """
+    Complete the asynchronous disconnect call.
+    """
+    warnings.warn("This function is deprecated. Use `helicsFederateDisconnectComplete` instead.")
+    helicsFederateDisconnectComplete(fed)
+
+
+def helicsFederateDisconnect(fed: HelicsFederate):
+    """
+    Disconnect the federate. This function halts all communication in the federate and disconnects it from the core.
+    """
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsFederateFinalize")
+    else:
+        f = loadSym("helicsFederateDisconnect")
     err = helicsErrorInitialize()
     f(fed.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateFinalizeComplete(fed: HelicsFederate):
+def helicsFederateDisconnectAsync(fed: HelicsFederate):
     """
-    Complete the asynchronous finalize call.
+    Disconnect the federate in an async call.
     """
-    f = loadSym("helicsFederateFinalizeComplete")
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsFederateFinalizeAsync")
+    else:
+        f = loadSym("helicsFederateDisconnectAsync")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateDisconnectComplete(fed: HelicsFederate):
+    """
+    Complete the asynchronous disconnect call.
+    """
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsFederateFinalizeComplete")
+    else:
+        f = loadSym("helicsFederateDisconnectComplete")
     err = helicsErrorInitialize()
     f(fed.handle, err)
     if err.error_code != 0:
@@ -3865,9 +4052,9 @@ def helicsFederateGetCore(fed: HelicsFederate) -> HelicsCore:
 
     **Returns**: `helics.HelicsCore`.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsFederateGetCoreObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsFederateGetCore")
     err = helicsErrorInitialize()
     result = f(fed.handle, err)
@@ -3954,7 +4141,11 @@ def helicsFederateRequestTimeIterative(
     """
     f = loadSym("helicsFederateRequestTimeIterative")
     err = helicsErrorInitialize()
-    out_iterate = ffi.new("helics_iteration_result *")
+    if HELICS_VERSION == 2:
+        out_iterate = ffi.new("helics_iteration_result *")
+    else:
+        out_iterate = ffi.new("HelicsIterationResult *")
+
     result = f(fed.handle, request_time, HelicsIterationRequest(iterate), out_iterate, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
@@ -4026,7 +4217,10 @@ def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> Tuple[Hel
     """
     f = loadSym("helicsFederateRequestTimeIterativeComplete")
     err = helicsErrorInitialize()
-    out_iterate = ffi.new("helics_iteration_result *")
+    if HELICS_VERSION == 2:
+        out_iterate = ffi.new("helics_iteration_result *")
+    else:
+        out_iterate = ffi.new("HelicsIterationResult *")
     result = f(fed.handle, out_iterate, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
@@ -4409,7 +4603,7 @@ def helicsCreateQuery(target_name: str, query_string: str) -> HelicsQuery:
     return HelicsQuery(result)
 
 
-def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> str:
+def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> JSONType:
     """
     Execute a query.
     The call will block until the query finishes which may require communication or other delays.
@@ -4431,10 +4625,11 @@ def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> str:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
-def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> Union[str, dict]:
+def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> JSONType:
     """
     Execute a query directly on a core.
     The call will block until the query finishes which may require communication or other delays.
@@ -4456,10 +4651,11 @@ def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> Union[str, d
         try:
             return json.loads(s)
         except json.JSONDecodeError:
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
-def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> str:
+def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> JSONType:
     """
     Execute a query directly on a broker.
     The call will block until the query finishes which may require communication or other delays.
@@ -4481,6 +4677,7 @@ def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> str:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
@@ -4500,7 +4697,7 @@ def helicsQueryExecuteAsync(query: HelicsQuery, fed: HelicsFederate):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsQueryExecuteComplete(query: HelicsQuery) -> str:
+def helicsQueryExecuteComplete(query: HelicsQuery) -> JSONType:
     """
     Complete the return from a query called with `helics.helicsExecuteQueryAsync`.
     The function will block until the query completes `isQueryComplete` can be called to determine if a query has completed or not.
@@ -4521,6 +4718,7 @@ def helicsQueryExecuteComplete(query: HelicsQuery) -> str:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
@@ -4731,36 +4929,24 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination
     - **`data`** - The data to send.
     - **`destination`** - The target destination.
     """
-    try:
-        f = loadSym("helicsEndpointSendBytesTo")
-        err = helicsErrorInitialize()
-        if isinstance(data, str):
-            data = data.encode()
-        if not isinstance(data, bytes):
-            raise HelicsException(
-                """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(
-                    t=type(data)
-                )
-            )
-        inputDataLength = len(data)
-        f(endpoint.handle, data, inputDataLength, cstring(destination), err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    except AttributeError:
+    err = helicsErrorInitialize()
+    if isinstance(data, str):
+        data = data.encode()
+    if not isinstance(data, bytes):
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
+    inputDataLength = len(data)
+
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointSendMessageRaw")
-        err = helicsErrorInitialize()
-        if isinstance(data, str):
-            data = data.encode()
-        if not isinstance(data, bytes):
-            raise HelicsException(
-                """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(
-                    t=type(data)
-                )
-            )
-        inputDataLength = len(data)
         f(endpoint.handle, cstring(destination), data, inputDataLength, err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        f = loadSym("helicsEndpointSendBytesTo")
+        f(endpoint.handle, data, inputDataLength, cstring(destination), err)
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, destination: str, data: bytes):
@@ -4792,20 +4978,18 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
     - **`destination`** - The target destination.
     - **`time`** - The time the message should be sent.
     """
-    try:
-        f = loadSym("helicsEndpointSendBytesToAt")
-        err = helicsErrorInitialize()
-        inputDataLength = len(data)
-        f(endpoint.handle, cstring(data), inputDataLength, cstring(destination), time, err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    except AttributeError:
+    err = helicsErrorInitialize()
+    inputDataLength = len(data)
+
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointSendEventRaw")
-        err = helicsErrorInitialize()
-        inputDataLength = len(data)
         f(endpoint.handle, cstring(destination), cstring(data), inputDataLength, time, err)
-        if err.error_code != 0:
-            raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        f = loadSym("helicsEndpointSendBytesToAt")
+        f(endpoint.handle, cstring(data), inputDataLength, cstring(destination), time, err)
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsEndpointSendEventRaw(
@@ -4841,7 +5025,7 @@ def helicsEndpointSendMessageObject(endpoint: HelicsEndpoint, message: HelicsMes
     **DEPRECATED**
     """
     warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
-    return helicsEndpointSendMessage(endpoint)
+    return helicsEndpointSendMessage(endpoint, message)
 
 
 def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: HelicsMessage):
@@ -4856,7 +5040,7 @@ def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: H
     **DEPRECATED**
     """
     warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
-    return helicsEndpointSendMessage(endpoint)
+    return helicsEndpointSendMessage(endpoint, message)
 
 
 def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
@@ -4868,9 +5052,9 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
     - **`endpoint`** - The endpoint to send the data from.
     - **`message`** - The actual message to send which will be copied.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointSendMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointSendMessage")
     err = helicsErrorInitialize()
     f(endpoint.handle, message.handle, err)
@@ -4878,18 +5062,18 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsEndpointSubscribe(endpoint: HelicsEndpoint, key: str):
+def helicsEndpointSubscribe(endpoint: HelicsEndpoint, name: str):
     """
     Subscribe an endpoint to a publication.
 
     **Parameters**
 
     - **`endpoint`** - The endpoint to use.
-    - **`key`** - The name of the publication.
+    - **`name`** - The name of the publication.
     """
     f = loadSym("helicsEndpointSubscribe")
     err = helicsErrorInitialize()
-    f(endpoint.handle, cstring(key), err)
+    f(endpoint.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4924,7 +5108,7 @@ def helicsEndpointHasMessage(endpoint: HelicsEndpoint) -> bool:
     return result == 1
 
 
-def helicsFederatePendingMessagesCount(fed: HelicsFederate) -> int:
+def helicsFederatePendingMessageCount(fed: HelicsFederate) -> int:
     """
     Returns the number of pending receives for the specified destination endpoint.
 
@@ -4932,10 +5116,10 @@ def helicsFederatePendingMessagesCount(fed: HelicsFederate) -> int:
 
     - **`fed`** - The federate to get the number of waiting messages from.
     """
-    try:
-        f = loadSym("helicsFederatePendingMessagesCount")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsFederatePendingMessages")
+    else:
+        f = loadSym("helicsFederatePendingMessageCount")
     return f(fed.handle)
 
 
@@ -4949,8 +5133,8 @@ def helicsFederatePendingMessages(fed: HelicsFederate) -> int:
 
     **DEPRECATED**
     """
-    warnings.warn("This function has been deprecated. Use `helicsFederatePendingMessagesCount` instead.")
-    return helicsFederatePendingMessagesCount(fed)
+    warnings.warn("This function has been deprecated. Use `helicsFederatePendingMessageCount` instead.")
+    return helicsFederatePendingMessageCount(fed)
 
 
 def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
@@ -4961,11 +5145,11 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
 
     - **`endpoint`** - The endpoint to query.
     """
-    warnings.warn("This function has been deprecated. Use `helicsEndpointPendingMessagesCount` instead.")
-    return helicsEndpointPendingMessagesCount(endpoint)
+    warnings.warn("This function has been deprecated. Use `helicsEndpointPendingMessageCount` instead.")
+    return helicsEndpointPendingMessageCount(endpoint)
 
 
-def helicsEndpointPendingMessagesCount(endpoint: HelicsEndpoint) -> int:
+def helicsEndpointPendingMessageCount(endpoint: HelicsEndpoint) -> int:
     """
     Returns the number of pending receives for all endpoints of a particular federate.
 
@@ -4973,10 +5157,10 @@ def helicsEndpointPendingMessagesCount(endpoint: HelicsEndpoint) -> int:
 
     - **`endpoint`** - The endpoint to query.
     """
-    try:
-        f = loadSym("helicsEndpointPendingMessagesCount")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointPendingMessages")
+    else:
+        f = loadSym("helicsEndpointPendingMessageCount")
     return f(endpoint.handle)
 
 
@@ -5006,9 +5190,9 @@ def helicsEndpointGetMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     **Returns**: A message object.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointGetMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointGetMessage")
     return HelicsMessage(f(endpoint.handle))
 
@@ -5037,9 +5221,9 @@ def helicsEndpointCreateMessage(endpoint: HelicsEndpoint) -> HelicsMessage:
 
     - **`endpoint`** - The endpoint object to associate the message with.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsEndpointCreateMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsEndpointCreateMessage")
     err = helicsErrorInitialize()
     result = f(endpoint.handle, err)
@@ -5073,9 +5257,9 @@ def helicsFederateGetMessage(fed: HelicsFederate) -> HelicsMessage:
 
     **Returns**: A `helics.HelicsMessage` which references the data in the message.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsFederateGetMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsFederateGetMessage")
     result = f(fed.handle)
     return HelicsMessage(result)
@@ -5105,9 +5289,9 @@ def helicsFederateCreateMessage(fed: HelicsFederate) -> HelicsMessage:
 
     - **`fed`** - the `helics.HelicsFederate` to associate the message with.
     """
-    try:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsFederateCreateMessageObject")
-    except AttributeError:
+    else:
         f = loadSym("helicsFederateCreateMessage")
     err = helicsErrorInitialize()
     result = f(fed.handle, err)
@@ -5142,10 +5326,11 @@ def helicsEndpointClearMessages(endpoint: HelicsEndpoint):
 
     **DEPRECATED**
     """
-    try:
+    if HELICS_VERSION == 2:
+        warnings.warn("This function is deprecated. Clearing is handled at the federate level.")
         f = loadSym("helicsEndpointClearMessages")
         f(endpoint.handle)
-    except AttributeError:
+    else:
         warnings.warn("This function is deprecated. Clearing is handled at the federate level.")
 
 
@@ -5376,10 +5561,10 @@ def helicsMessageGetFlagOption(message: HelicsMessage, flag: int) -> bool:
 
     **Returns**: The flags associated with a message.
     """
-    try:
-        f = loadSym("helicsMessageGetFlagOption")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsMessageCheckFlag")
+    else:
+        f = loadSym("helicsMessageGetFlagOption")
     result = f(message.handle, flag)
     return result == 1
 
@@ -5411,10 +5596,10 @@ def helicsMessageGetByteCount(message: HelicsMessage) -> int:
 
     **Returns**: The size of the data payload.
     """
-    try:
-        f = loadSym("helicsMessageGetByteCount")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsMessageGetRawDataSize")
+    else:
+        f = loadSym("helicsMessageGetByteCount")
     result = f(message.handle)
     return result
 
@@ -5461,10 +5646,10 @@ def helicsMessageGetBytes(message: HelicsMessage) -> bytes:
 
     **Returns**: Raw string data.
     """
-    try:
-        f = loadSym("helicsMessageGetBytes")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsMessageGetRawData")
+    else:
+        f = loadSym("helicsMessageGetBytes")
     err = helicsErrorInitialize()
     maxMessageLen = helicsMessageGetByteCount(message) + 1024
     data = ffi.new("char[{maxMessageLen}]".format(maxMessageLen=maxMessageLen))
@@ -5501,10 +5686,10 @@ def helicsMessageGetBytesPointer(message: HelicsMessage) -> pointer:
 
     **Returns**: A pointer to the raw data in memory, the pointer may be NULL if the message is not a valid message.
     """
-    try:
-        f = loadSym("helicsMessageGetBytesPointer")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsMessageGetRawDataPointer")
+    else:
+        f = loadSym("helicsMessageGetBytesPointer")
     result = f(message.handle)
     return result
 
@@ -6188,7 +6373,7 @@ def helicsFilterGetOption(filter: HelicsFilter, option: HelicsHandleOption) -> i
     return result
 
 
-def helicsFederateRegisterSubscription(fed: HelicsFederate, key: str, units: str = "") -> HelicsInput:
+def helicsFederateRegisterSubscription(fed: HelicsFederate, name: str, units: str = "") -> HelicsInput:
     """
     Functions related to value federates for the C api.
     Create a subscription.
@@ -6198,21 +6383,21 @@ def helicsFederateRegisterSubscription(fed: HelicsFederate, key: str, units: str
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a subscription, must have been created with `helics.helicsCreateValueFederate` or
     `helics.helicsCreateCombinationFederate`.
-    - **`key`** - The identifier matching a publication to get a subscription for.
+    - **`name`** - The identifier matching a publication to get a subscription for.
     - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsSubscription`.
     """
     f = loadSym("helicsFederateRegisterSubscription")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsInput(result)
 
 
-def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsPublication:
+def helicsFederateRegisterPublication(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsPublication:
     """
     Register a publication with a known type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6220,7 +6405,7 @@ def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: Helic
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication the global publication key will be prepended with the federate name.
+    - **`name`** - The identifier for the publication the global publication name will be prepended with the federate name.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the subscription (optional).
 
@@ -6228,14 +6413,14 @@ def helicsFederateRegisterPublication(fed: HelicsFederate, key: str, type: Helic
     """
     f = loadSym("helicsFederateRegisterPublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), HelicsDataType(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), HelicsDataType(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsPublication:
+def helicsFederateRegisterTypePublication(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsPublication:
     """
     Register a publication with a defined type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6243,7 +6428,7 @@ def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: s
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A string labeling the type of the publication.
     - **`units`** - A string listing the units of the subscription (optional).
 
@@ -6251,14 +6436,14 @@ def helicsFederateRegisterTypePublication(fed: HelicsFederate, key: str, type: s
     """
     f = loadSym("helicsFederateRegisterTypePublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type: HelicsDataType, units: str = "") -> HelicsPublication:
+def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, name: str, type: HelicsDataType, units: str = "") -> HelicsPublication:
     """
     Register a global named publication with an arbitrary type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6266,7 +6451,7 @@ def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type:
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the subscription (optional).
 
@@ -6274,14 +6459,14 @@ def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, key: str, type:
     """
     f = loadSym("helicsFederateRegisterGlobalPublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), HelicsDataType(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), HelicsDataType(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsPublication:
+def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsPublication:
     """
     Register a global publication with a defined type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6289,7 +6474,7 @@ def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, t
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A string describing the expected type of the publication.
     - **`units`** - A string listing the units of the subscription (optional).
 
@@ -6297,14 +6482,14 @@ def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, key: str, t
     """
     f = loadSym("helicsFederateRegisterGlobalTypePublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsInput:
+def helicsFederateRegisterInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsInput:
     """
     Register a named input.
     The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
@@ -6313,7 +6498,7 @@ def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataT
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create an input.
-    - **`key`** - The identifier for the publication the global input key will be prepended with the federate name.
+    - **`name`** - The identifier for the publication the global input name will be prepended with the federate name.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the input (optional).
 
@@ -6321,14 +6506,14 @@ def helicsFederateRegisterInput(fed: HelicsFederate, key: str, type: HelicsDataT
     """
     f = loadSym("helicsFederateRegisterInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), HelicsDataType(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), HelicsDataType(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsInput(result)
 
 
-def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsInput:
+def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
     """
     Register an input with a defined type.
     The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
@@ -6337,7 +6522,7 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, un
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create an input.
-    - **`key`** - The identifier for the input.
+    - **`name`** - The identifier for the input.
     - **`type`** - A string describing the expected type of the input.
     - **`units`** - A string listing the units of the input maybe NULL.
 
@@ -6345,14 +6530,14 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, key: str, type: str, un
     """
     f = loadSym("helicsFederateRegisterTypeInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsInput(result)
 
 
-def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: HelicsDataType, units: str) -> HelicsPublication:
+def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsPublication:
     """
     Register a global named input.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6360,7 +6545,7 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: Helic
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the subscription maybe NULL.
 
@@ -6368,14 +6553,14 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, key: str, type: Helic
     """
     f = loadSym("helicsFederateRegisterGlobalInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), HelicsDataType(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), HelicsDataType(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: str, units: str) -> HelicsInput:
+def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
     """
     Register a global publication with an arbitrary type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6383,7 +6568,7 @@ def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: s
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`key`** - The identifier for the publication.
+    - **`name`** - The identifier for the publication.
     - **`type`** - A string defining the type of the input.
     - **`units`** - A string listing the units of the subscription maybe NULL.
 
@@ -6391,27 +6576,27 @@ def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, key: str, type: s
     """
     f = loadSym("helicsFederateRegisterGlobalTypeInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), cstring(type), cstring(units), err)
+    result = f(fed.handle, cstring(name), cstring(type), cstring(units), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsInput(result)
 
 
-def helicsFederateGetPublication(fed: HelicsFederate, key: str) -> HelicsPublication:
+def helicsFederateGetPublication(fed: HelicsFederate, name: str) -> HelicsPublication:
     """
-    Get a `helics.HelicsPublication` from a key.
+    Get a `helics.HelicsPublication` from a name.
 
     **Parameters**
 
     - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    - **`key`** - The name of the publication.
+    - **`name`** - The name of the publication.
 
     **Returns**: `helics.HelicsPublication`.
     """
     f = loadSym("helicsFederateGetPublication")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), err)
+    result = f(fed.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -6438,20 +6623,20 @@ def helicsFederateGetPublicationByIndex(fed: HelicsFederate, index: int) -> Heli
         return HelicsPublication(result)
 
 
-def helicsFederateGetInput(fed: HelicsFederate, key: str) -> HelicsInput:
+def helicsFederateGetInput(fed: HelicsFederate, name: str) -> HelicsInput:
     """
-    Get an input object from a key.
+    Get an input object from a name.
 
     **Parameters**
 
     - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    - **`key`** - The name of the input.
+    - **`name`** - The name of the input.
 
     **Returns**: `helics.HelicsInput`.
     """
     f = loadSym("helicsFederateGetInput")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), err)
+    result = f(fed.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -6478,20 +6663,20 @@ def helicsFederateGetInputByIndex(fed: HelicsFederate, index: int) -> HelicsInpu
         return HelicsInput(result)
 
 
-def helicsFederateGetSubscription(fed: HelicsFederate, key: str) -> HelicsInput:
+def helicsFederateGetSubscription(fed: HelicsFederate, name: str) -> HelicsInput:
     """
     Get an input object from a subscription target.
 
     **Parameters**
 
     - **`fed`** - The value `helics.HelicsFederate` to use to get the publication.
-    - **`key`** - The name of the publication that a subscription is targeting.
+    - **`name`** - The name of the publication that a subscription is targeting.
 
     **Returns**: `helics.HelicsInput`
     """
     f = loadSym("helicsFederateGetSubscription")
     err = helicsErrorInitialize()
-    result = f(fed.handle, cstring(key), err)
+    result = f(fed.handle, cstring(name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
@@ -6584,10 +6769,10 @@ def helicsPublicationPublishBytes(pub: HelicsPublication, data: bytes):
     - **`pub`** - The publication to publish for.
     - **`data`** - A pointer to the raw data.
     """
-    try:
-        f = loadSym("helicsPublicationPublishBytes")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsPublicationPublishRaw")
+    else:
+        f = loadSym("helicsPublicationPublishBytes")
     err = helicsErrorInitialize()
     if isinstance(data, str):
         data = data.encode()
@@ -6816,10 +7001,10 @@ def helicsInputGetByteCount(ipt: HelicsInput) -> int:
 
     **Returns**: The size of the raw data/string in bytes.
     """
-    try:
-        f = loadSym("helicsInputGetByteCount")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsInputGetRawValueSize")
+    else:
+        f = loadSym("helicsInputGetByteCount")
     result = f(ipt.handle)
     return result
 
@@ -6850,10 +7035,10 @@ def helicsInputGetBytes(ipt: HelicsInput) -> bytes:
 
     **Returns**: Raw string data.
     """
-    try:
-        f = loadSym("helicsInputGetBytes")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsInputGetRawValue")
+    else:
+        f = loadSym("helicsInputGetBytes")
     err = helicsErrorInitialize()
     maxDataLen = helicsInputGetByteCount(ipt) + 1024
     data = ffi.new("char[{maxDataLen}]".format(maxDataLen=maxDataLen))
@@ -7122,10 +7307,10 @@ def helicsInputSetDefaultBytes(ipt: HelicsInput, data: bytes):
     - **`ipt`** - The input to set the default for.
     - **`data`** - A pointer to the raw data to use for the default.
     """
-    try:
-        f = loadSym("helicsInputSetDefaultBytes")
-    except AttributeError:
+    if HELICS_VERSION == 2:
         f = loadSym("helicsInputSetDefaultRaw")
+    else:
+        f = loadSym("helicsInputSetDefaultBytes")
     err = helicsErrorInitialize()
     if isinstance(data, str):
         data = data.encode()
@@ -7334,34 +7519,64 @@ def helicsPublicationGetType(pub: HelicsPublication) -> str:
 
 def helicsInputGetKey(ipt: HelicsInput) -> str:
     """
-    Get the key of an input.
+    Get the name of an input.
 
     **Parameters**
 
     - **`ipt`** - The input to query
 
-    **Returns**: A string with the key information.
+    **Returns**: A string with the name information.
     """
-    f = loadSym("helicsInputGetKey")
+    warnings.warn("This is deprecated. Use `helicsInputGetName` instead.")
+    return helicsInputGetName(ipt)
+
+
+def helicsInputGetName(ipt: HelicsInput) -> str:
+    """
+    Get the name of an input.
+
+    **Parameters**
+
+    - **`ipt`** - The input to query
+
+    **Returns**: A string with the name information.
+    """
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsInputGetKey")
+    else:
+        f = loadSym("helicsInputGetName")
     result = f(ipt.handle)
     return ffi.string(result).decode()
 
 
 def helicsSubscriptionGetKey(ipt: HelicsInput) -> str:
     """
-    Get the key of a subscription.
+    Get the name of a subscription.
 
-    **Returns**: A string with the subscription key.
+    **Returns**: A string with the subscription name.
     """
-    f = loadSym("helicsSubscriptionGetKey")
+    warnings.warn("This is deprecated. Use `helicsSubscriptionGetTarget` instead.")
+    return helicsSubscriptionGetTarget(ipt)
+
+
+def helicsSubscriptionGetTarget(ipt: HelicsInput) -> str:
+    """
+    Get the target of a subscription.
+
+    **Returns**: A string with the subscription target.
+    """
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsSubscriptionGetKey")
+    else:
+        f = loadSym("helicsSubscriptionGetTarget")
     result = f(ipt.handle)
     return ffi.string(result).decode()
 
 
 def helicsPublicationGetKey(pub: HelicsPublication) -> str:
     """
-    Get the key of a publication.
-    This will be the global key used to identify the publication to the federation.
+    Get the name of a publication.
+    This will be the global name used to identify the publication to the federation.
 
     **Parameters**
 
@@ -7369,7 +7584,25 @@ def helicsPublicationGetKey(pub: HelicsPublication) -> str:
 
     **Returns**: A string with the units information.
     """
-    f = loadSym("helicsPublicationGetKey")
+    warnings.warn("This is deprecated. Use `helicsPublicationGetName` instead.")
+    return helicsPublicationGetName(pub)
+
+
+def helicsPublicationGetName(pub: HelicsPublication) -> str:
+    """
+    Get the name of a publication.
+    This will be the global name used to identify the publication to the federation.
+
+    **Parameters**
+
+    - **`pub`** - The publication to query.
+
+    **Returns**: A string with the units information.
+    """
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsPublicationGetKey")
+    else:
+        f = loadSym("helicsPublicationGetName")
     result = f(pub.handle)
     return ffi.string(result).decode()
 
@@ -7856,3 +8089,54 @@ def helicsEndpointAddDestinationFilter(endpoint: HelicsEndpoint, filter_name: st
     f(endpoint.handle, cstring(filter_name), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsQuerySetOrdering(query: HelicsQuery, mode: int):
+    """
+    Update the ordering mode of the query, fast runs on priority channels, ordered goes on normal channels but goes in sequence
+    # Parameters
+    - **`query`**: The query object to change the order for.
+    - **`mode`**: 0 for fast, 1 for ordered.
+    """
+    f = loadSym("helicsQuerySetOrdering")
+    err = helicsErrorInitialize()
+    f(query.handle, mode, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsLoadSignalHandler():
+    """
+    Load a signal handler that handles Ctrl-C and shuts down the library
+    """
+    f = loadSym("helicsLoadSignalHandler")
+    f()
+
+
+def helicsAbort(error_code: int, message: str):
+    f = loadSym("helicsAbort")
+    f(error_code, cstring(message))
+
+
+try:
+
+    @ffi.callback("int handler(int)")
+    def _handle_helicsCallBack(code: int):
+        helicsAbort(code, "User pressed Ctrl-C")
+        return 0
+
+
+except Exception as _:
+    _handle_helicsCallBack = None
+
+
+def helicsLoadSignalHandlerCallback():
+    if _handle_helicsCallBack is not None:
+        try:
+            f = loadSym("helicsLoadSignalHandlerCallback")
+            f(_handle_helicsCallBack)
+        except Exception as _:
+            pass
+
+
+helicsLoadSignalHandlerCallback()

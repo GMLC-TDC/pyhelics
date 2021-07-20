@@ -6,7 +6,7 @@ This document will describe the path to migrate your python code from HELICS ver
 
 [See this commit for a diff of all the changes](https://github.com/GMLC-TDC/pyhelics/commit/366a4c5cb7fdfe44e48a85acdde0be43d56df3a3).
 
-You can also see the [tests](https://github.com/GMLC-TDC/pyhelics/tree/master/tests) folder on github for more examples on how to use the various functions.
+You can also see the [tests](https://github.com/GMLC-TDC/pyhelics/tree/main/tests) folder on github for more examples on how to use the various functions.
 
 See [the Pythonic Interface](./pythonic-interface.md) for all the new functionality that is available in pyhelics.
 
@@ -92,10 +92,8 @@ The following functions have been renamed and the argument order has been update
 
 The following functions have been renamed:
 
-- `helicsFederatePendingMessages` -> `helicsFederatePendingMessagesCount`
-- `helicsEndpointPendingMessages` -> `helicsEndpointPendingMessagesCount`
-
-
+- `helicsFederatePendingMessages` -> `helicsFederatePendingMessageCount`
+- `helicsEndpointPendingMessages` -> `helicsEndpointPendingMessageCount`
 
 ### Enumerations
 
@@ -115,10 +113,10 @@ h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.HELICS_PROPERTY_INT_MAX_ITERA
 
 ### New functionality
 
-If you would like to use callbacks you can:
+If you would like to use callbacks you can do the following in HELICS v3.x.x:
 
 ```python
-@h.ffi.callback("void logger(helics_message, void* userData)")
+@h.ffi.callback("void logger(HelicsMessage, void* userData)")
 def filterFunc1(mess, user_data):
     time = h.helicsMessageGetTime(mess)
     user_data = h.ffi.from_handle(user_data)
@@ -143,8 +141,10 @@ h.helicsFilterSetCustomCallback(f1, filterFunc1, handle)
 
 Find the signature of the function that you'd like to call, use `h.ffi.callback` as a python decorator for that function.
 
+In HELICS v3,
+
 ```python
-@h.ffi.callback("void logger(helics_message, void* userData)")
+@h.ffi.callback("void logger(HelicsMessage, void* userData)")
 ```
 
 In HELICS v2.x.x, use `helics_message_object` instead.
