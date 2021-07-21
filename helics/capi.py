@@ -758,14 +758,14 @@ class _FilterOptionAccessor(_HelicsCHandle):
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsFilterGetOption(HelicsFilter(self.handle), idx)
+        return helicsFilterGetOption(HelicsFilter(self.handle, cleanup=False), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsFilterSetOption(HelicsFilter(self.handle), idx, value)
+        return helicsFilterSetOption(HelicsFilter(self.handle, cleanup=False), idx, value)
 
     def __repr__(self):
         lst = []
@@ -778,8 +778,8 @@ class _FilterOptionAccessor(_HelicsCHandle):
 
 
 class HelicsFilter(_HelicsCHandle):
-    def __init__(self, handle):
-        super(HelicsFilter, self).__init__(handle, cleanup=False)
+    def __init__(self, handle, cleanup=True):
+        super(HelicsFilter, self).__init__(handle, cleanup=cleanup)
         self.option = _FilterOptionAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
@@ -1105,10 +1105,10 @@ class HelicsBroker(_HelicsCHandle):
 
 class _MessageFlagAccessor(_HelicsCHandle):
     def __getitem__(self, index):
-        return helicsMessageCheckFlag(HelicsMessage(self.handle), index)
+        return helicsMessageCheckFlag(HelicsMessage(self.handle, cleanup=False), index)
 
     def __setitem__(self, index: int, value: bool):
-        return helicsMessageSetFlagOption(HelicsMessage(self.handle), index, value)
+        return helicsMessageSetFlagOption(HelicsMessage(self.handle, cleanup=False), index, value)
 
     def __repr__(self):
         lst = []
@@ -1124,8 +1124,8 @@ class _MessageFlagAccessor(_HelicsCHandle):
 
 
 class HelicsMessage(_HelicsCHandle):
-    def __init__(self, handle):
-        super(HelicsMessage, self).__init__(handle)
+    def __init__(self, handle, cleanup=True):
+        super(HelicsMessage, self).__init__(handle, cleanup=cleanup)
         self.flag = _MessageFlagAccessor(self.handle, cleanup=False)
 
     def __repr__(self):

@@ -176,6 +176,7 @@ def test_python_api1():
     )
 
     message.append("-random")
+    assert message.is_valid() is True
     assert message.data == "random-data-random"
 
     message.data = "random-data"
@@ -184,6 +185,7 @@ def test_python_api1():
     message.raw_data = b"random-data-random"
     assert message.data == "random-data-random"
 
+    assert message.is_valid() is True
     message.message_id = 100
     message.source = "earth"
     message.destination = "moon"
@@ -191,6 +193,7 @@ def test_python_api1():
     message.original_destination = "goodbye-world"
     message.time = 2.0
 
+    assert message.is_valid() is True
     assert message.message_id == 100
     assert message.source == "earth"
     assert message.destination == "moon"
@@ -198,10 +201,12 @@ def test_python_api1():
     assert message.original_destination == "goodbye-world"
     assert message.time == 2.0
 
+    assert message.is_valid() is True
     assert (
         """<{ 1 = False, 2 = False, 3 = False, 4 = False, 5 = False, 6 = False, 7 = False, 8 = False, 9 = False, 10 = False, 11 = False, 12 = False, 13 = False, 14 = False, 15 = False }>"""
         in repr(message.flag)
     )
+    assert message.is_valid() is True
     message.flag[1] = True
     assert message.flag[1] is True
 
