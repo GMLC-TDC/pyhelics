@@ -136,8 +136,8 @@ def test_filter_types_tests_core_fitler_registration():
     h.helicsCoreSetReadyToInit(core1)
     h.helicsCoreDisconnect(core1)
     h.helicsCoreDisconnect(core2)
-    h.helicsCoreFree(core1)
-    h.helicsCoreFree(core2)
+    # h.helicsCoreFree(core1)
+    # h.helicsCoreFree(core2)
     h.helicsCloseLibrary()
 
 
@@ -568,7 +568,7 @@ def test_filter_test_types_clone_test_connections():
     filteredEndpoints = h.helicsQueryExecute(q, sFed)
     # assert "srcFilters" in str(filteredEndpoints)
     # assert "(cloning)" in str(filteredEndpoints)
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
 
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION
@@ -696,7 +696,7 @@ def test_filter_test_types_clone_test_dest_connections():
 
     h.helicsCoreAddDestinationFilterToEndpoint(cr, "", "dest")
 
-    h.helicsCoreFree(cr)
+    # h.helicsCoreFree(cr)
 
     h.helicsFederateEnterExecutingModeAsync(sFed)
     h.helicsFederateEnterExecutingModeAsync(dcFed)
@@ -707,7 +707,7 @@ def test_filter_test_types_clone_test_dest_connections():
     q = h.helicsCreateQuery("", "filtered_endpoints")
     filteredEndpoints = h.helicsQueryExecute(q, dFed)
     assert "cloningdestFilter" in str(filteredEndpoints)
-    h.helicsQueryFree(q)
+    # h.helicsQueryFree(q)
 
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_EXECUTION

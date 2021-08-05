@@ -39,8 +39,8 @@ def test_broker_api():
     h.helicsBrokerDisconnect(broker1)
     assert h.helicsBrokerIsConnected(broker1) == 0
     h.helicsBrokerDisconnect(broker2)
-    h.helicsBrokerFree(broker1)
-    h.helicsBrokerFree(broker2)
+    # h.helicsBrokerFree(broker1)
+    # h.helicsBrokerFree(broker2)
     h.helicsCloseLibrary()
 
 
@@ -63,8 +63,8 @@ def test_core_api():
     h.helicsCoreSetReadyToInit(core1)
     h.helicsCoreDisconnect(core1)
     h.helicsCoreDisconnect(core2)
-    h.helicsCoreFree(core1)
-    h.helicsCoreFree(core2)
+    # h.helicsCoreFree(core1)
+    # h.helicsCoreFree(core2)
     h.helicsCloseLibrary()
 
 
@@ -112,11 +112,11 @@ def test_logging_api():
     except:
         assert userdata.x == 9
 
-    h.helicsFederateFree(fed)
-    h.helicsFederateInfoFree(fi)
+    # h.helicsFederateFree(fed)
+    # h.helicsFederateInfoFree(fi)
 
     h.helicsBrokerDisconnect(broker)
-    h.helicsBrokerFree(broker)
+    # h.helicsBrokerFree(broker)
 
     h.helicsCleanupLibrary()
     h.helicsCloseLibrary()
@@ -137,7 +137,7 @@ def test_misc_api():
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_OFFSET, 0.1)
-    h.helicsFederateInfoFree(fedInfo1)
+    # h.helicsFederateInfoFree(fedInfo1)
 
     broker3 = h.helicsCreateBroker("zmq", "broker3", "--federates 1")
     fedInfo2 = h.helicsCreateFederateInfo()
@@ -357,13 +357,13 @@ def test_misc_api():
 
     h.helicsFederateDisconnect(fed1)
     h.helicsFederateDisconnect(fed2)
-    h.helicsFederateFree(fed1)
+    # h.helicsFederateFree(fed1)
     h.helicsFederateDisconnect(fed2)
-    h.helicsFederateFree(fed2)
-    h.helicsFederateInfoFree(fedInfo2)
+    # h.helicsFederateFree(fed2)
+    # h.helicsFederateInfoFree(fedInfo2)
     h.helicsBrokerDisconnect(broker3)
 
-    h.helicsBrokerFree(broker3)
+    # h.helicsBrokerFree(broker3)
 
     h.helicsCleanupLibrary()
     h.helicsCloseLibrary()
