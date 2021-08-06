@@ -1105,7 +1105,7 @@ class HelicsBroker(_HelicsCHandle):
 
 class _MessageFlagAccessor(_HelicsCHandle):
     def __getitem__(self, index):
-        return helicsMessageCheckFlag(HelicsMessage(self.handle, cleanup=False), index)
+        return helicsMessageGetFlagOption(HelicsMessage(self.handle, cleanup=False), index)
 
     def __setitem__(self, index: int, value: bool):
         return helicsMessageSetFlagOption(HelicsMessage(self.handle, cleanup=False), index, value)
