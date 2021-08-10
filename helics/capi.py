@@ -3,6 +3,7 @@ import logging
 import warnings
 import json
 import weakref
+import os
 
 from enum import IntEnum, unique
 
@@ -20,6 +21,7 @@ from . import _build
 lib = _build.lib
 ffi = _build.ffi
 
+PYHELICS_CLEANUP = os.environ.get("PYHELICS_CLEANUP", False)
 
 if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
     HELICS_VERSION = 2
@@ -739,7 +741,8 @@ def generate_cleanup_callback(obj):
     def cleanup(handle):
         if f is not None:
             f(handle)
-            helicsCleanupLibrary()
+            if PYHELICS_CLEANUP:
+                helicsCleanupLibrary()
 
     return cleanup
 
@@ -8152,7 +8155,7 @@ try:
         return 0
 
 
-except Exception as _:
+except Exception:
     _handle_helicsCallBack = None
 
 
@@ -8161,7 +8164,7 @@ def helicsLoadSignalHandlerCallback():
         try:
             f = loadSym("helicsLoadSignalHandlerCallback")
             f(_handle_helicsCallBack)
-        except Exception as _:
+        except Exception:
             pass
 
 
