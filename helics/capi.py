@@ -7076,7 +7076,7 @@ def helicsInputGetBytes(ipt: HelicsInput) -> bytes:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return ffi.string(data, maxlen=actualSize[0])
+        return ffi.unpack(data, length=actualSize[0])
 
 
 def helicsInputGetStringSize(ipt: HelicsInput) -> int:
