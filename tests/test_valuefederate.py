@@ -616,3 +616,28 @@ def test_valuefederate_test_file_load():
     h.helicsFederateFinalize(vFed)
     h.helicsFederateFree(vFed)
     h.helicsCloseLibrary()
+    
+def test_valuefederate_test_bytes():
+    broker = createBroker()
+    vFed, fedinfo = createValueFederate()
+    defaultValue = bytes([1,2,3,4,5])
+    testValue = bytes([5,4,3,2,1,0,255,30,17,18,19])
+    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_RAW, "")
+    subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
+    h.helicsInputSetDefaultBytes(subid, defaultValue)
+
+    h.helicsFederateEnterExecutingMode(vFed)
+
+    h.helicsPublicationPublishBytes(pubid, testValue)
+
+    value = h.helicsInputGetBytes(subid)
+    assert value == defaultValue
+
+    grantedtime = h.helicsFederateRequestTime(vFed, 1.0)
+    assert grantedtime == 0.01
+
+    value = h.helicsInputGetBytes(subid)
+    assert value == testValue
+
+    destroyFederate(vFed, fedinfo)
+    destroyBroker(broker)
