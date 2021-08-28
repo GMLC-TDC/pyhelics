@@ -394,6 +394,7 @@ else:
 
         NO_PRINT = -4  # HelicsLogLevels
         ERROR = 0  # HelicsLogLevels
+        PROFILING = 2  # HelicsLogLevels
         WARNING = 3  # HelicsLogLevels
         SUMMARY = 6  # HelicsLogLevels
         CONNECTIONS = 9  # HelicsLogLevels
@@ -406,6 +407,7 @@ else:
 
 HELICS_LOG_LEVEL_NO_PRINT = HelicsLogLevel.NO_PRINT
 HELICS_LOG_LEVEL_ERROR = HelicsLogLevel.ERROR
+HELICS_LOG_LEVEL_PROFILING = HelicsLogLevel.PROFILING
 HELICS_LOG_LEVEL_WARNING = HelicsLogLevel.WARNING
 HELICS_LOG_LEVEL_SUMMARY = HelicsLogLevel.SUMMARY
 HELICS_LOG_LEVEL_CONNECTIONS = HelicsLogLevel.CONNECTIONS
@@ -417,6 +419,7 @@ HELICS_LOG_LEVEL_DEBUG = HelicsLogLevel.DEBUG
 
 helics_log_level_no_print = HelicsLogLevel.NO_PRINT
 helics_log_level_error = HelicsLogLevel.ERROR
+helics_log_level_profiling = HelicsLogLevel.PROFILING
 helics_log_level_warning = HelicsLogLevel.WARNING
 helics_log_level_summary = HelicsLogLevel.SUMMARY
 helics_log_level_connections = HelicsLogLevel.CONNECTIONS
