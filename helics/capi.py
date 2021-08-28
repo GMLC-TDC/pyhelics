@@ -61,6 +61,15 @@ class HelicsSequencingMode(IntEnum):
     DEFAULT = 2
 
 
+HELICS_SEQUENCING_MODE_FAST = HelicsSequencingMode.FAST
+HELICS_SEQUENCING_MODE_ORDERED = HelicsSequencingMode.ORDERED
+HELICS_SEQUENCING_MODE_DEFAULT = HelicsSequencingMode.DEFAULT
+
+helics_sequencing_mode_fast = HelicsSequencingMode.FAST
+helics_sequencing_mode_ordered = HelicsSequencingMode.ORDERED
+helics_sequencing_mode_default = HelicsSequencingMode.DEFAULT
+
+
 @unique
 class HelicsCoreType(IntEnum):
     """
@@ -286,6 +295,7 @@ class HelicsFederateFlag(IntEnum):
     # specify that that federate should capture the profiling data to the local federate logging system
     LOCAL_PROFILING_CAPTURE = 96
 
+
 HELICS_FLAG_OBSERVER = HelicsFederateFlag.OBSERVER
 HELICS_FLAG_UNINTERRUPTIBLE = HelicsFederateFlag.UNINTERRUPTIBLE
 HELICS_FLAG_INTERRUPTIBLE = HelicsFederateFlag.INTERRUPTIBLE
@@ -323,13 +333,13 @@ helics_flag_event_triggered = HelicsFederateFlag.EVENT_TRIGGERED
 helics_flag_local_profiling_capture = HelicsFederateFlag.LOCAL_PROFILING_CAPTURE
 
 
-
 class HelicsCoreFlag(IntEnum):
     # used to delay a core from entering initialization mode even if it would otherwise be ready
     DELAY_INIT_ENTRY = 45
     # used to clear the HELICS_DELAY_INIT_ENTRY flag in cores
     ENABLE_INIT_ENTRY = 47
     IGNORE = 999
+
 
 HELICS_FLAG_DELAY_INIT_ENTRY = HelicsCoreFlag.DELAY_INIT_ENTRY
 HELICS_FLAG_ENABLE_INIT_ENTRY = HelicsCoreFlag.ENABLE_INIT_ENTRY
