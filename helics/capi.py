@@ -51,30 +51,32 @@ class HelicsSequencingMode(IntEnum):
     existing messages; ordered means it follows normal priority patterns and will be ordered along with
     existing messages
 
-    - **FAST** = 0
-    - **ORDERED** = 1
+    - **FAST**
+    - **ORDERED**
+    - **DEFAULT**
     """
 
     FAST = 0
     ORDERED = 1
+    DEFAULT = 2
 
 
 @unique
 class HelicsCoreType(IntEnum):
     """
-    - **DEFAULT**      = 0
-    - **TEST**         = 3
-    - **INTERPROCESS** = 4
-    - **IPC**          = 5
-    - **TCP**          = 6
-    - **UDP**          = 7
-    - **NNG**          = 9
-    - **ZMQ_TEST**     = 10
-    - **TCP_SS**       = 11
-    - **HTTP**         = 12
-    - **WEBSOCKET**    = 14
-    - **INPROC**       = 18
-    - **NULL**         = 66
+    - **DEFAULT**
+    - **TEST**
+    - **INTERPROCESS**
+    - **IPC**
+    - **TCP**
+    - **UDP**
+    - **NNG**
+    - **ZMQ_TEST**
+    - **TCP_SS**
+    - **HTTP**
+    - **WEBSOCKET**
+    - **INPROC**
+    - **NULL**
     """
 
     DEFAULT = 0  # HelicsCoreType
@@ -130,18 +132,19 @@ helics_core_type_null = HelicsCoreType.NULL
 @unique
 class HelicsDataType(IntEnum):
     """
-    - **STRING**         = 0
-    - **DOUBLE**         = 1
-    - **INT**            = 2
-    - **COMPLEX**        = 3
-    - **VECTOR**         = 4
-    - **COMPLEX_VECTOR** = 5
-    - **NAMED_POINT**    = 6
-    - **BOOLEAN**        = 7
-    - **TIME**           = 8
-    - **RAW**            = 25
-    - **MULTI**          = 33
-    - **ANY**            = 25262
+    - **STRING**
+    - **DOUBLE**
+    - **INT**
+    - **COMPLEX**
+    - **VECTOR**
+    - **COMPLEX_VECTOR**
+    - **NAMED_POINT**
+    - **BOOLEAN**
+    - **TIME**
+    - **RAW**
+    - **JSON**
+    - **MULTI**
+    - **ANY**
     """
 
     STRING = 0  # HelicsDataType
@@ -154,11 +157,13 @@ class HelicsDataType(IntEnum):
     BOOLEAN = 7  # HelicsDataType
     TIME = 8  # HelicsDataType
     RAW = 25  # HelicsDataType
+    JSON = 30  # HelicsDataType
     MULTI = 33  # HelicsDataType
     ANY = 25262  # HelicsDataType
 
 
 HELICS_DATA_TYPE_STRING = HelicsDataType.STRING
+HELICS_DATA_TYPE_CHAR = HelicsDataType.STRING
 HELICS_DATA_TYPE_DOUBLE = HelicsDataType.DOUBLE
 HELICS_DATA_TYPE_INT = HelicsDataType.INT
 HELICS_DATA_TYPE_COMPLEX = HelicsDataType.COMPLEX
@@ -168,10 +173,12 @@ HELICS_DATA_TYPE_NAMED_POINT = HelicsDataType.NAMED_POINT
 HELICS_DATA_TYPE_BOOLEAN = HelicsDataType.BOOLEAN
 HELICS_DATA_TYPE_TIME = HelicsDataType.TIME
 HELICS_DATA_TYPE_RAW = HelicsDataType.RAW
+HELICS_DATA_TYPE_JSON = HelicsDataType.JSON
 HELICS_DATA_TYPE_MULTI = HelicsDataType.MULTI
 HELICS_DATA_TYPE_ANY = HelicsDataType.ANY
 
 helics_data_type_string = HelicsDataType.STRING
+helics_data_type_char = HelicsDataType.STRING
 helics_data_type_double = HelicsDataType.DOUBLE
 helics_data_type_int = HelicsDataType.INT
 helics_data_type_complex = HelicsDataType.COMPLEX
@@ -181,49 +188,103 @@ helics_data_type_named_point = HelicsDataType.NAMED_POINT
 helics_data_type_boolean = HelicsDataType.BOOLEAN
 helics_data_type_time = HelicsDataType.TIME
 helics_data_type_raw = HelicsDataType.RAW
+helics_data_type_json = HelicsDataType.JSON
 helics_data_type_multi = HelicsDataType.MULTI
 helics_data_type_any = HelicsDataType.ANY
+
+
+# enumeration of general flags that can be used in federates/cores/brokers
+@unique
+class HelicsFlag(IntEnum):
+    # flag specifying that a federate, core, or broker may be slow to respond to pings If the federate goes offline there is no good way to detect it so use with caution
+    SLOW_RESPONDING = 29
+    # flag specifying the federate/core/broker is operating in a user debug mode so deadlock timers and timeout are disabled this flag is a combination of slow_responding and disabling of some timeouts
+    DEBUGGING = 31
+    # specify that a federate error should terminate the federation
+    TERMINATE_ON_ERROR = 72
+    # specify that the log files should be flushed on every log message
+    FORCE_LOGGING_FLUSH = 88
+    # specify that a full log should be dumped into a file
+    DUMPLOG = 89
+    # specify that helics should capture profiling data
+    PROFILING = 93
+    # flag trigger for generating a profiling marker
+    PROFILING_MARKER = 95
+
+
+HELICS_FLAG_SLOW_RESPONDING = HelicsFlag.SLOW_RESPONDING
+HELICS_FLAG_DEBUGGING = HelicsFlag.DEBUGGING
+HELICS_FLAG_TERMINATE_ON_ERROR = HelicsFlag.TERMINATE_ON_ERROR
+HELICS_FLAG_FORCE_LOGGING_FLUSH = HelicsFlag.FORCE_LOGGING_FLUSH
+HELICS_FLAG_DUMPLOG = HelicsFlag.DUMPLOG
+HELICS_FLAG_PROFILING = HelicsFlag.PROFILING
+HELICS_FLAG_PROFILING_MARKER = HelicsFlag.PROFILING_MARKER
+
+helics_flag_slow_responding = HelicsFlag.SLOW_RESPONDING
+helics_flag_debugging = HelicsFlag.DEBUGGING
+helics_flag_terminate_on_error = HelicsFlag.TERMINATE_ON_ERROR
+helics_flag_force_logging_flush = HelicsFlag.FORCE_LOGGING_FLUSH
+helics_flag_dumplog = HelicsFlag.DUMPLOG
+helics_flag_profiling = HelicsFlag.PROFILING
+helics_flag_profiling_marker = HelicsFlag.PROFILING_MARKER
 
 
 @unique
 class HelicsFederateFlag(IntEnum):
     """
-    - **OBSERVER**                      = 0
-    - **UNINTERRUPTIBLE**               = 1
-    - **INTERRUPTIBLE**                 = 2
-    - **SOURCE_ONLY**                   = 4
-    - **ONLY_TRANSMIT_ON_CHANGE**       = 6
-    - **ONLY_UPDATE_ON_CHANGE**         = 8
-    - **WAIT_FOR_CURRENT_TIME_UPDATE**  = 10
-    - **RESTRICTIVE_TIME_POLICY**       = 11
-    - **REALTIME**                      = 16
-    - **SLOW_RESPONDING**               = 29
-    - **DELAY_INIT_ENTRY**              = 45
-    - **ENABLE_INIT_ENTRY**             = 47
-    - **IGNORE_TIME_MISMATCH_WARNINGS** = 67
-    - **TERMINATE_ON_ERROR**            = 72
+    - **OBSERVER**
+    - **UNINTERRUPTIBLE**
+    - **INTERRUPTIBLE**
+    - **SOURCE_ONLY**
+    - **ONLY_TRANSMIT_ON_CHANGE**
+    - **ONLY_UPDATE_ON_CHANGE**
+    - **WAIT_FOR_CURRENT_TIME_UPDATE**
+    - **RESTRICTIVE_TIME_POLICY**
+    - **ROLLBACK**
+    - **FORWARD_COMPUTE**
+    - **REALTIME**
+    - **SINGLE_THREAD_FEDERATE**
+    - **IGNORE_TIME_MISMATCH_WARNINGS**
+    - **STRICT_CONFIG_CHECKING**
+    - **USE_JSON_SERIALIZATION**
+    - **EVENT_TRIGGERED**
+    - **LOCAL_PROFILING_CAPTURE**
     """
 
-    OBSERVER = 0  # HelicsFederateFlags
-    UNINTERRUPTIBLE = 1  # HelicsFederateFlags
-    INTERRUPTIBLE = 2  # HelicsFederateFlags
-    SOURCE_ONLY = 4  # HelicsFederateFlags
-    ONLY_TRANSMIT_ON_CHANGE = 6  # HelicsFederateFlags
-    ONLY_UPDATE_ON_CHANGE = 8  # HelicsFederateFlags
-    WAIT_FOR_CURRENT_TIME_UPDATE = 10  # HelicsFederateFlags
-    RESTRICTIVE_TIME_POLICY = 11  # HelicsFederateFlags
-    # ROLLBACK = 12  # HelicsFederateFlags
-    # FORWARD_COMPUTE = 14  # HelicsFederateFlags
-    REALTIME = 16  # HelicsFederateFlags
-    # SINGLE_THREAD_FEDERATE = 27  # HelicsFederateFlags
-    SLOW_RESPONDING = 29  # HelicsFederateFlags
-    DELAY_INIT_ENTRY = 45  # HelicsFederateFlags
-    ENABLE_INIT_ENTRY = 47  # HelicsFederateFlags
-    IGNORE_TIME_MISMATCH_WARNINGS = 67  # HelicsFederateFlags
-    TERMINATE_ON_ERROR = 72  # HelicsFederateFlags
-    FORCE_LOGGING_FLUSH = 88  # HelicsFederateFlags
-    DUMPLOG = 89  # HelicsFederateFlags
-
+    # flag indicating that a federate is observe only
+    OBSERVER = 0
+    # flag indicating that a federate can only return requested times
+    UNINTERRUPTIBLE = 1
+    # flag indicating that a federate can be interrupted
+    INTERRUPTIBLE = 2
+    # flag indicating that a federate/interface is a signal generator only
+    SOURCE_ONLY = 4
+    # flag indicating a federate/interface should only transmit values if they have changed (binary equivalence)
+    ONLY_TRANSMIT_ON_CHANGE = 6
+    # flag indicating a federate/interface should only trigger an update if a value has changed (binary equivalence)
+    ONLY_UPDATE_ON_CHANGE = 8
+    # flag indicating a federate should only grant time if all other federates have already passed the requested time
+    WAIT_FOR_CURRENT_TIME_UPDATE = 10
+    # flag indicating a federate should operate on a restrictive time policy, which disallows some 2nd order time evaluation and can be useful for certain types of dependency cycles and update patterns, but generally shouldn't be used as it can lead to some very slow update conditions
+    RESTRICTIVE_TIME_POLICY = 11
+    # flag indicating that a federate has rollback capability
+    ROLLBACK = 12
+    # flag indicating that a federate performs forward computation and does internal rollback
+    FORWARD_COMPUTE = 14
+    # flag indicating that a federate needs to run in real time
+    REALTIME = 16
+    # flag indicating that the federate will only interact on a single thread
+    SINGLE_THREAD_FEDERATE = 27
+    # used to not display warnings on mismatched requested times
+    IGNORE_TIME_MISMATCH_WARNINGS = 67
+    # specify that checking on configuration files should be strict and throw and error on any invalid values
+    STRICT_CONFIG_CHECKING = 75
+    # specify that the federate should use json serialization for all data types
+    USE_JSON_SERIALIZATION = 79
+    # specify that the federate is event triggered-meaning (all/most) events are triggered by incoming events
+    EVENT_TRIGGERED = 81
+    # specify that that federate should capture the profiling data to the local federate logging system
+    LOCAL_PROFILING_CAPTURE = 96
 
 HELICS_FLAG_OBSERVER = HelicsFederateFlag.OBSERVER
 HELICS_FLAG_UNINTERRUPTIBLE = HelicsFederateFlag.UNINTERRUPTIBLE
@@ -233,17 +294,15 @@ HELICS_FLAG_ONLY_TRANSMIT_ON_CHANGE = HelicsFederateFlag.ONLY_TRANSMIT_ON_CHANGE
 HELICS_FLAG_ONLY_UPDATE_ON_CHANGE = HelicsFederateFlag.ONLY_UPDATE_ON_CHANGE
 HELICS_FLAG_WAIT_FOR_CURRENT_TIME_UPDATE = HelicsFederateFlag.WAIT_FOR_CURRENT_TIME_UPDATE
 HELICS_FLAG_RESTRICTIVE_TIME_POLICY = HelicsFederateFlag.RESTRICTIVE_TIME_POLICY
-# HELICS_FLAG_ROLLBACK = HelicsFederateFlag.ROLLBACK
-# HELICS_FLAG_FORWARD_COMPUTE = HelicsFederateFlag.FORWARD_COMPUTE
+HELICS_FLAG_ROLLBACK = HelicsFederateFlag.ROLLBACK
+HELICS_FLAG_FORWARD_COMPUTE = HelicsFederateFlag.FORWARD_COMPUTE
 HELICS_FLAG_REALTIME = HelicsFederateFlag.REALTIME
-# HELICS_FLAG_SINGLE_THREAD_FEDERATE = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
-HELICS_FLAG_SLOW_RESPONDING = HelicsFederateFlag.SLOW_RESPONDING
-HELICS_FLAG_DELAY_INIT_ENTRY = HelicsFederateFlag.DELAY_INIT_ENTRY
-HELICS_FLAG_ENABLE_INIT_ENTRY = HelicsFederateFlag.ENABLE_INIT_ENTRY
+HELICS_FLAG_SINGLE_THREAD_FEDERATE = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
 HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
-HELICS_FLAG_TERMINATE_ON_ERROR = HelicsFederateFlag.TERMINATE_ON_ERROR
-HELICS_FLAG_FORCE_LOGGING_FLUSH = HelicsFederateFlag.FORCE_LOGGING_FLUSH
-HELICS_FLAG_DUMPLOG = HelicsFederateFlag.DUMPLOG
+HELICS_FLAG_STRICT_CONFIG_CHECKING = HelicsFederateFlag.STRICT_CONFIG_CHECKING
+HELICS_FLAG_USE_JSON_SERIALIZATION = HelicsFederateFlag.USE_JSON_SERIALIZATION
+HELICS_FLAG_EVENT_TRIGGERED = HelicsFederateFlag.EVENT_TRIGGERED
+HELICS_FLAG_LOCAL_PROFILING_CAPTURE = HelicsFederateFlag.LOCAL_PROFILING_CAPTURE
 
 helics_flag_observer = HelicsFederateFlag.OBSERVER
 helics_flag_uninterruptible = HelicsFederateFlag.UNINTERRUPTIBLE
@@ -253,33 +312,45 @@ helics_flag_only_transmit_on_change = HelicsFederateFlag.ONLY_TRANSMIT_ON_CHANGE
 helics_flag_only_update_on_change = HelicsFederateFlag.ONLY_UPDATE_ON_CHANGE
 helics_flag_wait_for_current_time_update = HelicsFederateFlag.WAIT_FOR_CURRENT_TIME_UPDATE
 helics_flag_restrictive_time_policy = HelicsFederateFlag.RESTRICTIVE_TIME_POLICY
-# helics_flag_rollback = HelicsFederateFlag.ROLLBACK
-# helics_flag_forward_compute = HelicsFederateFlag.FORWARD_COMPUTE
+helics_flag_rollback = HelicsFederateFlag.ROLLBACK
+helics_flag_forward_compute = HelicsFederateFlag.FORWARD_COMPUTE
 helics_flag_realtime = HelicsFederateFlag.REALTIME
-# helics_flag_single_thread_federate = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
-helics_flag_slow_responding = HelicsFederateFlag.SLOW_RESPONDING
-helics_flag_delay_init_entry = HelicsFederateFlag.DELAY_INIT_ENTRY
-helics_flag_enable_init_entry = HelicsFederateFlag.ENABLE_INIT_ENTRY
+helics_flag_single_thread_federate = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
 helics_flag_ignore_time_mismatch_warnings = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
-helics_flag_terminate_on_error = HelicsFederateFlag.TERMINATE_ON_ERROR
-helics_flag_force_logging_flush = HelicsFederateFlag.FORCE_LOGGING_FLUSH
-helics_flag_dumplog = HelicsFederateFlag.DUMPLOG
+helics_flag_strict_config_checking = HelicsFederateFlag.STRICT_CONFIG_CHECKING
+helics_flag_use_json_serialization = HelicsFederateFlag.USE_JSON_SERIALIZATION
+helics_flag_event_triggered = HelicsFederateFlag.EVENT_TRIGGERED
+helics_flag_local_profiling_capture = HelicsFederateFlag.LOCAL_PROFILING_CAPTURE
 
+
+
+class HelicsCoreFlag(IntEnum):
+    # used to delay a core from entering initialization mode even if it would otherwise be ready
+    DELAY_INIT_ENTRY = 45
+    # used to clear the HELICS_DELAY_INIT_ENTRY flag in cores
+    ENABLE_INIT_ENTRY = 47
+    IGNORE = 999
+
+HELICS_FLAG_DELAY_INIT_ENTRY = HelicsCoreFlag.DELAY_INIT_ENTRY
+HELICS_FLAG_ENABLE_INIT_ENTRY = HelicsCoreFlag.ENABLE_INIT_ENTRY
+
+helics_flag_delay_init_entry = HelicsCoreFlag.DELAY_INIT_ENTRY
+helics_flag_enable_init_entry = HelicsCoreFlag.ENABLE_INIT_ENTRY
 
 if HELICS_VERSION == 2:
 
     @unique
     class HelicsLogLevel(IntEnum):
         """
-        - **NO_PRINT**    = -1
-        - **ERROR**       = 0
-        - **WARNING**     = 1
-        - **SUMMARY**     = 2
-        - **CONNECTIONS** = 3
-        - **INTERFACES**  = 4
-        - **TIMING**      = 5
-        - **DATA**        = 6
-        - **TRACE**       = 7
+        - **NO_PRINT**
+        - **ERROR**
+        - **WARNING**
+        - **SUMMARY**
+        - **CONNECTIONS**
+        - **INTERFACES**
+        - **TIMING**
+        - **DATA**
+        - **TRACE**
         """
 
         NO_PRINT = -1  # HelicsLogLevels
@@ -290,6 +361,7 @@ if HELICS_VERSION == 2:
         INTERFACES = 4  # HelicsLogLevels
         TIMING = 5  # HelicsLogLevels
         DATA = 6  # HelicsLogLevels
+        DEBUG = 7  # HelicsLogLevels
         TRACE = 7  # HelicsLogLevels
 
 
@@ -298,15 +370,16 @@ else:
     @unique
     class HelicsLogLevel(IntEnum):
         """
-        - **NO_PRINT**    = -4
-        - **ERROR**       = 0
-        - **WARNING**     = 3
-        - **SUMMARY**     = 6
-        - **CONNECTIONS** = 9
-        - **INTERFACES**  = 12
-        - **TIMING**      = 15
-        - **DATA**        = 18
-        - **TRACE**       = 21
+        - **NO_PRINT**
+        - **ERROR**
+        - **WARNING**
+        - **SUMMARY**
+        - **CONNECTIONS**
+        - **INTERFACES**
+        - **TIMING**
+        - **DATA**
+        - **DEBUG**
+        - **TRACE**
         """
 
         NO_PRINT = -4  # HelicsLogLevels
@@ -317,7 +390,8 @@ else:
         INTERFACES = 12  # HelicsLogLevels
         TIMING = 15  # HelicsLogLevels
         DATA = 18  # HelicsLogLevels
-        TRACE = 21  # HelicsLogLevels
+        DEBUG = 21  # HelicsLogLevels
+        TRACE = 24  # HelicsLogLevels
 
 
 HELICS_LOG_LEVEL_NO_PRINT = HelicsLogLevel.NO_PRINT
@@ -329,6 +403,7 @@ HELICS_LOG_LEVEL_INTERFACES = HelicsLogLevel.INTERFACES
 HELICS_LOG_LEVEL_TIMING = HelicsLogLevel.TIMING
 HELICS_LOG_LEVEL_DATA = HelicsLogLevel.DATA
 HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.TRACE
+HELICS_LOG_LEVEL_DEBUG = HelicsLogLevel.DEBUG
 
 helics_log_level_no_print = HelicsLogLevel.NO_PRINT
 helics_log_level_error = HelicsLogLevel.ERROR
@@ -344,26 +419,27 @@ helics_log_level_trace = HelicsLogLevel.TRACE
 @unique
 class HelicsError(IntEnum):
     """
-    - **FATAL**                    = -404
-    - **EXTERNAL_TYPE**            = -203
-    - **OTHER**                    = -101
-    - **INSUFFICIENT_SPACE**       = -18
-    - **EXECUTION_FAILURE**        = -14
-    - **INVALID_FUNCTION_CALL**    = -10
-    - **INVALID_STATE_TRANSITION** = -9
-    - **WARNING**                  = -8
-    - **SYSTEM_FAILURE**           = -6
-    - **DISCARD**                  = -5
-    - **INVALID_ARGUMENT**         = -4
-    - **INVALID_OBJECT**           = -3
-    - **CONNECTION_FAILURE**       = -2
-    - **REGISTRATION_FAILURE**     = -1
-    - **OK**                       = 0
+    - **FATAL**
+    - **EXTERNAL_TYPE**
+    - **OTHER**
+    - **INSUFFICIENT_SPACE**
+    - **EXECUTION_FAILURE**
+    - **INVALID_FUNCTION_CALL**
+    - **INVALID_STATE_TRANSITION**
+    - **WARNING**
+    - **SYSTEM_FAILURE**
+    - **DISCARD**
+    - **INVALID_ARGUMENT**
+    - **INVALID_OBJECT**
+    - **CONNECTION_FAILURE**
+    - **REGISTRATION_FAILURE**
+    - **OK**
     """
 
     FATAL = -404  # HelicsErrorTypes
     EXTERNAL_TYPE = -203  # HelicsErrorTypes
     OTHER = -101  # HelicsErrorTypes
+    USER_ABORT = -27  # HelicsErrorTypes
     INSUFFICIENT_SPACE = -18  # HelicsErrorTypes
     EXECUTION_FAILURE = -14  # HelicsErrorTypes
     INVALID_FUNCTION_CALL = -10  # HelicsErrorTypes
@@ -381,6 +457,7 @@ class HelicsError(IntEnum):
 HELICS_ERROR_FATAL = HelicsError.FATAL
 HELICS_ERROR_EXTERNAL_TYPE = HelicsError.EXTERNAL_TYPE
 HELICS_ERROR_OTHER = HelicsError.OTHER
+HELICS_ERROR_USER_ABORT = HelicsError.USER_ABORT
 HELICS_ERROR_INSUFFICIENT_SPACE = HelicsError.INSUFFICIENT_SPACE
 HELICS_ERROR_EXECUTION_FAILURE = HelicsError.EXECUTION_FAILURE
 HELICS_ERROR_INVALID_FUNCTION_CALL = HelicsError.INVALID_FUNCTION_CALL
@@ -397,6 +474,7 @@ HELICS_OK = HelicsError.OK
 helics_error_fatal = HelicsError.FATAL
 helics_error_external_type = HelicsError.EXTERNAL_TYPE
 helics_error_other = HelicsError.OTHER
+helics_error_user_abort = HelicsError.USER_ABORT
 helics_error_insufficient_space = HelicsError.INSUFFICIENT_SPACE
 helics_error_execution_failure = HelicsError.EXECUTION_FAILURE
 helics_error_invalid_function_call = HelicsError.INVALID_FUNCTION_CALL
@@ -414,18 +492,18 @@ helics_ok = HelicsError.OK
 @unique
 class HelicsProperty(IntEnum):
     """
-    - **TIME_DELTA**            = 137
-    - **TIME_PERIOD**           = 140
-    - **TIME_OFFSET**           = 141
-    - **TIME_RT_LAG**           = 143
-    - **TIME_RT_LEAD**          = 144
-    - **TIME_RT_TOLERANCE**     = 145
-    - **TIME_INPUT_DELAY**      = 148
-    - **TIME_OUTPUT_DELAY**     = 150
-    - **INT_MAX_ITERATIONS**    = 259
-    - **INT_LOG_LEVEL**         = 271
-    - **INT_FILE_LOG_LEVEL**    = 272
-    - **INT_CONSOLE_LOG_LEVEL** = 274
+    - **TIME_DELTA**
+    - **TIME_PERIOD**
+    - **TIME_OFFSET**
+    - **TIME_RT_LAG**
+    - **TIME_RT_LEAD**
+    - **TIME_RT_TOLERANCE**
+    - **TIME_INPUT_DELAY**
+    - **TIME_OUTPUT_DELAY**
+    - **INT_MAX_ITERATIONS**
+    - **INT_LOG_LEVEL**
+    - **INT_FILE_LOG_LEVEL**
+    - **INT_CONSOLE_LOG_LEVEL**
     """
 
     TIME_DELTA = 137  # HelicsProperties
@@ -440,8 +518,11 @@ class HelicsProperty(IntEnum):
     INT_LOG_LEVEL = 271  # HelicsProperties
     INT_FILE_LOG_LEVEL = 272  # HelicsProperties
     INT_CONSOLE_LOG_LEVEL = 274  # HelicsProperties
-    INVALID_OPTION_INDEX = -101  # HelicsProperties
 
+
+HELICS_INVALID_OPTION_INDEX = -101
+
+HELICS_INVALID_PROPERTY_VALUE = -972
 
 HELICS_PROPERTY_TIME_DELTA = HelicsProperty.TIME_DELTA
 HELICS_PROPERTY_TIME_PERIOD = HelicsProperty.TIME_PERIOD
@@ -455,7 +536,6 @@ HELICS_PROPERTY_INT_MAX_ITERATIONS = HelicsProperty.INT_MAX_ITERATIONS
 HELICS_PROPERTY_INT_LOG_LEVEL = HelicsProperty.INT_LOG_LEVEL
 HELICS_PROPERTY_INT_FILE_LOG_LEVEL = HelicsProperty.INT_FILE_LOG_LEVEL
 HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = HelicsProperty.INT_CONSOLE_LOG_LEVEL
-HELICS_PROPERTY_INVALID_OPTION_INDEX = HelicsProperty.INVALID_OPTION_INDEX
 
 helics_property_time_delta = HelicsProperty.TIME_DELTA
 helics_property_time_period = HelicsProperty.TIME_PERIOD
@@ -469,21 +549,20 @@ helics_property_int_max_iterations = HelicsProperty.INT_MAX_ITERATIONS
 helics_property_int_log_level = HelicsProperty.INT_LOG_LEVEL
 helics_property_int_file_log_level = HelicsProperty.INT_FILE_LOG_LEVEL
 helics_property_int_console_log_level = HelicsProperty.INT_CONSOLE_LOG_LEVEL
-helics_property_invalid_option_index = HelicsProperty.INVALID_OPTION_INDEX
 
 
 @unique
 class HelicsMultiInputMode(IntEnum):
     """
-    - **NO_OP**               = 0
-    - **VECTORIZE_OPERATION** = 1
-    - **AND_OPERATION**       = 2
-    - **OR_OPERATION**        = 3
-    - **SUM_OPERATION**       = 4
-    - **DIFF_OPERATION**      = 5
-    - **MAX_OPERATION**       = 6
-    - **MIN_OPERATION**       = 7
-    - **AVERAGE_OPERATION**   = 8
+    - **NO_OP**
+    - **VECTORIZE_OPERATION**
+    - **AND_OPERATION**
+    - **OR_OPERATION**
+    - **SUM_OPERATION**
+    - **DIFF_OPERATION**
+    - **MAX_OPERATION**
+    - **MIN_OPERATION**
+    - **AVERAGE_OPERATION**
     """
 
     NO_OP = 0  # HelicsMultiInputMode
@@ -521,20 +600,20 @@ helics_multi_input_average_operation = HelicsMultiInputMode.AVERAGE_OPERATION
 @unique
 class HelicsHandleOption(IntEnum):
     """
-    - **CONNECTION_REQUIRED**          = 397
-    - **CONNECTION_OPTIONAL**          = 402
-    - **SINGLE_CONNECTION_ONLY**       = 407
-    - **MULTIPLE_CONNECTIONS_ALLOWED** = 409
-    - **BUFFER_DATA**                  = 411
-    - **STRICT_TYPE_CHECKING**         = 414
-    - **IGNORE_UNIT_MISMATCH**         = 447
-    - **ONLY_TRANSMIT_ON_CHANGE**      = 452
-    - **ONLY_UPDATE_ON_CHANGE**        = 454
-    - **IGNORE_INTERRUPTS**            = 475
-    - **MULTI_INPUT_HANDLING_METHOD**  = 507
-    - **INPUT_PRIORITY_LOCATION**      = 510
-    - **CLEAR_PRIORITY_LIST**          = 512
-    - **CONNECTIONS**                  = 522
+    - **CONNECTION_REQUIRED**
+    - **CONNECTION_OPTIONAL**
+    - **SINGLE_CONNECTION_ONLY**
+    - **MULTIPLE_CONNECTIONS_ALLOWED**
+    - **BUFFER_DATA**
+    - **STRICT_TYPE_CHECKING**
+    - **IGNORE_UNIT_MISMATCH**
+    - **ONLY_TRANSMIT_ON_CHANGE**
+    - **ONLY_UPDATE_ON_CHANGE**
+    - **IGNORE_INTERRUPTS**
+    - **MULTI_INPUT_HANDLING_METHOD**
+    - **INPUT_PRIORITY_LOCATION**
+    - **CLEAR_PRIORITY_LIST**
+    - **CONNECTIONS**
     """
 
     CONNECTION_REQUIRED = 397  # HelicsHandleOptions
@@ -587,13 +666,13 @@ helics_handle_option_connections = HelicsHandleOption.CONNECTIONS
 @unique
 class HelicsFilterType(IntEnum):
     """
-    - **CUSTOM**       = 0
-    - **DELAY**        = 1
-    - **RANDOM_DELAY** = 2
-    - **RANDOM_DROP**  = 3
-    - **REROUTE**      = 4
-    - **CLONE**        = 5
-    - **FIREWALL**     = 6
+    - **CUSTOM**
+    - **DELAY**
+    - **RANDOM_DELAY**
+    - **RANDOM_DROP**
+    - **REROUTE**
+    - **CLONE**
+    - **FIREWALL**
     """
 
     CUSTOM = 0  # HelicsFilterType
@@ -625,9 +704,9 @@ helics_filter_type_firewall = HelicsFilterType.FIREWALL
 @unique
 class HelicsIterationRequest(IntEnum):
     """
-    - **NO_ITERATION**      = 0
-    - **FORCE_ITERATION**   = 1
-    - **ITERATE_IF_NEEDED** = 2
+    - **NO_ITERATION**
+    - **FORCE_ITERATION**
+    - **ITERATE_IF_NEEDED**
     """
 
     NO_ITERATION = 0  # HelicsIterationRequest
@@ -647,10 +726,10 @@ helics_iteration_request_iterate_if_needed = HelicsIterationRequest.ITERATE_IF_N
 @unique
 class HelicsIterationResult(IntEnum):
     """
-    - **NEXT_STEP** = 0
-    - **ERROR**     = 1
-    - **HALTED**    = 2
-    - **ITERATING** = 3
+    - **NEXT_STEP**
+    - **ERROR**
+    - **HALTED**
+    - **ITERATING**
     """
 
     NEXT_STEP = 0  # HelicsIterationResult
@@ -673,16 +752,17 @@ helics_iteration_result_iterating = HelicsIterationResult.ITERATING
 @unique
 class HelicsFederateState(IntEnum):
     """
-    - **STARTUP**                = 0
-    - **INITIALIZATION**         = 1
-    - **EXECUTION**              = 2
-    - **FINALIZE**               = 3
-    - **ERROR**                  = 4
-    - **PENDING_INIT**           = 5
-    - **PENDING_EXEC**           = 6
-    - **PENDING_TIME**           = 7
-    - **PENDING_ITERATIVE_TIME** = 8
-    - **PENDING_FINALIZE**       = 9
+    - **STARTUP**
+    - **INITIALIZATION**
+    - **EXECUTION**
+    - **FINALIZE**
+    - **ERROR**
+    - **PENDING_INIT**
+    - **PENDING_EXEC**
+    - **PENDING_TIME**
+    - **PENDING_ITERATIVE_TIME**
+    - **PENDING_FINALIZE**
+    - **FINISHED**
     """
 
     STARTUP = 0  # HelicsFederateState
@@ -695,6 +775,7 @@ class HelicsFederateState(IntEnum):
     PENDING_TIME = 7  # HelicsFederateState
     PENDING_ITERATIVE_TIME = 8  # HelicsFederateState
     PENDING_FINALIZE = 9  # HelicsFederateState
+    FINISHED = 10  # HelicsFederateState
 
 
 HELICS_STATE_STARTUP = HelicsFederateState.STARTUP
@@ -707,6 +788,7 @@ HELICS_STATE_PENDING_EXEC = HelicsFederateState.PENDING_EXEC
 HELICS_STATE_PENDING_TIME = HelicsFederateState.PENDING_TIME
 HELICS_STATE_PENDING_ITERATIVE_TIME = HelicsFederateState.PENDING_ITERATIVE_TIME
 HELICS_STATE_PENDING_FINALIZE = HelicsFederateState.PENDING_FINALIZE
+HELICS_STATE_FINISHED = HelicsFederateState.FINISHED
 
 helics_state_startup = HelicsFederateState.STARTUP
 helics_state_initialization = HelicsFederateState.INITIALIZATION
@@ -718,6 +800,7 @@ helics_state_pending_exec = HelicsFederateState.PENDING_EXEC
 helics_state_pending_time = HelicsFederateState.PENDING_TIME
 helics_state_pending_iterative_time = HelicsFederateState.PENDING_ITERATIVE_TIME
 helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
+helics_state_finished = HelicsFederateState.FINISHED
 
 
 def generate_cleanup_callback(obj):
@@ -1116,10 +1199,7 @@ class _MessageFlagAccessor(_HelicsCHandle):
     def __repr__(self):
         lst = []
         for f in range(1, 16):
-            try:
-                lst.append("{} = {}".format(f, self[f]))
-            except Exception:
-                pass
+            lst.append("{} = {}".format(f, self[f]))
         return "<{{ {} }}>".format(", ".join(lst))
 
     def __delitem__(self, index):
@@ -1323,7 +1403,11 @@ class _FederateInfoFlagAccessor(_HelicsCHandle):
         if type(index) == str:
             idx = helicsGetFlagIndex(index)
         else:
-            idx = HelicsFederateFlag(index)
+            try:
+                idx = HelicsFlag(index)
+            except Exception as _:
+                idx = HelicsFederateFlag(index)
+
         return helicsFederateInfoSetFlagOption(self, idx, value)
 
     def __delitem__(self, index):
@@ -1502,24 +1586,34 @@ class _FederateFlagAccessor(_HelicsCHandle):
         if type(index) == str:
             idx = helicsGetFlagIndex(index)
         else:
-            idx = HelicsFederateFlag(index)
+            try:
+                idx = HelicsFlag(index)
+            except Exception as _:
+                idx = HelicsFederateFlag(index)
         return helicsFederateGetFlagOption(self, idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
             idx = helicsGetFlagIndex(index)
         else:
-            idx = HelicsFederateFlag(index)
+            try:
+                idx = HelicsFlag(index)
+            except Exception as _:
+                idx = HelicsFederateFlag(index)
+
         return helicsFederateSetFlagOption(self, idx, value)
 
     def __repr__(self):
         lst = []
-        for f in HelicsFederateFlag:
-            # TODO: remove this try except
-            # See https://github.com/GMLC-TDC/HELICS/issues/1549
+        for f in HelicsFlag:
             try:
                 lst.append("'{}' = {}".format(f.name, self[f]))
-            except Exception:
+            except Exception as _:
+                pass
+        for f in HelicsFederateFlag:
+            try:
+                lst.append("'{}' = {}".format(f.name, self[f]))
+            except Exception as _:
                 pass
         return "<{{ {} }}>".format(", ".join(lst))
 
@@ -3590,7 +3684,10 @@ def helicsGetFlagIndex(value: str) -> HelicsFederateFlag:
     if result == -1 or result == -101:
         raise HelicsException("[-1] Unknown property index for flag `{value}`".format(value=value))
     else:
-        return HelicsFederateFlag(result)
+        try:
+            return HelicsFlag(result)
+        except Exception as _:
+            return HelicsFederateFlag(result)
 
 
 def helicsGetOptionIndex(value: str) -> HelicsHandleOption:
@@ -3631,7 +3728,7 @@ def helicsGetOptionValue(value: str) -> int:
         return result
 
 
-def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: HelicsFederateFlag, value: bool):
+def helicsFederateInfoSetFlagOption(fi: HelicsFederateInfo, flag: Union[int, HelicsFederateFlag, HelicsFlag], value: bool):
     """
     Set a flag in the info structure
     Valid flags are available `helics.HelicsFederateFlag`.
@@ -4281,7 +4378,7 @@ def helicsFederateSetTimeProperty(fed: HelicsFederate, time_property: int, time:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateSetFlagOption(fed: HelicsFederate, flag: int, value: bool):
+def helicsFederateSetFlagOption(fed: HelicsFederate, flag: Union[int, HelicsFederateFlag, HelicsFlag], value: bool):
     """
     Set a flag for the federate.
 
@@ -4353,7 +4450,7 @@ def helicsFederateGetTimeProperty(fed: HelicsFederate, time_property: int) -> He
         return result
 
 
-def helicsFederateGetFlagOption(fed: HelicsFederate, flag: HelicsFederateFlag) -> bool:
+def helicsFederateGetFlagOption(fed: HelicsFederate, flag: Union[int, HelicsFederateFlag, HelicsFlag]) -> bool:
     """
     Get a flag value for a federate.
 
@@ -4364,7 +4461,11 @@ def helicsFederateGetFlagOption(fed: HelicsFederate, flag: HelicsFederateFlag) -
     """
     f = loadSym("helicsFederateGetFlagOption")
     err = helicsErrorInitialize()
-    result = f(fed.handle, HelicsFederateFlag(flag), err)
+    try:
+        flag = HelicsFlag(flag)
+    except Exception as _:
+        flag = HelicsFederateFlag(flag)
+    result = f(fed.handle, flag, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:

@@ -493,7 +493,7 @@ def test_python_api4():
 
     fi.broker_init = "-f 3"
 
-    fi.flag[h.HelicsFederateFlag.TERMINATE_ON_ERROR] = True
+    fi.flag[h.HelicsFlag.TERMINATE_ON_ERROR] = True
     fi.property[h.HelicsProperty.TIME_DELTA] = 1.0
     fi.property["TIME_DELTA"] = 1.0
 
