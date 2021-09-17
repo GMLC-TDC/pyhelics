@@ -11,7 +11,8 @@ try:
     from typing import Dict, List, Tuple, Union, Any
 
     JSONType = Union[
-        Dict[str, Any], List[dict],
+        Dict[str, Any],
+        List[dict],
     ]
 except ImportError:
     pass
@@ -372,7 +373,6 @@ if HELICS_VERSION == 2:
         TIMING = 5  # HelicsLogLevels
         DATA = 6  # HelicsLogLevels
         DEBUG = 7  # HelicsLogLevels
-        TRACE = 7  # HelicsLogLevels
 
 
 else:
@@ -407,26 +407,41 @@ else:
 
 HELICS_LOG_LEVEL_NO_PRINT = HelicsLogLevel.NO_PRINT
 HELICS_LOG_LEVEL_ERROR = HelicsLogLevel.ERROR
-HELICS_LOG_LEVEL_PROFILING = HelicsLogLevel.PROFILING
+try:
+    HELICS_LOG_LEVEL_PROFILING = HelicsLogLevel.PROFILING
+except:
+    pass
 HELICS_LOG_LEVEL_WARNING = HelicsLogLevel.WARNING
 HELICS_LOG_LEVEL_SUMMARY = HelicsLogLevel.SUMMARY
 HELICS_LOG_LEVEL_CONNECTIONS = HelicsLogLevel.CONNECTIONS
 HELICS_LOG_LEVEL_INTERFACES = HelicsLogLevel.INTERFACES
 HELICS_LOG_LEVEL_TIMING = HelicsLogLevel.TIMING
 HELICS_LOG_LEVEL_DATA = HelicsLogLevel.DATA
-HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.TRACE
 HELICS_LOG_LEVEL_DEBUG = HelicsLogLevel.DEBUG
+try:
+    HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.TRACE
+except:
+    HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.DEBUG
+    pass
 
 helics_log_level_no_print = HelicsLogLevel.NO_PRINT
 helics_log_level_error = HelicsLogLevel.ERROR
-helics_log_level_profiling = HelicsLogLevel.PROFILING
+try:
+    helics_log_level_profiling = HelicsLogLevel.PROFILING
+except:
+    pass
 helics_log_level_warning = HelicsLogLevel.WARNING
 helics_log_level_summary = HelicsLogLevel.SUMMARY
 helics_log_level_connections = HelicsLogLevel.CONNECTIONS
 helics_log_level_interfaces = HelicsLogLevel.INTERFACES
 helics_log_level_timing = HelicsLogLevel.TIMING
 helics_log_level_data = HelicsLogLevel.DATA
-helics_log_level_trace = HelicsLogLevel.TRACE
+helics_log_level_debug = HelicsLogLevel.DEBUG
+try:
+    helics_log_level_trace = HelicsLogLevel.TRACE
+except:
+    helics_log_level_trace = HelicsLogLevel.DEBUG
+    pass
 
 
 @unique
@@ -954,7 +969,10 @@ class HelicsCore(_HelicsCHandle):
         identifier = self.identifier
         address = self.address
         return """<helics.{class_name}(identifier = "{identifier}", address = "{address}") at {id}>""".format(
-            class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
+            class_name=self.__class__.__name__,
+            identifier=identifier,
+            address=address,
+            id=hex(id(self)),
         )
 
     @property
@@ -1078,7 +1096,10 @@ class HelicsBroker(_HelicsCHandle):
         identifier = self.identifier
         address = self.address
         return """<helics.{class_name}(identifier = "{identifier}", address = "{address}") at {id}>""".format(
-            class_name=self.__class__.__name__, identifier=identifier, address=address, id=hex(id(self)),
+            class_name=self.__class__.__name__,
+            identifier=identifier,
+            address=address,
+            id=hex(id(self)),
         )
 
     def is_connected(self):
@@ -1460,7 +1481,10 @@ class HelicsFederateInfo(_HelicsCHandle):
         self.flag = _FederateInfoFlagAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
-        return """<helics.{class_name}() at {id}>""".format(class_name=self.__class__.__name__, id=hex(id(self)),)
+        return """<helics.{class_name}() at {id}>""".format(
+            class_name=self.__class__.__name__,
+            id=hex(id(self)),
+        )
 
     @property
     def core_name(self):
@@ -4121,7 +4145,9 @@ def helicsFederateEnterExecutingModeIterativeAsync(fed: HelicsFederate, iterate:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateEnterExecutingModeIterativeComplete(fed: HelicsFederate,) -> HelicsIterationResult:
+def helicsFederateEnterExecutingModeIterativeComplete(
+    fed: HelicsFederate,
+) -> HelicsIterationResult:
     """
     Complete the asynchronous iterative call into ExecutionMode.
 
@@ -5136,7 +5162,10 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
 
 
 def helicsEndpointSendEventRaw(
-    endpoint: HelicsEndpoint, destination: str, data: bytes, time: HelicsTime,
+    endpoint: HelicsEndpoint,
+    destination: str,
+    data: bytes,
+    time: HelicsTime,
 ):
     """
     Send a message at a specific time to the specified destination.
