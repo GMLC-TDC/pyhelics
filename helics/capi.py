@@ -5829,7 +5829,7 @@ def helicsMessageGetBytes(message: HelicsMessage) -> bytes:
     f(message.handle, data, maxMessageLen, actualSize, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-    return ffi.string(data, maxlen=actualSize[0])
+    return ffi.buffer(data, actualSize[0])[:]
 
 
 def helicsMessageGetRawDataPointer(message: HelicsMessage) -> pointer:
