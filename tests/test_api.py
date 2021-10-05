@@ -367,3 +367,69 @@ def test_misc_api():
 
     h.helicsCleanupLibrary()
     h.helicsCloseLibrary()
+
+# Exercise the Endpoint *Bytes* interfaces
+def test_send_endpoint_bytes():
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
+
+    fedInfo = h.helicsCreateFederateInfo()
+    coreInitString = "--federates 1"
+    h.helicsFederateInfoSetCoreInitString(fedInfo, coreInitString)
+    h.helicsFederateInfoSetCoreTypeFromString(fedInfo, "zmq")
+    h.helicsFederateInfoSetIntegerProperty(fedInfo, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_WARNING)
+    h.helicsFederateInfoSetTimeProperty(fedInfo, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
+    fed = h.helicsCreateMessageFederate("fed", fedInfo)
+
+    ep1 = h.helicsFederateRegisterEndpoint(fed, "Ep1", "")
+    ep2 = h.helicsFederateRegisterEndpoint(fed, "Ep2", "")
+
+    h.helicsEndpointSetDefaultDestination(ep1, "fed/Ep2")
+
+    h.helicsFederateEnterExecutingMode(fed)
+
+    data1 = b'\0\0Hello,\0\0World!\0\0\0\0'
+    data2 = bytes(x for x in range(256))
+    data3 = b'\0' * 64
+
+    msg = h.helicsFederateCreateMessage(fed)
+    h.helicsMessageSetData(msg, data1)
+    h.helicsEndpointSendMessage(ep1, msg)
+
+    h.helicsEndpointSendBytesTo(ep1, data2, "fed/Ep2")
+
+    h.helicsEndpointSendBytesToAt(ep1, data3, "fed/Ep2", 1.)
+
+    h.helicsFederateRequestNextStep(fed)
+
+    assert h.helicsEndpointPendingMessageCount(ep2) == 2
+    assert h.helicsEndpointHasMessage(ep2)
+    msg = h.helicsEndpointGetMessage(ep2)
+    assert h.helicsMessageGetByteCount(msg) == len(data1)
+    assert h.helicsMessageGetBytes(msg) == data1
+
+    assert h.helicsEndpointPendingMessageCount(ep2) == 1
+    assert h.helicsEndpointHasMessage(ep2)
+    msg = h.helicsEndpointGetMessage(ep2)
+    assert h.helicsMessageGetByteCount(msg) == len(data2)
+    assert h.helicsMessageGetBytes(msg) == data2
+
+    assert h.helicsEndpointPendingMessageCount(ep2) == 0
+    assert not h.helicsEndpointHasMessage(ep2)
+
+    h.helicsFederateRequestNextStep(fed)
+
+    assert h.helicsEndpointPendingMessageCount(ep2) == 1
+    assert h.helicsEndpointHasMessage(ep2)
+    msg = h.helicsEndpointGetMessage(ep2)
+    assert h.helicsMessageGetByteCount(msg) == len(data3)
+    assert h.helicsMessageGetBytes(msg) == data3
+
+    assert h.helicsEndpointPendingMessageCount(ep2) == 0
+    assert not h.helicsEndpointHasMessage(ep2)
+
+    h.helicsFederateDisconnect(fed)
+
+    h.helicsBrokerDisconnect(broker)
+
+    h.helicsCleanupLibrary()
+    h.helicsCloseLibrary()
