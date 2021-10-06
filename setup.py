@@ -53,8 +53,10 @@ DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/
 
 def create_default_url(helics_version, plat_name=""):
     if "macos" in plat_name.lower():
-        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
-            helics_version=helics_version
+        default_url = (
+            "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
+                helics_version=helics_version
+            )
         )
     elif "win" in plat_name.lower():
         if "win32" in plat_name.lower():
@@ -67,12 +69,16 @@ def create_default_url(helics_version, plat_name=""):
             )
 
     elif "linux" in plat_name.lower():
-        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
-            helics_version=helics_version
+        default_url = (
+            "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+                helics_version=helics_version
+            )
         )
     elif platform.system() == "Darwin":
-        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
-            helics_version=helics_version
+        default_url = (
+            "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
+                helics_version=helics_version
+            )
         )
     elif platform.system() == "Windows":
         if struct.calcsize("P") * 8 == 32:
@@ -85,8 +91,10 @@ def create_default_url(helics_version, plat_name=""):
             )
 
     elif platform.system() == "Linux":
-        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
-            helics_version=helics_version
+        default_url = (
+            "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+                helics_version=helics_version
+            )
         )
     else:
         raise NotImplementedError("Unsupported platform {}".format(platform.system()))
@@ -260,7 +268,7 @@ class HELICSCMakeBuild(build_ext):
                 f.write(data)
 
 
-install_requires = ["helics-apps", "cffi>=1.0.0", "strip-hints"]
+install_requires = ["helics-apps", "cffi>=1.6.0", "strip-hints"]
 
 if sys.version_info < (3, 4):
     install_requires.append("enum34")
