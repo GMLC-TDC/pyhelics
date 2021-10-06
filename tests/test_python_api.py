@@ -12,6 +12,7 @@ import helics as h
 import logging
 
 
+@pt.mark.skip(reason="clang generated python binding is being used")
 def test_python_api0():
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
     fedinfo = h.helicsCreateFederateInfo()
@@ -62,6 +63,7 @@ def test_python_api0():
     del broker
 
 
+@pt.mark.skip(reason="clang generated python binding is being used")
 def test_python_api1():
 
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
@@ -259,6 +261,7 @@ def test_python_api1():
     del broker
 
 
+@pt.mark.skip(reason="clang generated python binding is being used")
 def test_python_api2():
 
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel=warning")
@@ -430,6 +433,7 @@ def test_python_api2():
     h.helicsCloseLibrary()
 
 
+@pt.mark.skip(reason="clang generated python binding is being used")
 def test_python_api3():
     core1 = h.helicsCreateCore("inproc", "core1", "--autobroker")
 
@@ -481,6 +485,7 @@ def test_python_api3():
     h.helicsCloseLibrary()
 
 
+@pt.mark.skip(reason="clang generated python binding is being used")
 def test_python_api4():
     fi = h.helicsCreateFederateInfo()
     fi.separator = "_"
@@ -498,6 +503,7 @@ def test_python_api4():
     fi.property["TIME_DELTA"] = 1.0
 
 
+@pt.mark.skip(reason="clang generated python binding is being used")
 def test_python_api5():
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
     fi = h.helicsCreateFederateInfo()
@@ -521,6 +527,7 @@ def test_python_api5():
     h.helicsCloseLibrary()
 
 
+@pt.mark.skip(reason="clang generated python binding is being used")
 def test_python_api6():
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
     fi = h.helicsCreateFederateInfo()
@@ -605,6 +612,7 @@ def test_python_api7():
     h.helicsCloseLibrary()
 
 
+@pt.mark.skip(reason="clang generated python binding is being used")
 def test_python_api8():
 
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")

@@ -167,14 +167,14 @@ def test_misc_api():
     pub1 = h.helicsFederateRegisterGlobalPublication(fed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, "")
     pub2 = h.helicsFederateRegisterGlobalTypePublication(fed1, "pub2", "complex", "")
 
-    sub1 = h.helicsFederateRegisterSubscription(fed1, "pub1")
-    sub2 = h.helicsFederateRegisterSubscription(fed1, "pub2")
+    sub1 = h.helicsFederateRegisterSubscription(fed1, "pub1", "")
+    sub2 = h.helicsFederateRegisterSubscription(fed1, "pub2", "")
     pub3 = h.helicsFederateRegisterPublication(fed1, "pub3", h.HELICS_DATA_TYPE_STRING, "")
 
-    pub1KeyString = h.helicsPublicationGetKey(pub1)
+    pub1KeyString = h.helicsPublicationGetName(pub1)
     pub1TypeString = h.helicsPublicationGetType(pub1)
     pub1UnitsString = h.helicsPublicationGetUnits(pub1)
-    sub1KeyString = h.helicsSubscriptionGetKey(sub1)
+    sub1KeyString = h.helicsSubscriptionGetTarget(sub1)
     sub1UnitsString = h.helicsInputGetUnits(sub1)
     assert "pub1" == pub1KeyString
     assert "double" == pub1TypeString
@@ -204,17 +204,51 @@ def test_misc_api():
     pub7 = h.helicsFederateRegisterGlobalPublication(fed1, "pub7", h.HELICS_DATA_TYPE_NAMED_POINT, "")
     sub7 = h.helicsFederateRegisterSubscription(fed1, "pub7", "")
 
-    assert """helics.HelicsPublication(name = "pub1", type = "double", units = "", info = "")""" in repr(pub1)
-    assert """helics.HelicsPublication(name = "pub2", type = "complex", units = "", info = "")""" in repr(pub2)
-    assert """helics.HelicsPublication(name = "fed1/pub3", type = "string", units = "", info = "")""" in repr(pub3)
-    assert """helics.HelicsPublication(name = "fed1/pub4", type = "int", units = "", info = "")""" in repr(pub4)
-    assert """helics.HelicsPublication(name = "pub5", type = "boolean", units = "", info = "")""" in repr(pub5)
-    assert """helics.HelicsPublication(name = "pub6", type = "double_vector", units = "", info = "")""" in repr(pub6)
-    assert """helics.HelicsPublication(name = "pub7", type = "named_point", units = "", info = "")""" in repr(pub7)
-    assert (
-        """helics.HelicsInput(name = "_input_18", units = "", injection_units = "", publication_type = "", type = "", target = "pub7", info = "")"""
-        in repr(sub7)
-    )
+    #assert """helics.HelicsPublication(name = "pub1", type = "double", units = "", info = "")""" in repr(pub1)
+    assert h.helicsPublicationGetName(pub1) == "pub1"
+    assert h.helicsPublicationGetType(pub1) == "double"
+    assert h.helicsPublicationGetUnits(pub1) == ""
+    assert h.helicsPublicationGetInfo(pub1) == ""
+    #assert """helics.HelicsPublication(name = "pub2", type = "complex", units = "", info = "")""" in repr(pub2)
+    assert h.helicsPublicationGetName(pub2) == "pub2"
+    assert h.helicsPublicationGetType(pub2) == "complex"
+    assert h.helicsPublicationGetUnits(pub2) == ""
+    assert h.helicsPublicationGetInfo(pub2) == ""
+    #assert """helics.HelicsPublication(name = "fed1/pub3", type = "string", units = "", info = "")""" in repr(pub3)
+    assert h.helicsPublicationGetName(pub3) == "fed1/pub3"
+    assert h.helicsPublicationGetType(pub3) == "string"
+    assert h.helicsPublicationGetUnits(pub3) == ""
+    assert h.helicsPublicationGetInfo(pub3) == ""
+    #assert """helics.HelicsPublication(name = "fed1/pub4", type = "int", units = "", info = "")""" in repr(pub4)
+    assert h.helicsPublicationGetName(pub4) == "fed1/pub4"
+    assert h.helicsPublicationGetType(pub4) == "int"
+    assert h.helicsPublicationGetUnits(pub4) == ""
+    assert h.helicsPublicationGetInfo(pub4) == ""
+    #assert """helics.HelicsPublication(name = "pub5", type = "boolean", units = "", info = "")""" in repr(pub5)
+    assert h.helicsPublicationGetName(pub5) == "pub5"
+    assert h.helicsPublicationGetType(pub5) == "boolean"
+    assert h.helicsPublicationGetUnits(pub5) == ""
+    assert h.helicsPublicationGetInfo(pub5) == ""
+    #assert """helics.HelicsPublication(name = "pub6", type = "double_vector", units = "", info = "")""" in repr(pub6)
+    assert h.helicsPublicationGetName(pub6) == "pub6"
+    assert h.helicsPublicationGetType(pub6) == "double_vector"
+    assert h.helicsPublicationGetUnits(pub6) == ""
+    assert h.helicsPublicationGetInfo(pub6) == ""
+    #assert """helics.HelicsPublication(name = "pub7", type = "named_point", units = "", info = "")""" in repr(pub7)
+    assert h.helicsPublicationGetName(pub7) == "pub7"
+    assert h.helicsPublicationGetType(pub7) == "named_point"
+    assert h.helicsPublicationGetUnits(pub7) == ""
+    assert h.helicsPublicationGetInfo(pub7) == ""
+    #assert (
+    #    """helics.HelicsInput(name = "_input_18", units = "", injection_units = "", publication_type = "", type = "", target = "pub7", info = "")"""
+    #    in repr(sub7)
+    #)
+    assert h.helicsInputGetName(sub7) == "_input_18"
+    assert h.helicsInputGetUnits(sub7) == ""
+    assert h.helicsInputGetInjectionUnits(sub7) == ""
+    assert h.helicsInputGetPublicationType(sub7) == ""
+    assert h.helicsSubscriptionGetTarget(sub7) == "pub7"
+    assert h.helicsInputGetInfo(sub7) == ""
 
     h.helicsInputSetDefaultBoolean(sub5, False)
     h.helicsInputSetDefaultComplex(sub2, -9.9 + 2.5j)
@@ -239,10 +273,16 @@ def test_misc_api():
     h.helicsFederateEnterExecutingModeAsync(fed1)
     h.helicsFederateEnterExecutingModeComplete(fed1)
 
-    assert (
-        """helics.HelicsInput(name = "_input_18", units = "", injection_units = "", publication_type = "named_point", type = "", target = "pub7", info = "")"""
-        in repr(sub7)
-    )
+    #assert (
+    #    """helics.HelicsInput(name = "_input_18", units = "", injection_units = "", publication_type = "named_point", type = "", target = "pub7", info = "")"""
+    #    in repr(sub7)
+    #)
+    assert h.helicsInputGetName(sub7) == "_input_18"
+    assert h.helicsInputGetUnits(sub7) == ""
+    assert h.helicsInputGetInjectionUnits(sub7) == ""
+    assert h.helicsInputGetPublicationType(sub7) == "named_point"
+    assert h.helicsSubscriptionGetTarget(sub7) == "pub7"
+    assert h.helicsInputGetInfo(sub7) == ""
 
     mesg1 = h.helicsFederateCreateMessage(fed1)
     h.helicsMessageSetString(mesg1, "Hello")
@@ -267,7 +307,7 @@ def test_misc_api():
     assert ep1NameString == "fed1/Ep1"
     assert ep1TypeString == "string"
 
-    _ = h.helicsFederateGetCoreObject(fed1)
+    _ = h.helicsFederateGetCore(fed1)
 
     fed1Time = h.helicsFederateGetCurrentTime(fed1)
     assert fed1Time == 0.0
@@ -297,7 +337,7 @@ def test_misc_api():
 
     returnTime = h.helicsFederateRequestTimeComplete(fed1)
     assert returnTime == 1.0
-    ep2MsgCount = h.helicsEndpointPendingMessages(ep2)
+    ep2MsgCount = h.helicsEndpointPendingMessageCount(ep2)
     assert ep2MsgCount == 0
     ep2HasMsg = h.helicsEndpointHasMessage(ep2)
     assert ep2HasMsg == 0
@@ -350,8 +390,8 @@ def test_misc_api():
     assert h.helicsInputGetString(sub3) == "Mayhem"
 
     # TODO: this test is failing in HELICS3
-    # sub3ValueSize = h.helicsInputGetRawValueSize(sub3)
-    # assert sub3ValueSize == 6
+    sub3ValueSize = h.helicsInputGetByteCount(sub3)
+    assert sub3ValueSize == 6
 
     assert h.helicsInputGetVector(sub6) == [4.5, 56.5]
 

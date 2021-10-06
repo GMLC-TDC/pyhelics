@@ -31,7 +31,7 @@ def test_query_federate_tests():
     q1 = h.helicsCreateQuery("Testfed0", "publications")
     res = h.helicsQueryCoreExecute(q1, core)
     try:
-        assert res == "[pub1;Testfed0/pub2]"
+        assert res == '["pub1","Testfed0/pub2"]'
     except:
         assert res == ["pub1", "Testfed0/pub2"]
     # res = h.helicsQueryExecute(q1, vFed2)
@@ -71,13 +71,13 @@ def test_query_broker_tests():
     name2 = h.helicsFederateGetName(vFed2)
 
     try:
-        assert f"[{name1};{name2}]" == res
+        assert f'["{name1}","{name2}"]' == res
     except AssertionError:
         assert [name1, name2] == res
 
     res = h.helicsQueryExecute(q1, vFed1)
     try:
-        assert f"[{name1};{name2}]" == res
+        assert f'["{name1}","{name2}"]' == res
     except AssertionError:
         assert [name1, name2] == res
 

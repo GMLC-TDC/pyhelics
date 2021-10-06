@@ -54,12 +54,12 @@ def test_iteration_async_test():
     vFed2, fedinfo2 = createValueFederate(1, "fed1")
 
     # register the publications
-    pub1 = h.helicsFederateRegisterGlobalPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_INT)
+    pub1 = h.helicsFederateRegisterGlobalPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_INT, "")
 
-    sub1 = h.helicsFederateRegisterSubscription(vFed2, "pub1")
-    pub2 = h.helicsFederateRegisterGlobalPublication(vFed2, "pub2", h.HELICS_DATA_TYPE_INT)
+    sub1 = h.helicsFederateRegisterSubscription(vFed2, "pub1", "")
+    pub2 = h.helicsFederateRegisterGlobalPublication(vFed2, "pub2", h.HELICS_DATA_TYPE_INT, "")
 
-    sub2 = h.helicsFederateRegisterSubscription(vFed1, "pub2")
+    sub2 = h.helicsFederateRegisterSubscription(vFed1, "pub2", "")
     h.helicsFederateSetTimeProperty(vFed1, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
     h.helicsFederateSetTimeProperty(vFed2, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
     # vFed1->setLoggingLevel(5)
