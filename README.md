@@ -15,8 +15,7 @@ Python HELICS bindings
 pip install helics
 ```
 
-Documentation
-=============
+# Documentation
 
 To use the project:
 
@@ -27,7 +26,7 @@ h.helicsGetVersion()
 
 See <https://docs.helics.org> for more information about how to use HELICS.
 
-This package uses `cffi` to provide a Python interface to the [HELICS C API](https://docs.helics.org/en/latest/c-api-reference/index.html).
+This package uses `cffi` to provide a Python interface to the [HELICS C API](https://docs.helics.org/en/latest/references/api-reference/C_API.html).
 
 By default, when you install from PyPI, the version number of the package will match the version of HELICS that is installed.
 For example, if you run the following:
