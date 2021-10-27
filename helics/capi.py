@@ -2311,15 +2311,21 @@ class HelicsInput(_HelicsCHandle):
 
     @property
     def key(self) -> str:
-        """get the Name/Key for the input
-        the name is the local name if given, key is the full key name."""
+        """
+        Get the name/key for the input
+        the name is the local name if given, key is the full key name.
+
+        **DEPRECATED**
+        """
         warnings.warn("This function is deprecated. Use the `HelicsInput.name` attribute instead.")
         return helicsInputGetKey(self)
 
     @property
     def name(self) -> str:
-        """get the Name/Key for the input
-        the name is the local name if given, key is the full key name."""
+        """
+        Get the name/key for the input
+        the name is the local name if given, key is the full key name.
+        """
         return helicsInputGetName(self)
 
     @property
@@ -2408,7 +2414,11 @@ class HelicsPublication(_HelicsCHandle):
 
     @property
     def key(self) -> str:
-        """Get the key for the publication."""
+        """
+        Get the key for the publication.
+
+        **DEPRECATED**
+        """
         warnings.warn("This function is deprecated. Use the `HelicsPublication.name` attribute instead.")
         return helicsPublicationGetName(self)
 
@@ -3913,6 +3923,8 @@ def helicsFederateLocalError(fed: HelicsFederate, error_code: int, error_string:
 def helicsFederateFinalize(fed: HelicsFederate):
     """
     Finalize the federate. This function halts all communication in the federate and disconnects it from the core.
+
+    **DEPRECATED**
     """
     warnings.warn("This function is deprecated. Use `helicsFederateDisconnect` instead.")
     helicsFederateDisconnect(fed)
@@ -3921,6 +3933,8 @@ def helicsFederateFinalize(fed: HelicsFederate):
 def helicsFederateFinalizeAsync(fed: HelicsFederate):
     """
     Finalize the federate in an async call.
+
+    **DEPRECATED**
     """
     warnings.warn("This function is deprecated. Use `helicsFederateDisconnectAsync` instead.")
     helicsFederateDisconnectAsync(fed)
@@ -3929,6 +3943,8 @@ def helicsFederateFinalizeAsync(fed: HelicsFederate):
 def helicsFederateFinalizeComplete(fed: HelicsFederate):
     """
     Complete the asynchronous disconnect call.
+
+    **DEPRECATED**
     """
     warnings.warn("This function is deprecated. Use `helicsFederateDisconnectComplete` instead.")
     helicsFederateDisconnectComplete(fed)
@@ -4194,6 +4210,8 @@ def helicsFederateGetCoreObject(fed: HelicsFederate) -> HelicsCore:
     - **`fed`** - `helics.HelicsFederate`.
 
     **Returns**: `helics.HelicsCore`.
+
+    **DEPRECATED**
     """
     warnings.warn("This function is deprecated. Use `helicsFederateGetCore` instead.")
     return helicsFederateGetCore(fed)
@@ -5316,6 +5334,8 @@ def helicsEndpointPendingMessages(endpoint: HelicsEndpoint) -> int:
     **Parameters**
 
     - **`endpoint`** - The endpoint to query.
+
+    **DEPRECATED**
     """
     warnings.warn("This function has been deprecated. Use `helicsEndpointPendingMessageCount` instead.")
     return helicsEndpointPendingMessageCount(endpoint)
@@ -7698,6 +7718,8 @@ def helicsInputGetKey(ipt: HelicsInput) -> str:
     - **`ipt`** - The input to query
 
     **Returns**: A string with the name information.
+
+    **DEPRECATED**
     """
     warnings.warn("This is deprecated. Use `helicsInputGetName` instead.")
     return helicsInputGetName(ipt)
@@ -7726,6 +7748,8 @@ def helicsSubscriptionGetKey(ipt: HelicsInput) -> str:
     Get the name of a subscription.
 
     **Returns**: A string with the subscription name.
+
+    **DEPRECATED**
     """
     warnings.warn("This is deprecated. Use `helicsSubscriptionGetTarget` instead.")
     return helicsSubscriptionGetTarget(ipt)
@@ -7755,6 +7779,8 @@ def helicsPublicationGetKey(pub: HelicsPublication) -> str:
     - **`pub`** - The publication to query.
 
     **Returns**: A string with the units information.
+
+    **DEPRECATED**
     """
     warnings.warn("This is deprecated. Use `helicsPublicationGetName` instead.")
     return helicsPublicationGetName(pub)
