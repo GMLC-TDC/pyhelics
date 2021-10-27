@@ -1904,6 +1904,8 @@ class HelicsFederate(_HelicsCHandle):
         Terminate the simulation.
 
         Call is will block until the finalize has been acknowledged, no commands that interact with the core may be called after this function function.
+
+        **DEPRECATED**
         """
         helicsFederateFinalize(self)
 
@@ -1911,12 +1913,16 @@ class HelicsFederate(_HelicsCHandle):
         """
         Terminate the simulation in a non-blocking call.
         `self.finalize_complete()` must be called after this call to complete the finalize procedure.
+
+        **DEPRECATED**
         """
         helicsFederateFinalizeAsync(self)
 
     def finalize_complete(self):
         """
         Complete the asynchronous terminate pair.
+
+        **DEPRECATED**
         """
         helicsFederateFinalizeComplete(self)
 
