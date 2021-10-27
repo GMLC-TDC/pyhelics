@@ -105,7 +105,7 @@ def test_logging_api():
     h.helicsFederateLogInfoMessage(fed, "test MEXAGE")
     h.helicsFederateRequestNextStep(fed)
 
-    h.helicsFederateFinalize(fed)
+    h.helicsFederateDisconnect(fed)
 
     try:
         assert userdata.x == 19
@@ -355,10 +355,10 @@ def test_misc_api():
 
     assert h.helicsInputGetVector(sub6) == [4.5, 56.5]
 
-    h.helicsFederateFinalize(fed1)
-    h.helicsFederateFinalize(fed2)
+    h.helicsFederateDisconnect(fed1)
+    h.helicsFederateDisconnect(fed2)
     # h.helicsFederateFree(fed1)
-    h.helicsFederateFinalize(fed2)
+    h.helicsFederateDisconnect(fed2)
     # h.helicsFederateFree(fed2)
     # h.helicsFederateInfoFree(fedInfo2)
     h.helicsBrokerDisconnect(broker3)

@@ -52,10 +52,10 @@ def test_valuefederate_publication_registration():
 
     h.helicsFederateEnterExecutingMode(vFed)
 
-    assert h.helicsPublicationGetKey(pubid1) == "TestA Federate/pub1"
-    assert h.helicsPublicationGetKey(pubid2) == "pub2"
+    assert h.helicsPublicationGetName(pubid1) == "TestA Federate/pub1"
+    assert h.helicsPublicationGetName(pubid2) == "pub2"
 
-    assert h.helicsPublicationGetKey(pubid3) == "TestA Federate/pub3"
+    assert h.helicsPublicationGetName(pubid3) == "TestA Federate/pub3"
     assert h.helicsPublicationGetType(pubid3) == "double"
     assert h.helicsPublicationGetUnits(pubid3) == "V"
 
@@ -169,13 +169,13 @@ def test_valuefederate_publisher_registration():
     pubid3 = h.helicsFederateRegisterPublication(vFed, "pub3", h.HELICS_DATA_TYPE_DOUBLE, "V")
     h.helicsFederateEnterExecutingMode(vFed)
 
-    publication_key = h.helicsPublicationGetKey(pubid1)
+    publication_key = h.helicsPublicationGetName(pubid1)
     assert publication_key == "TestA Federate/pub1"
     publication_type = h.helicsPublicationGetType(pubid1)
     assert publication_type == "string"
-    publication_key = h.helicsPublicationGetKey(pubid2)
+    publication_key = h.helicsPublicationGetName(pubid2)
     assert publication_key == "pub2"
-    publication_key = h.helicsPublicationGetKey(pubid3)
+    publication_key = h.helicsPublicationGetName(pubid3)
     assert publication_key == "TestA Federate/pub3"
     publication_type = h.helicsPublicationGetType(pubid3)
     assert publication_type == "double"
@@ -206,13 +206,13 @@ def test_valuefederate_subscription_and_publication_registration():
     publication_type = h.helicsPublicationGetType(pubid3)
     assert publication_type == "double"
 
-    sub_key = h.helicsSubscriptionGetKey(subid1)
+    sub_key = h.helicsSubscriptionGetTarget(subid1)
     assert sub_key == "sub1"
     sub_type = h.helicsInputGetType(subid1)
     assert sub_type == ""
-    sub_key = h.helicsSubscriptionGetKey(subid2)
+    sub_key = h.helicsSubscriptionGetTarget(subid2)
     assert sub_key == "sub2"
-    sub_key = h.helicsSubscriptionGetKey(subid3)
+    sub_key = h.helicsSubscriptionGetTarget(subid3)
     assert sub_key == "sub3"
     sub_type = h.helicsInputGetType(subid3)
     assert sub_type == ""
@@ -222,7 +222,7 @@ def test_valuefederate_subscription_and_publication_registration():
     assert sub_type == ""
 
     subid_b = h.helicsFederateGetSubscription(vFed, "sub1")
-    tmp = h.helicsSubscriptionGetKey(subid_b)
+    tmp = h.helicsSubscriptionGetTarget(subid_b)
     assert tmp == "sub1"
     # check the getSubscriptionByIndex function
     subid_c = h.helicsFederateGetInputByIndex(vFed, 2)
@@ -230,11 +230,11 @@ def test_valuefederate_subscription_and_publication_registration():
     assert tmp == "V"
     # check publications
 
-    sv = h.helicsPublicationGetKey(pubid)
-    sv2 = h.helicsPublicationGetKey(pubid2)
+    sv = h.helicsPublicationGetName(pubid)
+    sv2 = h.helicsPublicationGetName(pubid2)
     assert sv == "Testfed0/pub1"
     assert sv2 == "pub2"
-    pub3name = h.helicsPublicationGetKey(pubid3)
+    pub3name = h.helicsPublicationGetName(pubid3)
     assert pub3name == "Testfed0/pub3"
 
     type = h.helicsPublicationGetType(pubid3)
@@ -255,7 +255,7 @@ def test_valuefederate_subscription_and_publication_registration():
     # this one should be invalid
     # @test_throws h.HELICSErrorInvalidArgument pubid_d = h.helicsFederateGetPublicationByIndex(vFed, 5)
 
-    h.helicsFederateFinalize(vFed)
+    h.helicsFederateDisconnect(vFed)
 
     state = h.helicsFederateGetState(vFed)
     assert state == h.HELICS_STATE_FINALIZE
@@ -501,9 +501,9 @@ def test_valuefederate_default_value_tests():
     h.helicsPublicationAddTarget(pub, "Testfed0/key7")
     h.helicsPublicationAddTarget(pub, "Testfed0/key8")
 
-    h.helicsInputSetDefaultRaw(inp_raw1, "")
+    h.helicsInputSetDefaultBytes(inp_raw1, "")
     data = "this is a string"
-    h.helicsInputSetDefaultRaw(inp_raw2, data)
+    h.helicsInputSetDefaultBytes(inp_raw2, data)
 
     h.helicsInputSetDefaultBoolean(inp_bool, True)
 
@@ -562,7 +562,7 @@ def test_valuefederate_default_value_tests():
     assert out == "this is a string"
     assert rval == 15.7
 
-    h.helicsFederateFinalize(vFed1)
+    h.helicsFederateDisconnect(vFed1)
 
     destroyFederate(vFed1, fedinfo)
     destroyBroker(broker)
@@ -590,8 +590,8 @@ def test_valuefederate_test_info_filed():
     assert h.helicsPublicationGetInfo(pubid1) == "pub1_test"
     assert h.helicsPublicationGetInfo(pubid2) == "pub2_test"
 
-    cr = h.helicsFederateGetCoreObject(vFed)
-    h.helicsFederateFinalize(vFed)
+    cr = h.helicsFederateGetCore(vFed)
+    h.helicsFederateDisconnect(vFed)
 
     wait = h.helicsCoreWaitForDisconnect(cr, 70)
     if wait is False:
@@ -613,7 +613,7 @@ def test_valuefederate_test_file_load():
     assert h.helicsFederateGetInputCount(vFed) == 3
     assert h.helicsFederateGetPublicationCount(vFed) == 2
 
-    h.helicsFederateFinalize(vFed)
+    h.helicsFederateDisconnect(vFed)
     h.helicsFederateFree(vFed)
     h.helicsCloseLibrary()
     

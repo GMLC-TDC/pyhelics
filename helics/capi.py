@@ -1225,7 +1225,7 @@ class HelicsBroker(_HelicsCHandle):
 
 class _MessageFlagAccessor(_HelicsCHandle):
     def __getitem__(self, index):
-        return helicsMessageCheckFlag(HelicsMessage(self.handle, cleanup=False), index)
+        return helicsMessageGetFlagOption(HelicsMessage(self.handle, cleanup=False), index)
 
     def __setitem__(self, index: int, value: bool):
         return helicsMessageSetFlagOption(HelicsMessage(self.handle, cleanup=False), index, value)
@@ -1331,7 +1331,7 @@ class HelicsMessage(_HelicsCHandle):
 
     @property
     def raw_data(self) -> bytes:
-        return helicsMessageGetRawData(self)
+        return helicsMessageGetBytes(self)
 
     @raw_data.setter
     def raw_data(self, v: bytes):
@@ -1740,7 +1740,7 @@ class HelicsFederate(_HelicsCHandle):
 
     @property
     def core(self) -> HelicsCore:
-        return helicsFederateGetCoreObject(self)
+        return helicsFederateGetCore(self)
 
     @property
     def n_publications(self) -> int:
@@ -1907,6 +1907,7 @@ class HelicsFederate(_HelicsCHandle):
 
         **DEPRECATED**
         """
+        warnings.warn("This function is deprecated. Use the `HelicsFederate.disconnect` function instead.")
         helicsFederateFinalize(self)
 
     def finalize_async(self):
@@ -1916,6 +1917,7 @@ class HelicsFederate(_HelicsCHandle):
 
         **DEPRECATED**
         """
+        warnings.warn("This function is deprecated. Use the `HelicsFederate.disconnect_async` function instead.")
         helicsFederateFinalizeAsync(self)
 
     def finalize_complete(self):
@@ -1924,6 +1926,7 @@ class HelicsFederate(_HelicsCHandle):
 
         **DEPRECATED**
         """
+        warnings.warn("This function is deprecated. Use the `HelicsFederate.disconnect_complete` function instead.")
         helicsFederateFinalizeComplete(self)
 
     def request_time(self, time: HelicsTime) -> HelicsTime:
@@ -7489,7 +7492,7 @@ def helicsInputSetDefaultRaw(ipt: HelicsInput, data: bytes):
 
     **DEPRECATED**
     """
-    warnings.warn("This function has been deprecated. Use `helicsInputSetDefaultRaw` instead.")
+    warnings.warn("This function has been deprecated. Use `helicsInputSetDefaultBytes` instead.")
     helicsInputSetDefaultBytes(ipt, data)
 
 

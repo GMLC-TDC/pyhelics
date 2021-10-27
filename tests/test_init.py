@@ -67,7 +67,7 @@ def destroyBroker(broker):
 
 
 def destroyFederate(fed, fedinfo, broker=None):
-    h.helicsFederateFinalize(fed)
+    h.helicsFederateDisconnect(fed)
     _ = h.helicsFederateGetState(fed)
     if broker is not None:
         while h.helicsBrokerIsConnected(broker):

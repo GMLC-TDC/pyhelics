@@ -253,7 +253,7 @@ def test_python_api1():
         in repr(m)
     )
 
-    mFed.finalize()
+    mFed.disconnect()
 
     del mFed
     del broker
@@ -590,8 +590,8 @@ def test_python_api7():
     fed.log_message("debug", logging.DEBUG)
     fed.log_message("summary", h.HELICS_LOG_LEVEL_SUMMARY)
 
-    fed.finalize_async()
-    fed.finalize_complete()
+    fed.disconnect_async()
+    fed.disconnect_complete()
 
     fed.core.disconnect()
     assert fed.core.wait_for_disconnect()
