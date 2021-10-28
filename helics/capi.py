@@ -5107,6 +5107,31 @@ def helicsEndpointGetDefaultDestination(endpoint: HelicsEndpoint) -> str:
     return ffi.string(result).decode()
 
 
+def helicsEndpointSendBytes(endpoint: HelicsEndpoint, data: bytes):
+    """
+    Send a message from a specific endpoint.
+
+    **Parameters**
+
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`data`** - The data to send
+    """
+    err = helicsErrorInitialize()
+    if isinstance(data, str):
+        data = data.encode()
+    if not isinstance(data, bytes):
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
+    inputDataLength = len(data)
+
+    f = loadSym("helicsEndpointSendBytes")
+    f(endpoint.handle, data, inputDataLength, err)
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination: str):
     """
     Send a message to the specified destination.
