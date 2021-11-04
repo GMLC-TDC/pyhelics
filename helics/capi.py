@@ -5758,7 +5758,7 @@ def helicsMessageGetString(message: HelicsMessage) -> str:
     """
     f = loadSym("helicsMessageGetString")
     result = f(message.handle)
-    return ffi.string(result).decode()
+    return ffi.string(result, helicsMessageGetByteCount(message)).decode()
 
 
 def helicsMessageGetMessageID(message: HelicsMessage) -> int:
