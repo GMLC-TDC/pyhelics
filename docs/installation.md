@@ -18,7 +18,7 @@ $ where pip # sanity check on Windows
 $ python -m pip install helics
 ```
 
-Using `python -m pip` invokes pip from the python process. This is the safest way to ensure you are installing `helics` into the place `python` will look for packages. 
+Using `python -m pip` invokes the `pip` module from the python process. This is the safest way to ensure you are installing `helics` into the place `python` will look for packages. 
 If `pip` and `python` belong to the same environment, you can invoke `pip` directly. 
 
 This will give you the latest version of the python helics interface.
