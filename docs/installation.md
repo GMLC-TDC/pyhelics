@@ -9,8 +9,17 @@ Versions equal to and prior to `v2.6.0` used swig to generate the Python API.
 ## Install from PyPI (recommended)
 
 ```bash
-$ pip install helics
+$ which python # sanity check on Unix
+$ which pip # sanity check on Unix
+
+$ where python # sanity check on Windows
+$ where pip # sanity check on Windows
+
+$ python -m pip install helics
 ```
+
+Using `python -m pip` invokes pip from the python process. This is the safest way to ensure you are installing `helics` into the place `python` will look for packages. 
+If `pip` and `python` belong to the same environment, you can invoke `pip` directly. 
 
 This will give you the latest version of the python helics interface.
 If you already have helics installed, you can upgrade to the latest version by using the following:
