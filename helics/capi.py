@@ -8352,9 +8352,16 @@ def helicsAbort(error_code: int, message: str):
 
 try:
 
+    import threading
+
     @ffi.callback("int handler(int)")
     def _handle_helicsCallBack(code: int):
-        helicsAbort(code, "User pressed Ctrl-C")
+        def target():
+            helicsAbort(code, "User pressed Ctrl-C")
+            helicsCloseLibrary()
+
+        x = threading.Thread(target=target)
+        x.start()
         return 0
 
 

@@ -81,8 +81,8 @@ elif platform.system() == "Darwin":
     else:
         lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
     for file in os.listdir(lib_folder):
-        if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".dylib"):
-            lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
+        if "helicsSharedLib." in file or "libhelics." in file or "libhelicsd." in file and file.endswith(".dylib"):
+            lib = ffi.dlopen(os.path.join(lib_folder, file))
             break
     else:
         try:
@@ -97,7 +97,7 @@ elif platform.system() == "Linux":
     else:
         lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
     for file in os.listdir(lib_folder):
-        if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".so"):
+        if "helicsSharedLib." in file or "libhelics." in file or "libhelicsd." in file and file.endswith(".so"):
             lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
             break
     else:
