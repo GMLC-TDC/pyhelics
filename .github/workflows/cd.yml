@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - os: macOS-latest
-            target: macosx_10_14_universal2
+            target: macosx_10_14_universal2.macosx_10_14_x86_64.macosx_11_0_arm64
             python3-version: "3.8"
             python2-version: "2.7"
           - os: ubuntu-latest
