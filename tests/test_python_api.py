@@ -438,7 +438,7 @@ def test_python_api2():
 def test_python_api3():
     core1 = h.helicsCreateCore("inproc", "core3", "--autobroker")
 
-    assert """HelicsCore(identifier = "core3", address = "core1")""" in repr(core1)
+    assert """HelicsCore(identifier = "core3", address = "core3")""" in repr(core1)
 
     core2 = core1.clone()
 
