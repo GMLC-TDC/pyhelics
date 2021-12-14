@@ -67,8 +67,6 @@ if platform.system() == "Windows":
             except:
                 lib = ffi.dlopen("helics.dll")
         except OSError as e:
-            from .vcredist import VcRedist
-
             raise OSError(
                 str(e)
                 + "\n\nRECOMMENDATION: When using Python / Anaconda on Windows, users must manually install the latest version of Visual C++ Redistributable for Visual Studio 2019. See https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads for links. If this problem persists after installing Visual C++ Redistributable, please open an issue on https://github.com/GMLC-TDC/HELICS."
@@ -81,29 +79,39 @@ elif platform.system() == "Darwin":
     else:
         lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
     for file in os.listdir(lib_folder):
-        if "helicsSharedLib." in file or "libhelics." in file or "libhelicsd." in file and file.endswith(".dylib"):
+        if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".dylib"):
             lib = ffi.dlopen(os.path.join(lib_folder, file))
             break
     else:
-        try:
-            lib = ffi.dlopen("libhelics.dylib")
-        except:
-            lib = ffi.dlopen("helicsSharedLib.dylib")
-        if lib is None:
-            raise Exception("Unable to load helics shared library")
+        for file in os.listdir(lib_folder):
+            if "helicsSharedLibd." in file or "libhelicsd." in file and file.endswith(".dylib"):
+                lib = ffi.dlopen(os.path.join(lib_folder, file))
+                break
+        else:
+            try:
+                lib = ffi.dlopen("libhelics.dylib")
+            except:
+                lib = ffi.dlopen("helicsSharedLib.dylib")
+            if lib is None:
+                raise Exception("Unable to load helics shared library")
 elif platform.system() == "Linux":
     if os.path.isdir(os.path.join(PYHELICS_INSTALL, "lib64")):
         lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
     else:
         lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
     for file in os.listdir(lib_folder):
-        if "helicsSharedLib." in file or "libhelics." in file or "libhelicsd." in file and file.endswith(".so"):
+        if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".so"):
             lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
             break
     else:
-        try:
-            lib = ffi.dlopen("libhelics.so")
-        except:
-            lib = ffi.dlopen("helicsSharedLib.so")
-        if lib is None:
-            raise Exception("Unable to load helics shared library")
+        for file in os.listdir(lib_folder):
+            if "helicsSharedLibd." in file or "libhelicsd." in file and file.endswith(".so"):
+                lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
+                break
+        else:
+            try:
+                lib = ffi.dlopen("libhelics.so")
+            except:
+                lib = ffi.dlopen("helicsSharedLib.so")
+            if lib is None:
+                raise Exception("Unable to load helics shared library")
