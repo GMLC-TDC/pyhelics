@@ -2264,6 +2264,27 @@ class HelicsInput(_HelicsCHandle):
             raise NotImplementedError("Unknown type `{}`".format(type(data)))
 
     @property
+    def value(self):
+        if self.type == "bytes":
+            return self.bytes
+        elif self.type == "string":
+            return self.string
+        elif self.type == "integer":
+            return self.integer
+        elif self.type == "boolean":
+            return self.boolean
+        elif self.type == "double":
+            return self.double
+        elif self.type == "complex":
+            return self.complex
+        elif self.type == "vector":
+            return self.vector
+        elif self.type == "named_point":
+            return self.named_point
+        else:
+            raise NotImplementedError("Unknown type `{}`".format(self.type))
+
+    @property
     def bytes(self) -> bytes:
         """Get a raw value as a character vector."""
         return helicsInputGetBytes(self)
