@@ -2264,7 +2264,7 @@ class HelicsInput(_HelicsCHandle):
             raise NotImplementedError("Unknown type `{}`".format(type(data)))
 
     @property
-    def value(self):
+    def value(self) -> Union[bytes, str, int, bool, float, complex, Tuple, List[float]]:
         if self.type == "bytes":
             return self.bytes
         elif self.type == "string":
