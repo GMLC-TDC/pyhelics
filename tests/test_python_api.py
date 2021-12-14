@@ -13,12 +13,12 @@ import logging
 
 
 def test_python_api0():
-    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
+    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker0")
     fedinfo = h.helicsCreateFederateInfo()
     assert "HelicsFederateInfo()" in repr(fedinfo)
     fedinfo.core_name = "TestFederate"
     fedinfo.core_type = "zmq"
-    fedinfo.core_init = "-f 1 --broker=mainbroker"
+    fedinfo.core_init = "-f 1 --broker=mainbroker0 --name=core0"
     mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
     assert (
@@ -61,12 +61,12 @@ def test_python_api0():
 
 def test_python_api1():
 
-    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
+    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker1")
     fedinfo = h.helicsCreateFederateInfo()
     assert "HelicsFederateInfo()" in repr(fedinfo)
     fedinfo.core_name = "TestFederate"
     fedinfo.core_type = "zmq"
-    fedinfo.core_init = "-f 1 --broker=mainbroker"
+    fedinfo.core_init = "-f 1 --broker=mainbroker1  --name=core0"
     mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
     assert (
@@ -266,7 +266,7 @@ def test_python_api1():
 
 def test_python_api2():
 
-    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel=warning")
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel=warning  --name=mainbroker2")
     assert broker.is_connected()
 
     broker.set_global("hello", "world")
@@ -280,7 +280,7 @@ def test_python_api2():
         assert broker.query("hello", "world") == {"error": {"code": 404, "message": "query not valid"}}
 
     fi = h.helicsCreateFederateInfo()
-    fi.core_init = "--federates 1"
+    fi.core_init = "--federates 1 --brokername=mainbroker2 --name=core2"
     fi.property[h.HELICS_PROPERTY_INT_LOG_LEVEL] = 2
 
     fed = h.helicsCreateCombinationFederate("test1", fi)
@@ -436,15 +436,15 @@ def test_python_api2():
 
 
 def test_python_api3():
-    core1 = h.helicsCreateCore("inproc", "core1", "--autobroker")
+    core1 = h.helicsCreateCore("inproc", "core3", "--autobroker")
 
-    assert """HelicsCore(identifier = "core1", address = "core1")""" in repr(core1)
+    assert """HelicsCore(identifier = "core3", address = "core1")""" in repr(core1)
 
     core2 = core1.clone()
 
-    assert core1.identifier == "core1"
+    assert core1.identifier == "core3"
 
-    source_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter")
+    source_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core3SourceFilter")
 
     source_filter1.add_source_target("ep1")
 
@@ -504,7 +504,7 @@ def test_python_api4():
 
 
 def test_python_api5():
-    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --name=mainbroker5")
     fi = h.helicsCreateFederateInfo()
 
     fed = h.helicsCreateCombinationFederate("test1", fi)
@@ -527,7 +527,7 @@ def test_python_api5():
 
 
 def test_python_api6():
-    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --name=mainbroker6")
     fi = h.helicsCreateFederateInfo()
 
     fed = h.helicsCreateCombinationFederate("test1", fi)
@@ -549,7 +549,7 @@ def test_python_api6():
 
 @pt.mark.skip(reason="Fails to pass on windows and linux")
 def test_python_api7():
-    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
+    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --name=mainbroker7")
     fi = h.helicsCreateFederateInfo()
 
     fed = h.helicsCreateCombinationFederate("test1", fi)
@@ -612,7 +612,7 @@ def test_python_api7():
 
 def test_python_api8():
 
-    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
+    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker8")
 
     cfed = h.helicsCreateCombinationFederateFromConfig(os.path.join(CURRENT_DIRECTORY, "combinationfederate.json"))
 
