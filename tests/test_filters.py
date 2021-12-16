@@ -112,7 +112,7 @@ def test_filter_type_tests_info():
     destroyBroker(broker)
 
 
-def test_filter_types_tests_core_fitler_registration():
+def test_filter_types_tests_core_filter_registration():
 
     core1 = h.helicsCreateCore("inproc", "core1", "--autobroker")
 
