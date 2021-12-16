@@ -364,6 +364,7 @@ if HELICS_VERSION == 2:
         - **TRACE**
         """
 
+        DUMPLOG = -10  # HelicsLogLevels
         NO_PRINT = -1  # HelicsLogLevels
         ERROR = 0  # HelicsLogLevels
         WARNING = 1  # HelicsLogLevels
@@ -392,6 +393,7 @@ else:
         - **TRACE**
         """
 
+        DUMPLOG = -10  # HelicsLogLevels
         NO_PRINT = -4  # HelicsLogLevels
         ERROR = 0  # HelicsLogLevels
         PROFILING = 2  # HelicsLogLevels
@@ -405,6 +407,10 @@ else:
         TRACE = 24  # HelicsLogLevels
 
 
+try:
+    HELICS_LOG_LEVEL_DUMPLOG = HelicsLogLevel.DUMPLOG
+except:
+    pass
 HELICS_LOG_LEVEL_NO_PRINT = HelicsLogLevel.NO_PRINT
 HELICS_LOG_LEVEL_ERROR = HelicsLogLevel.ERROR
 try:
@@ -2737,6 +2743,17 @@ def helicsGetVersion() -> str:
     return ffi.string(result).decode()
 
 
+def helicsGetSystemInfo() -> JSONType:
+    """
+    Get a Python dictionary from JSON string containing version info.
+    The object contains fields with system information like cpu, core count, operating system, and memory,
+    as well as information about the HELICS build.  Used for debugging reports and gathering other information.
+    """
+    f = loadSym("helicsGetSystemInfo")
+    result = f()
+    return json.loads(ffi.string(result).decode())
+
+
 def helicsGetBuildFlags() -> str:
     """
     Get the build flags used to compile HELICS.
@@ -3532,6 +3549,22 @@ def helicsFederateInfoLoadFromArgs(fi: HelicsFederateInfo, arguments: List[str])
     for i, s in enumerate(arguments):
         argv[i] = cstring(s)
     f(fi.handle, argc, argv, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateInfoLoadFromString(fi: HelicsFederateInfo, arguments: str):
+    """
+    Load federate info from command line arguments contained in a string.
+
+    **Parameters**
+
+    - **`fi`** - A federateInfo object.
+    - **`arguments`** - Command line argument specified in a string
+    """
+    f = loadSym("helicsFederateInfoLoadFromString")
+    err = helicsErrorInitialize()
+    f(fi.handle, cstring(arguments), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
