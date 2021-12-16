@@ -2271,24 +2271,25 @@ class HelicsInput(_HelicsCHandle):
 
     @property
     def value(self) -> Union[bytes, str, int, bool, float, complex, Tuple, List[float]]:
-        if self.type == "bytes":
+        if self.publication_type == "bytes":
             return self.bytes
-        elif self.type == "string":
+        elif self.publication_type == "string":
             return self.string
-        elif self.type == "integer":
+        elif self.publication_type == "integer":
             return self.integer
-        elif self.type == "boolean":
+        elif self.publication_type == "boolean":
             return self.boolean
-        elif self.type == "double":
+        elif self.publication_type == "double":
             return self.double
-        elif self.type == "complex":
+        elif self.publication_type == "complex":
             return self.complex
-        elif self.type == "vector":
+        elif self.publication_type == "vector":
             return self.vector
-        elif self.type == "named_point":
+        elif self.publication_type == "named_point":
             return self.named_point
         else:
-            raise NotImplementedError("Unknown type `{}`".format(self.type))
+            warnings.warn("Unknown publication type `{}`. Defaulting to string.".format(self.publication_type))
+            return self.string
 
     @property
     def bytes(self) -> bytes:

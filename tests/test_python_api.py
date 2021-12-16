@@ -32,9 +32,9 @@ def test_python_api0():
     pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
     assert """HelicsPublication(name = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
 
-    sub = mFed.register_subscription("subscription", "custom-units")
+    sub = mFed.register_subscription("TestFederate/publication", "custom-units")
     assert (
-        """HelicsInput(name = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "subscription", info = "")"""
+        """HelicsInput(name = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "TestFederate/publication", info = "")"""
         in repr(sub)
     )
     assert (
@@ -45,16 +45,13 @@ def test_python_api0():
     sub.option[h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED] = 1
     assert sub.option["CONNECTION_REQUIRED"] == 1
 
-    sub.add_target("")
-
     mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
     assert mFed.property[h.HELICS_PROPERTY_TIME_DELTA] == 1.0
 
     mFed.property["TIME_DELTA"] = 1.0
     assert mFed.property["TIME_DELTA"] == 1.0
 
-    with pt.raises(h.HelicsException):
-        mFed.enter_executing_mode()
+    mFed.enter_executing_mode()
 
     h.helicsCloseLibrary()
 
@@ -145,6 +142,7 @@ def test_python_api1():
 
     assert mFed.request_time(2.0) == 1.0
 
+    assert mFed.subscriptions["TestFederate/publication"].value == "first-time"
     try:
         assert mFed.subscriptions["TestFederate/publication"].bytes == b"first-time"
     except Exception as _:
@@ -232,7 +230,13 @@ def test_python_api1():
 
     assert mFed.request_next_step() == 4.0
 
-    assert mFed.subscriptions["TestFederate/publication"].vector == [1.0, 2.0, 3.0, 4.0, 5.0]
+    assert mFed.subscriptions["TestFederate/publication"].vector == [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+    ]
 
     mFed.publications["TestFederate/publication"].publish(False)
 
