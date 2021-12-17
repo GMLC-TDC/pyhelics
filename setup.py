@@ -148,6 +148,12 @@ class HELICSDownloadCommand(Command):
                         print(p)
                         parent_dir = p.parents[1]
                         p.rename(parent_dir / p.name)
+                    for file in os.listdir(os.path.join(self.pyhelics_install, "bin")):
+                        f = Path(os.path.join(self.pyhelics_install, "bin", file))
+                        try:
+                            f.chmod(f.stat().st_mode | stat.S_IEXEC)
+                        except:
+                            pass
             else:
                 with tarfile.open(fileobj=content) as tf:
                     dirname = tf.getnames()[0].partition("/")[0]
