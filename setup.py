@@ -145,12 +145,12 @@ class HELICSDownloadCommand(Command):
                     tmp = os.listdir(self.pyhelics_install)[0]
                     for folder in os.listdir(os.path.join(self.pyhelics_install, tmp)):
                         p = Path(os.path.join(self.pyhelics_install, tmp, folder)).absolute()
-                        print(p)
                         parent_dir = p.parents[1]
                         p.rename(parent_dir / p.name)
                     for file in os.listdir(os.path.join(self.pyhelics_install, "bin")):
                         f = Path(os.path.join(self.pyhelics_install, "bin", file))
                         try:
+                            import stat
                             f.chmod(f.stat().st_mode | stat.S_IEXEC)
                         except:
                             pass
