@@ -140,7 +140,6 @@ class HELICSDownloadCommand(Command):
             if self.helics_url.endswith(".zip"):
                 with zipfile.ZipFile(content) as f:
                     f.extractall(self.pyhelics_install)
-                print(os.listdir(self.pyhelics_install))
                 if len(os.listdir(self.pyhelics_install))==1 and os.listdir(self.pyhelics_install)[0].startswith("Helics-"):
                     tmp = os.listdir(self.pyhelics_install)[0]
                     for folder in os.listdir(os.path.join(self.pyhelics_install, tmp)):
