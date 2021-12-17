@@ -9,6 +9,7 @@ from os.path import basename
 from os.path import dirname
 from os.path import join
 from os.path import splitext
+from pathlib import Path
 
 import re
 import sys
@@ -17,6 +18,7 @@ import struct
 import shutil
 import platform
 import tarfile
+import zipfile
 import subprocess
 import shlex
 
@@ -54,55 +56,55 @@ DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/
 def create_default_url(helics_version, plat_name=""):
     if "macos" in plat_name.lower():
         if helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1:  # >= 3.1.x
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-universal2.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
                 helics_version=helics_version
             )
         else:
             default_url = (
-                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
+                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-x86_64.zip".format(
                     helics_version=helics_version
                 )
             )
     elif "win" in plat_name.lower():
         if "win32" in plat_name.lower():
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-win32.zip".format(
                 helics_version=helics_version
             )
         else:
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-win64.zip".format(
                 helics_version=helics_version
             )
 
     elif "linux" in plat_name.lower():
         default_url = (
-            "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+            "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-Linux-x86_64.tar.gz".format(
                 helics_version=helics_version
             )
         )
     elif platform.system() == "Darwin":
         if helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1:  # >= 3.1.x
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-universal2.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
                 helics_version=helics_version
             )
         else:
             default_url = (
-                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
+                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-x86_64.zip".format(
                     helics_version=helics_version
                 )
             )
     elif platform.system() == "Windows":
         if struct.calcsize("P") * 8 == 32:
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-win32.zip".format(
                 helics_version=helics_version
             )
         else:
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-win64.zip".format(
                 helics_version=helics_version
             )
 
     elif platform.system() == "Linux":
         default_url = (
-            "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+            "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-Linux-x86_64.tar.gz".format(
                 helics_version=helics_version
             )
         )
@@ -135,11 +137,23 @@ class HELICSDownloadCommand(Command):
         if r.getcode() == 200:
             content = io.BytesIO(r.read())
             content.seek(0)
-            with tarfile.open(fileobj=content) as tf:
-                dirname = tf.getnames()[0].partition("/")[0]
-                tf.extractall()
-            shutil.move(dirname, self.pyhelics_install)
-            if platform.system() == "Linux":
+            if self.helics_url.endswith(".zip"):
+                with zipfile.ZipFile(content) as f:
+                    f.extractall(self.pyhelics_install)
+                print(os.listdir(self.pyhelics_install))
+                if len(os.listdir(self.pyhelics_install))==1 and os.listdir(self.pyhelics_install)[0].startswith("Helics-"):
+                    tmp = os.listdir(self.pyhelics_install)[0]
+                    for folder in os.listdir(os.path.join(self.pyhelics_install, tmp)):
+                        p = Path(os.path.join(self.pyhelics_install, tmp, folder)).absolute()
+                        print(p)
+                        parent_dir = p.parents[1]
+                        p.rename(parent_dir / p.name)
+            else:
+                with tarfile.open(fileobj=content) as tf:
+                    dirname = tf.getnames()[0].partition("/")[0]
+                    tf.extractall()
+                shutil.move(dirname, self.pyhelics_install)
+            if "Linux" in self.helics_url:
                 shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
             files = [
                 "helics_api.h",
