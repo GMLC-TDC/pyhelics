@@ -365,4 +365,13 @@ setup(
         "docs": ["mkdocs", "inari[mkdocs]", "mkdocs-material", "black", "pygments", "pymdown-extensions"],
     },
     cmdclass=cmdclass,
+    entry_points={
+        "console_scripts": [
+            "helics_app=helics.bin:helics_app",
+            "helics_broker=helics.bin:helics_broker",
+            "helics_broker_server=helics.bin:helics_broker_server",
+            "helics_player=helics.bin:helics_player",
+            "helics_recorder=helics.bin:helics_recorder",
+        ]
+    },
 )
