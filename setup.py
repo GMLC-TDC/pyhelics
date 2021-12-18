@@ -140,7 +140,14 @@ class HELICSDownloadCommand(Command):
                 t = tempfile.gettempdir()
                 with open(os.path.join(t, "tmp.zip"), "wb") as f:
                     f.write(r.read())
-                subprocess.call(shlex.split("python ziptools/zip-extract.py {} {}".format(os.path.join(t, "tmp.zip"), self.pyhelics_install)))
+                subprocess.call(
+                    shlex.split(
+                        "python ziptools/zip-extract.py {} {}".format(
+                            os.path.abspath(os.path.join(t, "tmp.zip")),
+                            os.path.abspath(self.pyhelics_install),
+                        )
+                    )
+                )
                 if len(os.listdir(self.pyhelics_install)) == 1 and os.listdir(self.pyhelics_install)[0].startswith("Helics-"):
                     tmp = os.listdir(self.pyhelics_install)[0]
                     for folder in os.listdir(os.path.join(self.pyhelics_install, tmp)):
