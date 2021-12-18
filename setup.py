@@ -22,6 +22,7 @@ import struct
 import shutil
 import platform
 import tarfile
+import zipfile
 import ziptools
 import subprocess
 import shlex
@@ -40,12 +41,18 @@ except ImportError:
 
 
 def read(*names, **kwargs):
-    with io.open(join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")) as fh:
+    with io.open(
+        join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")
+    ) as fh:
         return fh.read()
 
 
-PYHELICS_VERSION = read(os.path.join(os.path.dirname(__file__), "helics", "_version.py"), encoding="utf-8")
-PYHELICS_VERSION = PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
+PYHELICS_VERSION = read(
+    os.path.join(os.path.dirname(__file__), "helics", "_version.py"), encoding="utf-8"
+)
+PYHELICS_VERSION = (
+    PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
+)
 
 HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
 # HELICS_VERSION = "{}-beta".format(HELICS_VERSION)
@@ -55,16 +62,18 @@ CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 HELICS_SOURCE = os.path.join(CURRENT_DIRECTORY, "./_source")
 PYHELICS_INSTALL = os.path.join(CURRENT_DIRECTORY, "./helics/install")
 
-DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(version=HELICS_VERSION)
+DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(
+    version=HELICS_VERSION
+)
 
 
 def create_default_url(helics_version, plat_name=""):
     if "macos" in plat_name.lower():
-        if helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1:  # >= 3.1.x
-            default_url = (
-                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
-                    helics_version=helics_version
-                )
+        if (
+            helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1
+        ):  # >= 3.1.x
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
+                helics_version=helics_version
             )
         else:
             default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-x86_64.zip".format(
@@ -85,11 +94,11 @@ def create_default_url(helics_version, plat_name=""):
             helics_version=helics_version
         )
     elif platform.system() == "Darwin":
-        if helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1:  # >= 3.1.x
-            default_url = (
-                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
-                    helics_version=helics_version
-                )
+        if (
+            helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1
+        ):  # >= 3.1.x
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
+                helics_version=helics_version
             )
         else:
             default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-x86_64.zip".format(
@@ -137,21 +146,31 @@ class HELICSDownloadCommand(Command):
         r = urlopen(self.helics_url)
         if r.getcode() == 200:
             if self.helics_url.endswith(".zip"):
-                t = tempfile.gettempdir()
-                with open(os.path.join(t, "tmp.zip"), "wb") as f:
-                    f.write(r.read())
-                subprocess.call(
-                    shlex.split(
-                        "python ziptools/zip-extract.py {} {}".format(
-                            os.path.abspath(os.path.join(t, "tmp.zip")),
-                            os.path.abspath(self.pyhelics_install),
+                if platform.system() == "Windows":
+                    content = io.BytesIO(r.read())
+                    content.seek(0)
+                    with zipfile.ZipFile(content) as f:
+                        f.extractall(self.pyhelics_install)
+                else:
+                    t = tempfile.gettempdir()
+                    with open(os.path.join(t, "tmp.zip"), "wb") as f:
+                        f.write(r.read())
+                    subprocess.call(
+                        shlex.split(
+                            "python ziptools/zip-extract.py {} {}".format(
+                                os.path.abspath(os.path.join(t, "tmp.zip")),
+                                os.path.abspath(self.pyhelics_install),
+                            )
                         )
                     )
-                )
-                if len(os.listdir(self.pyhelics_install)) == 1 and os.listdir(self.pyhelics_install)[0].startswith("Helics-"):
+                if len(os.listdir(self.pyhelics_install)) == 1 and os.listdir(
+                    self.pyhelics_install
+                )[0].startswith("Helics-"):
                     tmp = os.listdir(self.pyhelics_install)[0]
                     for folder in os.listdir(os.path.join(self.pyhelics_install, tmp)):
-                        p = Path(os.path.join(self.pyhelics_install, tmp, folder)).absolute()
+                        p = Path(
+                            os.path.join(self.pyhelics_install, tmp, folder)
+                        ).absolute()
                         parent_dir = p.parents[1]
                         p.rename(parent_dir / p.name)
             else:
@@ -188,9 +207,13 @@ class HELICSDownloadCommand(Command):
             IGNOREBLOCK = False
             print("Writing to {}".format(os.path.abspath(self.pyhelics_install)))
             for file in files:
-                if not os.path.isfile(os.path.join(self.pyhelics_install, "include", "helics", file)):
+                if not os.path.isfile(
+                    os.path.join(self.pyhelics_install, "include", "helics", file)
+                ):
                     continue
-                with open(os.path.join(self.pyhelics_install, "include", "helics", file)) as f:
+                with open(
+                    os.path.join(self.pyhelics_install, "include", "helics", file)
+                ) as f:
                     lines = []
                     for line in f:
                         if line.startswith("#ifdef __cplusplus"):
@@ -207,7 +230,9 @@ class HELICSDownloadCommand(Command):
                     data = "\n".join(lines)
                     data = data.replace("HELICS_EXPORT", "")
                     data = data.replace("HELICS_DEPRECATED_EXPORT", "")
-                with open(os.path.join(self.pyhelics_install, "include", "helics", file), "w") as f:
+                with open(
+                    os.path.join(self.pyhelics_install, "include", "helics", file), "w"
+                ) as f:
                     f.write(data)
 
 
@@ -222,7 +247,10 @@ class HELICSCMakeBuild(build_ext):
         try:
             out = subprocess.check_output(["cmake", "--version"])
         except OSError:
-            raise RuntimeError("CMake must be installed to build the following extensions: " + ", ".join(e.name for e in self.extensions))
+            raise RuntimeError(
+                "CMake must be installed to build the following extensions: "
+                + ", ".join(e.name for e in self.extensions)
+            )
 
         cmake_version = re.search(r"version\s*([\d.]+)", out.decode().lower()).group(1)
         cmake_version = [int(i) for i in cmake_version.split(".")]
@@ -261,7 +289,9 @@ class HELICSCMakeBuild(build_ext):
         build_args = ["--config", cfg]
 
         if platform.system() == "Windows":
-            cmake_args += ["-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir)]
+            cmake_args += [
+                "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir)
+            ]
             if sys.maxsize > 2 ** 32:
                 cmake_args += ["-A", "x64"]
                 build_args += ["--", "/m"]
@@ -272,7 +302,9 @@ class HELICSCMakeBuild(build_ext):
         env = os.environ.copy()
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
-        subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
+        subprocess.check_call(
+            ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env
+        )
         cmd = " ".join(["cmake", "--build", ".", "--target", "install"] + build_args)
         print(cmd)
         subprocess.check_call(shlex.split(cmd), cwd=self.build_temp)
