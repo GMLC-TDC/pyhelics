@@ -91,11 +91,8 @@ def _load_library():
                 or "libhelics." in file
                 and file.endswith(".dylib")
             ):
-                try:
-                    lib = ffi.dlopen(os.path.join(lib_folder, file))
-                    break
-                except:
-                    pass
+                lib = ffi.dlopen(os.path.join(lib_folder, file))
+                break
         else:
             for file in os.listdir(lib_folder):
                 if (
