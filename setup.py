@@ -190,7 +190,6 @@ def _set_permissions(zip_file_info, extracted_path):
     os.chmod(extracted_path, permission)
 
 
-
 def _override_permissions(path, permission):
     """
     Forcefully override the permissions on the path
@@ -203,7 +202,6 @@ def _override_permissions(path, permission):
     """
     if permission:
         os.chmod(path, permission)
-
 
 
 def unzip(zip_file_path, output_dir, permission=None):

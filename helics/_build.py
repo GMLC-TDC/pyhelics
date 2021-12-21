@@ -84,21 +84,13 @@ def _load_library():
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
         else:
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
-        for file in reversed(sorted(os.listdir(lib_folder), key = len)):
-            if (
-                "helicsSharedLib." in file
-                or "libhelics." in file
-                and file.endswith(".dylib")
-            ):
+        for file in reversed(sorted(os.listdir(lib_folder), key=len)):
+            if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".dylib"):
                 lib = ffi.dlopen(os.path.join(lib_folder, file))
                 break
         else:
-            for file in reversed(sorted(os.listdir(lib_folder), key = len)):
-                if (
-                    "helicsSharedLibd." in file
-                    or "libhelicsd." in file
-                    and file.endswith(".dylib")
-                ):
+            for file in reversed(sorted(os.listdir(lib_folder), key=len)):
+                if "helicsSharedLibd." in file or "libhelicsd." in file and file.endswith(".dylib"):
                     lib = ffi.dlopen(os.path.join(lib_folder, file))
                     break
             else:
@@ -113,21 +105,13 @@ def _load_library():
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
         else:
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
-        for file in reversed(sorted(os.listdir(lib_folder), key = len)):
-            if (
-                "helicsSharedLib." in file
-                or "libhelics." in file
-                and file.endswith(".so")
-            ):
+        for file in reversed(sorted(os.listdir(lib_folder), key=len)):
+            if "helicsSharedLib." in file or "libhelics." in file and file.endswith(".so"):
                 lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
                 break
         else:
-            for file in reversed(sorted(os.listdir(lib_folder), key = len)):
-                if (
-                    "helicsSharedLibd." in file
-                    or "libhelicsd." in file
-                    and file.endswith(".so")
-                ):
+            for file in reversed(sorted(os.listdir(lib_folder), key=len)):
+                if "helicsSharedLibd." in file or "libhelicsd." in file and file.endswith(".so"):
                     try:
                         lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
                         break
