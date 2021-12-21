@@ -85,7 +85,7 @@ def _load_library():
         else:
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
         print(lib_folder, os.listdir(lib_folder))
-        for file in os.listdir(lib_folder):
+        for file in reversed(sorted(os.listdir(lib_folder), key = len)):
             if (
                 "helicsSharedLib." in file
                 or "libhelics." in file
@@ -94,7 +94,7 @@ def _load_library():
                 lib = ffi.dlopen(os.path.join(lib_folder, file))
                 break
         else:
-            for file in os.listdir(lib_folder):
+            for file in reversed(sorted(os.listdir(lib_folder), key = len)):
                 if (
                     "helicsSharedLibd." in file
                     or "libhelicsd." in file
@@ -114,7 +114,7 @@ def _load_library():
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
         else:
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
-        for file in os.listdir(lib_folder):
+        for file in reversed(sorted(os.listdir(lib_folder), key = len)):
             if (
                 "helicsSharedLib." in file
                 or "libhelics." in file
@@ -123,7 +123,7 @@ def _load_library():
                 lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "lib", file))
                 break
         else:
-            for file in os.listdir(lib_folder):
+            for file in reversed(sorted(os.listdir(lib_folder), key = len)):
                 if (
                     "helicsSharedLibd." in file
                     or "libhelicsd." in file
