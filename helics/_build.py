@@ -84,7 +84,6 @@ def _load_library():
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib64")
         else:
             lib_folder = os.path.join(PYHELICS_INSTALL, "lib")
-        print(lib_folder, os.listdir(lib_folder))
         for file in reversed(sorted(os.listdir(lib_folder), key = len)):
             if (
                 "helicsSharedLib." in file
