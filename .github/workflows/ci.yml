@@ -19,7 +19,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip install wheel setuptools cffi
-          python scripts/download-ziptools.py
       - name: Download helics library and run pip install
         run: |
           python setup.py download

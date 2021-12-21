@@ -42,10 +42,6 @@ jobs:
         run: |
           python -m pip install -U pip install wheel setuptools cffi
 
-      - name: Download ziptools
-        run: |
-          python ./scripts/download-ziptools.py
-
       - name: Download helics library
         run: python setup.py download --plat-name=${{ matrix.target }}
 
@@ -91,10 +87,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip install wheel setuptools cffi
-
-      - name: Download ziptools
-        run: |
-          python ./scripts/download-ziptools.py
 
       - name: Download helics header files and build sdist
         run: |
