@@ -38,3 +38,11 @@ pip install helics
 You will also get precompiled binaries of [HELICS](https://github.com/GMLC-TDC/HELICS/releases/latest) for your platform if they exist.
 If they don't exist, a source distribution will attempt to be built and installed. The user can also provide the location of the binaries if they wish to do so.
 For more information, see <https://python.helics.org/installation>.
+
+# Debugging
+
+Please share the output of the following command when creating an issue:
+
+```
+$ python -c "import helics as h; import json; print(json.dumps(h.helicsGetSystemInfo(), indent=4, sort_keys=True))"
+```
