@@ -835,6 +835,31 @@ helics_state_pending_finalize = HelicsFederateState.PENDING_FINALIZE
 helics_state_finished = HelicsFederateState.FINISHED
 
 
+@unique
+class HelicsTranslaterTypes(IntEnum):
+    """
+    Rnumeration of the predefined translator types
+
+    A custom filter type that executes a user defined callback
+    - **CUSTOM**
+
+    A translator type that converts to and from JSON
+    - **JSON**
+
+    A translator type that just encodes the message again in binary
+    - **BINARY**
+    """
+
+    CUSTOM = 0
+    JSON = 11
+    BINARY = 12
+
+
+HELICS_TRANSLATOR_TYPE_CUSTOM = HelicsTranslaterTypes.CUSTOM
+HELICS_TRANSLATOR_TYPE_JSON = HelicsTranslaterTypes.JSON
+HELICS_TRANSLATOR_TYPE_BINARY = HelicsTranslaterTypes.BINARY
+
+
 def generate_cleanup_callback(obj):
     t = type(obj)
     if isinstance(obj, HelicsFederate):
@@ -966,6 +991,11 @@ class HelicsFilter(_HelicsCHandle):
 
 class HelicsCloningFilter(HelicsFilter):
     pass
+
+
+class HelicsTranslator(_HelicsCHandle):
+    def __init__(self, handle, cleanup=True):
+        super(HelicsTranslator, self).__init__(handle, cleanup=cleanup)
 
 
 class HelicsCore(_HelicsCHandle):
@@ -6733,6 +6763,369 @@ def helicsFilterGetOption(filter: HelicsFilter, option: HelicsHandleOption) -> i
     f = loadSym("helicsFilterGetOption")
     result = f(filter.handle, HelicsHandleOption(option))
     return result
+
+
+def helicsIntToBytes(value: int, data):
+    """
+    Convert an integer to serialized bytes
+    """
+    pass
+
+
+def helicsDoubleToBytes(value: int, data):
+    """
+    Convert a double to serialized bytes
+    """
+    pass
+
+
+def helicsStringToBytes(string: str, data):
+    """
+    Convert a string to serialized bytes
+    """
+    pass
+
+
+def helicsBoolToBytes(value: bool, data):
+    """
+    Convert a bool to serialized bytes
+    """
+    pass
+
+
+def helicsCharToBytes(value: str, data):
+    """
+    Convert a bool to serialized bytes
+    """
+    pass
+
+
+def helicsTimeToBytes(value: HelicsTime, data):
+    """
+    Convert a bool to serialized bytes
+    """
+    pass
+
+
+def helicsFederateRegisterTranslator(fed: HelicsFederate, type: HelicsTranslaterTypes, name: str) -> HelicsTranslator:
+    """
+    Create a source Translator on the specified federate.
+
+    Translators can be created through a federate or a core, linking through a federate allows
+    a few extra features of name matching to function on the federate interface but otherwise equivalent behavior
+
+    **Parameters**
+
+    - **`fed`** - The federate to register through.
+    - **`type`** - The type of translator to create /ref HelicsTranslatorTypes.
+    - **`name`** - The name of the translator (can be NULL).
+
+    **Returns**: `helics.HelicsTranslator`.
+    """
+    f = loadSym("helicsFederateRegisterTranslator")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, type, cstring(name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsTranslator(result)
+
+
+def helicsFederateRegisterGlobalTranslator(fed: HelicsFederate, type: HelicsTranslaterTypes, name: str) -> HelicsTranslator:
+    """
+    Create a source Translator on the specified federate.
+
+    Translators can be created through a federate or a core, linking through a federate allows
+    a few extra features of name matching to function on the federate interface but otherwise equivalent behavior
+
+    **Parameters**
+
+    - **`fed`** - The federate to register through.
+    - **`type`** - The type of translator to create /ref HelicsTranslatorTypes.
+    - **`name`** - The name of the translator (can be NULL).
+
+    **Returns**: `helics.HelicsTranslator`.
+    """
+    f = loadSym("helicsFederateRegisterGlobalTranslator")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, type, cstring(name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsTranslator(result)
+
+
+def helicsCoreRegisterGlobalTranslator(core: HelicsCore, type: HelicsTranslaterTypes, name: str) -> HelicsTranslator:
+    """
+    Create a source Translator on the specified core.
+
+    Translators can be created through a federate or a core, linking through a federate allows a few extra features of name matching to function on the federate interface but otherwise equivalent behavior.
+
+    **Parameters**
+
+    - **`core`** - The core to register through.
+    - **`type`** - The type of translator to create /ref HelicsTranslatorTypes.
+    - **`name`** - The name of the translator (can be NULL).
+
+    **Returns**: `helics.HelicsTranslator`.
+    """
+    f = loadSym("helicsCoreRegisterTranslator")
+    err = helicsErrorInitialize()
+    result = f(core.handle, type, cstring(name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsTranslator(result)
+
+
+def helicsFederateGetTranslatorCount(fed: HelicsFederate) -> int:
+    """
+    Get the number of translators registered through a federate.
+
+    **Parameters**
+
+    - **`fed`** - The federate object to use to get the translator.
+
+    **Returns**: A count of the number of translators registered through a federate.
+    """
+    f = loadSym("helicsFederateGetTranslatorCount")
+    r = f(fed.handle)
+    return r
+
+
+def helicsFederateGetTranslator(fed: HelicsFederate, name: str) -> HelicsTranslator:
+    """
+    Get a translator by its name, typically already created via registerInterfaces file or something of that nature.
+
+    - **`fed`** The federate object to use to get the translator.
+    - **`name`** The name of the translator.
+
+    **Returns**: A `helics.HelicsTranslator` object
+    """
+    f = loadSym("helicsFederateGetTranslator")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, cstring(name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsTranslator(result)
+
+
+def helicsFederateGetTranslatorByIndex(fed: HelicsFederate, index: int) -> HelicsTranslator:
+    """
+    Get a translator by its name, typically already created via registerInterfaces file or something of that nature.
+
+    - **`fed`** The federate object to use to get the translator.
+    - **`index`** The index of the translator.
+
+    **Returns**: A `helics.HelicsTranslator` object
+    """
+    f = loadSym("helicsFederateGetTranslatorByIndex")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, index, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsTranslator(result)
+
+
+def helicsTranslatorIsValid(translator: HelicsTranslator) -> bool:
+    """
+    Check if a translator is valid.
+
+    - **`translator`** The translator object to check.
+
+    **Returns**: True if the Translator object represents a valid translator.
+    """
+    f = loadSym("helicsTranslatorIsValid")
+    result = f(translator.handle)
+    return result == 1
+
+
+def helicsTranslatorGetName(translator: HelicsTranslator) -> str:
+    """
+    Get the name of a translator.
+
+    **Parameters**
+
+    - **`translator`** - The translator to query.
+
+    **Returns**: A string with the name of the translator.
+    """
+    f = loadSym("helicsPublicationGetName")
+    result = f(translator.handle)
+    return ffi.string(result).decode()
+
+
+def helicsTranslatorSet(translator: HelicsTranslator, property: str, value: float):
+    """
+    Set a property on a translator.
+
+    - **`translator`**: The translator to modify.
+    - **`prop`**: A string containing the property to set.
+    - **`val`**: A numerical value for the property.
+    """
+    f = loadSym("helicsTranslatorSet")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(property), cdouble(value), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorSetString(translator: HelicsTranslator, property: str, value: str):
+    """
+    Set string property on a translator.
+
+    **Parameters**
+
+    - **`translator`** - The translator to modify
+    - **`property`**: A string containing the property to set.
+    - **`value`**: A string value for the property.
+    """
+    f = loadSym("helicsMessageSetString")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(property), cstring(value), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorAddDestinationTarget(translator: HelicsTranslator, destination_name: str):
+    """
+    Add a destination target to a translator.
+    All messages coming from a source are copied to the delivery address(es).
+    # Parameters
+    - **`translator`** - The given translator.
+    - **`source_name`** - The name of the translator to add as a source target.
+    """
+    f = loadSym("helicsTranslatorAddDestinationTarget")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(destination_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorAddSourceTarget(translator: HelicsTranslator, source_name: str):
+    """
+    Add a source target to a translator.
+    All messages coming from a source are copied to the delivery address(es).
+    # Parameters
+    - **`translator`** - The given translator.
+    - **`source_name`** - The name of the translator to add as a source target.
+    """
+    f = loadSym("helicsTranslatorAddSourceTarget")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(source_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorRemoveTarget(translator: HelicsTranslator, target: str):
+    """
+    Remove target from translator
+    # Parameters
+    - **`translator`** - The given translator.
+    - **`target_name`** - The name of the translator to remove.
+    """
+    f = loadSym("helicsTranslatorAddRemoveTarget")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(target), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorGetInfo(translator: HelicsTranslator) -> str:
+    """
+    Get the data in the info field of an translator.
+
+    **Parameters**
+
+    - **`translator`** - The translator to query.
+
+    **Returns**: A string with the info field string.
+    """
+    f = loadSym("helicsTranslatorGetInfo")
+    result = f(translator.handle)
+    return ffi.string(result).decode()
+
+
+def helicsTranslatorSetInfo(translator: HelicsTranslator, info: str):
+    """
+    Set the data in the info field for an translator.
+
+    **Parameters**
+
+    - **`translator`** - The translator to query.
+    - **`info`** - The string to set.
+    """
+    f = loadSym("helicsTranslatorSetInfo")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(info), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorGetTag(translator: HelicsTranslator) -> str:
+    """
+    Get the data in the tag for an translator.
+
+    **Parameters**
+
+    - **`translator`** - The translator to query.
+
+    **Returns**: A string with the info field string.
+    """
+    f = loadSym("helicsTranslatorGetTag")
+    result = f(translator.handle)
+    return ffi.string(result).decode()
+
+
+def helicsTranslatorSetTag(translator: HelicsTranslator, tag: str):
+    """
+    Set the data in the tag for an translator.
+
+    **Parameters**
+
+    - **`translator`** - The translator to query.
+    - **`tag`** - The string to set.
+    """
+    f = loadSym("helicsTranslatorSetTag")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(tag), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorGetOption(translator: HelicsTranslator, option: HelicsHandleOption) -> int:
+    """
+    Get the current value of an translator handle option.
+
+    **Parameters**
+
+    - **`translator`** - The translator to query.
+    - **`option`** - Integer representation of the option in question see `helics.HelicsHandleOption`.
+
+    **Returns**: An integer value with the current value of the given option.
+    """
+    f = loadSym("helicsTranslatorGetOption")
+    result = f(translator.handle, HelicsHandleOption(option))
+    return result
+
+
+def helicsTranslatorSetOption(translator: HelicsTranslator, option: HelicsHandleOption, value: int):
+    """
+    Set an option on an translator.
+
+    **Parameters**
+
+    - **`translator`** - The translator to query.
+    - **`option`** - The option to set for the translator `helics.HelicsHandleOption`.
+    - **`value`** - The value to set the option to.
+    """
+    f = loadSym("helicsTranslatorSetOption")
+    err = helicsErrorInitialize()
+    f(translator.handle, HelicsHandleOption(option), value, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateRegisterSubscription(fed: HelicsFederate, name: str, units: str = "") -> HelicsInput:
