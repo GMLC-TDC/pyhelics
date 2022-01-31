@@ -878,7 +878,7 @@ def generate_cleanup_callback(obj):
         f = None
     else:
         f = None
-        warnings.warn("Trying to finalize unknown object of type: {}".format(t))
+        warnings.warn("Ignoring cleanup for unknown object of type: {}.".format(t))
 
     def cleanup(handle):
         if f is not None:
