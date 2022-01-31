@@ -874,6 +874,8 @@ def generate_cleanup_callback(obj):
         f = loadSym("helicsQueryFree")
     elif isinstance(obj, HelicsMessage):
         f = loadSym("helicsMessageFree")
+    elif isinstance(obj, HelicsFilter) or isinstance(obj, HelicsTranslator):
+        f = None
     else:
         f = None
         warnings.warn("Trying to finalize unknown object of type: {}".format(t))
