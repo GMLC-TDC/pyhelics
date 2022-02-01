@@ -6991,32 +6991,67 @@ def helicsTranslatorSetString(translator: HelicsTranslator, property: str, value
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsTranslatorAddDestinationTarget(translator: HelicsTranslator, destination_name: str):
+def helicsTranslatorAddInputTarget(translator: HelicsTranslator, input: str):
+    """
+    Add an input to send a translator output.
+
+    All messages going to a destination are copied to the delivery address(es).
+
+    # Parameters
+
+    - **`translator`** - The given translator to add a input target to.
+    - **`input`** - The name of the endpoint to add as a input target.
+    """
+    f = loadSym("helicsTranslatorAddInputTarget")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(input), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorAddPublicationTarget(translator: HelicsTranslator, publication: str):
+    """
+    Add a source publication target to a translator.
+
+    All messages coming from a source are copied to the delivery address(es).
+
+    - **`translator`** - The given translator.
+    - **`publication`** - The name of the endpoint to add as a publication target.
+    """
+    f = loadSym("helicsTranslatorAddPublicationTarget")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(publication), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorAddSourceEndpoint(translator: HelicsTranslator, source: str):
+    """
+    Add a source endpoint target to a translator.
+
+    All messages coming from a source are copied to the delivery address(es).
+
+    - **`trans`** - The given translator.
+    - **`source``** - The name of the endpoint to add as a source target.
+    """
+    f = loadSym("helicsTranslatorAddSourceEndpoint")
+    err = helicsErrorInitialize()
+    f(translator.handle, cstring(source), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsTranslatorAddDestinationEndpoint(translator: HelicsTranslator, destination: str):
     """
     Add a destination target to a translator.
     All messages coming from a source are copied to the delivery address(es).
     # Parameters
     - **`translator`** - The given translator.
-    - **`source_name`** - The name of the translator to add as a source target.
+    - **`destination`** - The name of the translator to add as a source target.
     """
-    f = loadSym("helicsTranslatorAddDestinationTarget")
+    f = loadSym("helicsTranslatorAddDestinationEndpoint")
     err = helicsErrorInitialize()
-    f(translator.handle, cstring(destination_name), err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
-
-
-def helicsTranslatorAddSourceTarget(translator: HelicsTranslator, source_name: str):
-    """
-    Add a source target to a translator.
-    All messages coming from a source are copied to the delivery address(es).
-    # Parameters
-    - **`translator`** - The given translator.
-    - **`source_name`** - The name of the translator to add as a source target.
-    """
-    f = loadSym("helicsTranslatorAddSourceTarget")
-    err = helicsErrorInitialize()
-    f(translator.handle, cstring(source_name), err)
+    f(translator.handle, cstring(destination), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
