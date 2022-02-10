@@ -8866,7 +8866,7 @@ def helicsFederateRegisterGlobalTargetedEndpoint(fed: HelicsFederate, name: str,
     - **`type`** - A string describing the expected type of the publication (optional).
     **Returns**: `helics.HelicsEndpoint`.
     """
-    f = loadSym("helicsFederateGlobalRegisterTargetedEndpoint")
+    f = loadSym("helicsFederateRegisterGlobalTargetedEndpoint")
     err = helicsErrorInitialize()
     result = f(fed.handle, cstring(name), cstring(type), err)
     if err.error_code != 0:
