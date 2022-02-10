@@ -5109,7 +5109,7 @@ def helicsCleanupLibrary():
     f()
 
 
-def helicsFederateRegisterEndpoint(fed: HelicsFederate, name: str, type: str) -> HelicsEndpoint:
+def helicsFederateRegisterEndpoint(fed: HelicsFederate, name: str, type: str = "") -> HelicsEndpoint:
     """
 
     MessageFederate Calls.
@@ -7212,7 +7212,7 @@ def helicsFederateRegisterPublication(fed: HelicsFederate, name: str, type: Heli
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterTypePublication(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsPublication:
+def helicsFederateRegisterTypePublication(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsPublication:
     """
     Register a publication with a defined type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -7258,7 +7258,7 @@ def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, name: str, type
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsPublication:
+def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsPublication:
     """
     Register a global publication with a defined type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -7305,7 +7305,7 @@ def helicsFederateRegisterInput(fed: HelicsFederate, name: str, type: HelicsData
         return HelicsInput(result)
 
 
-def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
+def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsInput:
     """
     Register an input with a defined type.
     The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
@@ -7316,7 +7316,7 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, u
     - **`fed`** - The `helics.HelicsFederate` in which to create an input.
     - **`name`** - The identifier for the input.
     - **`type`** - A string describing the expected type of the input.
-    - **`units`** - A string listing the units of the input maybe NULL.
+    - **`units`** - A string listing the units of the input (optional).
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -7329,7 +7329,7 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, u
         return HelicsInput(result)
 
 
-def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsInput:
+def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str = "") -> HelicsInput:
     """
     Register a global named input.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -7339,7 +7339,7 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: Heli
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
     - **`name`** - The identifier for the publication.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
-    - **`units`** - A string listing the units of the subscription maybe NULL.
+    - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -7352,7 +7352,7 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: Heli
         return HelicsInput(result)
 
 
-def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
+def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsInput:
     """
     Register a global publication with an arbitrary type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -7362,7 +7362,7 @@ def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: 
     - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
     - **`name`** - The identifier for the publication.
     - **`type`** - A string defining the type of the input.
-    - **`units`** - A string listing the units of the subscription maybe NULL.
+    - **`units`** - A string listing the units of the subscription (optional).
 
     **Returns**: `helics.HelicsPublication`.
     """
@@ -8837,7 +8837,7 @@ def helicsBrokerSendCommand(broker, target, command, err):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateRegisterTargetedEndpoint(fed: HelicsFederate, name: str, type: str):
+def helicsFederateRegisterTargetedEndpoint(fed: HelicsFederate, name: str, type: str = ""):
     """
     Create an targeted endpoint.
     The endpoint becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for endpoints.
@@ -8856,7 +8856,7 @@ def helicsFederateRegisterTargetedEndpoint(fed: HelicsFederate, name: str, type:
         return HelicsEndpoint(result, cleanup=False)
 
 
-def helicsFederateRegisterGlobalTargetedEndpoint(fed: HelicsFederate, name: str, type: str):
+def helicsFederateRegisterGlobalTargetedEndpoint(fed: HelicsFederate, name: str, type: str = ""):
     """
     Create a globally targeted endpoint.
     The endpoint becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for endpoints.
