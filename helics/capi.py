@@ -1320,6 +1320,7 @@ def helicsBrokerWaitForDisconnect(broker: HelicsBroker, msToWait: int) -> bool:
 
 		@param broker The broker to wait for.
 		@param msToWait The time out in millisecond (<0 for infinite timeout).
+		
 
 		@param[in,out] err An error object that will contain an error code and string if any error occurred during the execution of the function.
 
@@ -1666,7 +1667,7 @@ def helicsCreateMessageFederate(fedName: str, fi: HelicsFederateInfo) -> HelicsF
 	if err.error_code != 0:
 		raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 	return HelicsFederate(result)
-
+	
 
 def helicsCreateMessageFederateFromConfig(configFile: str) -> HelicsFederate:
 	"""
@@ -6435,7 +6436,6 @@ def helicsFederateSetQueryCallback(fed: HelicsFederate, queryAnswer, userdata):
 		@param userdata A pointer to user data that is passed to the function when executing.
 
 		@param[in,out] err A pointer to an error object for catching errors.
-
 	"""
 	fn = loadSym("helicsFederateSetQueryCallback")
 	err = helicsErrorInitialize()

@@ -10,6 +10,11 @@ from os.path import dirname
 from os.path import join
 from os.path import splitext
 
+try:
+    from pathlib import Path
+except:
+    from pathlib2 import Path
+
 import re
 import sys
 import os
@@ -17,8 +22,10 @@ import struct
 import shutil
 import platform
 import tarfile
+import zipfile
 import subprocess
 import shlex
+import tempfile
 
 from setuptools import setup, Extension, Command
 from setuptools.dist import Distribution
@@ -53,45 +60,177 @@ DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/
 
 def create_default_url(helics_version, plat_name=""):
     if "macos" in plat_name.lower():
-        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
-            helics_version=helics_version
-        )
+        if helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1:  # >= 3.1.x
+            default_url = (
+                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
+                    helics_version=helics_version
+                )
+            )
+        else:
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-x86_64.zip".format(
+                helics_version=helics_version
+            )
     elif "win" in plat_name.lower():
         if "win32" in plat_name.lower():
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-win32.zip".format(
                 helics_version=helics_version
             )
         else:
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-win64.zip".format(
                 helics_version=helics_version
             )
 
     elif "linux" in plat_name.lower():
-        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-Linux-x86_64.tar.gz".format(
             helics_version=helics_version
         )
     elif platform.system() == "Darwin":
-        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-macOS-x86_64.tar.gz".format(
-            helics_version=helics_version
-        )
+        if helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1:  # >= 3.1.x
+            default_url = (
+                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
+                    helics_version=helics_version
+                )
+            )
+        else:
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-x86_64.zip".format(
+                helics_version=helics_version
+            )
     elif platform.system() == "Windows":
         if struct.calcsize("P") * 8 == 32:
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win32.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-win32.zip".format(
                 helics_version=helics_version
             )
         else:
-            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-win64.tar.gz".format(
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-win64.zip".format(
                 helics_version=helics_version
             )
 
     elif platform.system() == "Linux":
-        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-shared-{helics_version}-Linux-x86_64.tar.gz".format(
+        default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-Linux-x86_64.tar.gz".format(
             helics_version=helics_version
         )
     else:
         raise NotImplementedError("Unsupported platform {}".format(platform.system()))
 
     return default_url
+
+
+def _is_symlink(file_info):
+    """
+    Check the upper 4 bits of the external attribute for a symlink.
+    See: https://unix.stackexchange.com/questions/14705/the-zip-formats-external-file-attribute
+    Parameters
+    ----------
+    file_info : zipfile.ZipInfo
+        The ZipInfo for a ZipFile
+    Returns
+    -------
+    bool
+        A response regarding whether the ZipInfo defines a symlink or not.
+    """
+
+    return (file_info.external_attr >> 28) == 0xA
+
+
+def _extract(file_info, output_dir, zip_ref):
+    """
+    Unzip the given file into the given directory while preserving file permissions in the process.
+    Parameters
+    ----------
+    file_info : zipfile.ZipInfo
+        The ZipInfo for a ZipFile
+    output_dir : str
+        Path to the directory where the it should be unzipped to
+    zip_ref : zipfile.ZipFile
+        The ZipFile we are working with.
+    Returns
+    -------
+    string
+        Returns the target path the Zip Entry was extracted to.
+    """
+
+    # Handle any regular file/directory entries
+    if not _is_symlink(file_info):
+        return zip_ref.extract(file_info, output_dir)
+
+    source = zip_ref.read(file_info.filename).decode("utf8")
+    link_name = os.path.normpath(os.path.join(output_dir, file_info.filename))
+
+    # make leading dirs if needed
+    leading_dirs = os.path.dirname(link_name)
+    if not os.path.exists(leading_dirs):
+        os.makedirs(leading_dirs)
+
+    # If the link already exists, delete it or symlink() fails
+    if os.path.lexists(link_name):
+        os.remove(link_name)
+
+    # Create a symbolic link pointing to source named link_name.
+    os.symlink(source, link_name)
+
+    return link_name
+
+
+def _set_permissions(zip_file_info, extracted_path):
+    """
+    Sets permissions on the extracted file by reading the ``external_attr`` property of given file info.
+    Parameters
+    ----------
+    zip_file_info : zipfile.ZipInfo
+        Object containing information about a file within a zip archive
+    extracted_path : str
+        Path where the file has been extracted to
+    """
+
+    # Permission information is stored in first two bytes.
+    permission = zip_file_info.external_attr >> 16
+    if not permission:
+        return
+
+    os.chmod(extracted_path, permission)
+
+
+def _override_permissions(path, permission):
+    """
+    Forcefully override the permissions on the path
+    Parameters
+    ----------
+    path str
+        Path where the file or directory
+    permission octal int
+        Permission to set
+    """
+    if permission:
+        os.chmod(path, permission)
+
+
+def unzip(zip_file_path, output_dir, permission=None):
+    """
+    Unzip the given file into the given directory while preserving file permissions in the process.
+    Parameters
+    ----------
+    zip_file_path : str
+        Path to the zip file
+    output_dir : str
+        Path to the directory where the it should be unzipped to
+    permission : int
+        Permission to set in an octal int form
+    """
+    extracted_path = None
+    with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
+
+        # For each item in the zip file, extract the file and set permissions if available
+        for file_info in zip_ref.infolist():
+            extracted_path = _extract(file_info, output_dir, zip_ref)
+
+            # If the extracted_path is a symlink, do not set the permissions. If the target of the symlink does not
+            # exist, then os.chmod will fail with FileNotFoundError
+            if not os.path.islink(extracted_path):
+                _set_permissions(file_info, extracted_path)
+                _override_permissions(extracted_path, permission)
+
+    if extracted_path is not None and not os.path.islink(extracted_path):
+        _override_permissions(output_dir, permission)
 
 
 class HELICSDownloadCommand(Command):
@@ -112,16 +251,41 @@ class HELICSDownloadCommand(Command):
 
     def run(self):
         self.helics_url = create_default_url(HELICS_VERSION, self.plat_name)
+        print("Downloading {}".format(self.helics_url))
         r = urlopen(self.helics_url)
         if r.getcode() == 200:
-            content = io.BytesIO(r.read())
-            content.seek(0)
-            with tarfile.open(fileobj=content) as tf:
-                dirname = tf.getnames()[0].partition("/")[0]
-                tf.extractall()
-            shutil.move(dirname, self.pyhelics_install)
-            if platform.system() == "Linux":
-                shutil.move(os.path.join(self.pyhelics_install, "lib64"), os.path.join(self.pyhelics_install, "lib"))
+            if self.helics_url.endswith(".zip"):
+                with open("./tmp.zip", "wb") as f:
+                    f.write(r.read())
+                unzip("./tmp.zip", self.pyhelics_install)
+                os.remove("./tmp.zip")
+
+                if len(os.listdir(self.pyhelics_install)) == 1 and os.listdir(self.pyhelics_install)[0].startswith("Helics-"):
+                    tmp = os.listdir(self.pyhelics_install)[0]
+                    for folder in os.listdir(os.path.join(self.pyhelics_install, tmp)):
+                        p = Path(os.path.join(self.pyhelics_install, tmp, folder)).absolute()
+                        parent_dir = p.parents[1]
+                        p.rename(parent_dir / p.name)
+            else:
+                content = io.BytesIO(r.read())
+                content.seek(0)
+                with tarfile.open(fileobj=content) as tf:
+                    dirname = tf.getnames()[0].partition("/")[0]
+                    tf.extractall()
+                shutil.move(dirname, self.pyhelics_install)
+            for file in os.listdir(os.path.join(self.pyhelics_install, "bin")):
+                f = Path(os.path.join(self.pyhelics_install, "bin", file))
+                try:
+                    import stat
+
+                    f.chmod(f.stat().st_mode | stat.S_IEXEC)
+                except:
+                    pass
+            if "Linux" in self.helics_url:
+                shutil.move(
+                    os.path.join(self.pyhelics_install, "lib64"),
+                    os.path.join(self.pyhelics_install, "lib"),
+                )
             files = [
                 "helics_api.h",
                 "helics_enums.h",
@@ -134,6 +298,7 @@ class HELICSDownloadCommand(Command):
                 os.path.join("shared_api_library", "helicsCallbacks.h"),
             ]
             IGNOREBLOCK = False
+            print("Writing to {}".format(os.path.abspath(self.pyhelics_install)))
             for file in files:
                 if not os.path.isfile(os.path.join(self.pyhelics_install, "include", "helics", file)):
                     continue
@@ -260,7 +425,7 @@ class HELICSCMakeBuild(build_ext):
                 f.write(data)
 
 
-install_requires = ["helics-apps", "cffi>=1.0.0", "strip-hints"]
+install_requires = ["cffi>=1.6.0", "strip-hints"]
 
 if sys.version_info < (3, 4):
     install_requires.append("enum34")
@@ -328,7 +493,23 @@ setup(
     install_requires=install_requires,
     extras_require={
         "tests": ["pytest", "pytest-ordering", "pytest-cov", "pytest-runner"],
-        "docs": ["mkdocs", "inari[mkdocs]", "mkdocs-material", "black", "pygments", "pymdown-extensions"],
+        "docs": [
+            "mkdocs",
+            "inari[mkdocs]",
+            "mkdocs-material",
+            "black",
+            "pygments",
+            "pymdown-extensions",
+        ],
     },
     cmdclass=cmdclass,
+    entry_points={
+        "console_scripts": [
+            "helics_app=helics.bin:helics_app",
+            "helics_broker=helics.bin:helics_broker",
+            "helics_broker_server=helics.bin:helics_broker_server",
+            "helics_player=helics.bin:helics_player",
+            "helics_recorder=helics.bin:helics_recorder",
+        ]
+    },
 )

@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-        - v*
+      - v*
 
 jobs:
   build-wheels:
@@ -15,117 +15,118 @@ jobs:
       matrix:
         include:
           - os: macOS-latest
-            target: macosx_10_9_x86_64
-            python3-version: '3.8'
-            python2-version: '2.7'
+            target: macosx_10_14_universal2.macosx_10_14_x86_64.macosx_11_0_arm64
+            python3-version: "3.8"
+            python2-version: "2.7"
           - os: ubuntu-latest
             target: manylinux2010_x86_64
-            python3-version: '3.8'
-            python2-version: '2.7'
+            python3-version: "3.8"
+            python2-version: "2.7"
           - os: windows-latest
             target: win_amd64
-            python3-version: '3.8'
-            python2-version: '2.7'
+            python3-version: "3.8"
+            python2-version: "2.7"
           - os: windows-latest
             target: win32
-            python3-version: '3.8'
-            python2-version: '2.7'
+            python3-version: "3.8"
+            python2-version: "2.7"
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python3
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python3-version }}
+      - name: Set up Python3
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python3-version }}
 
-    - name: Install python3 dependencies
-      run: |
-        python -m pip install -U pip install wheel setuptools cffi
+      - name: Install python3 dependencies
+        run: |
+          python -m pip install -U pip install wheel setuptools cffi
 
-    - name: Download helics library
-      run: python setup.py download --plat-name=${{ matrix.target }}
+      - name: Download helics library
+        run: python setup.py download --plat-name=${{ matrix.target }}
 
-    - name: Build python3 wheel
-      run: |
-        python setup.py bdist_wheel --plat-name=${{ matrix.target }}
+      - name: Build python3 wheel
+        run: |
+          python setup.py bdist_wheel --plat-name=${{ matrix.target }}
+          python scripts/cleanup_bdist.py ${{ matrix.target }}
 
-    # Steps to build Python 2 wheels
-    - name: Set up Python2
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python2-version }}
+      # Steps to build Python 2 wheels
+      - name: Set up Python2
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python2-version }}
 
-    - name: Install python2 dependencies
-      run: |
-        python -m pip install -U pip install wheel setuptools cffi strip-hints
+      - name: Install python2 dependencies
+        run: |
+          python -m pip install -U pip install wheel setuptools cffi strip-hints pathlib2
 
-    - name: Build python2 wheel
-      if: ${{ matrix.target }} == win_amd32
-      run: |
-        strip-hints helics/capi.py > tmp
-        rm helics/capi.py
-        mv tmp helics/capi.py
-        python setup.py bdist_wheel --plat-name=${{ matrix.target }}
-    # End steps to build Python 2 wheels
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: python-dist
-        path: dist/*
+      - name: Build python2 wheel
+        if: ${{ matrix.target }} == win_amd32
+        run: |
+          strip-hints helics/capi.py > tmp
+          rm helics/capi.py
+          mv tmp helics/capi.py
+          python setup.py bdist_wheel --plat-name=${{ matrix.target }}
+          python scripts/cleanup_bdist.py ${{ matrix.target }}
+      # End steps to build Python 2 wheels
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: python-dist
+          path: dist/*
 
   build-sdist:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
 
-    - name: Install dependencies
-      run: |
-        python -m pip install -U pip install wheel setuptools cffi
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip install wheel setuptools cffi
 
-    - name: Download helics header files and build sdist
-      run: |
-        python setup.py sdist
+      - name: Download helics header files and build sdist
+        run: |
+          python setup.py sdist
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: python-dist
-        path: dist/*
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: python-dist
+          path: dist/*
 
   publish-helics:
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
     steps:
-    - name: Get the built packages
-      uses: actions/download-artifact@v1
-      with:
-        name: python-dist
-        path: dist
+      - name: Get the built packages
+        uses: actions/download-artifact@v1
+        with:
+          name: python-dist
+          path: dist
 
-    - name: Publish package to TestPyPI
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.TEST_PYPI_PASSWORD }}
-        repository_url: https://test.pypi.org/legacy/
+      - name: Publish package to TestPyPI
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_PASSWORD }}
+          repository_url: https://test.pypi.org/legacy/
 
-    - name: Publish package to PyPI
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_PASSWORD }}
+      - name: Publish package to PyPI
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_PASSWORD }}
 
-    - name: GitHub Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
-      with:
-        files: 'dist/*'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "dist/*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
