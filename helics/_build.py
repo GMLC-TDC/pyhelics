@@ -2,15 +2,20 @@
 import cffi
 import os
 import platform
+import warnings
 
 ffi = cffi.FFI()
 
 
+CURRENT_INSTALL = os.path.join(os.path.dirname(os.path.abspath(__file__)), "install")
 HELICS_INSTALL = os.getenv(
     "HELICS_INSTALL",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "install"),
+    CURRENT_INSTALL,
 )
 PYHELICS_INSTALL = os.getenv("PYHELICS_INSTALL", HELICS_INSTALL)
+if not os.path.isdir(PYHELICS_INSTALL):
+    warnings.warn("PYHELICS_INSTALL ({}) is not a directory. Using DEFAULT_INSTALL ({})".format(PYHELICS_INSTALL, CURRENT_INSTALL))
+    PYHELICS_INSTALL = CURRENT_INSTALL
 
 files = [
     "helics_api.h",
