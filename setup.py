@@ -12,7 +12,7 @@ from os.path import splitext
 
 try:
     from pathlib import Path
-except:
+except ImportError:
     from pathlib2 import Path
 
 import re
@@ -25,7 +25,6 @@ import tarfile
 import zipfile
 import subprocess
 import shlex
-import tempfile
 
 from setuptools import setup, Extension, Command
 from setuptools.dist import Distribution
@@ -281,11 +280,6 @@ class HELICSDownloadCommand(Command):
                     f.chmod(f.stat().st_mode | stat.S_IEXEC)
                 except:
                     pass
-            if "Linux" in self.helics_url:
-                shutil.move(
-                    os.path.join(self.pyhelics_install, "lib64"),
-                    os.path.join(self.pyhelics_install, "lib"),
-                )
             files = [
                 "helics_api.h",
                 "helics_enums.h",
