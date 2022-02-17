@@ -4,6 +4,8 @@ import warnings
 import json
 import weakref
 import os
+import sys
+import traceback
 
 from enum import IntEnum, unique
 
@@ -8434,3 +8436,20 @@ def helicsLoadSignalHandlerCallback():
 
 
 helicsLoadSignalHandlerCallback()
+
+if sys.__excepthook__ == sys.excepthook:
+    _original_excepthook = sys.__excepthook__
+else:
+    _original_excepthook = sys.excepthook
+
+
+def _handle_exception(exc_type, exc_value, exc_traceback):
+    if not hasattr(sys, "ps1") and sys.stderr.isatty():
+        # Only add hook in interactive mode
+        exc = traceback.format_exception(exc_type, exc_value, exc_traceback)
+        helicsAbort(1, "".join(exc))
+
+    _original_excepthook(exc_type, exc_value, exc_traceback)
+
+
+sys.excepthook = _handle_exception
