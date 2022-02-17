@@ -8444,7 +8444,7 @@ else:
 
 
 def _handle_exception(exc_type, exc_value, exc_traceback):
-    if not hasattr(sys, "ps1") and sys.stderr.isatty():
+    if not hasattr(sys, "ps1") and sys.stderr.isatty() and not issubclass(exc_type, HelicsException):
         # Only add hook in interactive mode
         exc = traceback.format_exception(exc_type, exc_value, exc_traceback)
         helicsAbort(-29, "".join(exc))
