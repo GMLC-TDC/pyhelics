@@ -5693,6 +5693,40 @@ def helicsEndpointSetInfo(endpoint: HelicsEndpoint, info: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsPublicationGetTag(pub: HelicsPublication, tagname: str):
+    """
+    Get the data in a specified tag of a publication.
+
+    **Parameters**
+
+    - **`pub`**: The publication object to query.
+    - **`tagname`**: The name of the tag to query.
+
+    **Returns**
+
+    A string with the tag data.
+    """
+
+    f = loadSym("helicsPublicationGetTag")
+    result = f(pub.handle, cstring(tagname))
+    return ffi.string(result).decode()
+
+
+def helicsPublicationSetTag(pub: HelicsPublication, tagname: str, tagvalue: str):
+    """
+    Set the data in a specific tag for a publication.
+
+    **`pub`**: The publication object to set a tag for.
+    **`tagname`**: The name of the tag to set.
+    **`tagvalue`**: The string value to associate with a tag.
+    """
+    f = loadSym("helicsPublicationSetTag")
+    err = helicsErrorInitialize()
+    f(pub.handle, cstring(tagname), cstring(tagvalue), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsEndpointSetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption, value: int):
     """
     Set a handle option on an endpoint.
