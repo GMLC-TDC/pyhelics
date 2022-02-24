@@ -2272,7 +2272,7 @@ class HelicsInput(_HelicsCHandle):
             raise NotImplementedError("Unknown type `{}`".format(type(data)))
 
     @property
-    def value(self) -> Union[bytes, str, int, bool, float, complex, Tuple, List[float]]:
+    def value(self) -> Union[bytes, str, int, bool, float, complex, Tuple, List[float], JSONType]:
         if self.publication_type == "bytes":
             return self.bytes
         elif self.publication_type == "string":
@@ -2287,11 +2287,18 @@ class HelicsInput(_HelicsCHandle):
             return self.complex
         elif self.publication_type == "vector":
             return self.vector
+        elif self.publication_type == "json":
+            return self.json
         elif self.publication_type == "named_point":
             return self.named_point
         else:
             warnings.warn("Unknown publication type `{}`. Defaulting to string.".format(self.publication_type))
             return self.string
+
+    @property
+    def json(self) -> JSONType:
+        """Get a raw value as a character vector."""
+        return json.loads(helicsInputGetString(self))
 
     @property
     def bytes(self) -> bytes:
