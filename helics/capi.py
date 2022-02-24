@@ -2023,7 +2023,7 @@ class HelicsFederate(_HelicsCHandle):
         granted_time, status = helicsFederateRequestTimeIterativeComplete(self)
         return granted_time, status
 
-    def query(self, target: str, query: str) -> JSONType:
+    def query(self, target: str, query: str, mode: HelicsSequencingMode = HelicsSequencingMode.FAST) -> JSONType:
         """
         Make a query of the federate.
 
@@ -2038,6 +2038,8 @@ class HelicsFederate(_HelicsCHandle):
         this is either going to be a vector of strings value or a JSON string stored in the first element of the vector. The string "#invalid" is returned if the query was not valid.
         """
         q = helicsCreateQuery(target, query)
+        if mode != HelicsSequencingMode.FAST:
+            helicsQuerySetOrdering(q, mode)
         result = helicsQueryExecute(q, self)
         helicsQueryFree(q)
         return result
