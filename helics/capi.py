@@ -1068,7 +1068,7 @@ class HelicsCore(_HelicsCHandle):
         """
         helicsCoreSetGlobal(self, name, value)
 
-    def query(self, target: str, query: str) -> JSONType:
+    def query(self, target: str, query: str, mode: HelicsSequencingMode = HelicsSequencingMode.FAST) -> JSONType:
         """
         Make a query of the core.
 
@@ -1083,6 +1083,8 @@ class HelicsCore(_HelicsCHandle):
         if the query was not valid
         """
         q = helicsCreateQuery(target, query)
+        if mode != HelicsSequencingMode.FAST:
+            helicsQuerySetOrdering(q, mode)
         result = helicsQueryCoreExecute(q, self)
         helicsQueryFree(q)
         return result
