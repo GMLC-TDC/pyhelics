@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-__version__ = "v3.1.2.post3"
+__version__ = "v3.1.2.post4"
