@@ -411,13 +411,13 @@ else:
 
 try:
     HELICS_LOG_LEVEL_DUMPLOG = HelicsLogLevel.DUMPLOG
-except:
+except AttributeError:
     pass
 HELICS_LOG_LEVEL_NO_PRINT = HelicsLogLevel.NO_PRINT
 HELICS_LOG_LEVEL_ERROR = HelicsLogLevel.ERROR
 try:
     HELICS_LOG_LEVEL_PROFILING = HelicsLogLevel.PROFILING
-except:
+except AttributeError:
     pass
 HELICS_LOG_LEVEL_WARNING = HelicsLogLevel.WARNING
 HELICS_LOG_LEVEL_SUMMARY = HelicsLogLevel.SUMMARY
@@ -428,7 +428,7 @@ HELICS_LOG_LEVEL_DATA = HelicsLogLevel.DATA
 HELICS_LOG_LEVEL_DEBUG = HelicsLogLevel.DEBUG
 try:
     HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.TRACE
-except:
+except AttributeError:
     HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.DEBUG
     pass
 
@@ -436,7 +436,7 @@ helics_log_level_no_print = HelicsLogLevel.NO_PRINT
 helics_log_level_error = HelicsLogLevel.ERROR
 try:
     helics_log_level_profiling = HelicsLogLevel.PROFILING
-except:
+except AttributeError:
     pass
 helics_log_level_warning = HelicsLogLevel.WARNING
 helics_log_level_summary = HelicsLogLevel.SUMMARY
@@ -447,7 +447,7 @@ helics_log_level_data = HelicsLogLevel.DATA
 helics_log_level_debug = HelicsLogLevel.DEBUG
 try:
     helics_log_level_trace = HelicsLogLevel.TRACE
-except:
+except AttributeError:
     helics_log_level_trace = HelicsLogLevel.DEBUG
     pass
 
@@ -1438,6 +1438,10 @@ class HelicsEndpoint(_HelicsCHandle):
         else:
             helicsEndpointSendBytesToAt(self, data, destination, time)
 
+    def subscribe(self, name: str):
+        """Subscribe an endpoint to a publication."""
+        helicsEndpointSubscribe(self, name)
+
 
 class _FederateInfoFlagAccessor(_HelicsCHandle):
     def __getitem__(self, index):
@@ -1449,7 +1453,7 @@ class _FederateInfoFlagAccessor(_HelicsCHandle):
         else:
             try:
                 idx = HelicsFlag(index)
-            except Exception as _:
+            except Exception:
                 idx = HelicsFederateFlag(index)
 
         return helicsFederateInfoSetFlagOption(self, idx, value)
@@ -1635,7 +1639,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
         else:
             try:
                 idx = HelicsFlag(index)
-            except Exception as _:
+            except Exception:
                 idx = HelicsFederateFlag(index)
         return helicsFederateGetFlagOption(self, idx)
 
@@ -1645,7 +1649,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
         else:
             try:
                 idx = HelicsFlag(index)
-            except Exception as _:
+            except Exception:
                 idx = HelicsFederateFlag(index)
 
         return helicsFederateSetFlagOption(self, idx, value)
@@ -1655,12 +1659,12 @@ class _FederateFlagAccessor(_HelicsCHandle):
         for f in HelicsFlag:
             try:
                 lst.append("'{}' = {}".format(f.name, self[f]))
-            except Exception as _:
+            except Exception:
                 pass
         for f in HelicsFederateFlag:
             try:
                 lst.append("'{}' = {}".format(f.name, self[f]))
-            except Exception as _:
+            except Exception:
                 pass
         return "<{{ {} }}>".format(", ".join(lst))
 
@@ -2496,6 +2500,10 @@ class HelicsPublication(_HelicsCHandle):
     def info(self, info: str):
         """Set the interface information field of the publication."""
         helicsPublicationSetInfo(self, info)
+
+    def add_target(self, name: str):
+        """Add a named input to the list of targets a publication publishes to."""
+        helicsPublicationAddTarget(self, name)
 
 
 class HelicsValueFederate(HelicsFederate):
@@ -3810,7 +3818,7 @@ def helicsGetFlagIndex(value: str) -> HelicsFederateFlag:
     else:
         try:
             return HelicsFlag(result)
-        except Exception as _:
+        except Exception:
             return HelicsFederateFlag(result)
 
 
@@ -4597,7 +4605,7 @@ def helicsFederateGetFlagOption(fed: HelicsFederate, flag: Union[int, HelicsFede
     err = helicsErrorInitialize()
     try:
         flag = HelicsFlag(flag)
-    except Exception as _:
+    except Exception:
         flag = HelicsFederateFlag(flag)
     result = f(fed.handle, flag, err)
     if err.error_code != 0:
