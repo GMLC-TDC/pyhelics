@@ -9,7 +9,6 @@ import traceback
 
 from enum import IntEnum, unique
 
-
 try:
     from typing import Dict, List, Tuple, Union, Any, cast
 
@@ -23,7 +22,6 @@ except ImportError:
 
     def cast(_, val):
         return val
-
 
 from . import _build
 
@@ -2090,7 +2088,7 @@ class HelicsFederate(_HelicsCHandle):
             helicsQuerySetOrdering(q, mode)
         result = helicsQueryExecute(q, self)
         helicsQueryFree(q)
-        return result
+        return cast(JSONType, result)
 
     def register_filter(self, kind: HelicsFilterType, filter_name: str) -> HelicsFilter:
         """
@@ -5094,7 +5092,7 @@ def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> JSONType:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
-            warnings.warn("This function will return a JSON object in the next major release")
+            # warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
@@ -9594,9 +9592,17 @@ def helicsAbort(error_code: int, message: str):
     f(error_code, cstring(message))
 
 
+import threading
+
+
 @ffi.callback("int handler(int)")
 def _handle_helicsCallBack(code: int):
-    helicsAbort(code, "User pressed Ctrl-C")
+    def target():
+        helicsAbort(code, "User pressed Ctrl-C")
+        helicsCloseLibrary()
+
+    x = threading.Thread(target=target)
+    x.start()
     return 0
 
 
