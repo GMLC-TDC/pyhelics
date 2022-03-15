@@ -1454,7 +1454,10 @@ class _FederateInfoFlagAccessor(_HelicsCHandle):
             try:
                 idx = HelicsFlag(index)
             except Exception:
-                idx = HelicsFederateFlag(index)
+                try:
+                    idx = HelicsFederateFlag(index)
+                except Exception:
+                    idx = HelicsHandleOption(index)
 
         return helicsFederateInfoSetFlagOption(self, idx, value)
 
