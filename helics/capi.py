@@ -8463,25 +8463,18 @@ def helicsAbort(error_code: int, message: str):
     f(error_code, cstring(message))
 
 
-try:
-
-    @ffi.callback("int handler(int)")
-    def _handle_helicsCallBack(code: int):
-        helicsAbort(code, "User pressed Ctrl-C")
-        return 0
-
-
-except Exception:
-    _handle_helicsCallBack = None
+@ffi.callback("int handler(int)")
+def _handle_helicsCallBack(code: int):
+    helicsAbort(code, "User pressed Ctrl-C")
+    return 0
 
 
 def helicsLoadSignalHandlerCallback():
-    if _handle_helicsCallBack is not None:
-        try:
-            f = loadSym("helicsLoadSignalHandlerCallback")
-            f(_handle_helicsCallBack, True)
-        except Exception:
-            pass
+    try:
+        f = loadSym("helicsLoadSignalHandlerCallback")
+        f(_handle_helicsCallBack, True)
+    except Exception:
+        pass
 
 
 helicsLoadSignalHandlerCallback()
