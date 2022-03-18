@@ -8465,16 +8465,9 @@ def helicsAbort(error_code: int, message: str):
 
 try:
 
-    import threading
-
     @ffi.callback("int handler(int)")
     def _handle_helicsCallBack(code: int):
-        def target():
-            helicsAbort(code, "User pressed Ctrl-C")
-            helicsCloseLibrary()
-
-        x = threading.Thread(target=target)
-        x.start()
+        helicsAbort(code, "User pressed Ctrl-C")
         return 0
 
 
@@ -8486,7 +8479,7 @@ def helicsLoadSignalHandlerCallback():
     if _handle_helicsCallBack is not None:
         try:
             f = loadSym("helicsLoadSignalHandlerCallback")
-            f(_handle_helicsCallBack)
+            f(_handle_helicsCallBack, True)
         except Exception:
             pass
 
