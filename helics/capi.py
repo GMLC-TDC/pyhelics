@@ -10,14 +10,17 @@ import traceback
 from enum import IntEnum, unique
 
 try:
-    from typing import Dict, List, Tuple, Union, Any
+    from typing import Dict, List, Tuple, Union, Any, cast
 
     JSONType = Union[
         Dict[str, Any],
         List[dict],
     ]
 except ImportError:
-    pass
+
+    def cast(typ, val):
+        return val
+
 
 from . import _build
 
@@ -1718,6 +1721,7 @@ class HelicsFederate(_HelicsCHandle):
 
         self.publications = {}
         self.subscriptions = {}
+        self.inputs = self.subscriptions
         self.endpoints = {}
         self.filters = {}
 
@@ -1925,7 +1929,7 @@ class HelicsFederate(_HelicsCHandle):
         **DEPRECATED**
         """
         warnings.warn("This function is deprecated. Use the `HelicsFederate.disconnect` function instead.")
-        helicsFederateFinalize(self)
+        self.disconnect()
 
     def finalize_async(self):
         """
@@ -1935,7 +1939,7 @@ class HelicsFederate(_HelicsCHandle):
         **DEPRECATED**
         """
         warnings.warn("This function is deprecated. Use the `HelicsFederate.disconnect_async` function instead.")
-        helicsFederateFinalizeAsync(self)
+        self.disconnect_async()
 
     def finalize_complete(self):
         """
@@ -1944,7 +1948,7 @@ class HelicsFederate(_HelicsCHandle):
         **DEPRECATED**
         """
         warnings.warn("This function is deprecated. Use the `HelicsFederate.disconnect_complete` function instead.")
-        helicsFederateFinalizeComplete(self)
+        self.disconnect_complete()
 
     def request_time(self, time: HelicsTime) -> HelicsTime:
         """
@@ -2204,14 +2208,14 @@ class _InputOptionAccessor(_HelicsCHandle):
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsInputGetOption(self, idx)
+        return helicsInputGetOption(cast(HelicsInput, self), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsInputSetOption(self, idx, value)
+        return helicsInputSetOption(cast(HelicsInput, self), idx, value)
 
     def __repr__(self):
         lst = []
@@ -2521,7 +2525,7 @@ class HelicsValueFederate(HelicsFederate):
             sub = self.get_subscription_by_index(i)
             self.subscriptions[sub.target] = sub
 
-    def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "") -> HelicsPublication:
+    def register_publication(self, name: str, kind: Union[str, HelicsDataType], units: str = "", local: bool = True) -> HelicsPublication:
         """
         Register a publication.
 
@@ -2532,13 +2536,25 @@ class HelicsValueFederate(HelicsFederate):
         - **`name`**: the name of the publication.
         - **`kind`**: the type of the publication.
         - **`units`**: a string defining the units of the publication [optional]
+        - **`local`**: a bool defining whether the publication is global or not [optional]
 
         Returns: a publication id object for use as an identifier
         """
         if type(kind) == str:
             pub = helicsFederateRegisterTypePublication(self, name, kind, units)
+            kind = cast(str, kind)
+            if local:
+                f = helicsFederateRegisterTypePublication
+            else:
+                f = helicsFederateRegisterGlobalTypePublication
+            pub = f(self, name, kind, units)
         else:
-            pub = helicsFederateRegisterPublication(self, name, HelicsDataType(kind), units)
+            kind = HelicsDataType(kind)
+            if local:
+                f = helicsFederateRegisterPublication
+            else:
+                f = helicsFederateRegisterGlobalPublication
+            pub = f(self, name, kind, units)
         self.publications[pub.name] = pub
         return pub
 
