@@ -4908,7 +4908,7 @@ def helicsQueryExecute(query: HelicsQuery, fed: HelicsFederate) -> JSONType:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
-            # warnings.warn("This function will return a JSON object in the next major release")
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
@@ -4934,7 +4934,7 @@ def helicsQueryCoreExecute(query: HelicsQuery, core: HelicsCore) -> JSONType:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
-            # warnings.warn("This function will return a JSON object in the next major release")
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
@@ -4960,7 +4960,7 @@ def helicsQueryBrokerExecute(query: HelicsQuery, broker: HelicsBroker) -> JSONTy
         try:
             return json.loads(s)
         except json.JSONDecodeError:
-            # warnings.warn("This function will return a JSON object in the next major release")
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
@@ -5001,7 +5001,7 @@ def helicsQueryExecuteComplete(query: HelicsQuery) -> JSONType:
         try:
             return json.loads(s)
         except json.JSONDecodeError:
-            # warnings.warn("This function will return a JSON object in the next major release")
+            warnings.warn("This function will return a JSON object in the next major release")
             return s
 
 
