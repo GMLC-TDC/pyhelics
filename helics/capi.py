@@ -7574,7 +7574,7 @@ def helicsInputGetComplexObject(ipt: HelicsInput) -> Tuple[float, float]:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        warnings.warn("This function will return a complex number in the next major release")
+        warnings.warn("This function will return a complex number in the next minor release")
         return (result.real, result.imag)
 
 
@@ -7596,7 +7596,7 @@ def helicsInputGetComplex(ipt: HelicsInput) -> Tuple[float, float]:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        warnings.warn("This function will return a complex number in the next major release")
+        warnings.warn("This function will return a complex number in the next minor release")
         return (real[0], imag[0])
 
 
