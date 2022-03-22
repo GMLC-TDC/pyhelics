@@ -2468,7 +2468,7 @@ class HelicsPublication(_HelicsCHandle):
             helicsPublicationPublishComplex(self, data.real, data.imag)
         elif isinstance(data, list) and all(isinstance(e, complex) for e in data):
             helicsPublicationPublishComplexVector(self, data)
-        elif isinstance(data, list) and all(isinstance(e, float) for e in data):
+        elif isinstance(data, list):
             helicsPublicationPublishVector(self, data)
         elif isinstance(data, tuple):
             helicsPublicationPublishNamedPoint(self, data[0], data[1])
