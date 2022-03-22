@@ -9,6 +9,7 @@ import traceback
 
 from enum import IntEnum, unique
 
+
 try:
     from typing import Dict, List, Tuple, Union, Any, cast
 
@@ -16,9 +17,11 @@ try:
         Dict[str, Any],
         List[dict],
     ]
-except ImportError:
 
-    def cast(typ, val):
+except ImportError:
+    JSONType = None
+
+    def cast(_, val):
         return val
 
 
@@ -412,16 +415,15 @@ else:
         TRACE = 24  # HelicsLogLevels
 
 
-try:
+if HELICS_VERSION != 2:
     HELICS_LOG_LEVEL_DUMPLOG = HelicsLogLevel.DUMPLOG
-except AttributeError:
-    pass
+if HELICS_VERSION != 2:
+    HELICS_LOG_LEVEL_PROFILING = HelicsLogLevel.PROFILING
+if HELICS_VERSION != 2:
+    HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.TRACE
+
 HELICS_LOG_LEVEL_NO_PRINT = HelicsLogLevel.NO_PRINT
 HELICS_LOG_LEVEL_ERROR = HelicsLogLevel.ERROR
-try:
-    HELICS_LOG_LEVEL_PROFILING = HelicsLogLevel.PROFILING
-except AttributeError:
-    pass
 HELICS_LOG_LEVEL_WARNING = HelicsLogLevel.WARNING
 HELICS_LOG_LEVEL_SUMMARY = HelicsLogLevel.SUMMARY
 HELICS_LOG_LEVEL_CONNECTIONS = HelicsLogLevel.CONNECTIONS
@@ -429,18 +431,14 @@ HELICS_LOG_LEVEL_INTERFACES = HelicsLogLevel.INTERFACES
 HELICS_LOG_LEVEL_TIMING = HelicsLogLevel.TIMING
 HELICS_LOG_LEVEL_DATA = HelicsLogLevel.DATA
 HELICS_LOG_LEVEL_DEBUG = HelicsLogLevel.DEBUG
-try:
-    HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.TRACE
-except AttributeError:
-    HELICS_LOG_LEVEL_TRACE = HelicsLogLevel.DEBUG
-    pass
 
 helics_log_level_no_print = HelicsLogLevel.NO_PRINT
 helics_log_level_error = HelicsLogLevel.ERROR
-try:
+
+if HELICS_VERSION != 2:
     helics_log_level_profiling = HelicsLogLevel.PROFILING
-except AttributeError:
-    pass
+if HELICS_VERSION != 2:
+    helics_log_level_trace = HelicsLogLevel.TRACE
 helics_log_level_warning = HelicsLogLevel.WARNING
 helics_log_level_summary = HelicsLogLevel.SUMMARY
 helics_log_level_connections = HelicsLogLevel.CONNECTIONS
@@ -448,11 +446,6 @@ helics_log_level_interfaces = HelicsLogLevel.INTERFACES
 helics_log_level_timing = HelicsLogLevel.TIMING
 helics_log_level_data = HelicsLogLevel.DATA
 helics_log_level_debug = HelicsLogLevel.DEBUG
-try:
-    helics_log_level_trace = HelicsLogLevel.TRACE
-except AttributeError:
-    helics_log_level_trace = HelicsLogLevel.DEBUG
-    pass
 
 
 @unique
@@ -1435,11 +1428,11 @@ class HelicsEndpoint(_HelicsCHandle):
 
     def send_data(self, data: Union[bytes, HelicsMessage], destination: str = None, time=None):
         if type(data) == HelicsMessage:
-            helicsEndpointSendMessage(self, data)
+            helicsEndpointSendMessage(self, cast(HelicsMessage, data))
         elif time is None:
-            helicsEndpointSendBytesTo(self, data, destination)
+            helicsEndpointSendBytesTo(self, cast(bytes, data), cast(str, destination))
         else:
-            helicsEndpointSendBytesToAt(self, data, destination, time)
+            helicsEndpointSendBytesToAt(self, cast(bytes, data), cast(str, destination), time)
 
     def subscribe(self, name: str):
         """Subscribe an endpoint to a publication."""
@@ -1462,7 +1455,7 @@ class _FederateInfoFlagAccessor(_HelicsCHandle):
                 except Exception:
                     idx = HelicsHandleOption(index)
 
-        return helicsFederateInfoSetFlagOption(self, idx, value)
+        return helicsFederateInfoSetFlagOption(HelicsFederateInfo(self.handle), idx, value)
 
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index: {}".format(index))
@@ -1478,9 +1471,9 @@ class _FederateInfoPropertyAccessor(_HelicsCHandle):
         else:
             idx = HelicsProperty(index)
         if "TIME_" in idx.name:
-            return helicsFederateInfoSetTimeProperty(self, idx, value)
+            return helicsFederateInfoSetTimeProperty(HelicsFederateInfo(self.handle), idx, value)
         elif "INT_" in idx.name:
-            return helicsFederateInfoSetIntegerProperty(self, index, value)
+            return helicsFederateInfoSetIntegerProperty(HelicsFederateInfo(self.handle), index, value)
 
     def __repr__(self):
         lst = []
@@ -1619,14 +1612,14 @@ class _PublicationOptionAccessor(_HelicsCHandle):
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsPublicationGetOption(self, idx)
+        return helicsPublicationGetOption(HelicsPublication(self.handle), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsPublicationSetOption(self, idx, value)
+        return helicsPublicationSetOption(HelicsPublication(self.handle), idx, value)
 
     def __repr__(self):
         lst = []
@@ -1647,7 +1640,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
                 idx = HelicsFlag(index)
             except Exception:
                 idx = HelicsFederateFlag(index)
-        return helicsFederateGetFlagOption(self, idx)
+        return helicsFederateGetFlagOption(HelicsFederate(self.handle), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
@@ -1658,7 +1651,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
             except Exception:
                 idx = HelicsFederateFlag(index)
 
-        return helicsFederateSetFlagOption(self, idx, value)
+        return helicsFederateSetFlagOption(HelicsFederate(self.handle), idx, value)
 
     def __repr__(self):
         lst = []
@@ -1685,9 +1678,9 @@ class _FederatePropertyAccessor(_HelicsCHandle):
         else:
             idx = HelicsProperty(index)
         if "TIME_" in idx.name:
-            return helicsFederateGetTimeProperty(self, idx)
+            return helicsFederateGetTimeProperty(HelicsFederate(self.handle), idx)
         elif "INT_" in idx.name:
-            return helicsFederateGetIntegerProperty(self, idx)
+            return helicsFederateGetIntegerProperty(HelicsFederate(self.handle), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
@@ -1695,9 +1688,9 @@ class _FederatePropertyAccessor(_HelicsCHandle):
         else:
             idx = HelicsProperty(index)
         if "TIME_" in idx.name:
-            return helicsFederateSetTimeProperty(self, idx, value)
+            return helicsFederateSetTimeProperty(HelicsFederate(self.handle), idx, value)
         elif "INT_" in idx.name:
-            return helicsFederateSetIntegerProperty(self, index, value)
+            return helicsFederateSetIntegerProperty(HelicsFederate(self.handle), index, value)
 
     def __repr__(self):
         lst = []
@@ -2208,14 +2201,14 @@ class _InputOptionAccessor(_HelicsCHandle):
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsInputGetOption(cast(HelicsInput, self), idx)
+        return helicsInputGetOption(HelicsInput(self.handle), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
             idx = helicsGetOptionIndex(index)
         else:
             idx = HelicsHandleOption(index)
-        return helicsInputSetOption(cast(HelicsInput, self), idx, value)
+        return helicsInputSetOption(HelicsInput(self.handle), idx, value)
 
     def __repr__(self):
         lst = []
@@ -2541,8 +2534,8 @@ class HelicsValueFederate(HelicsFederate):
         Returns: a publication id object for use as an identifier
         """
         if type(kind) == str:
-            pub = helicsFederateRegisterTypePublication(self, name, kind, units)
             kind = cast(str, kind)
+            pub = helicsFederateRegisterTypePublication(self, name, kind, units)
             if local:
                 f = helicsFederateRegisterTypePublication
             else:
@@ -2573,6 +2566,7 @@ class HelicsValueFederate(HelicsFederate):
         Returns: a publication object for use as an identifier
         """
         if type(kind) == str:
+            kind = cast(str, kind)
             pub = helicsFederateRegisterGlobalTypePublication(self, name, kind, units)
         else:
             pub = helicsFederateRegisterGlobalPublication(self, name, HelicsDataType(kind), units)
@@ -2587,13 +2581,13 @@ class HelicsValueFederate(HelicsFederate):
         """
         if type(data) == str:
             try:
-                with open(data) as f:
+                with open(cast(str, data)) as f:
                     data = json.load(f)
             except Exception:
-                data = json.loads(data)
+                data = json.loads(cast(str, data))
         else:
             data = json.dumps(data)
-        helicsFederateRegisterFromPublicationJSON(self, data)
+        helicsFederateRegisterFromPublicationJSON(self, cast(str, data))
         for i in range(0, self.n_publications):
             pub = self.get_publication_by_index(i)
             self.publications[pub.name] = pub
@@ -2634,9 +2628,10 @@ class HelicsValueFederate(HelicsFederate):
         Returns: an input id object for use as an identifier
         """
         if type(kind) == str:
+            kind = cast(str, kind)
             ipt = helicsFederateRegisterTypeInput(self, name, kind, units)
         else:
-            ipt = helicsFederateRegisterTypeInput(self, name, HelicsDataType(kind), units)
+            ipt = helicsFederateRegisterInput(self, name, HelicsDataType(kind), units)
         self.subscriptions[ipt.target] = ipt
         return ipt
 
@@ -2655,9 +2650,10 @@ class HelicsValueFederate(HelicsFederate):
         Returns: an input object for use as an identifier.
         """
         if type(kind) == str:
+            kind = cast(str, kind)
             ipt = helicsFederateRegisterGlobalTypeInput(self, name, kind, units)
         else:
-            ipt = helicsFederateRegisterGlobalTypeInput(self, name, HelicsDataType(kind), units)
+            ipt = helicsFederateRegisterGlobalInput(self, name, HelicsDataType(kind), units)
         self.subscriptions[ipt.target] = ipt
         return ipt
 
@@ -2687,13 +2683,13 @@ class HelicsValueFederate(HelicsFederate):
         """Publish data contained in a JSON file."""
         if type(data) == str:
             try:
-                with open(data) as f:
+                with open(cast(str, data)) as f:
                     data = json.load(f)
             except Exception:
-                data = json.loads(data)
+                data = json.loads(cast(str, data))
         else:
             data = json.dumps(data)
-        helicsFederatePublishJSON(self, data)
+        helicsFederatePublishJSON(self, cast(str, data))
 
 
 class HelicsMessageFederate(HelicsFederate):
@@ -3820,7 +3816,7 @@ def helicsGetPropertyIndex(value: str) -> HelicsProperty:
         return HelicsProperty(result)
 
 
-def helicsGetFlagIndex(value: str) -> HelicsFederateFlag:
+def helicsGetFlagIndex(value: str) -> Union[HelicsFlag, HelicsFederateFlag]:
     """
     Get a property index for use in `helics.helicsFederateInfoSetFlagOption`, `helics.helicsFederateSetFlagOption`.
 
@@ -6712,7 +6708,7 @@ def helicsFilterSetOption(filter: HelicsFilter, option: HelicsHandleOption, valu
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFilterGetOption(filter: Union[HelicsFilter], option: HelicsHandleOption) -> int:
+def helicsFilterGetOption(filter: HelicsFilter, option: HelicsHandleOption) -> int:
     """
     Get a handle option for the filter.
 
@@ -6892,7 +6888,7 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, u
         return HelicsInput(result)
 
 
-def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsPublication:
+def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsInput:
     """
     Register a global named input.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6912,7 +6908,7 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: Heli
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsPublication(result)
+        return HelicsInput(result)
 
 
 def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
