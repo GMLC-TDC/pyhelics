@@ -7558,7 +7558,7 @@ def helicsInputGetChar(ipt: HelicsInput) -> str:
         return result.decode()
 
 
-def helicsInputGetComplexObject(ipt: HelicsInput) -> Tuple[float, float]:
+def helicsInputGetComplexObject(ipt: HelicsInput) -> complex:
     """
     Get a complex object from an input object.
 
@@ -7574,11 +7574,10 @@ def helicsInputGetComplexObject(ipt: HelicsInput) -> Tuple[float, float]:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        warnings.warn("This function will return a complex number in the next major release")
-        return (result.real, result.imag)
+        return complex(result.real, result.imag)
 
 
-def helicsInputGetComplex(ipt: HelicsInput) -> Tuple[float, float]:
+def helicsInputGetComplex(ipt: HelicsInput) -> complex:
     """
     Get a pair of double forming a complex number from a subscriptions.
 
@@ -7596,8 +7595,7 @@ def helicsInputGetComplex(ipt: HelicsInput) -> Tuple[float, float]:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        warnings.warn("This function will return a complex number in the next major release")
-        return (real[0], imag[0])
+        return complex(real[0], imag[0])
 
 
 def helicsInputGetVectorSize(ipt: HelicsInput) -> int:
