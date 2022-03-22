@@ -116,6 +116,7 @@ def test_python_api1():
     sub.set_default([1.0, 2.0, 3.0])
     assert sub.vector == [1.0, 2.0, 3.0]
 
+    sub.set_default([complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)])
     sub.info = "hello world"
     assert sub.info == "hello world"
 
@@ -145,7 +146,7 @@ def test_python_api1():
     assert mFed.subscriptions["TestFederate/publication"].value == "first-time"
     try:
         assert mFed.subscriptions["TestFederate/publication"].bytes == b"first-time"
-    except Exception as _:
+    except Exception:
         # TODO: this does not work as expected
         with pt.raises(AssertionError):
             assert mFed.subscriptions["TestFederate/publication"].bytes == b"first-time"
@@ -622,3 +623,30 @@ def test_python_api8():
     h.helicsFederateFree(cfed)
     h.helicsBrokerDestroy(broker)
     h.helicsCloseLibrary()
+
+
+def test_python_api9():
+
+    broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
+    fedinfo = h.helicsCreateFederateInfo()
+    assert "HelicsFederateInfo()" in repr(fedinfo)
+    fedinfo.core_name = "TestFederate"
+    fedinfo.core_type = "zmq"
+    fedinfo.core_init = "-f 1 --broker=mainbroker"
+    mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
+
+    pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_COMPLEX_VECTOR, "custom-units")
+    assert pub.type == "complex_vector"
+
+    sub = mFed.register_subscription("TestFederate/publication", "custom-units")
+    sub.set_default([complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)])
+
+    mFed.enter_executing_mode()
+
+    assert sub.publication_type == "complex_vector"
+    print(sub.value)
+
+    mFed.disconnect()
+
+    del mFed
+    del broker

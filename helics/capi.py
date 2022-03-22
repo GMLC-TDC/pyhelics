@@ -2253,7 +2253,7 @@ class HelicsInput(_HelicsCHandle):
         """Add a publication target to the input."""
         helicsInputAddTarget(self, target)
 
-    def set_default(self, data: Union[bytes, str, int, bool, float, complex, List[float]]):
+    def set_default(self, data: Union[bytes, str, int, bool, float, complex, List[float], List[complex]]):
         """
         Set the default value as a raw data
         Set the default value as a string
@@ -2274,13 +2274,15 @@ class HelicsInput(_HelicsCHandle):
             helicsInputSetDefaultDouble(self, data)
         elif isinstance(data, complex):
             helicsInputSetDefaultComplex(self, data.real, data.imag)
-        elif isinstance(data, list):
+        elif isinstance(data, list) and all(isinstance(e, complex) for e in data):
+            helicsInputSetDefaultComplexVector(self, data)
+        elif isinstance(data, list) and all(isinstance(e, float) for e in data):
             helicsInputSetDefaultVector(self, data)
         else:
             raise NotImplementedError("Unknown type `{}`".format(type(data)))
 
     @property
-    def value(self) -> Union[bytes, str, int, bool, float, complex, Tuple, List[float], JSONType]:
+    def value(self) -> Union[bytes, str, int, bool, float, complex, Tuple, List[float], List[complex], JSONType]:
         if self.publication_type == "bytes":
             return self.bytes
         elif self.publication_type == "string":
@@ -2293,6 +2295,8 @@ class HelicsInput(_HelicsCHandle):
             return self.double
         elif self.publication_type == "complex":
             return self.complex
+        elif self.publication_type == "complex_vector":
+            return self.complex_vector
         elif self.publication_type == "vector":
             return self.vector
         elif self.publication_type == "json":
@@ -2345,6 +2349,11 @@ class HelicsInput(_HelicsCHandle):
             warnings.simplefilter("ignore")
             r, i = helicsInputGetComplex(self)
         return complex(r, i)
+
+    @property
+    def complex_vector(self):  # -> List[complex]:
+        """get the current value as a vector of complex."""
+        return helicsInputGetComplexVector(self)
 
     @property
     def vector(self) -> List[float]:
@@ -2436,7 +2445,7 @@ class HelicsPublication(_HelicsCHandle):
         """Check if the publication is valid."""
         return helicsPublicationIsValid(self)
 
-    def publish(self, data: Union[bytes, str, int, complex, float, List[float], Tuple[str, float], bool]):
+    def publish(self, data: Union[bytes, str, int, complex, float, List[complex], List[float], Tuple[str, float], bool]):
         """
         publish raw bytes
         publish a string
@@ -2457,7 +2466,9 @@ class HelicsPublication(_HelicsCHandle):
             helicsPublicationPublishDouble(self, data)
         elif isinstance(data, complex):
             helicsPublicationPublishComplex(self, data.real, data.imag)
-        elif isinstance(data, list):
+        elif isinstance(data, list) and all(isinstance(e, complex) for e in data):
+            helicsPublicationPublishComplexVector(self, data)
+        elif isinstance(data, list) and all(isinstance(e, float) for e in data):
             helicsPublicationPublishVector(self, data)
         elif isinstance(data, tuple):
             helicsPublicationPublishNamedPoint(self, data[0], data[1])
@@ -7258,12 +7269,29 @@ def helicsPublicationPublishVector(pub: HelicsPublication, vectorInput: List[flo
     **Parameters**
 
     - **`pub`** - The publication to publish for.
-    - **`vectorInput`** - A pointer to an array of double data.
+    - **`vectorInput`** - A list of double data.
     """
     f = loadSym("helicsPublicationPublishVector")
     err = helicsErrorInitialize()
     vectorLength = len(vectorInput)
     f(pub.handle, vectorInput, vectorLength, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsPublicationPublishComplexVector(pub: HelicsPublication, vectorInput: List[complex]):
+    """
+    Publish a vector of complexes.
+
+    **Parameters**
+
+    - **`pub`** - The publication to publish for.
+    - **`vectorInput`** - A list of complex data.
+    """
+    f = loadSym("helicsPublicationPublishComplexVector")
+    err = helicsErrorInitialize()
+    vectorLength = len(vectorInput)
+    f(pub.handle, [item for c in vectorInput for item in [c.real, c.imag]], vectorLength * 2, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -7585,7 +7613,7 @@ def helicsInputGetVectorSize(ipt: HelicsInput) -> int:
 
 def helicsInputGetVector(ipt: HelicsInput) -> List[float]:
     """
-    Get a vector from a subscription.
+    Get a vector of doubles from a subscription.
 
     **Parameters**
 
@@ -7603,6 +7631,30 @@ def helicsInputGetVector(ipt: HelicsInput) -> List[float]:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return [x for x in data][0 : actualSize[0]]
+
+
+def helicsInputGetComplexVector(ipt: HelicsInput) -> List[complex]:
+    """
+    Get a vector of complex from a subscription.
+
+    **Parameters**
+
+    - **`ipt`** - The input to get the result for.
+
+    **Returns**: a list of floating point values
+    """
+    f = loadSym("helicsInputGetComplexVector")
+    err = helicsErrorInitialize()
+    maxlen = helicsInputGetVectorSize(ipt) + 1024
+    data = ffi.new("double[{maxlen}]".format(maxlen=maxlen))
+    actualSize = ffi.new("int[1]")
+    f(ipt.handle, data, maxlen, actualSize, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        vector = [x for x in data][0 : 2 * actualSize[0]]
+        it = iter(vector)
+        return [complex(r, i) for r, i in zip(it, it)]
 
 
 def helicsInputGetNamedPoint(ipt: HelicsInput) -> Tuple[str, float]:
@@ -7802,6 +7854,23 @@ def helicsInputSetDefaultVector(ipt: HelicsInput, vectorInput: List[float]):
     err = helicsErrorInitialize()
     vectorLength = len(vectorInput)
     f(ipt.handle, vectorInput, vectorLength, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsInputSetDefaultComplexVector(ipt: HelicsInput, vectorInput: List[complex]):
+    """
+    Set the default as a vector of doubles.
+
+    **Parameters**
+
+    - **`ipt`** - The input to set the default for.
+    - **`vectorInput`** - A pointer to an array of double data.
+    """
+    f = loadSym("helicsInputSetDefaultVector")
+    err = helicsErrorInitialize()
+    vectorLength = len(vectorInput)
+    f(ipt.handle, [item for c in vectorInput for item in [c.real, c.imag]], vectorLength * 2, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
