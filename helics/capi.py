@@ -1455,7 +1455,7 @@ class _FederateInfoFlagAccessor(_HelicsCHandle):
                 except Exception:
                     idx = HelicsHandleOption(index)
 
-        return helicsFederateInfoSetFlagOption(HelicsFederateInfo(self.handle), idx, value)
+        return helicsFederateInfoSetFlagOption(HelicsFederateInfo(self.handle, cleanup=False), idx, value)
 
     def __delitem__(self, index):
         raise NotImplementedError("Cannot delete index: {}".format(index))
@@ -1471,9 +1471,9 @@ class _FederateInfoPropertyAccessor(_HelicsCHandle):
         else:
             idx = HelicsProperty(index)
         if "TIME_" in idx.name:
-            return helicsFederateInfoSetTimeProperty(HelicsFederateInfo(self.handle), idx, value)
+            return helicsFederateInfoSetTimeProperty(HelicsFederateInfo(self.handle, cleanup=False), idx, value)
         elif "INT_" in idx.name:
-            return helicsFederateInfoSetIntegerProperty(HelicsFederateInfo(self.handle), index, value)
+            return helicsFederateInfoSetIntegerProperty(HelicsFederateInfo(self.handle, cleanup=False), index, value)
 
     def __repr__(self):
         lst = []
@@ -1486,9 +1486,9 @@ class _FederateInfoPropertyAccessor(_HelicsCHandle):
 
 
 class HelicsFederateInfo(_HelicsCHandle):
-    def __init__(self, handle):
+    def __init__(self, handle, cleanup=True):
         # Python2 compatible super
-        super(HelicsFederateInfo, self).__init__(handle)
+        super(HelicsFederateInfo, self).__init__(handle, cleanup)
 
         self.property = _FederateInfoPropertyAccessor(self.handle, cleanup=False)
         self.flag = _FederateInfoFlagAccessor(self.handle, cleanup=False)
@@ -1640,7 +1640,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
                 idx = HelicsFlag(index)
             except Exception:
                 idx = HelicsFederateFlag(index)
-        return helicsFederateGetFlagOption(HelicsFederate(self.handle), idx)
+        return helicsFederateGetFlagOption(HelicsFederate(self.handle, cleanup=False), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
@@ -1651,7 +1651,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
             except Exception:
                 idx = HelicsFederateFlag(index)
 
-        return helicsFederateSetFlagOption(HelicsFederate(self.handle), idx, value)
+        return helicsFederateSetFlagOption(HelicsFederate(self.handle, cleanup=False), idx, value)
 
     def __repr__(self):
         lst = []
@@ -1678,9 +1678,9 @@ class _FederatePropertyAccessor(_HelicsCHandle):
         else:
             idx = HelicsProperty(index)
         if "TIME_" in idx.name:
-            return helicsFederateGetTimeProperty(HelicsFederate(self.handle), idx)
+            return helicsFederateGetTimeProperty(HelicsFederate(self.handle, cleanup=False), idx)
         elif "INT_" in idx.name:
-            return helicsFederateGetIntegerProperty(HelicsFederate(self.handle), idx)
+            return helicsFederateGetIntegerProperty(HelicsFederate(self.handle, cleanup=False), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
@@ -1688,9 +1688,9 @@ class _FederatePropertyAccessor(_HelicsCHandle):
         else:
             idx = HelicsProperty(index)
         if "TIME_" in idx.name:
-            return helicsFederateSetTimeProperty(HelicsFederate(self.handle), idx, value)
+            return helicsFederateSetTimeProperty(HelicsFederate(self.handle, cleanup=False), idx, value)
         elif "INT_" in idx.name:
-            return helicsFederateSetIntegerProperty(HelicsFederate(self.handle), index, value)
+            return helicsFederateSetIntegerProperty(HelicsFederate(self.handle, cleanup=False), index, value)
 
     def __repr__(self):
         lst = []
@@ -1703,9 +1703,9 @@ class _FederatePropertyAccessor(_HelicsCHandle):
 
 
 class HelicsFederate(_HelicsCHandle):
-    def __init__(self, handle):
+    def __init__(self, handle, cleanup=True):
         # Python2 compatible super
-        super(HelicsFederate, self).__init__(handle)
+        super(HelicsFederate, self).__init__(handle, cleanup)
 
         self._exec_async_iterate = False
         self.property = _FederatePropertyAccessor(self.handle, cleanup=False)
