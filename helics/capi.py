@@ -6758,7 +6758,7 @@ def helicsFederateRegisterSubscription(fed: HelicsFederate, name: str, units: st
         return HelicsInput(result)
 
 
-def helicsFederateRegisterPublication(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsPublication:
+def helicsFederateRegisterPublication(fed: HelicsFederate, name: str, type: HelicsDataType, units: str = "") -> HelicsPublication:
     """
     Register a publication with a known type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6781,7 +6781,7 @@ def helicsFederateRegisterPublication(fed: HelicsFederate, name: str, type: Heli
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterTypePublication(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsPublication:
+def helicsFederateRegisterTypePublication(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsPublication:
     """
     Register a publication with a defined type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6827,7 +6827,7 @@ def helicsFederateRegisterGlobalPublication(fed: HelicsFederate, name: str, type
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsPublication:
+def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsPublication:
     """
     Register a global publication with a defined type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6850,7 +6850,7 @@ def helicsFederateRegisterGlobalTypePublication(fed: HelicsFederate, name: str, 
         return HelicsPublication(result)
 
 
-def helicsFederateRegisterInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsInput:
+def helicsFederateRegisterInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str = "") -> HelicsInput:
     """
     Register a named input.
     The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
@@ -6874,7 +6874,7 @@ def helicsFederateRegisterInput(fed: HelicsFederate, name: str, type: HelicsData
         return HelicsInput(result)
 
 
-def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
+def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsInput:
     """
     Register an input with a defined type.
     The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free
@@ -6898,7 +6898,7 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, u
         return HelicsInput(result)
 
 
-def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str) -> HelicsInput:
+def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str = "") -> HelicsInput:
     """
     Register a global named input.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
@@ -6921,7 +6921,7 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: Heli
         return HelicsInput(result)
 
 
-def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: str, units: str) -> HelicsInput:
+def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsInput:
     """
     Register a global publication with an arbitrary type.
     The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
