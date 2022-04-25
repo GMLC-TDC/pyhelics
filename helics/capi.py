@@ -2546,7 +2546,6 @@ class HelicsValueFederate(HelicsFederate):
         """
         if type(kind) == str:
             kind = cast(str, kind)
-            pub = helicsFederateRegisterTypePublication(self, name, kind, units)
             if local:
                 f = helicsFederateRegisterTypePublication
             else:
