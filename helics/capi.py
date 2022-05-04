@@ -2907,7 +2907,7 @@ def helicsIsCoreTypeAvailable(type: str) -> bool:
     return result == 1
 
 
-def helicsCreateCore(type: str, name: str, init_string: str) -> HelicsCore:
+def helicsCreateCore(type: str, name: str = "", init_string: str = "") -> HelicsCore:
     """
     Create a `helics.HelicsCore`.
 
