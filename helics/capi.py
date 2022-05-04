@@ -836,7 +836,7 @@ helics_state_finished = HelicsFederateState.FINISHED
 
 
 @unique
-class HelicsTranslaterTypes(IntEnum):
+class HelicsTranslatorTypes(IntEnum):
     """
     Rnumeration of the predefined translator types
 
@@ -855,9 +855,9 @@ class HelicsTranslaterTypes(IntEnum):
     BINARY = 12
 
 
-HELICS_TRANSLATOR_TYPE_CUSTOM = HelicsTranslaterTypes.CUSTOM
-HELICS_TRANSLATOR_TYPE_JSON = HelicsTranslaterTypes.JSON
-HELICS_TRANSLATOR_TYPE_BINARY = HelicsTranslaterTypes.BINARY
+HELICS_TRANSLATOR_TYPE_CUSTOM = HelicsTranslatorTypes.CUSTOM
+HELICS_TRANSLATOR_TYPE_JSON = HelicsTranslatorTypes.JSON
+HELICS_TRANSLATOR_TYPE_BINARY = HelicsTranslatorTypes.BINARY
 
 
 def generate_cleanup_callback(obj):
@@ -2808,6 +2808,10 @@ class HelicsMessageFederate(HelicsFederate):
 
 
 class HelicsCombinationFederate(HelicsValueFederate, HelicsMessageFederate):
+    pass
+
+
+class HelicsDataBuffer(_HelicsCHandle):
     pass
 
 
@@ -6766,49 +6770,7 @@ def helicsFilterGetOption(filter: HelicsFilter, option: HelicsHandleOption) -> i
     return result
 
 
-def helicsIntToBytes(value: int, data):
-    """
-    Convert an integer to serialized bytes
-    """
-    pass
-
-
-def helicsDoubleToBytes(value: int, data):
-    """
-    Convert a double to serialized bytes
-    """
-    pass
-
-
-def helicsStringToBytes(string: str, data):
-    """
-    Convert a string to serialized bytes
-    """
-    pass
-
-
-def helicsBoolToBytes(value: bool, data):
-    """
-    Convert a bool to serialized bytes
-    """
-    pass
-
-
-def helicsCharToBytes(value: str, data):
-    """
-    Convert a bool to serialized bytes
-    """
-    pass
-
-
-def helicsTimeToBytes(value: HelicsTime, data):
-    """
-    Convert a bool to serialized bytes
-    """
-    pass
-
-
-def helicsFederateRegisterTranslator(fed: HelicsFederate, type: HelicsTranslaterTypes, name: str) -> HelicsTranslator:
+def helicsFederateRegisterTranslator(fed: HelicsFederate, type: HelicsTranslatorTypes, name: str) -> HelicsTranslator:
     """
     Create a source Translator on the specified federate.
 
@@ -6832,7 +6794,7 @@ def helicsFederateRegisterTranslator(fed: HelicsFederate, type: HelicsTranslater
         return HelicsTranslator(result)
 
 
-def helicsFederateRegisterGlobalTranslator(fed: HelicsFederate, type: HelicsTranslaterTypes, name: str) -> HelicsTranslator:
+def helicsFederateRegisterGlobalTranslator(fed: HelicsFederate, type: HelicsTranslatorTypes, name: str) -> HelicsTranslator:
     """
     Create a source Translator on the specified federate.
 
@@ -6856,7 +6818,7 @@ def helicsFederateRegisterGlobalTranslator(fed: HelicsFederate, type: HelicsTran
         return HelicsTranslator(result)
 
 
-def helicsCoreRegisterGlobalTranslator(core: HelicsCore, type: HelicsTranslaterTypes, name: str) -> HelicsTranslator:
+def helicsCoreRegisterGlobalTranslator(core: HelicsCore, type: HelicsTranslatorTypes, name: str) -> HelicsTranslator:
     """
     Create a source Translator on the specified core.
 
@@ -8958,6 +8920,133 @@ def helicsQuerySetOrdering(query: HelicsQuery, mode: int):
     f(query.handle, mode, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsCreateDataBuffer(initial_capacity: int) -> HelicsDataBuffer:
+    """
+    Create a helics managed data buffer with initial capacity
+    """
+    f = loadSym("helicsCreateDataBuffer")
+    result = f(initial_capacity)
+    return HelicsDataBuffer(result)
+
+
+def helicsWrapDataInBuffer(data: bytes, data_capacity: int) -> HelicsDataBuffer:
+    """
+    Wrap user data in a buffer object
+    """
+    f = loadSym("helicsWrapDataInBuffer")
+    result = f(data, len(data), data_capacity)
+    return HelicsDataBuffer(result)
+
+
+def helicsDataBufferFree(data: HelicsDataBuffer):
+    f = loadSym("helicsDataBufferFree")
+    f(data)
+
+
+def helicsDataBufferCapacity(data: HelicsDataBuffer) -> int:
+    f = loadSym("helicsDataBufferCapacity")
+    return f(data)
+
+
+def helicsDataBufferSize(data: HelicsDataBuffer) -> int:
+    f = loadSym("helicsDataBufferSize")
+    return f(data)
+
+
+def helicsDataBufferReserve(data: HelicsDataBuffer, new_capacity) -> bool:
+    f = loadSym("helicsDataBufferReserve")
+    return f(data, new_capacity) == 1
+
+
+def helicsDataBufferData(data: HelicsDataBuffer) -> bytes:
+    f = loadSym("helicsDataBufferData")
+    return f(data)
+
+
+def helicsIntToBytes(value: int, data: HelicsDataBuffer):
+    """
+    Convert an integer to serialized bytes
+    """
+    f = loadSym("helicsIntToBytes")
+    f(value, data)
+
+
+def helicsDoubleToBytes(value: int, data: HelicsDataBuffer):
+    """
+    Convert a double to serialized bytes
+    """
+    f = loadSym("helicsDoubleToBytes")
+    f(value, data)
+
+
+def helicsStringToBytes(string: str, data: HelicsDataBuffer):
+    """
+    Convert a string to serialized bytes
+    """
+    f = loadSym("helicsStringToBytes")
+    f(string, data)
+
+
+def helicsBoolToBytes(value: bool, data: HelicsDataBuffer):
+    """
+    Convert a bool to serialized bytes
+    """
+    f = loadSym("helicsBoolToBytes")
+    f(value, data)
+
+
+def helicsCharToBytes(value: str, data: HelicsDataBuffer):
+    """
+    Convert a bool to serialized bytes
+    """
+    f = loadSym("helicsCharToBytes")
+    f(value, data)
+
+
+def helicsTimeToBytes(value: HelicsTime, data: HelicsDataBuffer):
+    """
+    Convert a bool to serialized bytes
+    """
+    f = loadSym("helicsTimeToBytes")
+    f(value, data)
+
+
+def helicsComplexToBytes(value: complex, data: HelicsDataBuffer):
+    """
+    Convert a complex to serialized bytes
+    """
+    f = loadSym("helicsComplexToBytes")
+    f(value, data)
+
+
+def helicsVectorToBytes(value: List[float], data: HelicsDataBuffer):
+    """
+    Convert a complex to serialized bytes
+    """
+    f = loadSym("helicsVectorToBytes")
+    f(value, data)
+
+
+def helicsDataBufferType(data: HelicsDataBuffer) -> int:
+    f = loadSym("helicsDataBufferType")
+    return f(data)
+
+
+def helicsDataBufferToInt(data: HelicsDataBuffer) -> int:
+    f = loadSym("helicsDataBufferToInt")
+    return f(data)
+
+
+def helicsDataBufferToDouble(data: HelicsDataBuffer) -> float:
+    f = loadSym("helicsDataBufferToDouble")
+    return f(data)
+
+
+def helicsDataBufferToBool(data: HelicsDataBuffer) -> bool:
+    f = loadSym("helicsDataBufferToBool")
+    return f(data)
 
 
 def helicsLoadSignalHandler():
