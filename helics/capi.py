@@ -9018,7 +9018,7 @@ def helicsComplexToBytes(value: complex, data: HelicsDataBuffer):
     Convert a complex to serialized bytes
     """
     f = loadSym("helicsComplexToBytes")
-    f(value, data)
+    f(value.real, value.imag, data)
 
 
 def helicsVectorToBytes(value: List[float], data: HelicsDataBuffer):
