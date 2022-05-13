@@ -31,7 +31,12 @@ lib = _build.lib
 ffi = _build.ffi
 
 PYHELICS_FREE_ON_DESTRUCTION = os.environ.get("PYHELICS_FREE_ON_DESTRUCTION", True)
-PYHELICS_CLEANUP = os.environ.get("PYHELICS_CLEANUP", False)
+PYHELICS_CLEANUP = os.environ.get("PYHELICS_CLEANUP", None)
+if PYHELICS_CLEANUP is not None:
+    warnings.warn("PYHELICS_CLEANUP has been deprecated. Use PYHELICS_CLEANUP_ON_DESTRUCTION instead.")
+else:
+    PYHELICS_CLEANUP = False
+PYHELICS_CLEANUP_ON_DESTRUCTION = os.environ.get("PYHELICS_CLEANUP_ON_DESTRUCTION", PYHELICS_CLEANUP)
 
 if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
     HELICS_VERSION = 2
