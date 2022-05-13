@@ -30,6 +30,7 @@ from . import _build
 lib = _build.lib
 ffi = _build.ffi
 
+PYHELICS_FREE_ON_DESTRUCTION = os.environ.get("PYHELICS_FREE_ON_DESTRUCTION", True)
 PYHELICS_CLEANUP = os.environ.get("PYHELICS_CLEANUP", False)
 
 if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
@@ -882,7 +883,8 @@ def generate_cleanup_callback(obj):
 
     def cleanup(handle):
         if f is not None:
-            f(handle)
+            if PYHELICS_FREE_ON_DESTRUCTION:
+                f(handle)
             if PYHELICS_CLEANUP:
                 helicsCleanupLibrary()
 
