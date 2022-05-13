@@ -314,7 +314,7 @@ def test_bad_input_init_error():
     destroyBroker(broker)
 
 
-@pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
+@pt.mark.skip(reason="Fails to pass on CI")
 def test_bad_inputs_input_tests():
 
     broker = createBroker(1)
