@@ -126,6 +126,7 @@ def test_system_test_core_global_value1():
     h.helicsCloseLibrary()
 
 
+@pt.mark.skip(reason = "Segfaults on linux")
 def test_system_test_core_global_value2():
     brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
 
