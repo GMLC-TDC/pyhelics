@@ -890,7 +890,7 @@ def generate_cleanup_callback(obj):
         if f is not None:
             if PYHELICS_FREE_ON_DESTRUCTION:
                 f(handle)
-            if PYHELICS_CLEANUP:
+            if PYHELICS_CLEANUP_ON_DESTRUCTION:
                 helicsCleanupLibrary()
 
     return cleanup

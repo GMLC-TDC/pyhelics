@@ -10,16 +10,16 @@ Versions equal to and prior to `v2.6.0` used swig to generate the Python API.
 
 ```bash
 $ which python # sanity check on Unix
-$ which pip # sanity check on Unix
+$ which pip    # sanity check on Unix
 
 $ where python # sanity check on Windows
-$ where pip # sanity check on Windows
+$ where pip    # sanity check on Windows
 
 $ python -m pip install helics
 ```
 
-Using `python -m pip` invokes the `pip` module from the `python` process. This is the safest way to ensure you are installing `helics` into the place `python` will look for packages. 
-If `pip` and `python` belong to the same environment, you can invoke `pip` directly. 
+Using `python -m pip` invokes the `pip` module from the `python` process. This is the safest way to ensure you are installing `helics` into the place `python` will look for packages.
+If `pip` and `python` belong to the same environment, you can invoke `pip` directly.
 
 This will give you the latest version of the python helics interface.
 If you already have helics installed, you can upgrade to the latest version by using the following:
@@ -168,22 +168,21 @@ $ tree /path/to/helics_installation
 
 helics_installation
 ├── include
-│  └── helics
+│ └── helics
 ├── lib
-│  ├── cmake
-│  ├── libhelicsSharedLib.2.6.1.dylib
-│  ├── libhelicsSharedLib.2.dylib -> libhelicsSharedLib.2.6.1.dylib
-│  ├── libhelicsSharedLib.dylib -> libhelicsSharedLib.2.dylib
-│  ├── libzmq.5.2.2.dylib
-│  ├── libzmq.5.dylib -> libzmq.5.2.2.dylib
-│  ├── libzmq.dylib -> libzmq.5.dylib
-│  └── pkgconfig
+│ ├── cmake
+│ ├── libhelicsSharedLib.2.6.1.dylib
+│ ├── libhelicsSharedLib.2.dylib - > libhelicsSharedLib.2.6.1.dylib
+│ ├── libhelicsSharedLib.dylib - > libhelicsSharedLib.2.dylib
+│ ├── libzmq.5.2.2.dylib
+│ ├── libzmq.5.dylib - > libzmq.5.2.2.dylib
+│ ├── libzmq.dylib - > libzmq.5.dylib
+│ └── pkgconfig
 └── share
-   ├── doc
-      ├── helics
-         └── man
+├── doc
+├── helics
+└── man
 ```
-
 
 On Windows, follow instructions online to set a user environment variable to the path of the HELICS installation.
 You can also use `set PYHELICS_INSTALL="C:\path\to\helics_installation"` in a command line session.
@@ -217,3 +216,8 @@ If you are interested in using the HELICS libraries that are installed along wit
 ```bash
 $ python -c 'import helics as h; print(h._build.PYHELICS_INSTALL)'
 ```
+
+### Additional environment variables
+
+- `PYHELICS_FREE_ON_DESTRUCTION` (True): Calls `helicsFederateFree` on `HelicsFederate` destruction, and similar respective functions for other objects.
+- `PYHELICS_CLEANUP_ON_DESTRUCTION` (False): Calls `helicsCleanup` on `HelicsFederate` and other objects destruction.
