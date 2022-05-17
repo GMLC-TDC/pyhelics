@@ -32,7 +32,7 @@ ffi = _build.ffi
 
 PYHELICS_CLEANUP = os.environ.get("PYHELICS_CLEANUP", False)
 PYHELICS_CLEANUP_FEDERATES = os.environ("PYHELICS_CLEANUP_FEDERATES",
-                                        False)
+                                        True)
 
 if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
     HELICS_VERSION = 2
@@ -1744,11 +1744,9 @@ class _FederatePropertyAccessor(_HelicsCHandle):
 
 
 class HelicsFederate(_HelicsCHandle):
-    def __init__(self, handle, free_federates_on_finalize=True):
-        cleanup = free_federates_on_finalize and \
-                PYHELICS_CLEANUP_FEDERATES
+    def __init__(self, handle, free_federates_on_finalize=PYHELICS_CLEANUP_FEDERATES):
         # Python2 compatible super
-        super(HelicsFederate, self).__init__(handle, cleanup)
+        super(HelicsFederate, self).__init__(handle, free_federates_on_finalize)
 
         self._exec_async_iterate = False
         self.property = _FederatePropertyAccessor(self.handle, cleanup=False)
@@ -3558,7 +3556,8 @@ def helicsCreateMessageFederateFromConfig(config_file: str, free_federates_on_fi
         return HelicsMessageFederate(handle=result, free_federates_on_finalize=free_federates_on_finalize)
 
 
-def helicsCreateCombinationFederate(fed_name: str,
+def helicsCreateCombinationFederate(
+                                    fed_name: str,
                                     fi: HelicsFederateInfo = None,
                                     free_federates_on_finalize=True
                                     ) -> HelicsCombinationFederate:
