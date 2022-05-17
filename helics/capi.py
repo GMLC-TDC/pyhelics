@@ -31,6 +31,8 @@ lib = _build.lib
 ffi = _build.ffi
 
 PYHELICS_CLEANUP = os.environ.get("PYHELICS_CLEANUP", False)
+PYHELICS_CLEANUP_FEDERATES = os.environ("PYHELICS_CLEANUP_FEDERATES",
+                                        True)
 
 if ffi.string(lib.helicsGetVersion()).decode().startswith("2."):
     HELICS_VERSION = 2
@@ -1676,7 +1678,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
                 idx = HelicsFlag(index)
             except Exception:
                 idx = HelicsFederateFlag(index)
-        return helicsFederateGetFlagOption(HelicsFederate(self.handle, cleanup=False), idx)
+        return helicsFederateGetFlagOption(HelicsFederate(self.handle, free_federates_on_finalize=False), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
@@ -1687,7 +1689,7 @@ class _FederateFlagAccessor(_HelicsCHandle):
             except Exception:
                 idx = HelicsFederateFlag(index)
 
-        return helicsFederateSetFlagOption(HelicsFederate(self.handle, cleanup=False), idx, value)
+        return helicsFederateSetFlagOption(HelicsFederate(self.handle, free_federates_on_finalize=False), idx, value)
 
     def __repr__(self):
         lst = []
@@ -1714,9 +1716,12 @@ class _FederatePropertyAccessor(_HelicsCHandle):
         else:
             idx = HelicsProperty(index)
         if "TIME_" in idx.name:
-            return helicsFederateGetTimeProperty(HelicsFederate(self.handle, cleanup=False), idx)
+            return helicsFederateGetTimeProperty(HelicsFederate(
+                self.handle, free_federates_on_finalize=False),
+                idx)
         elif "INT_" in idx.name:
-            return helicsFederateGetIntegerProperty(HelicsFederate(self.handle, cleanup=False), idx)
+            return helicsFederateGetIntegerProperty(HelicsFederate(
+                self.handle, free_federates_on_finalize=False), idx)
 
     def __setitem__(self, index, value):
         if type(index) == str:
@@ -1724,9 +1729,9 @@ class _FederatePropertyAccessor(_HelicsCHandle):
         else:
             idx = HelicsProperty(index)
         if "TIME_" in idx.name:
-            return helicsFederateSetTimeProperty(HelicsFederate(self.handle, cleanup=False), idx, value)
+            return helicsFederateSetTimeProperty(HelicsFederate(self.handle, free_federates_on_finalize=False), idx, value)
         elif "INT_" in idx.name:
-            return helicsFederateSetIntegerProperty(HelicsFederate(self.handle, cleanup=False), index, value)
+            return helicsFederateSetIntegerProperty(HelicsFederate(self.handle, free_federates_on_finalize=False), index, value)
 
     def __repr__(self):
         lst = []
@@ -1739,9 +1744,9 @@ class _FederatePropertyAccessor(_HelicsCHandle):
 
 
 class HelicsFederate(_HelicsCHandle):
-    def __init__(self, handle, cleanup=True):
+    def __init__(self, handle, free_federates_on_finalize=PYHELICS_CLEANUP_FEDERATES):
         # Python2 compatible super
-        super(HelicsFederate, self).__init__(handle, cleanup)
+        super(HelicsFederate, self).__init__(handle, free_federates_on_finalize)
 
         self._exec_async_iterate = False
         self.property = _FederatePropertyAccessor(self.handle, cleanup=False)
@@ -2554,8 +2559,9 @@ class HelicsPublication(_HelicsCHandle):
 
 
 class HelicsValueFederate(HelicsFederate):
-    def __init__(self, handle):
-        super(HelicsValueFederate, self).__init__(handle)
+    def __init__(self, handle, free_federates_on_finalize=True):
+        super(HelicsValueFederate, self).__init__(handle=handle,
+                                                  free_federates_on_finalize=free_federates_on_finalize)
 
         for i in range(0, self.n_publications):
             pub = self.get_publication_by_index(i)
@@ -2739,8 +2745,9 @@ class HelicsValueFederate(HelicsFederate):
 
 
 class HelicsMessageFederate(HelicsFederate):
-    def __init__(self, handle):
-        super(HelicsMessageFederate, self).__init__(handle)
+    def __init__(self, handle, free_federates_on_finalize=True):
+        super(HelicsMessageFederate, self).__init__(handle=handle,
+                                                    free_federates_on_finalize=free_federates_on_finalize)
 
         for i in range(0, self.n_endpoints):
             end = self.get_endpoint_by_index(i)
@@ -3382,7 +3389,8 @@ def helicsCoreDisconnect(core: HelicsCore):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsGetFederateByName(fed_name: str) -> HelicsFederate:
+def helicsGetFederateByName(fed_name: str, cleanup=True) -> \
+    HelicsFederate:
     """
     Get an existing `helics.HelicsFederate` from a core by name.
     The federate must have been created by one of the other functions and at least one of the objects referencing the created federate must still be active in the process.
@@ -3399,7 +3407,7 @@ def helicsGetFederateByName(fed_name: str) -> HelicsFederate:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsFederate(result)
+        return HelicsFederate(hanlde=result, free_federates_on_finalize=cleanup)
 
 
 def helicsBrokerDisconnect(broker: HelicsBroker):
@@ -3457,7 +3465,8 @@ def helicsBrokerFree(broker: HelicsBroker):
     f(broker.handle)
 
 
-def helicsCreateValueFederate(fed_name: str, fi: HelicsFederateInfo = None) -> HelicsValueFederate:
+def helicsCreateValueFederate(fed_name: str, fi: HelicsFederateInfo =
+None, free_federates_on_finalize=True) -> HelicsValueFederate:
     """
     Creation and destruction of Federates.
     Create `helics.HelicsValueFederate` from `helics.HelicsFederateInfo`.
@@ -3478,10 +3487,11 @@ def helicsCreateValueFederate(fed_name: str, fi: HelicsFederateInfo = None) -> H
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsValueFederate(result)
+        return HelicsValueFederate(handle=result, free_federates_on_finalize=free_federates_on_finalize)
 
 
-def helicsCreateValueFederateFromConfig(config_file: str) -> HelicsValueFederate:
+def helicsCreateValueFederateFromConfig(config_file: str, free_federates_on_finalize=True
+                                        ) -> HelicsValueFederate:
     """
     Create `helics.HelicsValueFederate` from a JSON file, JSON string, or TOML file.
     `helics.HelicsValueFederate` objects can be used in all functions that take a `helics.HelicsFederate` as an argument.
@@ -3498,10 +3508,11 @@ def helicsCreateValueFederateFromConfig(config_file: str) -> HelicsValueFederate
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsValueFederate(result)
+        return HelicsValueFederate(handle=result, free_federates_on_finalize=free_federates_on_finalize)
 
 
-def helicsCreateMessageFederate(fed_name: str, fi: HelicsFederateInfo = None) -> HelicsMessageFederate:
+def helicsCreateMessageFederate(fed_name: str, fi: HelicsFederateInfo
+= None, free_federates_on_finalize=True) -> HelicsMessageFederate:
     """
     Create `helics.HelicsMessageFederate` from `helics.HelicsFederateInfo`.
     `helics.HelicsMessageFederate` objects can be used in all functions that take a `helics.HelicsFederate` as an argument.
@@ -3521,10 +3532,11 @@ def helicsCreateMessageFederate(fed_name: str, fi: HelicsFederateInfo = None) ->
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsMessageFederate(result)
+        return HelicsMessageFederate(handle=result, free_federates_on_finalize=free_federates_on_finalize)
 
 
-def helicsCreateMessageFederateFromConfig(config_file: str) -> HelicsMessageFederate:
+def helicsCreateMessageFederateFromConfig(config_file: str, free_federates_on_finalize=True
+                                          ) -> HelicsMessageFederate:
     """
     Create `helics.HelicsMessageFederate` from a JSON file or JSON string or TOML file.
     `helics.HelicsMessageFederate` objects can be used in all functions that take a `helics.HelicsFederate` object as an argument.
@@ -3541,10 +3553,14 @@ def helicsCreateMessageFederateFromConfig(config_file: str) -> HelicsMessageFede
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsMessageFederate(result)
+        return HelicsMessageFederate(handle=result, free_federates_on_finalize=free_federates_on_finalize)
 
 
-def helicsCreateCombinationFederate(fed_name: str, fi: HelicsFederateInfo = None) -> HelicsCombinationFederate:
+def helicsCreateCombinationFederate(
+                                    fed_name: str,
+                                    fi: HelicsFederateInfo = None,
+                                    free_federates_on_finalize=True
+                                    ) -> HelicsCombinationFederate:
     """
     Create a combination federate from `helics.HelicsFederateInfo`.
     Combination federates are both value federates and message federates, objects can be used in all functions
@@ -3565,10 +3581,12 @@ def helicsCreateCombinationFederate(fed_name: str, fi: HelicsFederateInfo = None
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsCombinationFederate(result)
+        return HelicsCombinationFederate(handle=result, free_federates_on_finalize=free_federates_on_finalize)
 
 
-def helicsCreateCombinationFederateFromConfig(config_file: str) -> HelicsCombinationFederate:
+def helicsCreateCombinationFederateFromConfig(config_file: str,
+                                              cleanup=True
+                                              ) -> HelicsCombinationFederate:
     """
     Create a combination federate from a JSON file or JSON string or TOML file.
     Combination federates are both value federates and message federates, objects can be used in all functions
@@ -3586,10 +3604,11 @@ def helicsCreateCombinationFederateFromConfig(config_file: str) -> HelicsCombina
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsCombinationFederate(result)
+        return HelicsCombinationFederate(handle=result, cleanup=cleanup)
 
 
-def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
+def helicsFederateClone(fed: HelicsFederate, cleanup=True) -> \
+        HelicsFederate:
     """
     Create a new reference to an existing federate.
     This will create a new `helics.HelicsFederate` object that references the existing federate.
@@ -3607,7 +3626,7 @@ def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        return HelicsFederate(result)
+        return HelicsFederate(handle=result, free_federates_on_finalize=cleanup)
 
 
 def helicsCreateFederateInfo() -> HelicsFederateInfo:
