@@ -30,6 +30,7 @@ from . import _build
 lib = _build.lib
 ffi = _build.ffi
 
+PYHELICS_ADD_EXCEPTION_HANDLER = bool(os.environ.get("PYHELICS_ADD_EXCEPTION_HANDLER", False))
 PYHELICS_FREE_ON_DESTRUCTION = bool(os.environ.get("PYHELICS_FREE_ON_DESTRUCTION", True))
 PYHELICS_CLEANUP = os.environ.get("PYHELICS_CLEANUP", None)
 if PYHELICS_CLEANUP is not None:
@@ -389,6 +390,7 @@ if HELICS_VERSION == 2:
         TIMING = 5  # HelicsLogLevels
         DATA = 6  # HelicsLogLevels
         DEBUG = 7  # HelicsLogLevels
+
 
 else:
 
@@ -9358,19 +9360,18 @@ def helicsLoadSignalHandlerCallback():
 
 helicsLoadSignalHandlerCallback()
 
-if sys.__excepthook__ == sys.excepthook:
-    _original_excepthook = sys.__excepthook__
-else:
-    _original_excepthook = sys.excepthook
+if PYHELICS_ADD_EXCEPTION_HANDLER:
+    if sys.__excepthook__ == sys.excepthook:
+        _original_excepthook = sys.__excepthook__
+    else:
+        _original_excepthook = sys.excepthook
 
+    def _handle_exception(exc_type, exc_value, exc_traceback):
+        if not hasattr(sys, "ps1") and sys.stderr.isatty() and not issubclass(exc_type, HelicsException):
+            # Only add hook in interactive mode
+            exc = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            helicsAbort(-29, "".join(exc).strip())
 
-def _handle_exception(exc_type, exc_value, exc_traceback):
-    if not hasattr(sys, "ps1") and sys.stderr.isatty() and not issubclass(exc_type, HelicsException):
-        # Only add hook in interactive mode
-        exc = traceback.format_exception(exc_type, exc_value, exc_traceback)
-        helicsAbort(-29, "".join(exc).strip())
+        _original_excepthook(exc_type, exc_value, exc_traceback)
 
-    _original_excepthook(exc_type, exc_value, exc_traceback)
-
-
-sys.excepthook = _handle_exception
+    sys.excepthook = _handle_exception
