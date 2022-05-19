@@ -5818,6 +5818,142 @@ def helicsPublicationSetTag(pub: HelicsPublication, tagname: str, tagvalue: str)
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsFederateGetTag(fed: HelicsFederate, tagname: str):
+    """
+    Get the data in a specified tag of a federate.
+
+    **Parameters**
+
+    - **`fed`**: The federate object to query.
+    - **`tagname`**: The name of the tag to query.
+
+    **Returns**
+
+    A string with the tag data.
+    """
+
+    f = loadSym("helicsFederateGetTag")
+    result = f(fed.handle, cstring(tagname))
+    return ffi.string(result).decode()
+
+
+def helicsFederateSetTag(fed: HelicsFederate, tagname: str, tagvalue: str):
+    """
+    Set the data in a specific tag for a federate.
+
+    **`fed`**: The federate object to set a tag for.
+    **`tagname`**: The name of the tag to set.
+    **`tagvalue`**: The string value to associate with a tag.
+    """
+    f = loadSym("helicsFederateSetTag")
+    err = helicsErrorInitialize()
+    f(fed.handle, cstring(tagname), cstring(tagvalue), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointGetTag(endpoint: HelicsEndpoint, tagname: str):
+    """
+    Get the data in a specified tag of a endpoint.
+
+    **Parameters**
+
+    - **`endpoint`**: The endpoint object to query.
+    - **`tagname`**: The name of the tag to query.
+
+    **Returns**
+
+    A string with the tag data.
+    """
+
+    f = loadSym("helicsEndpointGetTag")
+    result = f(endpoint.handle, cstring(tagname))
+    return ffi.string(result).decode()
+
+
+def helicsEndpointSetTag(endpoint: HelicsEndpoint, tagname: str, tagvalue: str):
+    """
+    Set the data in a specific tag for a endpoint.
+
+    **`endpoint`**: The endpoint object to set a tag for.
+    **`tagname`**: The name of the tag to set.
+    **`tagvalue`**: The string value to associate with a tag.
+    """
+    f = loadSym("helicsEndpointSetTag")
+    err = helicsErrorInitialize()
+    f(endpoint.handle, cstring(tagname), cstring(tagvalue), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsInputGetTag(input: HelicsInput, tagname: str):
+    """
+    Get the data in a specified tag of a input.
+
+    **Parameters**
+
+    - **`input`**: The input object to query.
+    - **`tagname`**: The name of the tag to query.
+
+    **Returns**
+
+    A string with the tag data.
+    """
+
+    f = loadSym("helicsInputGetTag")
+    result = f(input.handle, cstring(tagname))
+    return ffi.string(result).decode()
+
+
+def helicsInputSetTag(input: HelicsInput, tagname: str, tagvalue: str):
+    """
+    Set the data in a specific tag for a input.
+
+    **`input`**: The input object to set a tag for.
+    **`tagname`**: The name of the tag to set.
+    **`tagvalue`**: The string value to associate with a tag.
+    """
+    f = loadSym("helicsInputSetTag")
+    err = helicsErrorInitialize()
+    f(input.handle, cstring(tagname), cstring(tagvalue), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFilterGetTag(filter: HelicsFilter, tagname: str):
+    """
+    Get the data in a specified tag of a filter.
+
+    **Parameters**
+
+    - **`filter`**: The filter object to query.
+    - **`tagname`**: The name of the tag to query.
+
+    **Returns**
+
+    A string with the tag data.
+    """
+
+    f = loadSym("helicsFilterGetTag")
+    result = f(filter.handle, cstring(tagname))
+    return ffi.string(result).decode()
+
+
+def helicsFilterSetTag(filter: HelicsFilter, tagname: str, tagvalue: str):
+    """
+    Set the data in a specific tag for a filter.
+
+    **`filter`**: The filter object to set a tag for.
+    **`tagname`**: The name of the tag to set.
+    **`tagvalue`**: The string value to associate with a tag.
+    """
+    f = loadSym("helicsFilterSetTag")
+    err = helicsErrorInitialize()
+    f(filter.handle, cstring(tagname), cstring(tagvalue), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsEndpointSetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption, value: int):
     """
     Set a handle option on an endpoint.
