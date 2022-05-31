@@ -981,6 +981,7 @@ class HelicsFilter(_HelicsCHandle):
 
     @property
     def name(self) -> str:
+        """Get the name of the filter."""
         return helicsFilterGetName(self)
 
     @property
