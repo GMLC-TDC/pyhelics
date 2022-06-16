@@ -4742,6 +4742,26 @@ def helicsFederateSetGlobal(fed: HelicsFederate, name: str, value: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsFederateSetStateChangeCallback(fed: HelicsFederate, state_changer, user_data):
+    """
+    Set the callback for a `helics.HelicsFederate` state change
+
+    Add a logging callback function for the C.
+    The logging callback will be called when a message flows into a `helics.HelicsFederate` from the core or from a federate.
+
+    # Parameters
+
+    - **`fed`**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`, `helics.helicsCreateMessageFederate` or `helics.helicsCreateCombinationFederate`
+    - **`state_changer`**: a callback with signature void(HelicsFederateState newState, HelicsFederateState oldState, void *userdata);
+    - **`user_data`**: a pointer to user data that is passed to the function when executing
+    """
+    f = loadSym("helicsFederateSetStateChangeCallback")
+    err = helicsErrorInitialize()
+    f(fed.handle, state_changer, user_data, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsFederateAddDependency(fed: HelicsFederate, name: str):
     """
     Add a time dependency for a federate. The federate will depend on the given named federate for time synchronization.
