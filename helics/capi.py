@@ -7294,6 +7294,26 @@ def helicsTranslatorSetOption(translator: HelicsTranslator, option: HelicsHandle
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsTranslatorSetCustomCallback(translator, to_message_call, to_value_call, userdata):
+    """
+    Set a general callback for a custom translator.
+
+    Add a pair of custom callbacks for running a translator operation in the C shared library.
+
+    **Parameters**
+
+    - **`translator`**: The translator object to set the callbacks for.
+    - **`to_message_call`**: A callback with signature void(HelicsDataBuffer, HelicsMessage, void *); The function arguments are raw Value data, the messageObject to fill out and a pointer to user data.
+    - **`to_value_call`**: A callback with signature void(HelicsMessage, HelicsDataBuffer, void *); The function arguments are a message object, the data buffer to fill out and a pointer to user data.
+    - **`userdata`**: A pointer to user data that is passed to the functions when executing.
+    """
+    f = loadSym("helicsTranslatorSetCustomCallback")
+    err = helicsErrorInitialize()
+    f(translator.handle, to_message_call, to_value_call, userdata, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsFederateRegisterSubscription(fed: HelicsFederate, name: str, units: str = "") -> HelicsInput:
     """
     Functions related to value federates for the C api.
@@ -8962,7 +8982,7 @@ def helicsFederateSetTimeRequestEntryCallback(fed: HelicsFederate, request_time,
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFederateSetTimeRequestUpdateCallback(fed: HelicsFederate, update_time, user_data):
+def helicsFederateSetTimeUpdateCallback(fed: HelicsFederate, time_update, user_data):
     """
     Set the callback for the time request
 
@@ -8974,9 +8994,9 @@ def helicsFederateSetTimeRequestUpdateCallback(fed: HelicsFederate, update_time,
     - **`update_time`**: a callback with signature void(HelicsTime newTime, bool iterating, void *userdata); The function arguments are the current time value, the requested time value, a bool indicating that the time is iterating, and pointer to the userdata
     - **`user_data`**: a pointer to user data that is passed to the function when executing
     """
-    f = loadSym("helicsFederateSetTimeRequestUpdateCallback")
+    f = loadSym("helicsFederateSetTimeUpdateCallback")
     err = helicsErrorInitialize()
-    f(fed.handle, update_time, user_data, err)
+    f(fed.handle, time_update, user_data, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
