@@ -340,12 +340,12 @@ def test_valuefederate_test_complex():
     # publish string1 at time=0.0
     h.helicsPublicationPublishComplex(pubid, complex(rTestValue, iTestValue))
 
-    assert (rDefaultValue, iDefaultValue) == h.helicsInputGetComplex(subid)
+    assert complex(rDefaultValue, iDefaultValue) == h.helicsInputGetComplex(subid)
 
     grantedtime = h.helicsFederateRequestTime(vFed, 1.0)
     assert grantedtime == 0.01
 
-    assert (rTestValue, iTestValue) == h.helicsInputGetComplex(subid)
+    assert complex(rTestValue, iTestValue) == h.helicsInputGetComplex(subid)
 
     destroyFederate(vFed, fedinfo)
     destroyBroker(broker)
@@ -616,12 +616,13 @@ def test_valuefederate_test_file_load():
     h.helicsFederateDisconnect(vFed)
     h.helicsFederateFree(vFed)
     h.helicsCloseLibrary()
-    
+
+
 def test_valuefederate_test_bytes():
     broker = createBroker()
     vFed, fedinfo = createValueFederate()
-    defaultValue = bytes([1,2,3,4,5])
-    testValue = bytes([5,4,3,2,1,0,255,30,17,18,19])
+    defaultValue = bytes([1, 2, 3, 4, 5])
+    testValue = bytes([5, 4, 3, 2, 1, 0, 255, 30, 17, 18, 19])
     pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_RAW, "")
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
     h.helicsInputSetDefaultBytes(subid, defaultValue)

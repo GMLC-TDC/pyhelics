@@ -2389,10 +2389,8 @@ class HelicsInput(_HelicsCHandle):
     @property
     def complex(self) -> complex:
         """Get the value as a complex number."""
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            r, i = helicsInputGetComplex(self)
-        return complex(r, i)
+        c = helicsInputGetComplex(self)
+        return c
 
     @property
     def complex_vector(self):  # -> List[complex]:

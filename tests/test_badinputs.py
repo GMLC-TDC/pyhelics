@@ -206,7 +206,7 @@ def test_bad_input_tests_raw_tests():
     h.helicsPublicationPublishDouble(pubid, 27)
     h.helicsFederateRequestNextStep(vFed1)
     s = h.helicsInputGetComplex(subid)
-    assert complex(*s) != 27 + 0j
+    assert complex(s) != 27 + 0j
 
     h.helicsFederateDisconnect(vFed1)
 
