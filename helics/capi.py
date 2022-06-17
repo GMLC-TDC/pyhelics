@@ -3618,6 +3618,60 @@ def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
         return HelicsFederate(result)
 
 
+def helicsFederateProtect(fed_name: str):
+    """
+    Protect a federate from finalizing and closing if all references go out of scope
+
+    This function allows a federate to be retrieved on demand, it must be explicitly close later otherwise it will be destroyed
+    when the library is closed
+
+    **Parameters**
+
+    - **`fedName`**: The name of an existing HelicsFederate.
+    """
+    f = loadSym("helicsFederateProtect")
+    err = helicsErrorInitialize()
+    f(cstring(fed_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateUnProtect(fed_name: str):
+    """
+    Remove the protection of an existing federate
+
+    This function allows a federate to be retrieved on demand, it must be explicitly close later otherwise it will be destroyed
+    when the library is closed
+
+    **Parameters**
+
+    - **`fedName`**: The name of an existing HelicsFederate.
+    """
+    f = loadSym("helicsFederateUnProtect")
+    err = helicsErrorInitialize()
+    f(cstring(fed_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateIsProtected(fed_name: str) -> bool:
+    """
+    Checks if an existing federate is protected
+
+    **Parameters**
+
+    - **`fedName`**: The name of an existing HelicsFederate.
+
+    **Returns**: boolean if existing federate is protected
+    """
+    f = loadSym("helicsFederateIsProtected")
+    err = helicsErrorInitialize()
+    result = f(cstring(fed_name), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    return result == 1
+
+
 def helicsCreateFederateInfo() -> HelicsFederateInfo:
     """
     Create `helics.HelicsFederateInfo` for specifying federate information when constructing a federate.
@@ -3929,6 +3983,24 @@ def helicsGetOptionValue(value: str) -> int:
     result = f(cstring(value))
     if result == -1 or result == -101:
         raise HelicsException("[-1] Unknown option value for flag `{value}`".format(value=value))
+    else:
+        return result
+
+
+def helicsGetDataType(value: str) -> int:
+    """
+    Get the data type for use in `helics.helicsFederateRegisterPublication`, `helics.helicsFederateRegisterInput`, `helics.helicsFilterSetOption`.
+
+    **Parameters**
+
+    - **`value`**: A string representing a data type.
+
+    **Returns**: An int with the data type or HELICS_DATA_TYPE_UNKNOWN(-1) if not a valid value.
+    """
+    f = loadSym("helicsGetDataType")
+    result = f(cstring(value))
+    if result == -1 or result == -101:
+        raise HelicsException("[-1] Unknown data type value `{value}`".format(value=value))
     else:
         return result
 
@@ -4559,6 +4631,22 @@ def helicsFederateRequestTimeIterativeComplete(fed: HelicsFederate) -> Tuple[Hel
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return result, out_iterate
+
+
+def helicsFederateProcessCommunications(fed: HelicsFederate, period: HelicsTime):
+    """
+    Tell helics to process internal communications for a period of time.
+
+    **Parameters**
+
+    - **`fed`**: The federate to tell to process.
+    - **`period`**: The length of time to process communications and then return control.
+    """
+    f = loadSym("helicsFederateProcessCommunications")
+    err = helicsErrorInitialize()
+    f(fed.handle, period, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateGetName(fed: HelicsFederate) -> str:
@@ -5347,6 +5435,31 @@ def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, destination: str, dat
     """
     warnings.warn("This function is deprecated. Use `helicsEndpointSendBytesTo` instead.")
     helicsEndpointSendBytesTo(endpoint, data, destination)
+
+
+def helicsEndpointSendBytesAt(endpoint: HelicsEndpoint, data: bytes, time: HelicsTime):
+    """
+    Send a message at a specific time to the targeted destinations
+
+    - **`endpoint`**: The endpoint to send the data from.
+    - **`data`**: The data to send.
+    - **`time`**: The time the message should be sent.
+    """
+    err = helicsErrorInitialize()
+    if isinstance(data, str):
+        data = data.encode()
+    if not isinstance(data, bytes):
+        raise HelicsException(
+            """Raw data must be of type `bytes`. Got {t} instead. Try converting it to bytes (e.g. `"hello world".encode()`""".format(t=type(data))
+        )
+
+    inputDataLength = len(data)
+
+    f = loadSym("helicsEndpointSendBytesToAt")
+    f(endpoint.handle, data, inputDataLength, time, err)
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destination: str, time: HelicsTime):
@@ -6418,6 +6531,18 @@ def helicsMessageClearFlags(message: HelicsMessage):
     f(message.handle)
 
 
+def helicsMessageClear(message: HelicsMessage):
+    """
+    Reset message to empty state
+
+    **Parameters**
+
+    - **`message`** - The message object in question.
+    """
+    f = loadSym("helicsMessageClear")
+    f(message.handle)
+
+
 def helicsMessageSetFlagOption(message: HelicsMessage, flag: int, value: bool):
     """
     Set a flag on a message.
@@ -6986,7 +7111,7 @@ def helicsFederateRegisterGlobalTranslator(fed: HelicsFederate, type: HelicsTran
         return HelicsTranslator(result)
 
 
-def helicsCoreRegisterGlobalTranslator(core: HelicsCore, type: HelicsTranslatorTypes, name: str) -> HelicsTranslator:
+def helicsCoreRegisterTranslator(core: HelicsCore, type: HelicsTranslatorTypes, name: str) -> HelicsTranslator:
     """
     Create a source Translator on the specified core.
 
@@ -8137,7 +8262,7 @@ def helicsInputGetChar(ipt: HelicsInput) -> str:
         return result.decode()
 
 
-def helicsInputGetComplexObject(ipt: HelicsInput) -> Tuple[float, float]:
+def helicsInputGetComplexObject(ipt: HelicsInput) -> complex:
     """
     Get a complex object from an input object.
 
@@ -8153,11 +8278,10 @@ def helicsInputGetComplexObject(ipt: HelicsInput) -> Tuple[float, float]:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        warnings.warn("This function will return a complex number in the next minor release")
-        return (result.real, result.imag)
+        return complex(result.real, result.imag)
 
 
-def helicsInputGetComplex(ipt: HelicsInput) -> Tuple[float, float]:
+def helicsInputGetComplex(ipt: HelicsInput) -> complex:
     """
     Get a pair of double forming a complex number from a subscriptions.
 
@@ -8175,8 +8299,7 @@ def helicsInputGetComplex(ipt: HelicsInput) -> Tuple[float, float]:
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
-        warnings.warn("This function will return a complex number in the next minor release")
-        return (real[0], imag[0])
+        return complex(real[0], imag[0])
 
 
 def helicsInputGetVectorSize(ipt: HelicsInput) -> int:
@@ -8499,6 +8622,22 @@ def helicsInputGetPublicationType(ipt: HelicsInput) -> str:
     f = loadSym("helicsInputGetPublicationType")
     result = f(ipt.handle)
     return ffi.string(result).decode()
+
+
+def helicsInputGetPublicationDataType(ipt: HelicsInput) -> int:
+    """
+    Get the data type the publisher to an input is sending.
+
+    **Parameters**
+
+    - **`ipt`** - The input to query
+
+    **Returns**: An int containing the enumeration value of the publication type.
+    """
+    # TODO: create publication enumeration
+    f = loadSym("helicsInputGetPublicationDataType")
+    result = f(ipt.handle)
+    return result
 
 
 def helicsPublicationGetType(pub: HelicsPublication) -> str:
@@ -9020,7 +9159,7 @@ def helicsFederateSetTimeRequestReturnCallback(fed: HelicsFederate, request_time
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def HelicsQueryBufferFill(buffer: HelicsQueryBuffer, string: str):
+def helicsQueryBufferFill(buffer: HelicsQueryBuffer, string: str):
     """
     Set the data for a query callback.
 
@@ -9029,7 +9168,7 @@ def HelicsQueryBufferFill(buffer: HelicsQueryBuffer, string: str):
     - **`buffer`**: The buffer received in a helicsQueryCallback.
     - **`string`**: Pointer to the data to fill the buffer with.
     """
-    f = loadSym("HelicsQueryBufferFill")
+    f = loadSym("helicsQueryBufferFill")
     err = helicsErrorInitialize()
     f(buffer.handle, string, len(string), err)
     if err.error_code != 0:
@@ -9104,6 +9243,14 @@ def helicsFederateWaitCommand(fed: HelicsFederate) -> str:
 
 
 def helicsCoreSendCommand(core, target, command, err):
+    """
+    Send a command to another helics object through a core using asynchronous(fast) messages.
+
+    - **`core`**: The broker to send the command through.
+    - **`target`**: The name of the object to send the command to.
+    - **`command`**: The command to send.
+
+    """
     f = loadSym("helicsCoreSendCommand")
     err = helicsErrorInitialize()
     f(core.handle, cstring(target), cstring(command), err)
@@ -9111,8 +9258,48 @@ def helicsCoreSendCommand(core, target, command, err):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsCoreSendOrderedCommand(core, target, command, err):
+    """
+    Send a command to another helics object through a core using ordered sequencing.
+
+    - **`core`**: The broker to send the command through.
+    - **`target`**: The name of the object to send the command to.
+    - **`command`**: The command to send.
+
+    """
+    f = loadSym("helicsCoreSendOrderedCommand")
+    err = helicsErrorInitialize()
+    f(core.handle, cstring(target), cstring(command), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsBrokerSendCommand(broker, target, command, err):
+    """
+    Send a command to another helics object through a broker using asynchronous(fast) messages.
+
+    - **`broker`**: The broker to send the command through.
+    - **`target`**: The name of the object to send the command to.
+    - **`command`**: The command to send.
+
+    """
     f = loadSym("helicsBrokerSendCommand")
+    err = helicsErrorInitialize()
+    f(broker.handle, cstring(target), cstring(command), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsBrokerSendOrderedCommand(broker, target, command, err):
+    """
+    Send a command to another helics object through a broker using ordered sequencing.
+
+    - **`broker`**: The broker to send the command through.
+    - **`target`**: The name of the object to send the command to.
+    - **`command`**: The command to send.
+
+    """
+    f = loadSym("helicsBrokerSendOrderedCommand")
     err = helicsErrorInitialize()
     f(broker.handle, cstring(target), cstring(command), err)
     if err.error_code != 0:
@@ -9365,9 +9552,35 @@ def helicsDataBufferToDouble(data: HelicsDataBuffer) -> float:
     return f(data)
 
 
-def helicsDataBufferToBool(data: HelicsDataBuffer) -> bool:
-    f = loadSym("helicsDataBufferToBool")
+def helicsDataBufferToBoolean(data: HelicsDataBuffer) -> bool:
+    f = loadSym("helicsDataBufferToBoolean")
     return f(data)
+
+
+def helicsDataBufferToComplex(data: HelicsDataBuffer) -> complex:
+    f = loadSym("helicsDataBufferToComplex")
+    real = ffi.new("double *")
+    imag = ffi.new("double *")
+    f(data, real, imag)
+    return complex(real[0], imag[0])
+
+
+def helicsDataBufferToNamedPoint(data: HelicsDataBuffer) -> Tuple[str, float]:
+    f = loadSym("helicsDataBufferToNamedPoint")
+    maxStringLen = helicsDataBufferCapacity(data) + 1024
+    outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen=maxStringLen))
+    actualLength = ffi.new("int[1]")
+    value = ffi.new("double[1]")
+    f(data.handle, outputString, maxStringLen, actualLength, value)
+    return (outputString, value)
+
+
+def helicsLoadThreadedSignalHandler():
+    """
+    Load a threaded signal handler that handles Ctrl-C and shuts down the library
+    """
+    f = loadSym("helicsLoadThreadedSignalHandler")
+    f()
 
 
 def helicsLoadSignalHandler():
@@ -9389,12 +9602,25 @@ def _handle_helicsCallBack(code: int):
     return 0
 
 
+def helicsLoadSignalHandlerCallbackNoExit():
+    try:
+        f = loadSym("helicsLoadSignalHandlerCallbackNoExit")
+        f(_handle_helicsCallBack, True)
+    except Exception:
+        pass
+
+
 def helicsLoadSignalHandlerCallback():
     try:
         f = loadSym("helicsLoadSignalHandlerCallback")
         f(_handle_helicsCallBack, True)
     except Exception:
         pass
+
+
+def helicsClearSignalHandler():
+    f = loadSym("helicsClearSignalHandler")
+    f()
 
 
 helicsLoadSignalHandlerCallback()
