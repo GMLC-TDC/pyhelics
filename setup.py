@@ -29,13 +29,141 @@ import shlex
 from setuptools import setup, Extension, Command
 from setuptools.dist import Distribution
 from setuptools.command.build_ext import build_ext
+from setuptools.command.build_py import build_py
+from setuptools.command.egg_info import egg_info
+from setuptools.command.sdist import sdist
 
 from wheel.bdist_wheel import bdist_wheel
+from distutils.dir_util import copy_tree
+from distutils import log
 
 try:
     from urllib2 import urlopen
 except ImportError:
     from urllib.request import urlopen
+
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+IS_REPO = os.path.exists(os.path.join(HERE, ".git"))
+STATIC_DIR = os.path.join(HERE, "helics", "static")
+NODE_ROOT = os.path.join(HERE, "client")
+NPM_PATH = os.pathsep.join(
+    [
+        os.path.join(NODE_ROOT, "node_modules", ".bin"),
+        os.environ.get("PATH", os.defpath),
+    ]
+)
+
+
+def update_package_data(distribution):
+    """update package_data to catch changes during setup"""
+    build_py = distribution.get_command_obj("build_py")
+    # distribution.package_data = find_package_data()
+    # re-init build_py options which load package_data
+    build_py.finalize_options()
+
+
+def js_prerelease(command, strict=False):
+    """decorator for building minified js/css prior to another command"""
+
+    class DecoratedCommand(command):
+        def run(self):
+            jsdeps = self.distribution.get_command_obj("jsdeps")
+            if not IS_REPO and all(os.path.exists(t) for t in jsdeps.targets):
+                # sdist, nothing to do
+                command.run(self)
+                return
+
+            try:
+                self.distribution.run_command("jsdeps")
+            except Exception as e:
+                missing = [t for t in jsdeps.targets if not os.path.exists(t)]
+                if strict or missing:
+                    log.warn("rebuilding js and css failed")
+                    if missing:
+                        log.error("missing files: %s" % missing)
+                    raise e
+                else:
+                    log.warn("rebuilding js and css failed (not a problem)")
+                    log.warn(str(e))
+            command.run(self)
+            update_package_data(self.distribution)
+
+    return DecoratedCommand
+
+
+class NPM(Command):
+    description = "install package.json dependencies using npm"
+
+    user_options = []
+
+    node_modules = os.path.join(NODE_ROOT, "node_modules")
+
+    targets = ["index.html"]
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def get_npm_name(self):
+        npm_name = "npm"
+        if platform.system() == "Windows":
+            npm_name = "npm.cmd"
+        return npm_name
+
+    def has_npm(self):
+        npm_name = self.get_npm_name()
+        try:
+            subprocess.check_call([npm_name, "--version"])
+            return True
+        except:
+            return False
+
+    def should_run_npm_install(self):
+        node_modules_exists = os.path.exists(self.node_modules)
+        return self.has_npm() and not node_modules_exists
+
+    def run(self):
+        has_npm = self.has_npm()
+        if not has_npm:
+            log.error("`npm` unavailable.  If you're running this command using " "sudo, make sure `npm` is available to sudo")
+
+        env = os.environ.copy()
+        env["PATH"] = NPM_PATH
+
+        npm_name = self.get_npm_name()
+
+        if self.should_run_npm_install():
+            log.info("Installing build dependencies with npm.  " "This may take a while...")
+            subprocess.check_call(
+                [npm_name, "install"],
+                cwd=NODE_ROOT,
+                stdout=sys.stdout,
+                stderr=sys.stderr,
+            )
+            os.utime(self.node_modules, None)
+
+        subprocess.check_call(
+            [npm_name, "run", "build"],
+            cwd=NODE_ROOT,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+        )
+
+        copy_tree(os.path.join(NODE_ROOT, "build"), os.path.join(STATIC_DIR))
+
+        for t in self.targets:
+            if not os.path.exists(os.path.join(STATIC_DIR, t)):
+                msg = "Missing file: %s" % t
+                if not has_npm:
+                    msg += "\nnpm is required to build a development version "
+                    "of a widget extension"
+                raise ValueError(msg)
+
+        # update package data in case this created new files
+        update_package_data(self.distribution)
 
 
 def read(*names, **kwargs):
@@ -368,7 +496,7 @@ class HELICSCMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_args += ["-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir)]
-            if sys.maxsize > 2 ** 32:
+            if sys.maxsize > 2**32:
                 cmake_args += ["-A", "x64"]
                 build_args += ["--", "/m"]
         else:
@@ -424,8 +552,6 @@ install_requires = ["cffi>=1.6.0", "strip-hints"]
 if sys.version_info < (3, 4):
     install_requires.append("enum34")
 
-cmdclass = {"build_ext": HELICSCMakeBuild, "download": HELICSDownloadCommand}
-
 
 class HelicsBdistWheel(bdist_wheel):
     def get_tag(self):
@@ -436,13 +562,23 @@ class HelicsBdistWheel(bdist_wheel):
             return ("py3", "none") + rv[2:]
 
 
-cmdclass["bdist_wheel"] = HelicsBdistWheel
+cmdclass = {
+    "download": HELICSDownloadCommand,
+    "build_ext": js_prerelease(HELICSCMakeBuild),
+    "bdist_wheel": js_prerelease(HelicsBdistWheel),
+    "build_py": js_prerelease(build_py),
+    "egg_info": js_prerelease(egg_info),
+    "sdist": js_prerelease(sdist, strict=True),
+    "jsdeps": NPM,
+}
 
 
 class BinaryDistribution(Distribution):
     def is_pure(self):
         return False
 
+
+helics_cli_install_requires = ["flask>=2", "click", "requests", "flask-restful", "flask-cors", "pandas", "SQLAlchemy", "matplotlib"]
 
 setup(
     name="helics",
@@ -486,6 +622,7 @@ setup(
     python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*",
     install_requires=install_requires,
     extras_require={
+        "cli": install_requires + helics_cli_install_requires,
         "tests": ["pytest", "pytest-ordering", "pytest-cov", "pytest-runner"],
         "docs": [
             "mkdocs",
@@ -499,6 +636,7 @@ setup(
     cmdclass=cmdclass,
     entry_points={
         "console_scripts": [
+            "helics=helics.cli:cli",
             "helics_app=helics.bin:helics_app",
             "helics_broker=helics.bin:helics_broker",
             "helics_broker_server=helics.bin:helics_broker_server",
