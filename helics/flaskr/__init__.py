@@ -236,11 +236,11 @@ class Profile(Resource):
 api.add_resource(Profile, "/api/profile")
 
 
-@app.route("/", defaults={"path": "index.html"})
+@app.route("/", defaults={"path": os.path.join(current_directory, "..", "static", "index.html")})
 @app.route("/<path:path>")
 def index(path):
     return app.send_static_file(path)
 
 
 def run(path=None):
-    app.run(debug=True)
+    app.run()
