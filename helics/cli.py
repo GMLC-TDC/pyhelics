@@ -39,9 +39,7 @@ def _get_version():
         import helics_apps as ha
 
         if not h.helicsGetVersion().startswith(ha.__version__.strip("v")):
-            click.echo(
-                "`helics` and `helics-apps` versions don't match. You may want to run `pip install helics helics-apps --upgrade`.", status="error"
-            )
+            click.echo("`helics` and `helics-apps` versions don't match. You may want to run `pip install helics helics-apps --upgrade`.")
     except ImportError:
         pass
 
