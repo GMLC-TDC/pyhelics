@@ -4,9 +4,7 @@ import os
 import sys
 from dataclasses import dataclass
 
-from flask import Flask, render_template, send_from_directory
-from flask import jsonify
-from flask import Flask, request
+from flask import Flask, render_template, send_from_directory, request, jsonify
 from flask_restful import Resource, Api, reqparse
 from flask_cors import CORS
 import sqlalchemy as sa
@@ -236,11 +234,11 @@ class Profile(Resource):
 api.add_resource(Profile, "/api/profile")
 
 
-@app.route("/", defaults={"path": os.path.join(current_directory, "..", "static", "index.html")})
+@app.route("/", defaults={"path": "index.html"})
 @app.route("/<path:path>")
 def index(path):
-    return app.send_static_file(path)
+    return send_from_directory(os.path.join(current_directory, "..", "static"), path)
 
 
-def run(path=None):
-    app.run()
+def run():
+    app.run(debug=os.environ.get("PYHELICS_FLASK_DEBUG", False))

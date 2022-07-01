@@ -23,6 +23,7 @@ except ImportError:
     def cast(_, val):
         return val
 
+
 from . import _build
 
 lib = _build.lib
@@ -9627,7 +9628,7 @@ def helicsClearSignalHandler():
     f()
 
 
-helicsLoadSignalHandlerCallback()
+# helicsLoadSignalHandlerCallback()
 
 if sys.__excepthook__ == sys.excepthook:
     _original_excepthook = sys.__excepthook__

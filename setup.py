@@ -30,6 +30,7 @@ from setuptools import setup, Extension, Command
 from setuptools.dist import Distribution
 from setuptools.command.build_ext import build_ext
 from setuptools.command.build_py import build_py
+from setuptools.command.develop import develop
 from setuptools.command.egg_info import egg_info
 from setuptools.command.sdist import sdist
 
@@ -566,6 +567,7 @@ cmdclass = {
     "download": HELICSDownloadCommand,
     "build_ext": js_prerelease(HELICSCMakeBuild),
     "bdist_wheel": js_prerelease(HelicsBdistWheel),
+    "develop": js_prerelease(develop),
     "build_py": js_prerelease(build_py),
     "egg_info": js_prerelease(egg_info),
     "sdist": js_prerelease(sdist, strict=True),
