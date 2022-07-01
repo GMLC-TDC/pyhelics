@@ -52,6 +52,7 @@ class HelicsObserverFederate:
         self.fedinfo.property[h.HELICS_PROPERTY_TIME_PERIOD] = 1.0
         self.fedinfo.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] = True
         self.fedinfo.flag[h.HELICS_HANDLE_OPTION_STRICT_TYPE_CHECKING] = True
+        self.fedinfo.flag[h.HELICS_FLAG_OBSERVER] = True
         logger.info("Creating observer")
         self.federate = h.helicsCreateCombinationFederate(self.name, self.fedinfo)
         logger.info("Entering initialization mode")

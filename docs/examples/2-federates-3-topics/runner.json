@@ -15,7 +15,7 @@
     },
     {
       "directory": ".",
-      "exec": "helics_broker -f3 --profiler=profile.txt",
+      "exec": "helics_broker -f2 --profiler=profile.txt",
       "host": "localhost",
       "name": "profiler-broker"
     },
