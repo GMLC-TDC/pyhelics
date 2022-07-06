@@ -456,13 +456,14 @@ class HELICSCMakeBuild(build_ext):
     def run(self):
         try:
             out = subprocess.check_output(["cmake", "--version"])
-        except OSError:
-            raise RuntimeError("CMake must be installed to build the following extensions: " + ", ".join(e.name for e in self.extensions))
+            cmake_version = re.search(r"version\s*([\d.]+)", out.decode().lower()).group(1)
+            cmake_version = [int(i) for i in cmake_version.split(".")]
+            if cmake_version < [3, 5, 1]:
+                raise RuntimeError("CMake >= 3.5.1 is required to build helics")
 
-        cmake_version = re.search(r"version\s*([\d.]+)", out.decode().lower()).group(1)
-        cmake_version = [int(i) for i in cmake_version.split(".")]
-        if cmake_version < [3, 5, 1]:
-            raise RuntimeError("CMake >= 3.5.1 is required to build helics")
+        except OSError:
+            if not os.path.exists(PYHELICS_INSTALL):
+                raise RuntimeError("CMake must be installed to build the following extensions: " + ", ".join(e.name for e in self.extensions))
 
         for ext in self.extensions:
             self.build_extension(ext)
