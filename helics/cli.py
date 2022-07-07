@@ -167,19 +167,12 @@ def run(path, silent, no_log_files, no_kill_on_error):
     if not silent:
         info("Running federation: {name}".format(name=config["name"]))
 
-    auto_broker = False
-    for f in config["federates"]:
-        if f["name"] == "broker":
-            break
-    else:
-        if config["broker"] is not False:
-            auto_broker = True
-
-    if auto_broker:
-        info(
-            "Adding auto broker (i.e. `helics_broker -f{f}`) to helics-cli subprocesses.".format(f=len(config["federates"])),
-            blink=True,
-        )
+    if "broker" in config.keys() and config["broker"] is not False:
+        if not silent:
+            info(
+                "Adding auto broker (i.e. `helics_broker -f{f}`) to helics-cli subprocesses.".format(f=len(config["federates"])),
+                blink=True,
+            )
         config["federates"].append(
             {"directory": ".", "exec": "helics_broker -f{}".format(len(config["federates"])), "host": "localhost", "name": "broker"}
         )
@@ -225,20 +218,21 @@ def run(path, silent, no_log_files, no_kill_on_error):
 
     try:
         t.start()
-        info(
-            "Waiting for {} processes to finish ...".format(len(process_list)),
-        )
+        if not silent:
+            info(
+                "Waiting for {} processes to finish ...".format(len(process_list)),
+            )
         for p in process_list:
             p.process.wait()
     except KeyboardInterrupt:
-        echo("User interrupted processes. Terminating safely ...")
+        warn("User interrupted processes. Terminating safely ...")
         for o in output_list:
             o.file.close()
         for p in process_list:
             p.process.kill()
     except Exception as e:
         click.echo("")
-        echo(f"{e}. Terminating ...", fg="red", level="error")
+        error(f"{e}. Terminating ...")
         if kill_on_error:
             for o in output_list:
                 o.file.close()
