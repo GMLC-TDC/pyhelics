@@ -164,9 +164,6 @@ def run(path, silent, no_log_files, no_kill_on_error):
     with open(path_to_config) as f:
         config = json.loads(f.read())
 
-    if "broker" in config.keys() and config["broker"] is not False:
-        warn("Auto starting broker is will be deprecated going forward.")
-
     if not silent:
         info("Running federation: {name}".format(name=config["name"]))
 
