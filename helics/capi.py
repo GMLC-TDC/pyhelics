@@ -5543,7 +5543,7 @@ def helicsEndpointSendMessageObjectZeroCopy(endpoint: HelicsEndpoint, message: H
     **DEPRECATED**
     """
     warnings.warn("This function has been deprecated. Use `helicsEndpointSendMessage` instead.")
-    return helicsEndpointSendMessage(endpoint, message)
+    return helicsEndpointSendMessageZeroCopy(endpoint, message)
 
 
 def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
@@ -5559,6 +5559,25 @@ def helicsEndpointSendMessage(endpoint: HelicsEndpoint, message: HelicsMessage):
         f = loadSym("helicsEndpointSendMessageObject")
     else:
         f = loadSym("helicsEndpointSendMessage")
+    err = helicsErrorInitialize()
+    f(endpoint.handle, message.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsEndpointSendMessageZeroCopy(endpoint: HelicsEndpoint, message: HelicsMessage):
+    """
+    Send a message object from a specific endpoint, the message will not be copied and the message object will no longer be valid after the call.
+
+    **Parameters**
+
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`message`** - The actual message to send which will be copied.
+    """
+    if HELICS_VERSION == 2:
+        f = loadSym("helicsEndpointSendMessageObjectZeroCopy")
+    else:
+        f = loadSym("helicsEndpointSendMessageZeroCopy")
     err = helicsErrorInitialize()
     f(endpoint.handle, message.handle, err)
     if err.error_code != 0:
@@ -9450,6 +9469,21 @@ def helicsDataBufferFree(data: HelicsDataBuffer):
     f(data)
 
 
+def helicsDataBufferIsValid(data: HelicsDataBuffer) -> bool:
+    f = loadSym("helicsDataBufferIsValid")
+    return f(data) == 1
+
+
+def helicsDataBufferConvertToType(data: HelicsDataBuffer, new_data_type: int):
+    f = loadSym("helicsDataBufferConvertToType")
+    return f(data, new_data_type) == 1
+
+
+def helicsDataBufferClone(data: HelicsDataBuffer) -> HelicsDataBuffer:
+    f = loadSym("helicsDataBufferClone")
+    return HelicsDataBuffer(f(data))
+
+
 def helicsDataBufferCapacity(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferCapacity")
     return f(data)
@@ -9458,6 +9492,30 @@ def helicsDataBufferCapacity(data: HelicsDataBuffer) -> int:
 def helicsDataBufferSize(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferSize")
     return f(data)
+
+
+def helicsDataBufferStringSize(data: HelicsDataBuffer) -> int:
+    f = loadSym("helicsDataBufferStringSize")
+    return f(data)
+
+
+def helicsDataBufferToTime(data: HelicsDataBuffer) -> HelicsTime:
+    f = loadSym("helicsDataBufferToTime")
+    return f(data)
+
+
+def helicsDataBufferVectorSize(data: HelicsDataBuffer) -> int:
+    f = loadSym("helicsDataBufferVectorSize")
+    return f(data)
+
+
+def helicsDataBufferToVector(data: HelicsDataBuffer) -> List[float]:
+    maxlen = helicsDataBufferVectorSize(data) + 1024
+    values = ffi.new("double[{maxlen}]".format(maxlen=maxlen))
+    actualSize = ffi.new("int[1]")
+    f = loadSym("helicsDataBufferToVector")
+    f(data.handle, values, maxlen, actualSize)
+    return values
 
 
 def helicsDataBufferReserve(data: HelicsDataBuffer, new_capacity) -> bool:
@@ -9470,20 +9528,20 @@ def helicsDataBufferData(data: HelicsDataBuffer) -> bytes:
     return f(data)
 
 
-def helicsIntToBytes(value: int, data: HelicsDataBuffer):
+def helicsIntegerToBytes(value: int, data: HelicsDataBuffer):
     """
     Convert an integer to serialized bytes
     """
-    f = loadSym("helicsIntToBytes")
+    f = loadSym("helicsIntegerToBytes")
     f(value, data)
 
 
-def helicsDoubleToBytes(value: int, data: HelicsDataBuffer):
+def helicsDoubleToBytes(value: float, data: HelicsDataBuffer):
     """
     Convert a double to serialized bytes
     """
     f = loadSym("helicsDoubleToBytes")
-    f(value, data)
+    f(cdouble(value), data)
 
 
 def helicsStringToBytes(string: str, data: HelicsDataBuffer):
@@ -9491,14 +9549,22 @@ def helicsStringToBytes(string: str, data: HelicsDataBuffer):
     Convert a string to serialized bytes
     """
     f = loadSym("helicsStringToBytes")
+    f(cstring(string), data)
+
+
+def helicsRawStringToBytes(string: bytes, data: HelicsDataBuffer):
+    """
+    Convert a raw string to serialized bytes
+    """
+    f = loadSym("helicsRawStringToBytes")
     f(string, data)
 
 
-def helicsBoolToBytes(value: bool, data: HelicsDataBuffer):
+def helicsBooleanToBytes(value: bool, data: HelicsDataBuffer):
     """
     Convert a bool to serialized bytes
     """
-    f = loadSym("helicsBoolToBytes")
+    f = loadSym("helicsBooleanToBytes")
     f(value, data)
 
 
@@ -9526,6 +9592,22 @@ def helicsComplexToBytes(value: complex, data: HelicsDataBuffer):
     f(value.real, value.imag, data)
 
 
+def helicsComplexObjectToBytes(value: complex, data: HelicsDataBuffer):
+    """
+    Convert a complex to serialized bytes
+    """
+    raise NotImplementedError("`helicsComplexObjectToBytes` is not implemented.")
+
+
+def helicsComplexVectorToBytes(value: List[complex], data: HelicsDataBuffer):
+    """
+    Convert a complex to serialized bytes
+    """
+    value = [x for xs in value for x in [xs.real, xs.imag]]
+    f = loadSym("helicsComplexVectorToBytes")
+    f(value, data)
+
+
 def helicsVectorToBytes(value: List[float], data: HelicsDataBuffer):
     """
     Convert a complex to serialized bytes
@@ -9534,14 +9616,47 @@ def helicsVectorToBytes(value: List[float], data: HelicsDataBuffer):
     f(value, data)
 
 
+def helicsNamedPointToBytes(string: str, value: float, data: HelicsDataBuffer):
+    """
+    Convert a named point to serialized bytes
+    """
+    f = loadSym("helicsNAmedPointToBytes")
+    f(cstring(string), cdouble(value), data)
+
+
 def helicsDataBufferType(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferType")
     return f(data)
 
 
-def helicsDataBufferToInt(data: HelicsDataBuffer) -> int:
-    f = loadSym("helicsDataBufferToInt")
+def helicsDataBufferToInteger(data: HelicsDataBuffer) -> int:
+    f = loadSym("helicsDataBufferToInteger")
     return f(data)
+
+
+def helicsDataBufferToChar(data: HelicsDataBuffer) -> str:
+    f = loadSym("helicsDataBufferToChar")
+    return f(data)
+
+
+def helicsDataBufferToString(data: HelicsDataBuffer) -> str:
+    f = loadSym("helicsDataBufferToString")
+    maxStringLen = helicsDataBufferStringSize(data) + 1024
+    outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen=maxStringLen))
+    actualLength = ffi.new("int[1]")
+    value = ffi.new("double[1]")
+    f(data.handle, outputString, maxStringLen, actualLength, value)
+    return outputString
+
+
+def helicsDataBufferToRawString(data: HelicsDataBuffer) -> str:
+    f = loadSym("helicsDataBufferToRawString")
+    maxStringLen = helicsDataBufferCapacity(data) + 1024
+    outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen=maxStringLen))
+    actualLength = ffi.new("int[1]")
+    value = ffi.new("double[1]")
+    f(data.handle, outputString, maxStringLen, actualLength, value)
+    return outputString
 
 
 def helicsDataBufferToDouble(data: HelicsDataBuffer) -> float:
@@ -9560,6 +9675,19 @@ def helicsDataBufferToComplex(data: HelicsDataBuffer) -> complex:
     imag = ffi.new("double *")
     f(data, real, imag)
     return complex(real[0], imag[0])
+
+
+def helicsDataBufferToComplexObject(data: HelicsDataBuffer) -> complex:
+    raise NotImplementedError("`helicsDataBufferToComplexObject` is not implemented.")
+
+
+def helicsDataBufferToComplexVector(data: HelicsDataBuffer) -> List[complex]:
+    maxlen = helicsDataBufferCapacity(data) + 1024
+    values = ffi.new("double[{maxlen}]".format(maxlen=maxlen))
+    actualSize = ffi.new("int[1]")
+    f = loadSym("helicsDataBufferToComplexVector")
+    f(data.handle, values, maxlen, actualSize)
+    return [complex(r, i) for r, i in zip(values[0::2], values[1::2])]
 
 
 def helicsDataBufferToNamedPoint(data: HelicsDataBuffer) -> Tuple[str, float]:
