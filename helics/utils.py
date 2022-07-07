@@ -2,8 +2,8 @@
 import click
 
 
-def info(msg):
-    echo(msg, fg="green", level="info", blink=False)
+def info(msg, blink=False):
+    echo(msg, fg="green", level="info", blink=blink)
 
 
 def warn(msg, blink=True):

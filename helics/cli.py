@@ -165,10 +165,27 @@ def run(path, silent, no_log_files, no_kill_on_error):
         config = json.loads(f.read())
 
     if "broker" in config.keys() and config["broker"] is not False:
-        echo("Auto starting broker is will be deprecated going forward.")
+        warn("Auto starting broker is will be deprecated going forward.")
 
     if not silent:
         info("Running federation: {name}".format(name=config["name"]))
+
+    auto_broker = False
+    for f in config["federates"]:
+        if f["name"] == "broker":
+            break
+    else:
+        if config["broker"] is not False:
+            auto_broker = True
+
+    if auto_broker:
+        info(
+            "Adding auto broker (i.e. `helics_broker -f{f}`) to helics-cli subprocesses.".format(f=len(config["federates"])),
+            blink=True,
+        )
+        config["federates"].append(
+            {"directory": ".", "exec": "helics_broker -f{}".format(len(config["federates"])), "host": "localhost", "name": "broker"}
+        )
 
     process_list = []
     output_list = []
@@ -236,7 +253,7 @@ def run(path, silent, no_log_files, no_kill_on_error):
                 error("Process {} exited with return code {}".format(p.name, p.process.returncode))
                 if os.path.exists(p.file):
                     with open(p.file) as f:
-                        warn('Last 10 lines of the failed process ("{}"):'.format(p.name), blink=False)
+                        warn("Last 10 lines of {}.log:".format(p.name), blink=False)
                         print("...")
                         for line in f.readlines()[-10:]:
                             print(line, end="")
