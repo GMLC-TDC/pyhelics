@@ -15,7 +15,7 @@ Python HELICS bindings
 pip install helics
 ```
 
-If you wish to get `helics-cli` functionality (_experimental_), you can install it using the following:
+If you wish to get additional functionality in the CLI (_experimental_), you can install it using the following:
 
 ```bash
 pip install 'helics[cli]'
