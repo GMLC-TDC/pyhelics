@@ -4,19 +4,19 @@ HELICS command line interface
 """
 
 import json
-import logging
 import os
+import io
 import shlex
-import shutil
 import subprocess
 from ._version import __version__
-from . import flaskr
-from . import profile as p
-from .status_checker import CheckStatusThread
+from .status_checker import CheckStatusThread, HELICSRuntimeError
 
 import click
 import pathlib
-from .observer import HelicsObserverFederate
+
+from typing import Union
+
+from .utils import echo, info, warn, error
 
 
 def _get_version():
@@ -39,9 +39,19 @@ def _get_version():
         import helics_apps as ha
 
         if not h.helicsGetVersion().startswith(ha.__version__.strip("v")):
-            click.echo("`helics` and `helics-apps` versions don't match. You may want to run `pip install helics helics-apps --upgrade`.")
+            echo("`helics` and `helics-apps` versions don't match. You may want to run `pip install helics helics-apps --upgrade`.")
     except ImportError:
         pass
+
+    try:
+        import flask
+    except ImportError:
+        echo('helics-cli\'s web interface is not installed. You may want to run `pip install "helics[cli]"`.')
+
+    try:
+        import sqlalchemy
+    except ImportError:
+        echo('helics-cli\'s observer functionality is not installed. You may want to run `pip install "helics[cli]"`.')
 
     return """{}
 
@@ -76,12 +86,16 @@ def cli(ctx, verbose):
     help="Open browser on startup",
 )
 def server(open: bool):
+    from . import flaskr
+
     flaskr.run()
 
 
 @cli.command()
 @click.option("--db-folder", prompt="path to database folder", type=click.Path(exists=True, file_okay=False, writable=True, path_type=pathlib.Path))
 def observer(db_folder: pathlib.Path):
+    from .observer import HelicsObserverFederate
+
     o = HelicsObserverFederate(folder=db_folder)
     o.run()
 
@@ -101,6 +115,8 @@ def observer(db_folder: pathlib.Path):
 )
 @click.option("--save", prompt=True, prompt_required=False, type=click.Path(), default=None, help="Path to save the plot")
 def profile_plot(path, save, invert):
+    from . import profile as p
+
     p.plot(p.profile(path, invert), save=save, kind="realtime")
 
 
@@ -111,6 +127,13 @@ from dataclasses import dataclass
 class Job:
     name: str
     process: subprocess.Popen
+    file: str
+
+
+@dataclass
+class Output:
+    name: str
+    file: Union[io.TextIOWrapper, None]
 
 
 @cli.command()
@@ -133,7 +156,7 @@ def run(path, silent, no_log_files, no_kill_on_error):
     path = os.path.dirname(path_to_config)
 
     if not os.path.exists(path_to_config):
-        print(
+        info(
             "Unable to find file `config.json` in path: {path_to_config}".format(path_to_config=path_to_config),
         )
         return None
@@ -142,23 +165,25 @@ def run(path, silent, no_log_files, no_kill_on_error):
         config = json.loads(f.read())
 
     if "broker" in config.keys() and config["broker"] is not False:
-        raise NotImplementedError("Auto starting broker is currently not supported.")
+        echo("Auto starting broker is will be deprecated going forward.")
 
     if not silent:
-        print("Running federation: {name}".format(name=config["name"]))
+        info("Running federation: {name}".format(name=config["name"]))
 
     process_list = []
     output_list = []
     for f in config["federates"]:
         if not silent:
-            print(
+            info(
                 "Running federate {name} as a background process".format(name=f["name"]),
             )
 
+        fname = os.path.abspath(os.path.join(path, "{}.log".format(f["name"])))
         if log is True:
-            o = open(os.path.join(path, "{}.log".format(f["name"])), "w")
+            o = Output(fname, open(fname, "w"))
         else:
-            o = None
+            o = Output(fname, None)
+
         try:
             directory = os.path.join(path, f["directory"])
 
@@ -169,52 +194,54 @@ def run(path, silent, no_log_files, no_kill_on_error):
             p = subprocess.Popen(
                 shlex.split(f["exec"]),
                 cwd=os.path.abspath(os.path.expanduser(directory)),
-                stdout=o,
-                stderr=o,
+                stdout=o.file,
+                stderr=o.file,
                 env=env,
             )
 
-            p = Job(name=f["name"], process=p)
+            p = Job(name=f["name"], process=p, file=o.name)
 
         except FileNotFoundError as e:
             raise click.ClickException("FileNotFoundError: {}".format(e))
         process_list.append(p)
-        if o is not None:
+        if o.file is not None:
             output_list.append(o)
 
     t = CheckStatusThread(process_list, kill_on_error)
 
     try:
         t.start()
-        print(
+        info(
             "Waiting for {} processes to finish ...".format(len(process_list)),
         )
         for p in process_list:
             p.process.wait()
     except KeyboardInterrupt:
-        print("Warning: User interrupted processes. Terminating safely ...")
+        echo("User interrupted processes. Terminating safely ...")
         for o in output_list:
-            o.close()
+            o.file.close()
         for p in process_list:
             p.process.kill()
-
     except Exception as e:
         click.echo("")
-        click.echo(f"Error: {e}. Terminating ...")
+        echo(f"{e}. Terminating ...", fg="red", level="error")
         if kill_on_error:
             for o in output_list:
-                o.close()
+                o.file.close()
             for p in process_list:
                 p.process.kill()
     finally:
         for p in process_list:
-            if p.process.returncode != 0 and p.process.returncode is not None:
-                print(
-                    "Process {} exited with return code {}".format(p.name, p.process.returncode),
-                )
-    click.echo(
-        "Done.",
-    )
+            if p.process.returncode != 0 and p.process.returncode != -9 and p.process.returncode is not None:
+                error("Process {} exited with return code {}".format(p.name, p.process.returncode))
+                if os.path.exists(p.file):
+                    with open(p.file) as f:
+                        warn('Last 10 lines of the failed process ("{}"):'.format(p.name), blink=False)
+                        print("...")
+                        for line in f.readlines()[-10:]:
+                            print(line, end="")
+                        print("...")
+    info("Done.")
 
 
 if __name__ == "__main__":

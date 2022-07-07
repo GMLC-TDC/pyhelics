@@ -549,7 +549,7 @@ class HELICSCMakeBuild(build_ext):
                 f.write(data)
 
 
-install_requires = ["cffi>=1.6.0", "strip-hints"]
+install_requires = ["cffi>=1.6.0", "strip-hints", "click>=8"]
 
 if sys.version_info < (3, 4):
     install_requires.append("enum34")
@@ -581,7 +581,7 @@ class BinaryDistribution(Distribution):
         return False
 
 
-helics_cli_install_requires = ["flask>=2", "click", "requests", "flask-restful", "flask-cors", "pandas", "SQLAlchemy", "matplotlib"]
+helics_cli_install_requires = ["flask>=2", "requests", "flask-restful", "flask-cors", "pandas", "SQLAlchemy", "matplotlib"]
 
 setup(
     name="helics",
