@@ -15,7 +15,7 @@ from .. import database as db
 
 current_directory = os.path.realpath(os.path.dirname(__file__))
 
-app = Flask(__name__.split(".")[0], static_url_path="", static_folder=os.path.join(current_directory, "../../client/build"))
+app = Flask(__name__.split(".")[0], static_url_path="", static_folder=os.path.join(current_directory, "../static"))
 api = Api(app)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -241,4 +241,12 @@ def index(path):
 
 
 def run():
-    app.run(debug=os.environ.get("PYHELICS_FLASK_DEBUG", False))
+    debug = bool(os.environ.get("PYHELICS_FLASK_DEBUG", False))
+    if debug:
+        host = None
+    else:
+        host = "0.0.0.0"
+        cli = sys.modules["flask.cli"]
+        cli.show_server_banner = lambda *x: None
+        os.environ["WERKZEUG_RUN_MAIN"] = "true"
+    app.run(host=host, debug=debug)
