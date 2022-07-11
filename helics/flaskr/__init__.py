@@ -173,7 +173,7 @@ class Profile(Resource):
             simtime = float(m.group("simtime"))
             try:
                 realtime = float(m.group("realtime"))
-            except:
+            except ValueError:
                 realtime, markertime = m.group("realtime").split("|")
                 time_marker[name] = float(markertime)
                 realtime = float(realtime)
@@ -248,5 +248,5 @@ def run():
         host = "0.0.0.0"
         cli = sys.modules["flask.cli"]
         cli.show_server_banner = lambda *x: None
-        os.environ["WERKZEUG_RUN_MAIN"] = "true"
+        # os.environ["WERKZEUG_RUN_MAIN"] = "true"
     app.run(host=host, debug=debug)
