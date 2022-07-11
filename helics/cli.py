@@ -8,6 +8,7 @@ import os
 import io
 import shlex
 import subprocess
+import collections
 from ._version import __version__
 from .status_checker import CheckStatusThread, HELICSRuntimeError
 
@@ -176,6 +177,13 @@ def run(path, silent, no_log_files, no_kill_on_error):
         config["federates"].append(
             {"directory": ".", "exec": "helics_broker -f{}".format(len(config["federates"])), "host": "localhost", "name": "broker"}
         )
+
+    names = [c["name"] for c in config["federates"]]
+    if len(set(n for n in names)) != len(config["federates"]):
+        error("Repeated names found in runner.json federates.", blink=True)
+        for n, c in [(item, count) for item, count in collections.Counter(names).items() if count > 1]:
+            info('Found name "{}" {} times'.format(n, c))
+        return -1
 
     process_list = []
     output_list = []

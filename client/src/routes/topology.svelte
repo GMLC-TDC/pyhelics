@@ -34,16 +34,16 @@
               label: keys[`${publication.federate}-${publication.handle}`],
               ignore: false,
             });
-            links.push({
-              source: `${publication.federate}-${publication.handle}`,
-              target: "__broker__",
-              ignore: true,
-            });
-            links.push({
-              source: `${target.federate}-${target.handle}`,
-              target: "__broker__",
-              ignore: true,
-            });
+            // links.push({
+            //   source: `${publication.federate}-${publication.handle}`,
+            //   target: "__broker__",
+            //   ignore: true,
+            // });
+            // links.push({
+            //   source: `${target.federate}-${target.handle}`,
+            //   target: "__broker__",
+            //   ignore: true,
+            // });
           }
         }
       }
@@ -70,16 +70,16 @@
               label: keys[`${source.federate}-${source.handle}`],
               ignore: false,
             });
-            links.push({
-              source: `${input.federate}-${input.handle}`,
-              target: "__broker__",
-              ignore: true,
-            });
-            links.push({
-              source: `${source.federate}-${source.handle}`,
-              target: "__broker__",
-              ignore: true,
-            });
+            // links.push({
+            //   source: `${input.federate}-${input.handle}`,
+            //   target: "__broker__",
+            //   ignore: true,
+            // });
+            // links.push({
+            //   source: `${source.federate}-${source.handle}`,
+            //   target: "__broker__",
+            //   ignore: true,
+            // });
           }
         }
       }
