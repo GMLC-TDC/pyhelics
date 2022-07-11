@@ -1,12 +1,12 @@
 <script lang="ts">
   import { getContext } from "svelte";
   const { data, width, height } = getContext("LayerCake");
-  import { onMount } from "svelte";
+  import { onMount, onDestroy, tick } from "svelte";
   import { fade, draw, crossfade } from "svelte/transition";
   import { scaleLinear, scaleOrdinal } from "d3-scale";
   import { zoom, zoomIdentity } from "d3-zoom";
   import { schemeCategory10 } from "d3-scale-chromatic";
-  import { select, selectAll } from "d3-selection";
+  import { select, selectAll, pointer } from "d3-selection";
   import { drag } from "d3-drag";
   import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from "d3-force";
 
@@ -19,6 +19,7 @@
     schemeCategory10,
     select,
     selectAll,
+    pointer,
     drag,
     forceSimulation,
     forceLink,
@@ -26,54 +27,60 @@
     forceCenter,
     forceCollide,
   };
-  let svg;
+  let canvas;
   let w = $width;
   let h = $height;
   const nodeRadius = 5;
   const padding = { top: 20, right: 40, bottom: 40, left: 25 };
   $: graph = $data.length == 0 ? { nodes: [], links: [] } : $data;
-  $: links = graph.links.map((d) => Object.create(d));
-  $: nodes = graph.nodes.map((d) => Object.create(d));
-  const colourScale = d3.scaleOrdinal(d3.schemeCategory10);
+  const groupColour = d3.scaleOrdinal(d3.schemeCategory10);
   let transform = d3.zoomIdentity;
-  $: simulation = d3
-    .forceSimulation(nodes)
-    .force(
-      "link",
-      d3
-        .forceLink(links)
-        .id((d) => d.name)
-        .distance((link) => (link.ignore ? 300 : 30)),
-    )
-    .force(
-      "collision",
-      d3.forceCollide().radius((d) => 25),
-    )
-    .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter($width / 2, $height / 2))
-    .on("tick", simulationUpdate);
+  let simulation, context;
 
-  onMount(() => {
-    d3.select(svg)
-      .append("svg:defs")
-      .selectAll("marker")
-      .data(["end"]) // Different link/path types can be defined here
-      .enter()
-      .append("svg:marker") // This section adds in the arrows
-      .attr("id", String)
-      .attr("viewBox", "0 -5 10 10")
-      .attr("refX", 15)
-      .attr("refY", -1.5)
-      .attr("markerWidth", 6)
-      .attr("markerHeight", 6)
-      .attr("orient", "auto")
-      .append("svg:path")
-      .attr("d", "M0,-5L10,0L0,5");
-    d3.select(svg)
+  const unsubscribe = data.subscribe(async ($data) => {
+    // Have to use tick so links and nodes can catch up
+    await tick();
+    render();
+  });
+  onDestroy(() => {
+    unsubscribe();
+  });
+
+  function render() {
+    console.log({ graph });
+    if (simulation) {
+      simulation.nodes([]).force("link", d3.forceLink([]));
+      simulation = undefined;
+    }
+    context = canvas.getContext("2d");
+    resize();
+
+    simulation = d3
+      .forceSimulation(graph.nodes)
+      .force(
+        "link",
+        d3.forceLink(graph.links).id((d) => d.name),
+      )
+      .force("charge", d3.forceManyBody())
+      .force("center", d3.forceCenter($width / 2, $height / 2))
+      .on("tick", simulationUpdate);
+    // title
+    d3.select(context.canvas).on("mousemove", (event) => {
+      const mouse = d3.pointer(event);
+      const d = simulation.find(
+        transform.invertX(mouse[0]),
+        transform.invertY(mouse[1]),
+        nodeRadius,
+      );
+
+      if (d) context.canvas.title = d.index;
+      else context.canvas.title = "";
+    });
+    d3.select(canvas)
       .call(
         d3
           .drag()
-          .container(svg)
+          .container(canvas)
           .subject(dragsubject)
           .on("start", dragstarted)
           .on("drag", dragged)
@@ -85,18 +92,65 @@
           .scaleExtent([1 / 10, 8])
           .on("zoom", zoomed),
       );
-  });
-
-  function simulationUpdate() {
-    nodes = [...nodes];
-    links = [...links];
   }
+  function simulationUpdate() {
+    context.save();
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.translate(transform.x, transform.y);
+    context.scale(transform.k, transform.k);
+    graph.links.forEach((d) => {
+      if (d.source.name == "__broker__" || d.target.name == "__broker__") {
+        return;
+      }
+      context.beginPath();
+      var dx = d.target.x - d.source.x;
+      var dy = d.target.y - d.source.y;
+      var angle = Math.atan2(dy, dx);
+      var head = nodeRadius;
+      context.moveTo(d.source.x, d.source.y);
+      context.lineTo(
+        d.target.x - Math.cos(angle) * nodeRadius * 1.2,
+        d.target.y - Math.sin(angle) * nodeRadius * 1.2,
+      );
+      context.lineTo(
+        d.target.x - Math.cos(angle) * nodeRadius * 1.2 - head * Math.cos(angle - Math.PI / 6),
+        d.target.y - Math.sin(angle) * nodeRadius * 1.2 - head * Math.sin(angle - Math.PI / 6),
+      );
+      context.moveTo(
+        d.target.x - Math.cos(angle) * nodeRadius * 1.2,
+        d.target.y - Math.sin(angle) * nodeRadius * 1.2,
+      );
+      context.lineTo(
+        d.target.x - Math.cos(angle) * nodeRadius * 1.2 - head * Math.cos(angle + Math.PI / 6),
+        d.target.y - Math.sin(angle) * nodeRadius * 1.2 - head * Math.sin(angle + Math.PI / 6),
+      );
+      context.globalAlpha = 0.6;
+      context.strokeStyle = "#999";
+      context.lineWidth = Math.sqrt(d.value);
+      context.stroke();
+      context.globalAlpha = 1;
+    });
 
+    graph.nodes.forEach((d, i) => {
+      if (d.name == "__broker__") {
+        return;
+      }
+      context.beginPath();
+      context.arc(d.x, d.y, nodeRadius, 0, 2 * Math.PI);
+      context.strokeStyle = "#fff";
+      context.lineWidth = 1.5;
+      context.stroke();
+      context.fillStyle = groupColour(d.group);
+      context.fill();
+      context.fillText(d.name, d.x + 10, d.y + 3);
+    });
+    context.restore();
+  }
   function zoomed(currentEvent) {
     transform = currentEvent.transform;
     simulationUpdate();
   }
-
+  // Use the d3-force simulation to locate the node
   function dragsubject(currentEvent) {
     const node = simulation.find(
       transform.invertX(currentEvent.x),
@@ -109,91 +163,33 @@
     }
     return node;
   }
-
   function dragstarted(currentEvent) {
     if (!currentEvent.active) simulation.alphaTarget(0.3).restart();
     currentEvent.subject.fx = transform.invertX(currentEvent.subject.x);
     currentEvent.subject.fy = transform.invertY(currentEvent.subject.y);
   }
-
   function dragged(currentEvent) {
     currentEvent.subject.fx = transform.invertX(currentEvent.x);
     currentEvent.subject.fy = transform.invertY(currentEvent.y);
   }
-
   function dragended(currentEvent) {
     if (!currentEvent.active) simulation.alphaTarget(0);
     currentEvent.subject.fx = null;
     currentEvent.subject.fy = null;
   }
+  function resize() {
+    ({ w, h } = canvas);
+  }
 </script>
 
-<div class="flex flex-col">
-  <div class="flex justify-center">
-    <div class="form-check">
-      <input type="checkbox" bind:checked={labels} />
-      <label class="form-check-label inline-block text-gray-800" for="flexCheckChecked">
-        Show labels
-      </label>
-    </div>
-  </div>
-  <svg class="grow" bind:this={svg} width={w} height={h / 1.15}>
-    {#each links as link}
-      <g stroke={link.ignore ? "" : "#999"} stroke-opacity="0.6">
-        <line
-          x1={link.source.x}
-          y1={link.source.y}
-          x2={link.target.x}
-          y2={link.target.y}
-          marker-end={link.ignore ? "" : "url(#end)"}
-          transform="translate({transform.x} {transform.y}) scale({transform.k} {transform.k})"
-        >
-          <title>{link.source.id}</title>
-        </line>
-        <text
-          class={link.ignore ? "hidden" : ""}
-          transform="translate({transform.x} {transform.y}) scale({transform.k} {transform.k})"
-          x={(link.source.x + link.target.x) / 2}
-          y={(link.source.y + link.target.y) / 2}
-          dx="12"
-          dy="0.35em">{link.label}</text
-        >
-      </g>
-    {/each}
+<svelte:window on:resize={resize} />
 
-    {#each nodes as point}
-      <circle
-        class="node"
-        r={point.name == "__broker__" ? 0 : 5}
-        fill={colourScale(point.group)}
-        cx={point.x}
-        cy={point.y}
-        transform="translate({transform.x} {transform.y}) scale({transform.k} {transform.k})"
-      >
-        <title>{point.id}</title></circle
-      >
-      {#if labels}
-        <text
-          class="label {point.name == '__broker__' ? 'hidden' : ''}"
-          transform="translate({transform.x} {transform.y}) scale({transform.k} {transform.k})"
-          x={point.x}
-          y={point.y}
-          dx="12"
-          dy=".35em">{point.federate} - {point.name}</text
-        >
-      {/if}
-    {/each}
-  </svg>
+<div class="container">
+  <canvas bind:this={canvas} width={$width} height={$height} />
 </div>
 
 <style>
-  svg {
-    width: 100%;
-    height: 100%;
-    background-color: #f0f0f0;
-  }
-  circle {
-    stroke: #fff;
-    stroke-width: 1.5;
+  canvas {
+    float: left;
   }
 </style>
