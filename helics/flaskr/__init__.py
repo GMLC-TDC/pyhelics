@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
 import logging
+import time
 import os
+import shlex
+import subprocess
 import sys
 from dataclasses import dataclass
+from typing import cast
 
 from flask import Flask, render_template, send_from_directory, request, jsonify
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Resource, Api, reqparse, abort
 from flask_cors import CORS
 import sqlalchemy as sa
 from sqlalchemy.ext.automap import automap_base
 import werkzeug
+
+import re
 
 from .. import database as db
 
@@ -137,8 +143,6 @@ class DataTable(Resource):
 
 api.add_resource(DataTable, "/api/data")
 
-import re
-
 
 class Profile(Resource):
 
@@ -167,6 +171,7 @@ class Profile(Resource):
         time_marker = {}
         for line in data.splitlines():
             m = self.PATTERN.match(line)
+            m = cast(re.Match[str], m)
             name = m.group("name")
             state = m.group("state")
             message = m.group("message")
@@ -232,6 +237,62 @@ class Profile(Resource):
 
 
 api.add_resource(Profile, "/api/profile")
+
+broker_server = {}
+
+
+class APIException(Exception):
+    def __init__(self, code, message):
+        self._code = code
+        self._message = message
+
+    @property
+    def code(self):
+        return self._code
+
+    @property
+    def message(self):
+        return self._message
+
+    def __str__(self):
+        return self.__class__.__name__ + ": " + self.message
+
+
+class BrokerServer(Resource):
+    def get(self):
+        if broker_server.get("process", None) is not None:
+            return {"status": True}
+        else:
+            return {"status": False}
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("status", type=bool, required=True, help="requested status of broker server")
+        args = parser.parse_args()
+        status = args["status"]
+        if status is True and broker_server.get("process", None) is not None:
+            return abort(417, description="Unable to start server", status=True)
+        elif status is False and broker_server.get("process", None) is None:
+            return abort(417, description="Unable to stop server", status=False)
+        elif status is True:
+            p = subprocess.Popen(shlex.split(os.path.expanduser("~/local/helics3-develop/bin/helics_broker_server --http")))
+            broker_server["process"] = p
+            return {"status": status}
+        elif status is False:
+            broker_server["process"].terminate()
+            broker_server["process"].kill()
+            counter = 0
+            # TODO: Find out why broker server is not being terminated
+            while broker_server["process"].poll() is None:
+                time.sleep(1)
+                broker_server["process"].terminate()
+                broker_server["process"].kill()
+                counter += 1
+            del broker_server["process"]
+            return {"status": status}
+
+
+api.add_resource(BrokerServer, "/api/broker-server")
 
 
 @app.route("/", defaults={"path": "index.html"})
