@@ -277,7 +277,7 @@ class BrokerServer(Resource):
         elif status is False and broker_server.get("process", None) is None:
             return abort(417, description="Unable to stop server", status=False)
         elif status is True:
-            p = subprocess.Popen(shlex.split(os.path.expanduser("~/local/helics3-develop/bin/helics_broker_server --http")))
+            p = subprocess.Popen(shlex.split("helics_broker_server --http"))
             broker_server["process"] = p
             return {"status": status}
         elif status is False:
