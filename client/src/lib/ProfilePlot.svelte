@@ -48,7 +48,8 @@
     .scaleLinear()
     .domain([xMin, xMax])
     .range([75, $width - 100]);
-  $: colorScale = d3.scaleLinear().domain(lowhighData($data)).range([1, 0]);
+  $: colorScale = (c) =>
+    d3.interpolateRdYlBu(d3.scaleLinear().domain(lowhighData($data)).range([1, 0])(c));
 
   const SCALING = 1e9;
 </script>
@@ -62,10 +63,10 @@
           y={yScale(e.name)}
           width={xScale(e.r_end) - xScale(e.r_enter)}
           height={($height / names.length) * 0.9}
-          style="fill:{d3.interpolateSpectral(
-            colorScale(e.r_end - e.r_enter),
-          )};stroke-width:1;stroke:rgb(0,0,0)"
-        />
+          style="fill:{colorScale(e.r_end - e.r_enter)};stroke-width:0.25;stroke:rgb(0,0,0)"
+        >
+          <title>{k} (t = {e.s_enter})</title>
+        </rect>
       {/each}
       <text x="0" y={yScale(k) + 25}>{k}</text>
     </g>
