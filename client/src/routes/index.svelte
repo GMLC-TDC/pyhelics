@@ -115,15 +115,15 @@
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
       <Dropzone on:drop={handleFilesSelect} multiple="false" />
 
-      {#if $data.table.length != 0}
-        <h3 class="font-medium leading-tight text-2xl mt-0 mb-2 text-blue-600">Topology</h3>
-        <Topology />
-      {/if}
-
       {#if Object.keys($data.systeminfo).length != 0}
         <div class="my-4">
           HELICS Version: {$data.systeminfo.version.string}
         </div>
+      {/if}
+
+      {#if $data.table.length != 0}
+        <h3 class="font-medium leading-tight text-2xl mt-0 mb-2 text-blue-600">Topology</h3>
+        <Topology />
       {/if}
 
       {#if $data.cores.length != 0}
