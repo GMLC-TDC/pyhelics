@@ -6,7 +6,8 @@
   import Table from "$lib/Table.svelte";
   import Dropzone from "svelte-file-dropzone";
   import { data } from "$lib/stores";
-  const BASE = "http://127.0.0.1:5000/api";
+  import Topology from "$lib/Topology.svelte";
+  const BASE = "http://127.0.0.1:5000/api/observer";
 
   function isEmpty(obj) {
     return Object.keys(obj).length === 0;
@@ -118,6 +119,11 @@
         <div class="my-4">
           HELICS Version: {$data.systeminfo.version.string}
         </div>
+      {/if}
+
+      {#if $data.table.length != 0}
+        <h3 class="font-medium leading-tight text-2xl mt-0 mb-2 text-blue-600">Topology</h3>
+        <Topology />
       {/if}
 
       {#if $data.cores.length != 0}

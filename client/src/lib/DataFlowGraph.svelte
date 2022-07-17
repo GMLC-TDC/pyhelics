@@ -47,7 +47,6 @@
   });
 
   function render() {
-    console.log({ graph });
     if (simulation) {
       simulation.nodes([]).force("link", d3.forceLink([]));
       simulation = undefined;

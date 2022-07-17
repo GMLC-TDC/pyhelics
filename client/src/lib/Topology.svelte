@@ -99,7 +99,7 @@
   });
 </script>
 
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-[50vh]">
   <div class="grow grid grid-areas-layout justify-items-stretch my-auto">
     <LayerCake data={graph}>
       <DataFlowGraph />

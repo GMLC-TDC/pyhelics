@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
 import logging
+import time
 import os
+import shlex
+import subprocess
 import sys
 from dataclasses import dataclass
+from typing import cast
 
 from flask import Flask, render_template, send_from_directory, request, jsonify
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Resource, Api, reqparse, abort
 from flask_cors import CORS
 import sqlalchemy as sa
 from sqlalchemy.ext.automap import automap_base
 import werkzeug
+
+import re
 
 from .. import database as db
 
@@ -54,7 +60,7 @@ class Database(Resource):
         return {"filename": dm.path_to_helics_db}
 
 
-api.add_resource(Database, "/api/database")
+api.add_resource(Database, "/api/observer/database")
 
 
 class SystemInfo(Resource):
@@ -63,7 +69,7 @@ class SystemInfo(Resource):
         return dm.session.query(db.SystemInfo).one().data
 
 
-api.add_resource(SystemInfo, "/api/systeminfo")
+api.add_resource(SystemInfo, "/api/observer/systeminfo")
 
 
 class Cores(Resource):
@@ -73,7 +79,7 @@ class Cores(Resource):
         return [{"id": e.id, "name": e.name, "address": e.address} for e in cores if not e.name.startswith("__observer__")]
 
 
-api.add_resource(Cores, "/api/cores")
+api.add_resource(Cores, "/api/observer/cores")
 
 
 class Federates(Resource):
@@ -83,7 +89,7 @@ class Federates(Resource):
         return [{"id": f.id, "name": f.name, "parent": f.parent} for f in federates if f.name != "__observer__"]
 
 
-api.add_resource(Federates, "/api/federates")
+api.add_resource(Federates, "/api/observer/federates")
 
 
 class Graph(Resource):
@@ -94,7 +100,7 @@ class Graph(Resource):
         return {"federate": federate, "data": data}
 
 
-api.add_resource(Graph, "/api/graphs")
+api.add_resource(Graph, "/api/observer/graphs")
 
 
 class Subscriptions(Resource):
@@ -104,7 +110,7 @@ class Subscriptions(Resource):
         return [db.as_dict(i) for i in subscriptions]
 
 
-api.add_resource(Subscriptions, "/api/subscriptions")
+api.add_resource(Subscriptions, "/api/observer/subscriptions")
 
 
 class Inputs(Resource):
@@ -114,7 +120,7 @@ class Inputs(Resource):
         return [db.as_dict(i) for i in inputs]
 
 
-api.add_resource(Inputs, "/api/inputs")
+api.add_resource(Inputs, "/api/observer/inputs")
 
 
 class Publications(Resource):
@@ -124,7 +130,7 @@ class Publications(Resource):
         return [db.as_dict(i) for i in publications]
 
 
-api.add_resource(Publications, "/api/publications")
+api.add_resource(Publications, "/api/observer/publications")
 
 
 class DataTable(Resource):
@@ -135,9 +141,7 @@ class DataTable(Resource):
         return [db.as_dict(i) for i in dm.session.query(Base.classes.datatable).all()]
 
 
-api.add_resource(DataTable, "/api/data")
-
-import re
+api.add_resource(DataTable, "/api/observer/data")
 
 
 class Profile(Resource):
@@ -167,6 +171,7 @@ class Profile(Resource):
         time_marker = {}
         for line in data.splitlines():
             m = self.PATTERN.match(line)
+            m = cast(re.Match[str], m)
             name = m.group("name")
             state = m.group("state")
             message = m.group("message")
@@ -205,7 +210,7 @@ class Profile(Resource):
             elif "ENTRY" in message and invert:
                 profile[name][-1]["s_end"] = simtime
                 profile[name][-1]["r_end"] = realtime
-        profiles = []
+        profiles = {}
         names = {k: i for i, k in enumerate(sorted(profile.keys()))}
 
         end = "r_end"
@@ -213,12 +218,14 @@ class Profile(Resource):
         scaling = 1e9
 
         for k in profile.keys():
+            profiles[k] = []
             for i in profile[k]:
                 if end in i.keys() and enter in i.keys():
                     i["name"] = k
                     i[enter] = i[enter] / scaling
                     i[end] = i[end] / scaling
-                    profiles.append(i)
+                    profiles[k].append(i)
+
         return profiles
 
     def post(self):
@@ -231,7 +238,63 @@ class Profile(Resource):
         cache["profile-path"] = os.path.join(app.config["UPLOAD_FOLDER"], "profile.txt")
 
 
-api.add_resource(Profile, "/api/profile")
+api.add_resource(Profile, "/api/profiler/")
+
+broker_server = {}
+
+
+class APIException(Exception):
+    def __init__(self, code, message):
+        self._code = code
+        self._message = message
+
+    @property
+    def code(self):
+        return self._code
+
+    @property
+    def message(self):
+        return self._message
+
+    def __str__(self):
+        return self.__class__.__name__ + ": " + self.message
+
+
+class BrokerServer(Resource):
+    def get(self):
+        if broker_server.get("process", None) is not None:
+            return {"status": True}
+        else:
+            return {"status": False}
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("status", type=bool, required=True, help="requested status of broker server")
+        args = parser.parse_args()
+        status = args["status"]
+        if status is True and broker_server.get("process", None) is not None:
+            return abort(417, description="Unable to start server", status=True)
+        elif status is False and broker_server.get("process", None) is None:
+            return abort(417, description="Unable to stop server", status=False)
+        elif status is True:
+            p = subprocess.Popen(shlex.split(os.path.expanduser("~/local/helics3-develop/bin/helics_broker_server --http")))
+            broker_server["process"] = p
+            return {"status": status}
+        elif status is False:
+            broker_server["process"].terminate()
+            broker_server["process"].kill()
+            counter = 0
+            # TODO: Find out why broker server is not being terminated
+            while broker_server["process"].poll() is None:
+                time.sleep(1)
+                broker_server["process"].terminate()
+                broker_server["process"].kill()
+                counter += 1
+            del broker_server["process"]
+            return {"status": status}
+
+
+api.add_resource(BrokerServer, "/api/broker-server")
 
 
 @app.route("/", defaults={"path": "index.html"})

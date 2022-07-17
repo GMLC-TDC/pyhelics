@@ -1,6 +1,7 @@
 <script lang="ts">
-  import Fa from 'svelte-fa'
-  import { faGithub } from '@fortawesome/free-brands-svg-icons'
+  import Fa from "svelte-fa";
+  import { faGithub } from "@fortawesome/free-brands-svg-icons";
+  import { onMount } from "svelte";
 </script>
 
 <nav
@@ -14,16 +15,19 @@
         <a class="nav-link text-white" href="/">Dashboard</a>
       </li>
       <li class="nav-item p-2">
-        <a class="nav-link text-white" href="/topology">Topology</a>
+        <a class="nav-link text-white" href="/profile">Profiler</a>
+      </li>
+      <li class="nav-item p-2">
+        <a class="nav-link text-white" href="/broker">Broker</a>
       </li>
     </ul>
     <!-- Left links -->
 
     <!-- Right elements -->
-    <div class="flex items-center relative">
+    <div class="flex space-x-2 justify-center items-center relative">
       <!-- Icon -->
       <a
-        class="text-white opacity-60 hover:opacity-80 focus:opacity-80 mr-4"
+        class="text-white opacity-60 hover:opacity-80 focus:opacity-80"
         href="https://github.com/GMLC-TDC/HELICS"
       >
         <Fa icon={faGithub} />
