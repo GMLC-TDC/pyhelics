@@ -109,7 +109,6 @@
         },
         body: JSON.stringify({}),
       });
-      console.log(r);
       await refresh();
       processingBrokerServer = false;
     }

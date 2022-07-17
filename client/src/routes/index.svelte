@@ -6,6 +6,7 @@
   import Table from "$lib/Table.svelte";
   import Dropzone from "svelte-file-dropzone";
   import { data } from "$lib/stores";
+  import Topology from "$lib/Topology.svelte";
   const BASE = "http://127.0.0.1:5000/api/observer";
 
   function isEmpty(obj) {
@@ -113,6 +114,11 @@
   <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
       <Dropzone on:drop={handleFilesSelect} multiple="false" />
+
+      {#if $data.table.length != 0}
+        <h3 class="font-medium leading-tight text-2xl mt-0 mb-2 text-blue-600">Topology</h3>
+        <Topology />
+      {/if}
 
       {#if Object.keys($data.systeminfo).length != 0}
         <div class="my-4">

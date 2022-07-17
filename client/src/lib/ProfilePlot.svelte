@@ -44,14 +44,11 @@
   $: names = Object.keys($data);
   $: yScale = d3.scaleBand().domain(names).range([$height, 0]);
   $: [xMin, xMax] = minmaxData($data);
-  $: console.log(xMin, xMax);
   $: xScale = d3
     .scaleLinear()
     .domain([xMin, xMax])
     .range([75, $width - 100]);
   $: colorScale = d3.scaleLinear().domain(lowhighData($data)).range([1, 0]);
-  $: console.log(names, names.map(yScale));
-  $: console.log($data, xScale);
 
   const SCALING = 1e9;
 </script>
