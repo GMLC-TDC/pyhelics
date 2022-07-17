@@ -18,6 +18,9 @@
         <a class="nav-link text-white" href="/topology">Topology</a>
       </li>
       <li class="nav-item p-2">
+        <a class="nav-link text-white" href="/profile">Profiler</a>
+      </li>
+      <li class="nav-item p-2">
         <a class="nav-link text-white" href="/broker">Broker</a>
       </li>
     </ul>

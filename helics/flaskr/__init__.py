@@ -60,7 +60,7 @@ class Database(Resource):
         return {"filename": dm.path_to_helics_db}
 
 
-api.add_resource(Database, "/api/database")
+api.add_resource(Database, "/api/observer/database")
 
 
 class SystemInfo(Resource):
@@ -69,7 +69,7 @@ class SystemInfo(Resource):
         return dm.session.query(db.SystemInfo).one().data
 
 
-api.add_resource(SystemInfo, "/api/systeminfo")
+api.add_resource(SystemInfo, "/api/observer/systeminfo")
 
 
 class Cores(Resource):
@@ -79,7 +79,7 @@ class Cores(Resource):
         return [{"id": e.id, "name": e.name, "address": e.address} for e in cores if not e.name.startswith("__observer__")]
 
 
-api.add_resource(Cores, "/api/cores")
+api.add_resource(Cores, "/api/observer/cores")
 
 
 class Federates(Resource):
@@ -89,7 +89,7 @@ class Federates(Resource):
         return [{"id": f.id, "name": f.name, "parent": f.parent} for f in federates if f.name != "__observer__"]
 
 
-api.add_resource(Federates, "/api/federates")
+api.add_resource(Federates, "/api/observer/federates")
 
 
 class Graph(Resource):
@@ -100,7 +100,7 @@ class Graph(Resource):
         return {"federate": federate, "data": data}
 
 
-api.add_resource(Graph, "/api/graphs")
+api.add_resource(Graph, "/api/observer/graphs")
 
 
 class Subscriptions(Resource):
@@ -110,7 +110,7 @@ class Subscriptions(Resource):
         return [db.as_dict(i) for i in subscriptions]
 
 
-api.add_resource(Subscriptions, "/api/subscriptions")
+api.add_resource(Subscriptions, "/api/observer/subscriptions")
 
 
 class Inputs(Resource):
@@ -120,7 +120,7 @@ class Inputs(Resource):
         return [db.as_dict(i) for i in inputs]
 
 
-api.add_resource(Inputs, "/api/inputs")
+api.add_resource(Inputs, "/api/observer/inputs")
 
 
 class Publications(Resource):
@@ -130,7 +130,7 @@ class Publications(Resource):
         return [db.as_dict(i) for i in publications]
 
 
-api.add_resource(Publications, "/api/publications")
+api.add_resource(Publications, "/api/observer/publications")
 
 
 class DataTable(Resource):
@@ -141,7 +141,7 @@ class DataTable(Resource):
         return [db.as_dict(i) for i in dm.session.query(Base.classes.datatable).all()]
 
 
-api.add_resource(DataTable, "/api/data")
+api.add_resource(DataTable, "/api/observer/data")
 
 
 class Profile(Resource):
@@ -210,7 +210,7 @@ class Profile(Resource):
             elif "ENTRY" in message and invert:
                 profile[name][-1]["s_end"] = simtime
                 profile[name][-1]["r_end"] = realtime
-        profiles = []
+        profiles = {}
         names = {k: i for i, k in enumerate(sorted(profile.keys()))}
 
         end = "r_end"
@@ -218,12 +218,14 @@ class Profile(Resource):
         scaling = 1e9
 
         for k in profile.keys():
+            profiles[k] = []
             for i in profile[k]:
                 if end in i.keys() and enter in i.keys():
                     i["name"] = k
                     i[enter] = i[enter] / scaling
                     i[end] = i[end] / scaling
-                    profiles.append(i)
+                    profiles[k].append(i)
+
         return profiles
 
     def post(self):
@@ -236,7 +238,7 @@ class Profile(Resource):
         cache["profile-path"] = os.path.join(app.config["UPLOAD_FOLDER"], "profile.txt")
 
 
-api.add_resource(Profile, "/api/profile")
+api.add_resource(Profile, "/api/profiler/")
 
 broker_server = {}
 

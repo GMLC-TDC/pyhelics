@@ -6,7 +6,7 @@
   import Table from "$lib/Table.svelte";
   import Dropzone from "svelte-file-dropzone";
   import { data } from "$lib/stores";
-  const BASE = "http://127.0.0.1:5000/api";
+  const BASE = "http://127.0.0.1:5000/api/observer";
 
   function isEmpty(obj) {
     return Object.keys(obj).length === 0;
