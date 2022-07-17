@@ -11,7 +11,10 @@
   let processingBrokerServer = true;
   let status = false;
   let interval = null;
-  let broker_name = "";
+  let broker_name = "Broker1";
+  let broker_port = 23404;
+  let broker_core_type = "zmq";
+  let broker_log_level = "info";
 
   const PYSERVER_BASE = "http://127.0.0.1:5000/api";
   const HELICSSERVER_BASE = "http://127.0.0.1:8080";
@@ -101,18 +104,26 @@
     processingBrokerServer = false;
   }
 
-  async function handleBrokerServerCreateClick(name) {
+  async function handleBrokerServerCreateClick(broker, port, core_type, log_level) {
     if (healthcheck) {
+      var data;
+      if (log_level === "info") {
+        data = { broker, port, core_type };
+      } else {
+        data = { broker, port, log_level, core_type };
+      }
+      console.log(JSON.stringify({ broker, port, log_level, core_type }));
       processingBrokerServer = true;
-      const r = await fetch(`${HELICSSERVER_BASE}/${name}`, {
+      const r = await fetch(`${HELICSSERVER_BASE}/create`, {
         method: "POST",
         mode: "cors",
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(data),
       });
+      console.log(r);
       await refresh();
       processingBrokerServer = false;
     }
@@ -202,7 +213,7 @@
       </div>
       <div class="modal-body relative p-4">
         <label for="broker-name-input" class="form-label inline-block mb-2 text-gray-700"
-          >Enter the name of the broker you'd like to create:</label
+          >Broker Name:</label
         >
         <input
           type="text"
@@ -228,6 +239,101 @@
           bind:value={broker_name}
         />
       </div>
+      <div class="modal-body relative p-4">
+        <label for="broker-port-input" class="form-label inline-block mb-2 text-gray-700"
+          >Broker Port:</label
+        >
+        <input
+          type="text"
+          class="
+        form-control
+        block
+        w-full
+        px-3
+        py-1.5
+        text-base
+        font-normal
+        text-gray-700
+        bg-white bg-clip-padding
+        border border-solid border-gray-300
+        rounded
+        transition
+        ease-in-out
+        m-0
+        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+      "
+          id="broker-port-input"
+          placeholder="23404"
+          bind:value={broker_port}
+        />
+      </div>
+      <div class="modal-body relative p-4">
+        <label for="broker-core-type-input" class="form-label inline-block mb-2 text-gray-700"
+          >Broker Core Type:</label
+        >
+        <select
+          bind:value={broker_core_type}
+          id="broker-core-type-input"
+          class="form-select appearance-none
+            block
+            w-full
+            px-3
+            py-1.5
+            text-base
+            font-normal
+            text-gray-700
+            bg-white bg-clip-padding bg-no-repeat
+            border border-solid border-gray-300
+            rounded
+            transition
+            ease-in-out
+            m-0
+            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+          aria-label="Core Type"
+        >
+          <option value="zmq">ZMQ</option>
+          <option value="tcp">TCP</option>
+          <option value="udp">UDP</option>
+        </select>
+      </div>
+      <div class="modal-body relative p-4">
+        <label for="broker-log-level-input" class="form-label inline-block mb-2 text-gray-700"
+          >Broker Log Level:</label
+        >
+        <select
+          bind:value={broker_log_level}
+          id="broker-core-type-input"
+          class="form-select appearance-none
+            block
+            w-full
+            px-3
+            py-1.5
+            text-base
+            font-normal
+            text-gray-700
+            bg-white bg-clip-padding bg-no-repeat
+            border border-solid border-gray-300
+            rounded
+            transition
+            ease-in-out
+            m-0
+            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+          aria-label="Log Level"
+        >
+          <option value="debug">debug</option>
+          <option value="trace">trace</option>
+          <option value="info">info</option>
+          <option value="error">error</option>
+          <option value="warning">warning</option>
+          <option value="none">none</option>
+          <option value="data">data</option>
+          <option value="connections">connections</option>
+          <option value="interfaces">interfaces</option>
+          <option value="profiling">profiling</option>
+          <option value="summary">summary</option>
+          <option value="timing">timing</option>
+        </select>
+      </div>
       <div
         class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md"
       >
@@ -246,7 +352,13 @@
             : 'pointer-events-none opacity-60'}"
           disabled={broker_name == ""}
           data-bs-dismiss="modal"
-          on:click={async () => await handleBrokerServerCreateClick(broker_name)}
+          on:click={async () =>
+            await handleBrokerServerCreateClick(
+              broker_name,
+              broker_port,
+              broker_core_type,
+              broker_log_level,
+            )}
         >
           Create
         </button>
