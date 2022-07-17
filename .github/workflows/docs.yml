@@ -19,9 +19,8 @@ jobs:
           python -m pip install -U pip install wheel setuptools
           python setup.py download
           pip install -e ".[cli,docs]"
-      - name: Run Black
+      - name: Copy README.md
         run: |
-          python -m black -l 80 helics/__init__.py
           cp README.md docs/index.md
       - run: mkdocs build
       - name: Github Pages Deploy
