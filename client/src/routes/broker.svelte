@@ -106,6 +106,9 @@
 
   async function handleBrokerServerCreateClick(broker, port, core_type, log_level) {
     if (healthcheck) {
+      if (port === "" || port === null) {
+        port = 23404;
+      }
       var data;
       if (log_level === "info") {
         data = { broker, port, core_type };
