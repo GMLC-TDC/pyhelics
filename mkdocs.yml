@@ -10,7 +10,7 @@ nav:
   - API: api/index.md
   - Pythonic API: pythonic-interface.md
   - CLI Interface: cli-interface.md
-  - Web Interface: web-interface.md
+  - Web Interface (experimental): web-interface.md
   - Migration v2 -> v3: migration-helics2-helics3.md
 
 theme:
