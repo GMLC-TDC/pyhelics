@@ -8,7 +8,7 @@
 
   let healthcheck = false;
   let brokers = [];
-  let processingBrokerServer = false;
+  let processingBrokerServer = true;
   let status = false;
   let interval = null;
   let broker_name = "";
@@ -23,6 +23,10 @@
   }
 
   onMount(async () => {
+    await refresh();
+    await tick();
+
+    processingBrokerServer = false;
     clearInterval(interval);
 
     interval = setInterval(async () => {
