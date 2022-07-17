@@ -84,6 +84,14 @@
       >
         Delete
       </button>
+      <button
+        type="button"
+        class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+        data-bs-toggle="modal"
+        data-bs-target="#broker-set-barrier-model"
+      >
+        Set Barrier
+      </button>
       {#if is_broker_barrier_time_set}
         <button
           type="button"
@@ -91,15 +99,6 @@
           on:click={handleBrokerBarrierClear}
         >
           Clear Barrier
-        </button>
-      {:else}
-        <button
-          type="button"
-          class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-          data-bs-toggle="modal"
-          data-bs-target="#broker-set-barrier-model"
-        >
-          Set Barrier
         </button>
       {/if}
     </div>
