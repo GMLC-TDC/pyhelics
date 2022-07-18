@@ -95,6 +95,8 @@
   function simulationUpdate() {
     context.save();
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.strokeStyle = "#999";
+    context.strokeRect(0, 0, $width, $height);
     context.translate(transform.x, transform.y);
     context.scale(transform.k, transform.k);
     graph.links.forEach((d) => {
@@ -127,6 +129,13 @@
       context.strokeStyle = "#999";
       context.lineWidth = Math.sqrt(d.value);
       context.stroke();
+      context.globalAlpha = 1;
+      context.fillStyle = "#aaa";
+      context.fillText(
+        d.label,
+        d.target.x - (Math.cos(angle) * Math.abs(dx)) / 2,
+        d.target.y - (Math.sin(angle) * Math.abs(dy)) / 2,
+      );
       context.globalAlpha = 1;
     });
 
