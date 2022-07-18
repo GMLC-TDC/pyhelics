@@ -39,7 +39,9 @@
   <div class="overflow-x-auto">
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
       <div class="flex space-x-4">
-        <Dropzone on:drop={handleFilesSelect} multiple="false" />
+        <Dropzone on:drop={handleFilesSelect} multiple="false">
+          <p>Drag 'n' drop a "profile.txt" file here, or click to select a "profile.txt" file</p>
+        </Dropzone>
         <button
           type="button"
           class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
