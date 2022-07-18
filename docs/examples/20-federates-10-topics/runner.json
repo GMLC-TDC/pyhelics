@@ -123,13 +123,7 @@
     },
     {
       "directory": ".",
-      "exec": "helics observer --db-folder=./",
-      "host": "localhost",
-      "name": "observer"
-    },
-    {
-      "directory": ".",
-      "exec": "helics_broker -f21 --profiler=profile.txt",
+      "exec": "helics_broker -f20 --profiler=profile.txt",
       "host": "localhost",
       "name": "profiler-broker"
     }
