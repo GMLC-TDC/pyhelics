@@ -5,7 +5,7 @@
   import Fa from "svelte-fa";
   import Table from "$lib/Table.svelte";
   import Dropzone from "svelte-file-dropzone";
-  import { data } from "$lib/stores";
+  import { data, DEFAULT } from "$lib/stores";
   import Topology from "$lib/Topology.svelte";
   const BASE = "http://127.0.0.1:5000/api/observer";
 
@@ -108,12 +108,25 @@
     });
     await updateData();
   }
+
+  async function handleClearClick(e) {
+    const profile = $data.profile;
+    $data = DEFAULT;
+    $data.profile = profile;
+  }
 </script>
 
 <div class="flex w-7/8 flex-col mt-6 mx-8">
   <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
-      <Dropzone on:drop={handleFilesSelect} multiple="false" />
+      <div class="flex space-x-4">
+        <Dropzone on:drop={handleFilesSelect} multiple="false" />
+        <button
+          type="button"
+          class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+          on:click={handleClearClick}>Clear</button
+        >
+      </div>
 
       {#if Object.keys($data.systeminfo).length != 0}
         <div class="my-4">
