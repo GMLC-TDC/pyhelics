@@ -28,6 +28,7 @@
       <!-- Icon -->
       <a
         class="text-white opacity-60 hover:opacity-80 focus:opacity-80"
+        target="_blank"
         href="https://github.com/GMLC-TDC/HELICS"
       >
         <Fa icon={faGithub} />
