@@ -15,6 +15,9 @@
         <a class="nav-link text-white" href="/">Dashboard</a>
       </li>
       <li class="nav-item p-2">
+        <a class="nav-link text-white" href="/observe">Observer</a>
+      </li>
+      <li class="nav-item p-2">
         <a class="nav-link text-white" href="/profile">Profiler</a>
       </li>
       <li class="nav-item p-2">
