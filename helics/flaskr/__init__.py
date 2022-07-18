@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import json
 import time
 import os
 import shlex
@@ -142,6 +143,25 @@ class DataTable(Resource):
 
 
 api.add_resource(DataTable, "/api/observer/data")
+
+
+class Runner(Resource):
+    def get(self):
+        with open(cache["runner-path"]) as f:
+            data = json.loads(f.read())
+        return data
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("file", type=werkzeug.datastructures.FileStorage, location="files")
+        args = parser.parse_args()
+        file = args["file"]
+        os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], "runner.json"))
+        cache["runner-path"] = os.path.join(app.config["UPLOAD_FOLDER"], "runner.json")
+
+
+api.add_resource(Runner, "/api/runner/")
 
 
 class Profile(Resource):
