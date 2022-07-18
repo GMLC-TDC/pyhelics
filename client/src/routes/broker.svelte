@@ -4,7 +4,7 @@
 
   import BrokerLayout from "$lib/BrokerLayout.svelte";
   import { data } from "$lib/stores";
-  import { onMount, tick } from "svelte";
+  import { onMount, onDestroy, tick } from "svelte";
 
   let healthcheck = false;
   let brokers = [];
@@ -36,6 +36,10 @@
       await refresh();
       await tick();
     }, 5000);
+  });
+
+  onDestroy(() => {
+    clearInterval(interval);
   });
 
   async function fetchHealthCheck() {
