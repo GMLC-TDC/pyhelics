@@ -145,7 +145,7 @@ class DataTable(Resource):
 api.add_resource(DataTable, "/api/observer/data")
 
 
-class Runner(Resource):
+class RunnerFile(Resource):
     def get(self):
         with open(cache["runner-path"]) as f:
             data = json.loads(f.read())
@@ -161,7 +161,22 @@ class Runner(Resource):
         cache["runner-path"] = os.path.join(app.config["UPLOAD_FOLDER"], "runner.json")
 
 
-api.add_resource(Runner, "/api/runner/")
+api.add_resource(RunnerFile, "/api/runner/file")
+
+
+class RunnerLog(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("file", type=werkzeug.datastructures.FileStorage, location="files")
+        args = parser.parse_args()
+        name = args["name"]
+        with open(cache["runner-path"]) as f:
+            data = json.loads(f.read())
+        print(name)
+        return data
+
+
+api.add_resource(RunnerLog, "/api/runner/log")
 
 
 class Profile(Resource):
