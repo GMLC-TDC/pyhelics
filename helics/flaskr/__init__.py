@@ -31,6 +31,9 @@ app.config["UPLOAD_FOLDER"] = "/tmp/uploads"
 cache = {
     "path": os.path.join(app.config["UPLOAD_FOLDER"], "helics-cli.sqlite.db"),
     "profile-path": os.path.join(app.config["UPLOAD_FOLDER"], "profile.txt"),
+    "runner-path": os.path.join(app.config["UPLOAD_FOLDER"], "runner.json"),
+    "runner-folder": app.config["UPLOAD_FOLDER"],
+    "runner-file-name": "runner.json",
 }
 
 
@@ -144,11 +147,27 @@ class DataTable(Resource):
 
 api.add_resource(DataTable, "/api/observer/data")
 
+status_tracker = {}
+
 
 class RunnerFile(Resource):
     def get(self):
+        print(status_tracker, cache)
         with open(cache["runner-path"]) as f:
             data = json.loads(f.read())
+        data["folder"] = cache["runner-folder"]
+        data["path"] = cache["runner-path"]
+        data["filename"] = cache["runner-file-name"]
+        for federate in data["federates"]:
+            if os.path.exists(os.path.join(data["folder"], "{}.log".format(federate["name"]))):
+                federate["log_available"] = True
+            else:
+                federate["log_available"] = False
+
+            if federate["name"] in status_tracker:
+                federate["status"] = status_tracker[federate["name"]]
+            else:
+                federate["status"] = None
         return data
 
     def post(self):
@@ -156,27 +175,117 @@ class RunnerFile(Resource):
         parser.add_argument("file", type=werkzeug.datastructures.FileStorage, location="files")
         args = parser.parse_args()
         file = args["file"]
-        os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], "runner.json"))
-        cache["runner-path"] = os.path.join(app.config["UPLOAD_FOLDER"], "runner.json")
+        path = cache["runner-folder"]
+        name = cache["runner-file-name"]
+        os.makedirs(path, exist_ok=True)
+        file.save(os.path.join(path, name))
+        cache["runner-path"] = os.path.join(path, name)
 
 
 api.add_resource(RunnerFile, "/api/runner/file")
 
 
+class RunnerFileName(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("name", type=str)
+        args = parser.parse_args()
+        name = args["name"]
+        cache["runner-file-name"] = name
+        cache["runner-path"] = os.path.join(cache["runner-folder"], cache["runner-file-name"])
+
+
+api.add_resource(RunnerFileName, "/api/runner/file/name")
+
+
+class RunnerFileFolder(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("folder", type=str)
+        args = parser.parse_args()
+        folder = args["folder"]
+        cache["runner-folder"] = folder
+        cache["runner-path"] = os.path.join(cache["runner-folder"], cache["runner-file-name"])
+
+
+api.add_resource(RunnerFileFolder, "/api/runner/file/folder")
+
+
 class RunnerLog(Resource):
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("file", type=werkzeug.datastructures.FileStorage, location="files")
+        parser.add_argument("name", type=str)
         args = parser.parse_args()
         name = args["name"]
         with open(cache["runner-path"]) as f:
             data = json.loads(f.read())
-        print(name)
-        return data
+        with open(os.path.join(os.path.dirname(cache["runner-path"]), "{}.log".format(name))) as f:
+            data = f.read()
+        return {"log": data}
 
 
 api.add_resource(RunnerLog, "/api/runner/log")
+
+
+class RunnerRun(Resource):
+    runner_server = {}
+
+    def get(self):
+        if self.runner_server.get("process", None) is not None:
+            return {"status": True}
+        else:
+            return {"status": False}
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("path", type=str, required=True, help="path to runner.json")
+        args = parser.parse_args()
+        runner_file = args["path"]
+        if not self.get()["status"]:
+            p = subprocess.Popen(shlex.split("helics run --path {}".format(runner_file)))
+            self.runner_server["process"] = p
+            return {"status": True}
+        else:
+            self.runner_server["process"].terminate()
+            self.runner_server["process"].kill()
+            counter = 0
+            while self.runner_server["process"].poll() is None or counter > 5:
+                time.sleep(1)
+                self.runner_server["process"].terminate()
+                self.runner_server["process"].kill()
+                counter += 1
+            del self.runner_server["process"]
+            return {"status": False}
+
+
+api.add_resource(RunnerRun, "/api/runner/run")
+
+
+class RunnerStatus(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("name", type=str, required=True, help="Name of federate")
+        args = parser.parse_args()
+        return {"status": status_tracker[args["name"]]}
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("name", type=str, required=True, help="Name of federate")
+        parser.add_argument("status", type=str, required=True, help="Status of federate")
+        args = parser.parse_args()
+        status_tracker[args["name"]] = args["status"]
+        return {"status": status_tracker[args["name"]]}
+
+
+api.add_resource(RunnerStatus, "/api/runner/status")
+
+
+class Health(Resource):
+    def get(self):
+        return {"status": 200}
+
+
+api.add_resource(Health, "/api/health")
 
 
 class Profile(Resource):
@@ -275,8 +384,6 @@ class Profile(Resource):
 
 api.add_resource(Profile, "/api/profiler/")
 
-broker_server = {}
-
 
 class APIException(Exception):
     def __init__(self, code, message):
@@ -296,8 +403,10 @@ class APIException(Exception):
 
 
 class BrokerServer(Resource):
+    broker_server = {}
+
     def get(self):
-        if broker_server.get("process", None) is not None:
+        if self.broker_server.get("process", None) is not None:
             return {"status": True}
         else:
             return {"status": False}
@@ -307,25 +416,25 @@ class BrokerServer(Resource):
         parser.add_argument("status", type=bool, required=True, help="requested status of broker server")
         args = parser.parse_args()
         status = args["status"]
-        if status is True and broker_server.get("process", None) is not None:
+        if status is True and self.broker_server.get("process", None) is not None:
             return abort(417, description="Unable to start server", status=True)
-        elif status is False and broker_server.get("process", None) is None:
+        elif status is False and self.broker_server.get("process", None) is None:
             return abort(417, description="Unable to stop server", status=False)
         elif status is True:
             p = subprocess.Popen(shlex.split("helics_broker_server --http"))
-            broker_server["process"] = p
+            self.broker_server["process"] = p
             return {"status": status}
         elif status is False:
-            broker_server["process"].terminate()
-            broker_server["process"].kill()
+            self.broker_server["process"].terminate()
+            self.broker_server["process"].kill()
             counter = 0
             # TODO: Find out why broker server is not being terminated
-            while broker_server["process"].poll() is None:
+            while self.broker_server["process"].poll() is None or counter > 5:
                 time.sleep(1)
-                broker_server["process"].terminate()
-                broker_server["process"].kill()
+                self.broker_server["process"].terminate()
+                self.broker_server["process"].kill()
                 counter += 1
-            del broker_server["process"]
+            del self.broker_server["process"]
             return {"status": status}
 
 

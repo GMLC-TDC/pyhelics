@@ -9,6 +9,8 @@ import io
 import shlex
 import subprocess
 import collections
+import urllib.request
+import logging
 from ._version import __version__
 from .status_checker import CheckStatusThread, HELICSRuntimeError
 
@@ -18,6 +20,10 @@ import pathlib
 from typing import Union
 
 from .utils import echo, info, warn, error
+
+HELICS_CLI_SERVER_API = "http://127.0.0.1:5000/api"
+
+logger = logging.getLogger(__name__)
 
 
 def _get_version():
@@ -137,6 +143,18 @@ class Output:
     file: Union[io.TextIOWrapper, None]
 
 
+def post(url, data):
+    r = urllib.request.Request("{}{}".format(HELICS_CLI_SERVER_API, url))
+    r.add_header("Content-Type", "application/json; charset=utf-8")
+    bytes = json.dumps(data).encode("utf-8")
+    r.add_header("Content-Length", str(len(bytes)))
+    try:
+        with urllib.request.urlopen(r, bytes) as response:
+            return json.loads(response.read().decode(response.info().get_param("charset") or "utf-8"))
+    except Exception as e:
+        logger.exception("Unable to post to helics-cli server: {}".format(e))
+
+
 @cli.command()
 @click.option(
     "--path",
@@ -151,6 +169,18 @@ def run(path, silent, no_log_files, no_kill_on_error):
     """
     Run HELICS federation
     """
+
+    r = urllib.request.Request("{}/health".format(HELICS_CLI_SERVER_API))
+
+    helics_server_available = False
+    try:
+        with urllib.request.urlopen(r) as response:
+            logger.debug(json.loads(response.read().decode(response.info().get_param("charset") or "utf-8")))
+        helics_server_available = True
+    except Exception:
+        logger.debug("Unable to connect to helics-cli server")
+        helics_server_available = False
+
     log = not no_log_files
     kill_on_error = not no_kill_on_error
     path_to_config = os.path.abspath(path)
@@ -184,6 +214,10 @@ def run(path, silent, no_log_files, no_kill_on_error):
         for n, c in [(item, count) for item, count in collections.Counter(names).items() if count > 1]:
             info('Found name "{}" {} times'.format(n, c))
         return -1
+
+    if helics_server_available:
+        post("/runner/file/name", {"name": os.path.basename(path_to_config)})
+        post("/runner/file/folder", {"folder": os.path.dirname(path_to_config)})
 
     process_list = []
     output_list = []
@@ -222,7 +256,7 @@ def run(path, silent, no_log_files, no_kill_on_error):
         if o.file is not None:
             output_list.append(o)
 
-    t = CheckStatusThread(process_list, kill_on_error)
+    t = CheckStatusThread(process_list, kill_on_error, helics_server_available)
 
     try:
         t.start()
@@ -248,6 +282,7 @@ def run(path, silent, no_log_files, no_kill_on_error):
                 p.process.kill()
     finally:
         for p in process_list:
+            t.status(p)
             if p.process.returncode != 0 and p.process.returncode != -9 and p.process.returncode is not None:
                 error("Process {} exited with return code {}".format(p.name, p.process.returncode))
                 if os.path.exists(p.file):
