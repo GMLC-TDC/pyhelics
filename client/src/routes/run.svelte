@@ -84,6 +84,36 @@
     console.log(r);
   }
 
+  async function handleRun(e) {
+    const r = await await fetch(`${BASE}/run`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(r);
+  }
+
+  async function handleLoad(e) {
+    const r = await await fetch(`${BASE}/file/path`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ path: $data.runner.path }),
+    });
+    console.log(r);
+    clearInterval(interval);
+    interval = setInterval(async () => {
+      await updateData();
+      await tick();
+    }, 1000);
+  }
+
   let interval = null;
   onMount(async () => {
     clearInterval(interval);
@@ -103,16 +133,6 @@
 <div class="flex w-7/8 flex-col mt-6 mx-8">
   <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
-      <div class="flex space-x-4">
-        <Dropzone on:drop={handleFilesSelect} multiple="false">
-          <p>Drag 'n' drop a "runner.json" file here, or click to select a "runner.json" file</p>
-        </Dropzone>
-        <button
-          type="button"
-          class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-          on:click={handleClearClick}>Clear</button
-        >
-      </div>
       {#if Object.keys($data.runner).length != 0}
         <div class="grid grid-cols-1 gap-2">
           <div class="flex justify-between py-4">
@@ -124,12 +144,24 @@
                 id="input"
                 bind:value={$data.runner.path}
                 aria-label="path to runner file"
-                readonly
               />
               <button
-                class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                on:click={handleLoad}>Load</button
+              >
+              <button
+                class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
                 data-bs-toggle="modal"
                 data-bs-target="#add-model">Add</button
+              >
+              <button
+                class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                on:click={handleRun}>Run</button
+              >
+              <button
+                type="button"
+                class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                on:click={handleClearClick}>Clear</button
               >
             </div>
           </div>

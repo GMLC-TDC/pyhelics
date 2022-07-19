@@ -211,6 +211,20 @@ class RunnerFileFolder(Resource):
 api.add_resource(RunnerFileFolder, "/api/runner/file/folder")
 
 
+class RunnerFilePath(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("path", type=str)
+        args = parser.parse_args()
+        path = args["path"]
+        cache["runner-path"] = path
+        cache["runner-folder"] = os.path.dirname(path)
+        cache["runner-file-name"] = os.path.basename(path)
+
+
+api.add_resource(RunnerFilePath, "/api/runner/file/path")
+
+
 class RunnerFileEdit(Resource):
     def delete(self):
         parser = reqparse.RequestParser()
@@ -320,12 +334,8 @@ class RunnerRun(Resource):
             return {"status": False}
 
     def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("path", type=str, required=True, help="path to runner.json")
-        args = parser.parse_args()
-        runner_file = args["path"]
         if not self.get()["status"]:
-            p = subprocess.Popen(shlex.split("helics run --path {}".format(runner_file)))
+            p = subprocess.Popen(shlex.split("helics run --path {}".format(cache["runner-path"])))
             self.runner_server["process"] = p
             return {"status": True}
         else:
