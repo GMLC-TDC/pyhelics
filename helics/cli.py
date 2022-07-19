@@ -163,9 +163,10 @@ def post(url, data):
     help="Path to config.json that describes how to run a federation",
 )
 @click.option("--silent", is_flag=True)
+@click.option("--connect-server", is_flag=True)
 @click.option("--no-log-files", is_flag=True, default=False)
 @click.option("--no-kill-on-error", is_flag=True, default=False, help="Do not kill all federates on error")
-def run(path, silent, no_log_files, no_kill_on_error):
+def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     """
     Run HELICS federation
     """
@@ -174,11 +175,13 @@ def run(path, silent, no_log_files, no_kill_on_error):
 
     helics_server_available = False
     try:
-        with urllib.request.urlopen(r) as response:
-            logger.debug(json.loads(response.read().decode(response.info().get_param("charset") or "utf-8")))
-        helics_server_available = True
+        if connect_server:
+            with urllib.request.urlopen(r) as response:
+                helics_server_available = (
+                    json.loads(response.read().decode(response.info().get_param("charset") or "utf-8")).get("status", None) == 200
+                )
     except Exception:
-        logger.debug("Unable to connect to helics-cli server")
+        warn("Unable to connect to helics-cli web server")
         helics_server_available = False
 
     log = not no_log_files
