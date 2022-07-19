@@ -8,6 +8,8 @@ helics server
 
 ![](https://user-images.githubusercontent.com/1813121/179425632-9cc1f914-d5bc-44bf-848c-893733729fb6.png)
 
+![](https://user-images.githubusercontent.com/1813121/179692080-b4dc172e-c73e-4982-8d97-17051dca8c26.png)
+
 Demo of web interface:
 
 [Link to demo](https://user-images.githubusercontent.com/1813121/179425246-9e12db06-a317-493c-88af-098fa460d3ec.mov)
