@@ -87,14 +87,18 @@ def cli(ctx, verbose):
 
 @cli.command()
 @click.option(
-    "--open",
+    "--open/--no-open",
     is_flag=True,
     default=True,
+    show_default=True,
     help="Open browser on startup",
 )
 def server(open: bool):
+    import webbrowser
     from . import flaskr
 
+    if open:
+        webbrowser.open("http://127.0.0.1:5000", 1)
     flaskr.run()
 
 
