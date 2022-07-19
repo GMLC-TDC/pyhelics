@@ -21,6 +21,7 @@
 
   async function updateData() {
     $data.runner = await (await fetch(`${BASE}/file`)).json();
+    processing = (await (await fetch(`${BASE}/run`)).json()).status;
   }
 
   async function handleFilesSelect(e) {
@@ -42,6 +43,7 @@
 
   async function handleClearClick(e) {
     $data.runner = DEFAULT.runner;
+    processing = false;
     clearInterval(interval);
   }
 
@@ -96,6 +98,18 @@
     console.log(r);
   }
 
+  async function handleCancel(e) {
+    const r = await await fetch(`${BASE}/run`, {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(r);
+  }
+
   async function handleLoad(e) {
     const r = await await fetch(`${BASE}/file/path`, {
       method: "POST",
@@ -128,6 +142,7 @@
   });
 
   let current_federate = { name: null, directory: null, exec: null };
+  let processing = false;
 </script>
 
 <div class="flex w-7/8 flex-col mt-6 mx-8">
@@ -138,6 +153,14 @@
           <div class="flex justify-between py-4">
             <h3 class="font-medium leading-tight text-2xl pt-4 mb-2 text-blue-600">Runner</h3>
             <div class="flex space-x-2 w-9/12 justify-end">
+              {#if processing}
+                <div
+                  class="spinner-border animate-spin inline-block px-3 py-2.5 w-8 h-8 border-4 rounded-full text-blue-600"
+                  role="status"
+                >
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              {/if}
               <input
                 type="text"
                 class="form-control block w-9/12 px-3 py-1.5 text-base font-normal text-gray-700 bg-gray-100 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
@@ -145,19 +168,26 @@
                 bind:value={$data.runner.path}
                 aria-label="path to runner file"
               />
-              <button
-                class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-                on:click={handleLoad}>Load</button
-              >
-              <button
-                class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-                data-bs-toggle="modal"
-                data-bs-target="#add-model">Add</button
-              >
-              <button
-                class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-                on:click={handleRun}>Run</button
-              >
+              {#if !processing}
+                <button
+                  class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                  on:click={handleLoad}>Load</button
+                >
+                <button
+                  class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                  data-bs-toggle="modal"
+                  data-bs-target="#add-model">Add</button
+                >
+                <button
+                  class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                  on:click={handleRun}>Run</button
+                >
+              {:else}
+                <button
+                  class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                  on:click={handleCancel}>Cancel</button
+                >
+              {/if}
               <button
                 type="button"
                 class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -217,16 +247,18 @@
                       <Fa icon={faQuestionCircle} />
                     </div>
                   {/if}
-                  <button
-                    class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-                    on:click={() => handleDelete(federate)}>Delete</button
-                  >
-                  <button
-                    class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-                    on:click={() => (current_federate = federate)}
-                    data-bs-toggle="modal"
-                    data-bs-target="#edit-model">Edit</button
-                  >
+                  {#if !processing}
+                    <button
+                      class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                      on:click={() => handleDelete(federate)}>Delete</button
+                    >
+                    <button
+                      class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                      on:click={() => (current_federate = federate)}
+                      data-bs-toggle="modal"
+                      data-bs-target="#edit-model">Edit</button
+                    >
+                  {/if}
                 </div>
               </div>
             </div>

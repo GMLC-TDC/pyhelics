@@ -204,7 +204,7 @@ class RunnerFileFolder(Resource):
         parser.add_argument("folder", type=str)
         args = parser.parse_args()
         folder = args["folder"]
-        cache["runner-folder"] = folder
+        cache["runner-folder"] = os.path.abspath(os.path.expanduser(folder))
         cache["runner-path"] = os.path.join(cache["runner-folder"], cache["runner-file-name"])
 
 
@@ -216,7 +216,7 @@ class RunnerFilePath(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("path", type=str)
         args = parser.parse_args()
-        path = args["path"]
+        path = os.path.abspath(os.path.expanduser(args["path"]))
         cache["runner-path"] = path
         cache["runner-folder"] = os.path.dirname(path)
         cache["runner-file-name"] = os.path.basename(path)
@@ -334,21 +334,25 @@ class RunnerRun(Resource):
             return {"status": False}
 
     def post(self):
-        if not self.get()["status"]:
-            p = subprocess.Popen(shlex.split("helics run --path {}".format(cache["runner-path"])))
-            self.runner_server["process"] = p
-            return {"status": True}
-        else:
+        if self.get()["status"]:
+            self.delete()
+        p = subprocess.Popen(shlex.split("helics run --path {}".format(cache["runner-path"])))
+        self.runner_server["process"] = p
+        return {"status": True}
+
+    def delete(self):
+        self.runner_server["process"].terminate()
+        self.runner_server["process"].kill()
+        counter = 0
+        while self.runner_server["process"].poll() is None or counter > 5:
+            time.sleep(1)
             self.runner_server["process"].terminate()
             self.runner_server["process"].kill()
-            counter = 0
-            while self.runner_server["process"].poll() is None or counter > 5:
-                time.sleep(1)
-                self.runner_server["process"].terminate()
-                self.runner_server["process"].kill()
-                counter += 1
-            del self.runner_server["process"]
-            return {"status": False}
+            counter += 1
+        del self.runner_server["process"]
+        global status_tracker
+        status_tracker = {}
+        return {"status": False}
 
 
 api.add_resource(RunnerRun, "/api/runner/run")
