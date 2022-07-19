@@ -4,6 +4,8 @@
 helics server
 ```
 
+![](https://user-images.githubusercontent.com/1813121/179692721-aed68b6e-229b-4bfe-b260-4e464357c91f.png)
+
 ![](https://user-images.githubusercontent.com/1813121/179425630-8136366d-2b09-4251-936f-1158a7b40c5b.png)
 
 ![](https://user-images.githubusercontent.com/1813121/179425632-9cc1f914-d5bc-44bf-848c-893733729fb6.png)
