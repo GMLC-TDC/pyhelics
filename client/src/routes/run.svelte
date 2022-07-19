@@ -45,6 +45,45 @@
     clearInterval(interval);
   }
 
+  async function handleEditSaveChanges(e) {
+    const r = await await fetch(`${BASE}/file/edit`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(current_federate),
+    });
+    console.log(r);
+  }
+
+  async function handleDelete(federate) {
+    const r = await await fetch(`${BASE}/file/edit`, {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(federate),
+    });
+    console.log(r);
+  }
+
+  async function handleAdd(e) {
+    const r = await await fetch(`${BASE}/file/edit`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(current_federate),
+    });
+    console.log(r);
+  }
+
   let interval = null;
   onMount(async () => {
     clearInterval(interval);
@@ -57,6 +96,8 @@
   onDestroy(() => {
     clearInterval(interval);
   });
+
+  let current_federate = { name: null, directory: null, exec: null };
 </script>
 
 <div class="flex w-7/8 flex-col mt-6 mx-8">
@@ -76,14 +117,21 @@
         <div class="grid grid-cols-1 gap-2">
           <div class="flex justify-between py-4">
             <h3 class="font-medium leading-tight text-2xl pt-4 mb-2 text-blue-600">Runner</h3>
-            <input
-              type="text"
-              class="form-control block w-9/12 px-3 py-1.5 text-base font-normal text-gray-700 bg-gray-100 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-              id="input"
-              bind:value={$data.runner.path}
-              aria-label="path to runner file"
-              readonly
-            />
+            <div class="flex space-x-2 w-9/12 justify-end">
+              <input
+                type="text"
+                class="form-control block w-9/12 px-3 py-1.5 text-base font-normal text-gray-700 bg-gray-100 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                id="input"
+                bind:value={$data.runner.path}
+                aria-label="path to runner file"
+                readonly
+              />
+              <button
+                class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                data-bs-toggle="modal"
+                data-bs-target="#add-model">Add</button
+              >
+            </div>
           </div>
 
           {#each $data.runner.federates as federate}
@@ -106,11 +154,11 @@
                   <p>
                     <span class="text-slate-400">dir: </span>
                     <code class="text-gray-700">
-                      "{federate.directory}"
+                      {federate.directory}
                     </code>
                   </p>
                 </div>
-                <div class="flex flex-col p-6 space-y-4 justify-center items-center">
+                <div class="flex flex-col px-4 py-2 space-y-2 justify-center items-center">
                   {#if federate.status == "running"}
                     <div class="inline-block w-8 h-8 text-blue-600" role="status">
                       <Fa icon={faSync} spin="true" />
@@ -137,16 +185,284 @@
                       <Fa icon={faQuestionCircle} />
                     </div>
                   {/if}
-                  <!-- <button -->
-                  <!--   class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out" -->
-                  <!--   >Tail Log File</button -->
-                  <!-- > -->
+                  <button
+                    class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                    on:click={() => handleDelete(federate)}>Delete</button
+                  >
+                  <button
+                    class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                    on:click={() => (current_federate = federate)}
+                    data-bs-toggle="modal"
+                    data-bs-target="#edit-model">Edit</button
+                  >
                 </div>
               </div>
             </div>
           {/each}
         </div>
       {/if}
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+  id="edit-model"
+  tabindex="-1"
+  aria-labelledby="edit-model-title"
+  aria-modal="true"
+  role="dialog"
+>
+  <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+    <div
+      class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current"
+    >
+      <div
+        class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md"
+      >
+        <h5 class="text-xl font-medium leading-normal text-gray-800" id="edit-model-label">
+          Edit Job
+        </h5>
+        <button
+          type="button"
+          class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        />
+      </div>
+      <div class="modal-body relative p-4">
+        <h5
+          class="text-xl font-medium mb-2 text-blue-600 hover:text-blue-700 transition duration-300 ease-in-out"
+        >
+          <label>Federate Name</label>
+          <input
+            type="text"
+            class="
+              form-control
+              block
+              w-full
+              px-3
+              py-1.5
+              text-base
+              font-normal
+              text-gray-700
+              bg-white bg-clip-padding
+              border border-solid border-gray-300
+              rounded
+              transition
+              ease-in-out
+              m-0
+              focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+            "
+            bind:value={current_federate.name}
+            placeholder="Federate Name"
+          />
+        </h5>
+        <p>
+          <label>exec:</label>
+          <code class="text-gray-700">
+            <input
+              type="text"
+              class="
+              form-control
+              block
+              w-full
+              px-3
+              py-1.5
+              text-base
+              font-normal
+              text-gray-700
+              bg-white bg-clip-padding
+              border border-solid border-gray-300
+              rounded
+              transition
+              ease-in-out
+              m-0
+              focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+            "
+              bind:value={current_federate.exec}
+              placeholder="Federate executable"
+            />
+          </code>
+        </p>
+        <p>
+          <label>dir:</label>
+          <span class="text-gray-700">
+            <input
+              type="text"
+              class="
+              form-control
+              block
+              w-full
+              px-3
+              py-1.5
+              text-base
+              font-normal
+              text-gray-700
+              bg-white bg-clip-padding
+              border border-solid border-gray-300
+              rounded
+              transition
+              ease-in-out
+              m-0
+              focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+            "
+              bind:value={current_federate.directory}
+              placeholder="Federate dir"
+            />
+          </span>
+        </p>
+      </div>
+      <div
+        class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md"
+      >
+        <button
+          type="button"
+          class="inline-block px-6 py-2.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out ml-1"
+          data-bs-dismiss="modal"
+          on:click={handleEditSaveChanges}
+        >
+          Save changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+  id="add-model"
+  tabindex="-1"
+  aria-labelledby="add-model-title"
+  aria-modal="true"
+  role="dialog"
+>
+  <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+    <div
+      class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current"
+    >
+      <div
+        class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md"
+      >
+        <h5 class="text-xl font-medium leading-normal text-gray-800" id="add-model-label">
+          Add Job
+        </h5>
+        <button
+          type="button"
+          class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        />
+      </div>
+      <div class="modal-body relative p-4">
+        <h5
+          class="text-xl font-medium mb-2 text-blue-600 hover:text-blue-700 transition duration-300 ease-in-out"
+        >
+          <label>Federate Name</label>
+          <input
+            type="text"
+            class="
+              form-control
+              block
+              w-full
+              px-3
+              py-1.5
+              text-base
+              font-normal
+              text-gray-700
+              bg-white bg-clip-padding
+              border border-solid border-gray-300
+              rounded
+              transition
+              ease-in-out
+              m-0
+              focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+            "
+            bind:value={current_federate.name}
+            placeholder="Federate Name"
+          />
+        </h5>
+        <p>
+          <label>exec:</label>
+          <code class="text-gray-700">
+            <input
+              type="text"
+              class="
+              form-control
+              block
+              w-full
+              px-3
+              py-1.5
+              text-base
+              font-normal
+              text-gray-700
+              bg-white bg-clip-padding
+              border border-solid border-gray-300
+              rounded
+              transition
+              ease-in-out
+              m-0
+              focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+            "
+              bind:value={current_federate.exec}
+              placeholder="Federate executable"
+            />
+          </code>
+        </p>
+        <p>
+          <label>dir:</label>
+          <span class="text-gray-700">
+            <input
+              type="text"
+              class="
+              form-control
+              block
+              w-full
+              px-3
+              py-1.5
+              text-base
+              font-normal
+              text-gray-700
+              bg-white bg-clip-padding
+              border border-solid border-gray-300
+              rounded
+              transition
+              ease-in-out
+              m-0
+              focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+            "
+              bind:value={current_federate.directory}
+              placeholder="Federate dir"
+            />
+          </span>
+        </p>
+      </div>
+      <div
+        class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md"
+      >
+        <button
+          type="button"
+          class="inline-block px-6 py-2.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out ml-1"
+          data-bs-dismiss="modal"
+          on:click={handleAdd}
+        >
+          Save changes
+        </button>
+      </div>
     </div>
   </div>
 </div>

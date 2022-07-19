@@ -152,13 +152,13 @@ status_tracker = {}
 
 class RunnerFile(Resource):
     def get(self):
-        print(status_tracker, cache)
         with open(cache["runner-path"]) as f:
             data = json.loads(f.read())
         data["folder"] = cache["runner-folder"]
         data["path"] = cache["runner-path"]
         data["filename"] = cache["runner-file-name"]
         for federate in data["federates"]:
+            federate["old_name"] = federate["name"]
             if os.path.exists(os.path.join(data["folder"], "{}.log".format(federate["name"]))):
                 federate["log_available"] = True
             else:
@@ -209,6 +209,89 @@ class RunnerFileFolder(Resource):
 
 
 api.add_resource(RunnerFileFolder, "/api/runner/file/folder")
+
+
+class RunnerFileEdit(Resource):
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("old_name", type=str)
+        args = parser.parse_args()
+        old_name = args["old_name"]
+        with open(cache["runner-path"]) as f:
+            data = json.loads(f.read())
+
+        delete_index = None
+        for i, f in enumerate(data["federates"]):
+            if f["name"] == old_name:
+                delete_index = i
+                break
+        data["federates"].pop(delete_index)
+        with open(cache["runner-path"], "w") as f:
+            f.write(json.dumps(data))
+        return {"status": 200}
+
+    def put(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("old_name", type=str)
+        parser.add_argument("name", type=str)
+        parser.add_argument("exec", type=str)
+        parser.add_argument("directory", type=str)
+        args = parser.parse_args()
+        old_name = args["old_name"]
+        name = args["name"]
+        exec = args["exec"]
+        directory = args["directory"]
+
+        with open(cache["runner-path"]) as f:
+            data = json.loads(f.read())
+
+        for f in data["federates"]:
+            if f["name"] == old_name:
+                f["name"] = name
+                f["exec"] = exec
+                f["directory"] = directory
+                break
+        else:
+            abort(417, description="Unknown name='{}'".format(old_name))
+
+        with open(cache["runner-path"], "w") as f:
+            f.write(json.dumps(data))
+
+        return {"status": 200}
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("name", type=str)
+        parser.add_argument("exec", type=str)
+        parser.add_argument("directory", type=str)
+        args = parser.parse_args()
+        name = args["name"]
+        exec = args["exec"]
+        directory = args["directory"]
+
+        with open(cache["runner-path"]) as f:
+            data = json.loads(f.read())
+
+        for f in data["federates"]:
+            if f["name"] == name:
+                return abort(417, description="Name already exists {}".format(name))
+
+        data["federates"].append(
+            {
+                "directory": directory,
+                "exec": exec,
+                "host": "localhost",
+                "name": name,
+            }
+        )
+
+        with open(cache["runner-path"], "w") as f:
+            f.write(json.dumps(data))
+
+        return {"status": 200}
+
+
+api.add_resource(RunnerFileEdit, "/api/runner/file/edit")
 
 
 class RunnerLog(Resource):
