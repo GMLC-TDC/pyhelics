@@ -6,7 +6,7 @@
         <section class="overflow-hidden text-gray-700 ">
           <div class="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
             <div class="flex flex-wrap -m-1 md:-m-2 space-x-4">
-              <div class="flex flex-wrap w-1/4">
+              <div class="flex flex-wrap w-1/5">
                 <div class="w-full p-1 md:p-2 border">
                   <a href="/observe">
                     <img
@@ -17,7 +17,7 @@
                   </a>
                 </div>
               </div>
-              <div class="flex flex-wrap w-1/4">
+              <div class="flex flex-wrap w-1/5">
                 <div class="w-full p-1 md:p-2 border">
                   <a href="/profile">
                     <img
@@ -28,13 +28,24 @@
                   </a>
                 </div>
               </div>
-              <div class="flex flex-wrap w-1/4">
+              <div class="flex flex-wrap w-1/5">
                 <div class="w-full p-1 md:p-2 border">
                   <a href="/broker">
                     <img
                       alt="broker"
                       class="block object-cover object-center w-full h-full rounded-lg"
                       src="https://user-images.githubusercontent.com/1813121/179560242-74c58446-098a-4890-85bc-805d39940f2f.png"
+                    />
+                  </a>
+                </div>
+              </div>
+              <div class="flex flex-wrap w-1/5">
+                <div class="w-full p-1 md:p-2 border">
+                  <a href="/run">
+                    <img
+                      alt="runner"
+                      class="block object-cover object-center w-full h-full rounded-lg"
+                      src="https://user-images.githubusercontent.com/1813121/179692080-b4dc172e-c73e-4982-8d97-17051dca8c26.png"
                     />
                   </a>
                 </div>
