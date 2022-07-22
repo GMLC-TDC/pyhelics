@@ -95,6 +95,9 @@ def cli(ctx, verbose):
     help="Open browser on startup",
 )
 def server(open: bool):
+    """
+    Run helics web server to access web interface
+    """
     import webbrowser
     from . import flaskr
 
@@ -106,6 +109,9 @@ def server(open: bool):
 @cli.command()
 @click.option("--db-folder", prompt="path to database folder", type=click.Path(exists=True, file_okay=False, writable=True, path_type=pathlib.Path))
 def observer(db_folder: pathlib.Path):
+    """
+    Run helics observer and write data to sqlite file
+    """
     from .observer import HelicsObserverFederate
 
     o = HelicsObserverFederate(folder=db_folder)
@@ -127,6 +133,9 @@ def observer(db_folder: pathlib.Path):
 )
 @click.option("--save", prompt=True, prompt_required=False, type=click.Path(), default=None, help="Path to save the plot")
 def profile_plot(path, save, invert):
+    """
+    Plot profiler output using matplotlib
+    """
     from . import profile as p
 
     p.plot(p.profile(path, invert), save=save, kind="realtime")
