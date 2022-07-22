@@ -26,7 +26,7 @@ app = Flask(__name__.split(".")[0], static_url_path="", static_folder=os.path.jo
 api = Api(app)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-app.config["UPLOAD_FOLDER"] = "/tmp/uploads"
+app.config["UPLOAD_FOLDER"] = os.path.abspath(os.path.join(os.getcwd(), "__helics-server"))
 
 cache = {
     "path": os.path.join(app.config["UPLOAD_FOLDER"], "helics-cli.sqlite.db"),
@@ -152,12 +152,20 @@ status_tracker = {}
 
 class RunnerFile(Resource):
     def get(self):
+        if not os.path.exists(cache["runner-path"]):
+            return {}
         with open(cache["runner-path"]) as f:
             data = json.loads(f.read())
         data["folder"] = cache["runner-folder"]
         data["path"] = cache["runner-path"]
         data["filename"] = cache["runner-file-name"]
+        if data.get("broker", False) is True:
+            data["federates"].append(
+                {"directory": ".", "exec": "helics_broker -f{}".format(len(data["federates"])), "host": "localhost", "name": "broker"}
+            )
         for federate in data["federates"]:
+            if federate["directory"].startswith("."):
+                federate["directory"] = os.path.abspath(os.path.join(data["folder"], federate["directory"]))
             federate["old_name"] = federate["name"]
             if os.path.exists(os.path.join(data["folder"], "{}.log".format(federate["name"]))):
                 federate["log_available"] = True
@@ -309,11 +317,7 @@ api.add_resource(RunnerFileEdit, "/api/runner/file/edit")
 
 
 class RunnerLog(Resource):
-    def get(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("name", type=str)
-        args = parser.parse_args()
-        name = args["name"]
+    def get(self, name):
         with open(cache["runner-path"]) as f:
             data = json.loads(f.read())
         with open(os.path.join(os.path.dirname(cache["runner-path"]), "{}.log".format(name))) as f:
@@ -321,7 +325,7 @@ class RunnerLog(Resource):
         return {"log": data}
 
 
-api.add_resource(RunnerLog, "/api/runner/log")
+api.add_resource(RunnerLog, "/api/runner/log/<string:name>")
 
 
 class RunnerRun(Resource):
@@ -336,7 +340,7 @@ class RunnerRun(Resource):
     def post(self):
         if self.get()["status"]:
             self.delete()
-        p = subprocess.Popen(shlex.split("helics run --path {}".format(cache["runner-path"])))
+        p = subprocess.Popen(shlex.split("helics run --path {} --connect-server".format(cache["runner-path"])))
         self.runner_server["process"] = p
         return {"status": True}
 
@@ -356,6 +360,30 @@ class RunnerRun(Resource):
 
 
 api.add_resource(RunnerRun, "/api/runner/run")
+
+
+class RunnerKillBroker(Resource):
+    def post(self):
+        name = "helics_broker"
+        import platform
+
+        if platform.system().lower().startswith("windows"):
+            # windows OS
+            if not name.endswith(".exe"):
+                name = name + ".exe"
+            os.system("taskkill /f /im {}".format(name))
+            # os.system(r"start /b pcs.exe 2>&1")
+            # with os.popen("tasklist | findstr \"pcs.exe\"") as f:
+            #     temp_content = f.read()
+            # if len(temp_content) == 0:
+            #     pass
+        else:
+            if name.endswith(".exe"):
+                name = name.replace(".exe", "")
+            os.system("killall -9 {} 2>&1".format(name))
+
+
+api.add_resource(RunnerKillBroker, "/api/runner/kill/broker")
 
 
 class RunnerStatus(Resource):

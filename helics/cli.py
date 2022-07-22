@@ -9,6 +9,7 @@ import io
 import shlex
 import subprocess
 import collections
+import platform
 import urllib.request
 import logging
 from ._version import __version__
@@ -147,8 +148,8 @@ class Output:
     file: Union[io.TextIOWrapper, None]
 
 
-def post(url, data):
-    r = urllib.request.Request("{}{}".format(HELICS_CLI_SERVER_API, url))
+def fetch(url, data={}, method="POST"):
+    r = urllib.request.Request("{}{}".format(HELICS_CLI_SERVER_API, url), method=method)
     r.add_header("Content-Type", "application/json; charset=utf-8")
     bytes = json.dumps(data).encode("utf-8")
     r.add_header("Content-Length", str(len(bytes)))
@@ -223,8 +224,8 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
         return -1
 
     if helics_server_available:
-        post("/runner/file/name", {"name": os.path.basename(path_to_config)})
-        post("/runner/file/folder", {"folder": os.path.dirname(path_to_config)})
+        fetch("/runner/file/name", {"name": os.path.basename(path_to_config)})
+        fetch("/runner/file/folder", {"folder": os.path.dirname(path_to_config)})
 
     process_list = []
     output_list = []
@@ -299,7 +300,54 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
                         for line in f.readlines()[-10:]:
                             print(line, end="")
                         print("...")
+
     info("Done.")
+
+
+@cli.command()
+def kill_all_brokers():
+    """
+    Kill all brokers
+    """
+    name = "helics_broker"
+
+    if platform.system().lower().startswith("windows"):
+        # windows OS
+        if not name.endswith(".exe"):
+            name = name + ".exe"
+        os.system("taskkill /f /im {}".format(name))
+        # os.system(r"start /b pcs.exe 2>&1")
+        # with os.popen("tasklist | findstr \"pcs.exe\"") as f:
+        #     temp_content = f.read()
+        # if len(temp_content) == 0:
+        #     pass
+    else:
+        if name.endswith(".exe"):
+            name = name.replace(".exe", "")
+        os.system("killall -9 {} 2>&1".format(name))
+
+
+@cli.command()
+def list_brokers():
+    """
+    List all brokers that are running
+    """
+
+    if platform.system().lower().startswith("windows"):
+        # windows OS
+        with os.popen('tasklist | findstr "helics_broker.exe"') as f:
+            data = f.read()
+        if len(data) != 0:
+            print(data)
+
+    else:
+        cmd = "ps aux"
+        p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        p.wait()
+        out, _ = p.communicate()
+        for line in out.decode("utf-8").splitlines():
+            if "helics_broker" in line:
+                print(line)
 
 
 if __name__ == "__main__":

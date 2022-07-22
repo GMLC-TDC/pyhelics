@@ -32,12 +32,8 @@ export default storage;
 
 export const DEFAULT = {
   profile: [],
-  runner: {
-    "broker": false,
-    "federates": [],
-    "name": "web",
-    "path": null,
-  },
+  runner: {},
+  runner_path: null,
   federates: [],
   cores: [],
   systeminfo: {},
