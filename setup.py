@@ -489,6 +489,9 @@ class HELICSCMakeBuild(build_ext):
 
         cmake_args = [
             "-DHELICS_DISABLE_GIT_OPERATIONS=OFF",
+            "-DHELICS_ZMQ_FORCE_SUBPROJECT=ON",
+            "-DHELICS_ZMQ_SUBPROJECT=ON",
+            "-DHELICS_DISABLE_BOOST=ON",
             "-DCMAKE_BUILD_TYPE=Release",
             "-DCMAKE_INSTALL_PREFIX={}".format(extdir),
         ]
