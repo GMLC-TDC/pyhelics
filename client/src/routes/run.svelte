@@ -251,6 +251,15 @@
                     <div class="inline-block w-8 h-8 text-blue-600" role="status">
                       <Fa icon={faCheckCircle} />
                     </div>
+                    <button
+                      class="inline-block px-6 py-2.5 w-48 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                      on:click={async () => {
+                        current_federate = federate;
+                        await handleLog();
+                      }}
+                      data-bs-toggle="modal"
+                      data-bs-target="#show-log-model">Show Log</button
+                    >
                   {/if}
                   {#if federate.status == "failed"}
                     <div class="inline-block w-8 h-8 text-blue-600" role="status">
@@ -295,6 +304,15 @@
                       on:click={() => (current_federate = federate)}
                       data-bs-toggle="modal"
                       data-bs-target="#edit-model">Edit</button
+                    >
+                    <button
+                      class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                      on:click={async () => {
+                        current_federate = federate;
+                        await handleLog();
+                      }}
+                      data-bs-toggle="modal"
+                      data-bs-target="#show-log-model">Logs</button
                     >
                   {/if}
                 </div>

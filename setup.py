@@ -643,6 +643,7 @@ setup(
     entry_points={
         "console_scripts": [
             "helics=helics.cli:cli",
+            "helics-cli=helics.cli:cli",
             "helics_app=helics.bin:helics_app",
             "helics_broker=helics.bin:helics_broker",
             "helics_broker_server=helics.bin:helics_broker_server",
