@@ -4,21 +4,25 @@
   import { afterUpdate, beforeUpdate, getContext, onMount } from "svelte";
   import { get, writable } from "svelte/store";
   import { Svg } from "layercake";
+  import { data as store_data } from "$lib/stores";
 
   import * as d3 from "d3";
 
   const { data, width, height } = getContext("LayerCake");
+
+  $: start_index = $store_data.profile_toggle_value == "real_time" ? "r_enter" : "s_enter";
+  $: end_index = $store_data.profile_toggle_value == "real_time" ? "r_end" : "s_end";
 
   function minmaxData(data) {
     var min = Infinity;
     var max = -Infinity;
     for (const [k, v] of Object.entries(data)) {
       for (const e of v) {
-        if (e.r_enter < min) {
-          min = e.r_enter;
+        if (e[start_index] < min) {
+          min = e[start_index];
         }
-        if (e.r_end > max) {
-          max = e.r_end;
+        if (e[end_index] > max) {
+          max = e[end_index];
         }
       }
     }
@@ -30,11 +34,11 @@
     var max = -Infinity;
     for (const [k, v] of Object.entries(data)) {
       for (const e of v) {
-        if (e.r_end - e.r_enter < min) {
-          min = e.r_end - e.r_enter;
+        if (e[end_index] - e[start_index] < min) {
+          min = e[end_index] - e[start_index];
         }
-        if (e.r_end - e.r_enter > max) {
-          max = e.r_end - e.r_enter;
+        if (e[end_index] - e[start_index] > max) {
+          max = e[end_index] - e[start_index];
         }
       }
     }
@@ -221,12 +225,14 @@
       color: d3.scaleSequential(lowhighData($data).reverse(), d3.interpolateRdYlBu),
       title: "Simulation Time (s)",
       width: $width,
+      start_index,
+      end_index,
     });
   }
 
   $: names = Object.keys($data);
   $: yScale = d3.scaleBand().domain(names).range([$height, 0]);
-  $: [xMin, xMax] = minmaxData($data);
+  $: [xMin, xMax] = minmaxData($data, start_index, end_index);
   $: xScale = d3
     .scaleLinear()
     .domain([xMin, xMax])
@@ -234,7 +240,7 @@
   $: colorScale = (c) =>
     d3.interpolateRdYlBu(d3.scaleLinear().domain(lowhighData($data)).range([1, 0])(c));
 
-  const SCALING = 1e9;
+  $: SCALING = $store_data.profile_toggle_value == "real_time" ? 1e9 : 1;
 </script>
 
 <div class="container">
@@ -247,13 +253,19 @@
       <g>
         {#each v as e}
           <rect
-            x={100 + xScale(e.r_enter)}
+            x={100 + xScale(e[start_index])}
             y={yScale(e.name) + 75}
-            width={xScale(e.r_end) - xScale(e.r_enter)}
+            width={xScale(e[end_index]) - xScale(e[start_index])}
             height={($height / names.length) * 0.9}
-            style="fill:{colorScale(e.r_end - e.r_enter)};stroke-width:0.25;stroke:rgb(0,0,0)"
+            style="fill:{colorScale(
+              e[end_index] - e[start_index],
+            )};stroke-width:0.25;stroke:rgb(0,0,0)"
           >
-            <title>{k} (time = {e.s_enter}): elapsed = {(e.r_end - e.r_enter).toFixed(2)}s</title>
+            <title
+              >{k} (time = {e.s_enter}): elapsed = {(e[end_index] - e[start_index]).toFixed(
+                2,
+              )}s</title
+            >
           </rect>
         {/each}
         <text x="0" y={yScale(k) + 100}>{k}</text>

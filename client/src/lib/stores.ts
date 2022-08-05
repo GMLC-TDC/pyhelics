@@ -32,6 +32,7 @@ export default storage;
 
 export const DEFAULT = {
   profile: [],
+  profile_toggle_value: "real_time",
   runner: {},
   runner_path: null,
   federates: [],

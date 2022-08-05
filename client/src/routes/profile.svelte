@@ -5,6 +5,7 @@
   import { onMount } from "svelte";
 
   import { LayerCake } from "layercake";
+  import Switch from "$lib/Switch.svelte";
   import Dropzone from "svelte-file-dropzone";
   const BASE = "http://127.0.0.1:5000/api";
 
@@ -49,6 +50,13 @@
           on:click={handleClearClick}>Clear</button
         >
       </div>
+      <Switch
+        bind:value={$data.profile_toggle_value}
+        label="Choose a theme"
+        design="multi"
+        options={["real_time", "simulation_time"]}
+        fontSize={12}
+      />
     </div>
   </div>
 
