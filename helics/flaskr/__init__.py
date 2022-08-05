@@ -333,8 +333,6 @@ class RunnerRun(Resource):
 
     def get(self):
         if self.runner_server.get("process", None) is not None:
-            if self.runner_server["process"].poll() == 0:
-                self.delete()
             return {"status": True}
         else:
             return {"status": False}
