@@ -191,7 +191,7 @@
                 <button
                   class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
                   data-bs-toggle="modal"
-                  data-bs-target="#load-model">Load</button
+                  data-bs-target="#edit-path-model">Edit</button
                 >
                 <button
                   class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -458,9 +458,9 @@
 
 <div
   class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
-  id="load-model"
+  id="edit-path-model"
   tabindex="-1"
-  aria-labelledby="load-model-title"
+  aria-labelledby="edit-path-model-title"
   aria-modal="true"
   role="dialog"
 >
@@ -471,8 +471,8 @@
       <div
         class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md"
       >
-        <h5 class="text-xl font-medium leading-normal text-gray-800" id="load-model-label">
-          Add Job
+        <h5 class="text-xl font-medium leading-normal text-gray-800" id="edit-path-model-label">
+          Edit Runner Path
         </h5>
         <button
           type="button"
