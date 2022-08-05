@@ -100,7 +100,7 @@
 
   async function handleCancel(e) {
     const r = await fetch(`${BASE}/run`, {
-      method: "PUT",
+      method: "DELETE",
       mode: "cors",
       headers: {
         "Accept": "application/json",
