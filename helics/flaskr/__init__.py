@@ -505,6 +505,7 @@ class Profile(Resource):
         os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], "profile.txt"))
         cache["profile-path"] = os.path.join(app.config["UPLOAD_FOLDER"], "profile.txt")
+        return {"status": "success"}
 
 
 api.add_resource(Profile, "/api/profiler/")

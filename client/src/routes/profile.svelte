@@ -22,11 +22,12 @@
     files.accepted = [...files.accepted, ...acceptedFiles];
     files.rejected = [...files.rejected, ...fileRejections];
     var form = new FormData();
-    form.append("file", files.accepted[0]);
-    await fetch(`${BASE}/profiler`, {
+    form.append("file", files.accepted.at(-1));
+    const r = await fetch(`${BASE}/profiler`, {
       method: "POST",
       body: form,
     });
+    console.log(await r.json());
     await updateData();
   }
 

@@ -101,7 +101,7 @@
     files.accepted = [...files.accepted, ...acceptedFiles];
     files.rejected = [...files.rejected, ...fileRejections];
     var data = new FormData();
-    data.append("file", files.accepted[0]);
+    data.append("file", files.accepted.at(-1));
     await fetch(`${BASE}/database`, {
       method: "POST",
       body: data,
