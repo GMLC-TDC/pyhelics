@@ -173,7 +173,7 @@
             <div class="flex space-x-2 w-9/12 justify-end">
               {#if processing}
                 <div
-                  class="flex flex-col justify-center mx-4 my-4 spinner-border animate-spin w-8 h-8 border-4 rounded-full text-blue-600"
+                  class="flex flex-col justify-center mx-4 my-2.5 spinner-border animate-spin w-8 h-8 border-4 rounded-full text-blue-600"
                   role="status"
                 >
                   <span class="visually-hidden">Loading...</span>
