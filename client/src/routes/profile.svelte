@@ -28,7 +28,6 @@
       method: "POST",
       body: form,
     });
-    console.log(await r.json());
     await updateData();
   }
 
