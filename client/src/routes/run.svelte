@@ -100,6 +100,18 @@
 
   async function handleCancel(e) {
     const r = await fetch(`${BASE}/run`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(r);
+  }
+
+  async function handleReset(e) {
+    const r = await fetch(`${BASE}/run`, {
       method: "DELETE",
       mode: "cors",
       headers: {
