@@ -1,5 +1,5 @@
 {
-  "broker": true,
+  "broker": false,
   "federates": [
     {
       "directory": ".",
@@ -12,6 +12,12 @@
       "exec": "python -u pireceiver.py 1",
       "host": "localhost",
       "name": "pireceiver1"
+    },
+    {
+      "directory": ".",
+      "exec": "helics_broker -f3 --profiler=profile.txt",
+      "host": "localhost",
+      "name": "profiler-broker"
     },
     {
       "directory": ".",
