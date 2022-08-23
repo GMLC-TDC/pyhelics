@@ -4837,7 +4837,7 @@ def helicsFederateSetStateChangeCallback(fed: HelicsFederate, state_changer, use
     # Parameters
 
     - **`fed`**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`, `helics.helicsCreateMessageFederate` or `helics.helicsCreateCombinationFederate`
-    - **`state_changer`**: a callback with signature void(HelicsFederateState newState, HelicsFederateState oldState, void *userdata);
+    - **`state_changer`**: a callback with signature void(HelicsFederateState newState, HelicsFederateState oldState, void *user_data);
     - **`user_data`**: a pointer to user data that is passed to the function when executing
     """
     f = loadSym("helicsFederateSetStateChangeCallback")
@@ -7435,7 +7435,7 @@ def helicsTranslatorSetOption(translator: HelicsTranslator, option: HelicsHandle
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsTranslatorSetCustomCallback(translator, to_message_call, to_value_call, userdata):
+def helicsTranslatorSetCustomCallback(translator, to_message_call, to_value_call, user_data):
     """
     Set a general callback for a custom translator.
 
@@ -7446,11 +7446,11 @@ def helicsTranslatorSetCustomCallback(translator, to_message_call, to_value_call
     - **`translator`**: The translator object to set the callbacks for.
     - **`to_message_call`**: A callback with signature void(HelicsDataBuffer, HelicsMessage, void *); The function arguments are raw Value data, the messageObject to fill out and a pointer to user data.
     - **`to_value_call`**: A callback with signature void(HelicsMessage, HelicsDataBuffer, void *); The function arguments are a message object, the data buffer to fill out and a pointer to user data.
-    - **`userdata`**: A pointer to user data that is passed to the functions when executing.
+    - **`user_data`**: A pointer to user data that is passed to the functions when executing.
     """
     f = loadSym("helicsTranslatorSetCustomCallback")
     err = helicsErrorInitialize()
-    f(translator.handle, to_message_call, to_value_call, userdata, err)
+    f(translator.handle, to_message_call, to_value_call, user_data, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -9108,7 +9108,7 @@ def helicsFederateSetQueryCallback(fed: HelicsFederate, query, user_data):
     # Parameters
 
     - **`fed`**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`
-    - **`query`**: a callback with signature const char *(const char *query, int querySize, HelicsQueryBuffer buffer, void *userdata); The function arguments include the query string requesting an answer along with its size; the string is not guaranteed to be null terminated. HelicsQueryBuffer is the buffer intended to filled out by the userCallback. The buffer can be empty if the query is not recognized and HELICS will generate the appropriate response. The buffer is used to ensure memory ownership separation between user code and HELICS code. The HelicsQueryBufferFill method can be used to load a string into the buffer.
+    - **`query`**: a callback with signature const char *(const char *query, int querySize, HelicsQueryBuffer buffer, void *user_data); The function arguments include the query string requesting an answer along with its size; the string is not guaranteed to be null terminated. HelicsQueryBuffer is the buffer intended to filled out by the userCallback. The buffer can be empty if the query is not recognized and HELICS will generate the appropriate response. The buffer is used to ensure memory ownership separation between user code and HELICS code. The HelicsQueryBufferFill method can be used to load a string into the buffer.
     - **`user_data`**: a pointer to user data that is passed to the function when executing
     """
     f = loadSym("helicsFederateSetQueryCallback")
@@ -9127,7 +9127,7 @@ def helicsFederateSetTimeRequestEntryCallback(fed: HelicsFederate, request_time,
     # Parameters
 
     - **`fed`**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`
-    - **`request_time`**: a callback with signature void(HelicsTime currentTime, HelicsTime requestTime, bool iterating, void *userdata); The function arguments are the current time value, the requested time value, a bool indicating that the time is iterating, and pointer to the userdata
+    - **`request_time`**: a callback with signature void(HelicsTime currentTime, HelicsTime requestTime, bool iterating, void *user_data); The function arguments are the current time value, the requested time value, a bool indicating that the time is iterating, and pointer to the user_data
     - **`user_data`**: a pointer to user data that is passed to the function when executing
     """
     f = loadSym("helicsFederateSetTimeRequestEntryCallback")
@@ -9146,7 +9146,7 @@ def helicsFederateSetTimeUpdateCallback(fed: HelicsFederate, time_update, user_d
     # Parameters
 
     - **`fed`**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`
-    - **`update_time`**: a callback with signature void(HelicsTime newTime, bool iterating, void *userdata); The function arguments are the current time value, the requested time value, a bool indicating that the time is iterating, and pointer to the userdata
+    - **`update_time`**: a callback with signature void(HelicsTime newTime, bool iterating, void *user_data); The function arguments are the current time value, the requested time value, a bool indicating that the time is iterating, and pointer to the user_data
     - **`user_data`**: a pointer to user data that is passed to the function when executing
     """
     f = loadSym("helicsFederateSetTimeUpdateCallback")
@@ -9165,12 +9165,145 @@ def helicsFederateSetTimeRequestReturnCallback(fed: HelicsFederate, request_time
     # Parameters
 
     - **`fed`**: the `helics.HelicsFederate` that is created with `helics.helicsCreateValueFederate`
-    - **`request_time_return`**: a callback with signature void(HelicsTime newTime, bool iterating, void *userdata); The function arguments are the current time value, the requested time value, a bool indicating that the time is iterating, and pointer to the userdata
+    - **`request_time_return`**: a callback with signature void(HelicsTime newTime, bool iterating, void *user_data); The function arguments are the current time value, the requested time value, a bool indicating that the time is iterating, and pointer to the user_data
     - **`user_data`**: a pointer to user data that is passed to the function when executing
     """
     f = loadSym("helicsFederateSetTimeRequestReturnCallback")
     err = helicsErrorInitialize()
     f(fed.handle, request_time_return, user_data, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateInitializingEntryCallback(fed: HelicsFederate, initializing_entry, user_data):
+    """
+    Set callback for the entry to initializingMode.
+
+    This callback will be executed when the initializingMode is entered
+
+    # Parameters
+
+    - **`fed`**: The federate to set the callback for.
+    - **`initializing_entry`**: A callback with signature void(HelicsBool iterating, void *user_data); the bool parameter is set to true if the entry is iterative, therefore the first time this is called the bool is false. all subsequent times it is false.
+    - **`user_data`**: A pointer to user data that is passed to the function when executing.
+    """
+    f = loadSym("helicsFederateInitializingEntryCallback")
+    err = helicsErrorInitialize()
+    f(fed.handle, initializing_entry, user_data, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateExecutingEntryCallback(fed: HelicsFederate, executing_entry, user_data):
+    """
+    Set callback for the entry to ExecutingMode.
+
+    This callback will be executed once on first entry to executing Mode
+
+    # Parameters
+
+    - **`fed`**: The federate to set the callback for.
+    - **`executing_entry`**: A callback with signature void( void *user_data);
+    - **`user_data`**: A pointer to user data that is passed to the function when executing.
+    """
+    f = loadSym("helicsFederateExecutingEntryCallback")
+    err = helicsErrorInitialize()
+    f(fed.handle, executing_entry, user_data, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateCosimulationTerminationCallback(fed: HelicsFederate, cosim_termination, user_data):
+    """
+    Set callback for cosimulation termination
+
+    This callback will be executed once when the time advance of the federate/co-simulation has terminated. This may be called as part of the finalize operation, or when a maxTime signal is returned from requestTime or when an error is encountered
+
+    # Parameters
+
+    - **`fed`**: The federate to set the callback for.
+    - **`cosim_termination`**: A callback with signature void( void *user_data);
+    - **`user_data`**: A pointer to user data that is passed to the function when executing.
+    """
+    f = loadSym("helicsFederateCosimulationTerminationCallback")
+    err = helicsErrorInitialize()
+    f(fed.handle, cosim_termination, user_data, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateErrorHandlerCallback(fed: HelicsFederate, error_handler, user_data):
+    """
+    Set callback for error handling
+
+    This callback will be when a federate error is encountered
+
+    # Parameters
+
+    - **`fed`**: The federate to set the callback for.
+    - **`error_handler`**: A callback with signature void(int errorCode, const char *errorString, void *user_data);
+    - **`user_data`** A pointer to user data that is passed to the function when executing.
+    """
+    f = loadSym("helicsFederateErrorHandlerCallback")
+    err = helicsErrorInitialize()
+    f(fed.handle, error_handler, user_data, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsCallbackFederateNextTimeCallback(fed: HelicsFederate, time_update, user_data):
+    """
+    Set callback for the next time update
+
+    This callback will be triggered to compute the next time update for a callback federate
+
+    # Parameters
+
+    - **`fed`**: The federate to set the callback for.
+    - **`time_update`**: A callback with signature HelicsTime(HelicsTime time, void *user_data);
+    - **`user_data`**: A pointer to user data that is passed to the function when executing.
+    """
+    f = loadSym("helicsCallbackFederateNextTimeCallback")
+    err = helicsErrorInitialize()
+    f(fed.handle, time_update, user_data, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsCallbackFederateNextTimeIterativeCallback(fed: HelicsFederate, time_update, user_data):
+    """
+    Set callback for the next time update with iteration capability
+
+    This callback will be triggered to compute the next time update for a callback federate
+
+    # Parameters
+
+    - **`fed`**: The federate to set the callback for.
+    - **`time_update`**: A callback with signature HelicsTime(HelicsTime time, void *user_data);
+    - **`user_data`**: A pointer to user data that is passed to the function when executing.
+    """
+    f = loadSym("helicsCallbackFederateNextTimeIterativeCallback")
+    err = helicsErrorInitialize()
+    f(fed.handle, time_update, user_data, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsCallbackFederateInitializeCallback(fed: HelicsFederate, initialize, user_data):
+    """
+    Set callback for initialization
+
+    This callback will be executed when computing whether to iterate in initialization mode
+
+    # Parameters
+
+    - **`fed`**: The federate to set the callback for.
+    - **`initialize`**: A callback with signature HelicsIterationRequest(void *user_data);
+    - **`user_data`**: A pointer to user data that is passed to the function when executing.
+    """
+    f = loadSym("helicsCallbackFederateInitializeCallback")
+    err = helicsErrorInitialize()
+    f(fed.handle, initialize, user_data, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -9191,10 +9324,10 @@ def helicsQueryBufferFill(buffer: HelicsQueryBuffer, string: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsFilterSetCustomCallback(filter: HelicsFilter, callback, userdata):
+def helicsFilterSetCustomCallback(filter: HelicsFilter, callback, user_data):
     f = loadSym("helicsFilterSetCustomCallback")
     err = helicsErrorInitialize()
-    f(filter.handle, callback, userdata, err)
+    f(filter.handle, callback, user_data, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
