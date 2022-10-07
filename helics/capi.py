@@ -2819,7 +2819,7 @@ class HelicsMessageFederate(HelicsFederate):
 class HelicsCombinationFederate(HelicsValueFederate, HelicsMessageFederate):
     pass
 
-class HelicsCallbackFederate(HelicsValueFederate, HelicsMessageFederate):
+class HelicsCallbackFederate(HelicsCombinationFederate):
     pass
 
 class HelicsDataBuffer(_HelicsCHandle):
