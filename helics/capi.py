@@ -2819,6 +2819,8 @@ class HelicsMessageFederate(HelicsFederate):
 class HelicsCombinationFederate(HelicsValueFederate, HelicsMessageFederate):
     pass
 
+class HelicsCallbackFederate(HelicsCombinationFederate):
+    pass
 
 class HelicsDataBuffer(_HelicsCHandle):
     pass
@@ -3592,6 +3594,49 @@ def helicsCreateCombinationFederateFromConfig(config_file: str) -> HelicsCombina
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return HelicsCombinationFederate(result)
+
+
+def helicsCreateCallbackFederate(fed_name: str, fi: HelicsFederateInfo = None) -> HelicsCallbackFederate:
+    """
+    Create a callback federate from `helics.HelicsFederateInfo`.
+    Callback federates are both value federates and message federates, objects can be used in all functions
+    that take a `helics.HelicsFederate` object as an argument.
+
+    - **`fed_name`** - A string with the name of the federate, can be NULL or an empty string to pull the default name from fi.
+    - **`fi`** - The federate info object that contains details on the federate.
+
+    **Returns**: `helics.HelicsCallbackFederate`.
+    """
+    f = loadSym("helicsCreateCallbackFederate")
+    err = helicsErrorInitialize()
+    if fi is None:
+        fi = helicsCreateFederateInfo()
+    result = f(cstring(fed_name), fi.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsCallbackFederate(result)
+
+
+def helicsCreateCallbackFederateFromConfig(config_file: str) -> HelicsCallbackFederate:
+    """
+    Create a callback federate from a JSON file or JSON string or TOML file.
+    Callback federates are both value federates and message federates, objects can be used in all functions
+    that take a `helics.HelicsFederate` object as an argument.
+
+    **Parameters**
+
+    - **`config_file`** - A JSON file or a JSON string or TOML file that contains setup and configuration information.
+
+    **Returns**: `helics.HelicsCallbackFederate`.
+    """
+    f = loadSym("helicsCreateCallbackFederateFromConfig")
+    err = helicsErrorInitialize()
+    result = f(cstring(config_file), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsCallbackFederate(result)
 
 
 def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
