@@ -129,7 +129,8 @@ class NPM(Command):
     def run(self):
         has_npm = self.has_npm()
         if not has_npm:
-            log.error("`npm` unavailable.  If you're running this command using " "sudo, make sure `npm` is available to sudo")
+            log.error("`npm` unavailable, skipping npm build.  If you're running this command using " "sudo, make sure `npm` is available to sudo")
+            return
 
         env = os.environ.copy()
         env["PATH"] = NPM_PATH
