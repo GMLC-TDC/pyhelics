@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'HELICS version number'
+        description: 'HELICS version number (without leading `v` prefix)'
         required: true
         type: string
       dryrun:
