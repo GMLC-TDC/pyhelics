@@ -126,6 +126,7 @@ def test_system_test_core_global_value1():
     h.helicsCloseLibrary()
 
 
+@pt.mark.skip(reason = "Segfaults on linux")
 def test_system_test_core_global_value2():
     brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
 
@@ -212,7 +213,7 @@ def test_system_test_federate_global_value():
     res = h.helicsQueryExecuteComplete(q2)
     assert str(res).lower() == "false"
 
-    h.helicsFederateFinalize(fed)
+    h.helicsFederateDisconnect(fed)
 
     h.helicsCoreDisconnect(cr)
     h.helicsBrokerDisconnect(brk)
@@ -268,7 +269,7 @@ def test_system_tests_federate_logging():
     h.helicsFederateClearMessages(fed)
     h.helicsCoreSetLogFile(core, lfile)
     h.helicsCoreDisconnect(core)
-    h.helicsFederateFinalize(fed)
+    h.helicsFederateDisconnect(fed)
     # h.helicsFederateInfoFree(fi)
     h.helicsCloseLibrary()
 

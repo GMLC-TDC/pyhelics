@@ -53,3 +53,37 @@ assert mFed.subscriptions["TestFederate/publication"].bytes == b"first-time"
 
 print("Exiting...")
 ```
+
+### Using a Filter Callbacks
+
+Here is a annotated snippet of how to use custom filter callbacks in Python.
+
+```python
+
+# Store what ever data you'd like. A reference to this object is passed to the filter callback. You don't need to use this if you don't want to.
+class UserData(object):
+    def __init__(self, x = None):
+        self.x = x
+
+# Create the filter callback function
+# This function is called when the message is transmitted
+@h.ffi.callback("void logger(HelicsMessage, void* userData)")
+def filterCallback(mess, userData):
+    m = h.HelicsMessage(mess)
+    time = h.helicsMessageGetTime(m)
+    # Change time here however you like. The following is an example of delaying it by 2.5 seconds.
+    h.helicsMessageSetTime(m, time + 2.5)
+
+
+# your code
+def main():
+    ...
+    # Register a `HELICS_FILTER_TYPE_CUSTOM` type filter and store in `f1`
+    f1 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
+    # optional user data if you need to.
+    userdata = UserData() # or userdata = None if you don't want to use it
+    # Create a handle to the user data
+    handle = h.ffi.new_handle(userdata)
+    # Set on `f1` the `filterCallback` function as the filter callback and pass handle to the userdata.
+    h.helicsFilterSetCustomCallback(f1, filterCallback, handle)
+```

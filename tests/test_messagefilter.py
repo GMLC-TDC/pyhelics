@@ -52,8 +52,8 @@ def test_messagefilter_registration():
     # filter_target = h.helicsFilterGetTarget(f2)
     # assert filter_target == "port2"
 
-    h.helicsFederateFinalize(mFed)
-    h.helicsFederateFinalize(fFed)
+    h.helicsFederateDisconnect(mFed)
+    h.helicsFederateDisconnect(fFed)
 
     destroyFederate(fFed, ffedinfo)
     destroyFederate(mFed, mfedinfo)
@@ -108,8 +108,8 @@ def test_messagefilter_info():
     assert h.helicsFilterGetInfo(f2) == "f2_test"
     assert h.helicsFilterGetInfo(f3) == "f3_test"
 
-    h.helicsFederateFinalize(mFed)
-    h.helicsFederateFinalize(fFed)
+    h.helicsFederateDisconnect(mFed)
+    h.helicsFederateDisconnect(fFed)
 
     destroyFederate(fFed, ffedinfo)
     destroyFederate(mFed, mfedinfo)
@@ -149,7 +149,7 @@ def test_messagefilter_function():
     filt_key = h.helicsFilterGetName(f2)
     assert filt_key == "filter2"
 
-    h.helicsEndpointSendMessageRaw(p1, "port2", data.encode())
+    h.helicsEndpointSendBytesTo(p1, data.encode(), "port2")
     h.helicsFederateRequestTimeAsync(mFed, 1.0)
     grantedtime = h.helicsFederateRequestTime(fFed, 1.0)
     assert grantedtime == 1.0
@@ -162,8 +162,8 @@ def test_messagefilter_function():
     # grantedtime = h.helicsFederateRequestTime(fFed, 3.0)
     # assert res==h.helics_true
 
-    h.helicsFederateFinalize(mFed)
-    h.helicsFederateFinalize(fFed)
+    h.helicsFederateDisconnect(mFed)
+    h.helicsFederateDisconnect(fFed)
     # f2 = h.helicsFederateRegisterDestinationFilter(fFed, h.helics_custom_filter, "filter2", "port2")
     # ep1 = h.helicsFederateRegisterEndpoint(fFed, "fout", "")
     # f3 = h.helicsFederateRegisterSourceFilter(fFed, h.helics_custom_filter, "", "filter0/fout")
