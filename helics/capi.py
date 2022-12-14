@@ -1151,6 +1151,17 @@ class HelicsCore(_HelicsCHandle):
         """
         helicsCoreSetGlobal(self, name, value)
 
+    def add_alias(self, interface_name: str, alias: str):
+        """
+        Create an alias for an interface.
+
+        **Parameters**
+
+        - **`interface_name`**: The current name of an interface.
+        - **`alias`**: The additional name to use for the given interface.
+        """
+        helicsCoreAddAlias(self, interface_name, alias)
+
     def query(self, target: str, query: str, mode: HelicsSequencingMode = HelicsSequencingMode.FAST) -> JSONType:
         """
         Make a query of the core.
@@ -1250,6 +1261,17 @@ class HelicsBroker(_HelicsCHandle):
         - **`value`**: the value of the global.
         """
         helicsBrokerSetGlobal(self, name, value)
+
+    def add_alias(self, interface_name: str, alias: str):
+        """
+        Create an alias for an interface.
+
+        **Parameters**
+
+        - **`interfaceName`**: The current name of an interface.
+        - **`alias`**: The additional name to use for the given interface.
+        """
+        helicsBrokerAddAlias(self, interface_name, alias)
 
     def data_link(self, source: str, target: str):
         """
@@ -1920,18 +1942,38 @@ class HelicsFederate(_HelicsCHandle):
         """
         helicsFederateEnterInitializingModeAsync(self)
 
+    def enter_initializing_mode_complete(self):
+        """
+        Second part of the async process for entering initializationState call after a call to `enter_initializing_mode_async` if call any other time it will throw an `InvalidFunctionCall` exception
+        """
+        helicsFederateEnterInitializingModeComplete(self)
+
+    def enter_initializing_mode_iterative(self):
+        """
+        Trigger a blocking call and return to created state after all federates have either triggered an iteration or are waiting to enter initializing mode.
+        """
+        helicsFederateEnterInitializingModeIterative(self)
+
+    def enter_initializing_mode_iterative_async(self):
+        """
+        Non-blocking alternative to `enter_initializing_mode_async`.
+
+        A call to `enter_initializing_mode_iterative_complete` should be made to complete the call sequence.
+        """
+        helicsFederateEnterInitializingModeIterativeAsync(self)
+
+    def enter_initializing_mode_iterative_complete(self):
+        """
+        Complete the call to enter initializing mode iterative that was initiated with `enter_initializing_mode_iterative_async`.
+        """
+        helicsFederateEnterInitializingModeIterativeComplete(self)
+
     def is_async_operation_completed(self):
         """
         Called after one of the async calls and will indicate true if an async operation has completed.
         Only call from the same thread as the one that called the initial async call and will return false if called when no aysnc operation is in flight
         """
         return helicsFederateIsAsyncOperationCompleted(self)
-
-    def enter_initializing_mode_complete(self):
-        """
-        Second part of the async process for entering initializationState call after a call to `enter_initializing_mode_async` if call any other time it will throw an `InvalidFunctionCall` exception
-        """
-        helicsFederateEnterInitializingModeComplete(self)
 
     def enter_executing_mode(self, iterate: HelicsIterationRequest = HelicsIterationRequest.NO_ITERATION):
         """
@@ -2224,6 +2266,17 @@ class HelicsFederate(_HelicsCHandle):
         Returns: A reference to a filter object which could be invalid if `filter_name` is not valid.
         """
         return helicsFederateGetFilterByIndex(self, filter_index)
+
+    def add_alias(self, interface_name: str, alias: str):
+        """
+        Create an alias for an interface.
+
+        **Parameters**
+
+        - **`interface_name`**: The current name of an interface.
+        - **`alias`**: The additional name to use for the given interface.
+        """
+        helicsFederateAddAlias(self, interface_name, alias)
 
     def set_global(self, name: str, value: str):
         """
@@ -3143,6 +3196,22 @@ def helicsBrokerIsConnected(broker: HelicsBroker) -> bool:
     f = loadSym("helicsBrokerIsConnected")
     result = f(broker.handle)
     return result == 1
+
+
+def helicsBrokerAddAlias(broker: HelicsBroker, interface_name: str, alias: str):
+    """
+    Create an alias for an interface.
+
+    **Parameters**
+
+    - **`interface_name`**: The current name of an interface.
+    - **`alias`**: The additional name to use for the given interface.
+    """
+    f = loadSym("helicsBrokerAddAlias")
+    err = helicsErrorInitialize()
+    f(broker.handle, cstring(interface_name), cstring(alias), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsBrokerDataLink(broker: HelicsBroker, source_name: str, target_name: str):
@@ -4362,6 +4431,68 @@ def helicsFederateEnterInitializingModeAsync(fed: HelicsFederate):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsFederateEnterInitializingModeComplete(fed: HelicsFederate):
+    """
+    Finalize the entry to initialize mode that was initiated with `helics.helicsFederateEnterInitializingModeAsync`.
+
+    **Parameters**
+
+    - **`fed`** - The federate desiring to complete the initialization step.
+    """
+    f = loadSym("helicsFederateEnterInitializingModeComplete")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateEnterInitializingModeIterative(fed: HelicsFederate):
+    """
+    Trigger a blocking call and return to created state after all federates have either triggered an iteration or are waiting to enter initializing mode.
+
+    **Parameters**
+
+    - **`fed`** - The federate to operate on.
+    """
+    f = loadSym("helicsFederateEnterInitializingModeIterative")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateEnterInitializingModeIterativeAsync(fed: HelicsFederate):
+    """
+    Non-blocking alternative to `helics.helicsFederateEnterInitializingModeIterative`.
+
+    A call to `helics.helicsFederateEnterInitializingModeIterativeComplete` should be made to complete the call sequence.
+
+    **Parameters**
+
+    - **`fed`** - The federate to operate on.
+    """
+    f = loadSym("helicsFederateEnterInitializingModeIterativeAsync")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateEnterInitializingModeIterativeComplete(fed: HelicsFederate):
+    """
+    Complete the call to enter initializing mode iterative that was initiated with `helics.helicsFederateEnterInitializingModeIterativeAsync`.
+
+    **Parameters**
+
+    - **`fed`** - The federate to operate on.
+    """
+    f = loadSym("helicsFederateEnterInitializingModeIterativeComplete")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsFederateIsAsyncOperationCompleted(fed: HelicsFederate) -> bool:
     """
     Check if the current Asynchronous operation has completed.
@@ -4379,21 +4510,6 @@ def helicsFederateIsAsyncOperationCompleted(fed: HelicsFederate) -> bool:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return result == 1
-
-
-def helicsFederateEnterInitializingModeComplete(fed: HelicsFederate):
-    """
-    Finalize the entry to initialize mode that was initiated with `helics.helicsEnterInitializingModeAsync`.
-
-    **Parameters**
-
-    - **`fed`** - The federate desiring to complete the initialization step.
-    """
-    f = loadSym("helicsFederateEnterInitializingModeComplete")
-    err = helicsErrorInitialize()
-    f(fed.handle, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateEnterExecutingMode(fed: HelicsFederate):
@@ -4900,6 +5016,22 @@ def helicsFederateGetCurrentTime(fed: HelicsFederate) -> HelicsTime:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return result
+
+
+def helicsFederateAddAlias(fed: HelicsFederate, interface_name: str, alias: str):
+    """
+    Create an alias for an interface.
+
+    **Parameters**
+
+    - **`interface_name`**: The current name of an interface.
+    - **`alias`**: The additional name to use for the given interface.
+    """
+    f = loadSym("helicsFederateAddAlias")
+    err = helicsErrorInitialize()
+    f(fed.handle, cstring(interface_name), cstring(alias), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateSetGlobal(fed: HelicsFederate, name: str, value: str):
@@ -9482,6 +9614,22 @@ def helicsFederateWaitCommand(fed: HelicsFederate) -> str:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return ffi.string(result).decode()
+
+
+def helicsCoreAddAlias(core: HelicsCore, interface_name: str, alias: str):
+    """
+    Create an alias for an interface.
+
+    **Parameters**
+
+    - **`interface_name`**: The current name of an interface.
+    - **`alias`**: The additional name to use for the given interface.
+    """
+    f = loadSym("helicsCoreAddAlias")
+    err = helicsErrorInitialize()
+    f(core.handle, cstring(interface_name), cstring(alias), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsCoreSendCommand(core, target, command, err):
