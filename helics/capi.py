@@ -234,6 +234,10 @@ class HelicsFlag(IntEnum):
     PROFILING = 93
     # flag trigger for generating a profiling marker
     PROFILING_MARKER = 95
+    # specify that the federate/core/broker should allow some remote control operations such as finalize
+    ALLOW_REMOTE_CONTROL = 109
+    # specify that the federate/core/broker should *NOT* allow some remote control operations such as finalize
+    DISABLE_REMOTE_CONTROL = 110
 
 
 HELICS_FLAG_SLOW_RESPONDING = HelicsFlag.SLOW_RESPONDING
@@ -243,6 +247,8 @@ HELICS_FLAG_FORCE_LOGGING_FLUSH = HelicsFlag.FORCE_LOGGING_FLUSH
 HELICS_FLAG_DUMPLOG = HelicsFlag.DUMPLOG
 HELICS_FLAG_PROFILING = HelicsFlag.PROFILING
 HELICS_FLAG_PROFILING_MARKER = HelicsFlag.PROFILING_MARKER
+HELICS_FLAG_ALLOW_REMOTE_CONTROL = HelicsFlag.ALLOW_REMOTE_CONTROL
+HELICS_FLAG_DISABLE_REMOTE_CONTROL = HelicsFlag.DISABLE_REMOTE_CONTROL
 
 helics_flag_slow_responding = HelicsFlag.SLOW_RESPONDING
 helics_flag_debugging = HelicsFlag.DEBUGGING
@@ -251,6 +257,8 @@ helics_flag_force_logging_flush = HelicsFlag.FORCE_LOGGING_FLUSH
 helics_flag_dumplog = HelicsFlag.DUMPLOG
 helics_flag_profiling = HelicsFlag.PROFILING
 helics_flag_profiling_marker = HelicsFlag.PROFILING_MARKER
+helics_flag_allow_remote_control = HelicsFlag.ALLOW_REMOTE_CONTROL
+helics_flag_disable_remote_control = HelicsFlag.DISABLE_REMOTE_CONTROL
 
 
 @unique
@@ -268,11 +276,15 @@ class HelicsFederateFlag(IntEnum):
     - **FORWARD_COMPUTE**
     - **REALTIME**
     - **SINGLE_THREAD_FEDERATE**
+    - **MULTI_THREAD_CORE**
+    - **SINGLE_THREAD_CORE**
     - **IGNORE_TIME_MISMATCH_WARNINGS**
     - **STRICT_CONFIG_CHECKING**
     - **USE_JSON_SERIALIZATION**
     - **EVENT_TRIGGERED**
     - **LOCAL_PROFILING_CAPTURE**
+    - **CALLBACK_FEDERATE**
+    - **AUTOMATED_TIME_REQUEST**
     """
 
     # flag indicating that a federate is observe only
@@ -299,6 +311,10 @@ class HelicsFederateFlag(IntEnum):
     REALTIME = 16
     # flag indicating that the federate will only interact on a single thread
     SINGLE_THREAD_FEDERATE = 27
+    # flag indicating use of a thread safe core
+    MULTI_THREAD_CORE = 28
+    # flag indicating use of a single threaded core
+    SINGLE_THREAD_CORE = 29
     # used to not display warnings on mismatched requested times
     IGNORE_TIME_MISMATCH_WARNINGS = 67
     # specify that checking on configuration files should be strict and throw and error on any invalid values
@@ -309,6 +325,10 @@ class HelicsFederateFlag(IntEnum):
     EVENT_TRIGGERED = 81
     # specify that that federate should capture the profiling data to the local federate logging system
     LOCAL_PROFILING_CAPTURE = 96
+    # specify that the federate is a callback based federate using callbacks for execution
+    CALLBACK_FEDERATE = 103
+    # specify that a federate should automatically call timeRequest on completion of current request
+    AUTOMATED_TIME_REQUEST = 106
 
 
 HELICS_FLAG_OBSERVER = HelicsFederateFlag.OBSERVER
@@ -323,11 +343,15 @@ HELICS_FLAG_ROLLBACK = HelicsFederateFlag.ROLLBACK
 HELICS_FLAG_FORWARD_COMPUTE = HelicsFederateFlag.FORWARD_COMPUTE
 HELICS_FLAG_REALTIME = HelicsFederateFlag.REALTIME
 HELICS_FLAG_SINGLE_THREAD_FEDERATE = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
+HELICS_FLAG_MULTI_THREAD_CORE = HelicsFederateFlag.MULTI_THREAD_CORE
+HELICS_FLAG_SINGLE_THREAD_CORE = HelicsFederateFlag.SINGLE_THREAD_CORE
 HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
 HELICS_FLAG_STRICT_CONFIG_CHECKING = HelicsFederateFlag.STRICT_CONFIG_CHECKING
 HELICS_FLAG_USE_JSON_SERIALIZATION = HelicsFederateFlag.USE_JSON_SERIALIZATION
 HELICS_FLAG_EVENT_TRIGGERED = HelicsFederateFlag.EVENT_TRIGGERED
 HELICS_FLAG_LOCAL_PROFILING_CAPTURE = HelicsFederateFlag.LOCAL_PROFILING_CAPTURE
+HELICS_FLAG_CALLBACK_FEDERATE = HelicsFederateFlag.CALLBACK_FEDERATE
+HELICS_FLAG_AUTOMATED_TIME_REQUEST = HelicsFederateFlag.AUTOMATED_TIME_REQUEST
 
 helics_flag_observer = HelicsFederateFlag.OBSERVER
 helics_flag_uninterruptible = HelicsFederateFlag.UNINTERRUPTIBLE
@@ -341,11 +365,15 @@ helics_flag_rollback = HelicsFederateFlag.ROLLBACK
 helics_flag_forward_compute = HelicsFederateFlag.FORWARD_COMPUTE
 helics_flag_realtime = HelicsFederateFlag.REALTIME
 helics_flag_single_thread_federate = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
+helics_flag_multi_thread_core = HelicsFederateFlag.MULTI_THREAD_CORE
+helics_flag_single_thread_core = HelicsFederateFlag.SINGLE_THREAD_CORE
 helics_flag_ignore_time_mismatch_warnings = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
 helics_flag_strict_config_checking = HelicsFederateFlag.STRICT_CONFIG_CHECKING
 helics_flag_use_json_serialization = HelicsFederateFlag.USE_JSON_SERIALIZATION
 helics_flag_event_triggered = HelicsFederateFlag.EVENT_TRIGGERED
 helics_flag_local_profiling_capture = HelicsFederateFlag.LOCAL_PROFILING_CAPTURE
+helics_flag_callback_federate = HelicsFederateFlag.CALLBACK_FEDERATE
+helics_flag_automated_time_request = HelicsFederateFlag.AUTOMATED_TIME_REQUEST
 
 
 class HelicsCoreFlag(IntEnum):
@@ -537,10 +565,15 @@ class HelicsProperty(IntEnum):
     - **TIME_RT_TOLERANCE**
     - **TIME_INPUT_DELAY**
     - **TIME_OUTPUT_DELAY**
+    - **TIME_STOPTIME**
+    - **TIME_GRANT_TIMEOUT**
+    - **INT_CURRENT_ITERATION**
     - **INT_MAX_ITERATIONS**
     - **INT_LOG_LEVEL**
     - **INT_FILE_LOG_LEVEL**
     - **INT_CONSOLE_LOG_LEVEL**
+    - **INT_LOG_BUFFER**
+    - **INT_INDEX_GROUP**
     """
 
     TIME_DELTA = 137  # HelicsProperties
@@ -551,10 +584,15 @@ class HelicsProperty(IntEnum):
     TIME_RT_TOLERANCE = 145  # HelicsProperties
     TIME_INPUT_DELAY = 148  # HelicsProperties
     TIME_OUTPUT_DELAY = 150  # HelicsProperties
+    TIME_STOPTIME = 152  # HelicsProperties
+    TIME_GRANT_TIMEOUT = 161  # HelicsProperties
+    INT_CURRENT_ITERATION = 258  # HelicsProperties
     INT_MAX_ITERATIONS = 259  # HelicsProperties
     INT_LOG_LEVEL = 271  # HelicsProperties
     INT_FILE_LOG_LEVEL = 272  # HelicsProperties
     INT_CONSOLE_LOG_LEVEL = 274  # HelicsProperties
+    INT_LOG_BUFFER = 276  # HelicsProperties
+    INT_INDEX_GROUP = 278  # HelicsProperties
 
 
 HELICS_INVALID_OPTION_INDEX = -101
@@ -569,10 +607,15 @@ HELICS_PROPERTY_TIME_RT_LEAD = HelicsProperty.TIME_RT_LEAD
 HELICS_PROPERTY_TIME_RT_TOLERANCE = HelicsProperty.TIME_RT_TOLERANCE
 HELICS_PROPERTY_TIME_INPUT_DELAY = HelicsProperty.TIME_INPUT_DELAY
 HELICS_PROPERTY_TIME_OUTPUT_DELAY = HelicsProperty.TIME_OUTPUT_DELAY
+HELICS_PROPERTY_TIME_STOPTIME = HelicsProperty.TIME_STOPTIME
+HELICS_PROPERTY_TIME_GRANT_TIMEOUT = HelicsProperty.TIME_GRANT_TIMEOUT
+HELICS_PROPERTY_INT_CURRENT_ITERATION = HelicsProperty.INT_CURRENT_ITERATION
 HELICS_PROPERTY_INT_MAX_ITERATIONS = HelicsProperty.INT_MAX_ITERATIONS
 HELICS_PROPERTY_INT_LOG_LEVEL = HelicsProperty.INT_LOG_LEVEL
 HELICS_PROPERTY_INT_FILE_LOG_LEVEL = HelicsProperty.INT_FILE_LOG_LEVEL
 HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+HELICS_PROPERTY_INT_LOG_BUFFER = HelicsProperty.INT_LOG_BUFFER
+HELICS_PROPERTY_INT_INDEX_GROUP = HelicsProperty.INT_INDEX_GROUP
 
 helics_property_time_delta = HelicsProperty.TIME_DELTA
 helics_property_time_period = HelicsProperty.TIME_PERIOD
@@ -582,10 +625,15 @@ helics_property_time_rt_lead = HelicsProperty.TIME_RT_LEAD
 helics_property_time_rt_tolerance = HelicsProperty.TIME_RT_TOLERANCE
 helics_property_time_input_delay = HelicsProperty.TIME_INPUT_DELAY
 helics_property_time_output_delay = HelicsProperty.TIME_OUTPUT_DELAY
+helics_property_time_stoptime = HelicsProperty.TIME_STOPTIME
+helics_property_time_grant_timeout = HelicsProperty.TIME_GRANT_TIMEOUT
+helics_property_int_current_iteration = HelicsProperty.INT_CURRENT_ITERATION
 helics_property_int_max_iterations = HelicsProperty.INT_MAX_ITERATIONS
 helics_property_int_log_level = HelicsProperty.INT_LOG_LEVEL
 helics_property_int_file_log_level = HelicsProperty.INT_FILE_LOG_LEVEL
 helics_property_int_console_log_level = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+helics_property_int_log_buffer = HelicsProperty.INT_LOG_BUFFER
+helics_property_int_index_group = HelicsProperty.INT_INDEX_GROUP
 
 
 @unique
