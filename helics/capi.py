@@ -234,6 +234,10 @@ class HelicsFlag(IntEnum):
     PROFILING = 93
     # flag trigger for generating a profiling marker
     PROFILING_MARKER = 95
+    # specify that the federate/core/broker should allow some remote control operations such as finalize
+    ALLOW_REMOTE_CONTROL = 109
+    # specify that the federate/core/broker should *NOT* allow some remote control operations such as finalize
+    DISABLE_REMOTE_CONTROL = 110
 
 
 HELICS_FLAG_SLOW_RESPONDING = HelicsFlag.SLOW_RESPONDING
@@ -243,6 +247,8 @@ HELICS_FLAG_FORCE_LOGGING_FLUSH = HelicsFlag.FORCE_LOGGING_FLUSH
 HELICS_FLAG_DUMPLOG = HelicsFlag.DUMPLOG
 HELICS_FLAG_PROFILING = HelicsFlag.PROFILING
 HELICS_FLAG_PROFILING_MARKER = HelicsFlag.PROFILING_MARKER
+HELICS_FLAG_ALLOW_REMOTE_CONTROL = HelicsFlag.ALLOW_REMOTE_CONTROL
+HELICS_FLAG_DISABLE_REMOTE_CONTROL = HelicsFlag.DISABLE_REMOTE_CONTROL
 
 helics_flag_slow_responding = HelicsFlag.SLOW_RESPONDING
 helics_flag_debugging = HelicsFlag.DEBUGGING
@@ -251,6 +257,8 @@ helics_flag_force_logging_flush = HelicsFlag.FORCE_LOGGING_FLUSH
 helics_flag_dumplog = HelicsFlag.DUMPLOG
 helics_flag_profiling = HelicsFlag.PROFILING
 helics_flag_profiling_marker = HelicsFlag.PROFILING_MARKER
+helics_flag_allow_remote_control = HelicsFlag.ALLOW_REMOTE_CONTROL
+helics_flag_disable_remote_control = HelicsFlag.DISABLE_REMOTE_CONTROL
 
 
 @unique
@@ -268,11 +276,15 @@ class HelicsFederateFlag(IntEnum):
     - **FORWARD_COMPUTE**
     - **REALTIME**
     - **SINGLE_THREAD_FEDERATE**
+    - **MULTI_THREAD_CORE**
+    - **SINGLE_THREAD_CORE**
     - **IGNORE_TIME_MISMATCH_WARNINGS**
     - **STRICT_CONFIG_CHECKING**
     - **USE_JSON_SERIALIZATION**
     - **EVENT_TRIGGERED**
     - **LOCAL_PROFILING_CAPTURE**
+    - **CALLBACK_FEDERATE**
+    - **AUTOMATED_TIME_REQUEST**
     """
 
     # flag indicating that a federate is observe only
@@ -299,6 +311,10 @@ class HelicsFederateFlag(IntEnum):
     REALTIME = 16
     # flag indicating that the federate will only interact on a single thread
     SINGLE_THREAD_FEDERATE = 27
+    # flag indicating use of a thread safe core
+    MULTI_THREAD_CORE = 28
+    # flag indicating use of a single threaded core
+    SINGLE_THREAD_CORE = 29
     # used to not display warnings on mismatched requested times
     IGNORE_TIME_MISMATCH_WARNINGS = 67
     # specify that checking on configuration files should be strict and throw and error on any invalid values
@@ -309,6 +325,10 @@ class HelicsFederateFlag(IntEnum):
     EVENT_TRIGGERED = 81
     # specify that that federate should capture the profiling data to the local federate logging system
     LOCAL_PROFILING_CAPTURE = 96
+    # specify that the federate is a callback based federate using callbacks for execution
+    CALLBACK_FEDERATE = 103
+    # specify that a federate should automatically call timeRequest on completion of current request
+    AUTOMATED_TIME_REQUEST = 106
 
 
 HELICS_FLAG_OBSERVER = HelicsFederateFlag.OBSERVER
@@ -323,11 +343,15 @@ HELICS_FLAG_ROLLBACK = HelicsFederateFlag.ROLLBACK
 HELICS_FLAG_FORWARD_COMPUTE = HelicsFederateFlag.FORWARD_COMPUTE
 HELICS_FLAG_REALTIME = HelicsFederateFlag.REALTIME
 HELICS_FLAG_SINGLE_THREAD_FEDERATE = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
+HELICS_FLAG_MULTI_THREAD_CORE = HelicsFederateFlag.MULTI_THREAD_CORE
+HELICS_FLAG_SINGLE_THREAD_CORE = HelicsFederateFlag.SINGLE_THREAD_CORE
 HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
 HELICS_FLAG_STRICT_CONFIG_CHECKING = HelicsFederateFlag.STRICT_CONFIG_CHECKING
 HELICS_FLAG_USE_JSON_SERIALIZATION = HelicsFederateFlag.USE_JSON_SERIALIZATION
 HELICS_FLAG_EVENT_TRIGGERED = HelicsFederateFlag.EVENT_TRIGGERED
 HELICS_FLAG_LOCAL_PROFILING_CAPTURE = HelicsFederateFlag.LOCAL_PROFILING_CAPTURE
+HELICS_FLAG_CALLBACK_FEDERATE = HelicsFederateFlag.CALLBACK_FEDERATE
+HELICS_FLAG_AUTOMATED_TIME_REQUEST = HelicsFederateFlag.AUTOMATED_TIME_REQUEST
 
 helics_flag_observer = HelicsFederateFlag.OBSERVER
 helics_flag_uninterruptible = HelicsFederateFlag.UNINTERRUPTIBLE
@@ -341,11 +365,15 @@ helics_flag_rollback = HelicsFederateFlag.ROLLBACK
 helics_flag_forward_compute = HelicsFederateFlag.FORWARD_COMPUTE
 helics_flag_realtime = HelicsFederateFlag.REALTIME
 helics_flag_single_thread_federate = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
+helics_flag_multi_thread_core = HelicsFederateFlag.MULTI_THREAD_CORE
+helics_flag_single_thread_core = HelicsFederateFlag.SINGLE_THREAD_CORE
 helics_flag_ignore_time_mismatch_warnings = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
 helics_flag_strict_config_checking = HelicsFederateFlag.STRICT_CONFIG_CHECKING
 helics_flag_use_json_serialization = HelicsFederateFlag.USE_JSON_SERIALIZATION
 helics_flag_event_triggered = HelicsFederateFlag.EVENT_TRIGGERED
 helics_flag_local_profiling_capture = HelicsFederateFlag.LOCAL_PROFILING_CAPTURE
+helics_flag_callback_federate = HelicsFederateFlag.CALLBACK_FEDERATE
+helics_flag_automated_time_request = HelicsFederateFlag.AUTOMATED_TIME_REQUEST
 
 
 class HelicsCoreFlag(IntEnum):
@@ -537,10 +565,15 @@ class HelicsProperty(IntEnum):
     - **TIME_RT_TOLERANCE**
     - **TIME_INPUT_DELAY**
     - **TIME_OUTPUT_DELAY**
+    - **TIME_STOPTIME**
+    - **TIME_GRANT_TIMEOUT**
+    - **INT_CURRENT_ITERATION**
     - **INT_MAX_ITERATIONS**
     - **INT_LOG_LEVEL**
     - **INT_FILE_LOG_LEVEL**
     - **INT_CONSOLE_LOG_LEVEL**
+    - **INT_LOG_BUFFER**
+    - **INT_INDEX_GROUP**
     """
 
     TIME_DELTA = 137  # HelicsProperties
@@ -551,10 +584,15 @@ class HelicsProperty(IntEnum):
     TIME_RT_TOLERANCE = 145  # HelicsProperties
     TIME_INPUT_DELAY = 148  # HelicsProperties
     TIME_OUTPUT_DELAY = 150  # HelicsProperties
+    TIME_STOPTIME = 152  # HelicsProperties
+    TIME_GRANT_TIMEOUT = 161  # HelicsProperties
+    INT_CURRENT_ITERATION = 258  # HelicsProperties
     INT_MAX_ITERATIONS = 259  # HelicsProperties
     INT_LOG_LEVEL = 271  # HelicsProperties
     INT_FILE_LOG_LEVEL = 272  # HelicsProperties
     INT_CONSOLE_LOG_LEVEL = 274  # HelicsProperties
+    INT_LOG_BUFFER = 276  # HelicsProperties
+    INT_INDEX_GROUP = 278  # HelicsProperties
 
 
 HELICS_INVALID_OPTION_INDEX = -101
@@ -569,10 +607,15 @@ HELICS_PROPERTY_TIME_RT_LEAD = HelicsProperty.TIME_RT_LEAD
 HELICS_PROPERTY_TIME_RT_TOLERANCE = HelicsProperty.TIME_RT_TOLERANCE
 HELICS_PROPERTY_TIME_INPUT_DELAY = HelicsProperty.TIME_INPUT_DELAY
 HELICS_PROPERTY_TIME_OUTPUT_DELAY = HelicsProperty.TIME_OUTPUT_DELAY
+HELICS_PROPERTY_TIME_STOPTIME = HelicsProperty.TIME_STOPTIME
+HELICS_PROPERTY_TIME_GRANT_TIMEOUT = HelicsProperty.TIME_GRANT_TIMEOUT
+HELICS_PROPERTY_INT_CURRENT_ITERATION = HelicsProperty.INT_CURRENT_ITERATION
 HELICS_PROPERTY_INT_MAX_ITERATIONS = HelicsProperty.INT_MAX_ITERATIONS
 HELICS_PROPERTY_INT_LOG_LEVEL = HelicsProperty.INT_LOG_LEVEL
 HELICS_PROPERTY_INT_FILE_LOG_LEVEL = HelicsProperty.INT_FILE_LOG_LEVEL
 HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+HELICS_PROPERTY_INT_LOG_BUFFER = HelicsProperty.INT_LOG_BUFFER
+HELICS_PROPERTY_INT_INDEX_GROUP = HelicsProperty.INT_INDEX_GROUP
 
 helics_property_time_delta = HelicsProperty.TIME_DELTA
 helics_property_time_period = HelicsProperty.TIME_PERIOD
@@ -582,10 +625,15 @@ helics_property_time_rt_lead = HelicsProperty.TIME_RT_LEAD
 helics_property_time_rt_tolerance = HelicsProperty.TIME_RT_TOLERANCE
 helics_property_time_input_delay = HelicsProperty.TIME_INPUT_DELAY
 helics_property_time_output_delay = HelicsProperty.TIME_OUTPUT_DELAY
+helics_property_time_stoptime = HelicsProperty.TIME_STOPTIME
+helics_property_time_grant_timeout = HelicsProperty.TIME_GRANT_TIMEOUT
+helics_property_int_current_iteration = HelicsProperty.INT_CURRENT_ITERATION
 helics_property_int_max_iterations = HelicsProperty.INT_MAX_ITERATIONS
 helics_property_int_log_level = HelicsProperty.INT_LOG_LEVEL
 helics_property_int_file_log_level = HelicsProperty.INT_FILE_LOG_LEVEL
 helics_property_int_console_log_level = HelicsProperty.INT_CONSOLE_LOG_LEVEL
+helics_property_int_log_buffer = HelicsProperty.INT_LOG_BUFFER
+helics_property_int_index_group = HelicsProperty.INT_INDEX_GROUP
 
 
 @unique
@@ -1103,6 +1151,17 @@ class HelicsCore(_HelicsCHandle):
         """
         helicsCoreSetGlobal(self, name, value)
 
+    def add_alias(self, interface_name: str, alias: str):
+        """
+        Create an alias for an interface.
+
+        **Parameters**
+
+        - **`interface_name`**: The current name of an interface.
+        - **`alias`**: The additional name to use for the given interface.
+        """
+        helicsCoreAddAlias(self, interface_name, alias)
+
     def query(self, target: str, query: str, mode: HelicsSequencingMode = HelicsSequencingMode.FAST) -> JSONType:
         """
         Make a query of the core.
@@ -1202,6 +1261,17 @@ class HelicsBroker(_HelicsCHandle):
         - **`value`**: the value of the global.
         """
         helicsBrokerSetGlobal(self, name, value)
+
+    def add_alias(self, interface_name: str, alias: str):
+        """
+        Create an alias for an interface.
+
+        **Parameters**
+
+        - **`interfaceName`**: The current name of an interface.
+        - **`alias`**: The additional name to use for the given interface.
+        """
+        helicsBrokerAddAlias(self, interface_name, alias)
 
     def data_link(self, source: str, target: str):
         """
@@ -1872,18 +1942,38 @@ class HelicsFederate(_HelicsCHandle):
         """
         helicsFederateEnterInitializingModeAsync(self)
 
+    def enter_initializing_mode_complete(self):
+        """
+        Second part of the async process for entering initializationState call after a call to `enter_initializing_mode_async` if call any other time it will throw an `InvalidFunctionCall` exception
+        """
+        helicsFederateEnterInitializingModeComplete(self)
+
+    def enter_initializing_mode_iterative(self):
+        """
+        Trigger a blocking call and return to created state after all federates have either triggered an iteration or are waiting to enter initializing mode.
+        """
+        helicsFederateEnterInitializingModeIterative(self)
+
+    def enter_initializing_mode_iterative_async(self):
+        """
+        Non-blocking alternative to `enter_initializing_mode_async`.
+
+        A call to `enter_initializing_mode_iterative_complete` should be made to complete the call sequence.
+        """
+        helicsFederateEnterInitializingModeIterativeAsync(self)
+
+    def enter_initializing_mode_iterative_complete(self):
+        """
+        Complete the call to enter initializing mode iterative that was initiated with `enter_initializing_mode_iterative_async`.
+        """
+        helicsFederateEnterInitializingModeIterativeComplete(self)
+
     def is_async_operation_completed(self):
         """
         Called after one of the async calls and will indicate true if an async operation has completed.
         Only call from the same thread as the one that called the initial async call and will return false if called when no aysnc operation is in flight
         """
         return helicsFederateIsAsyncOperationCompleted(self)
-
-    def enter_initializing_mode_complete(self):
-        """
-        Second part of the async process for entering initializationState call after a call to `enter_initializing_mode_async` if call any other time it will throw an `InvalidFunctionCall` exception
-        """
-        helicsFederateEnterInitializingModeComplete(self)
 
     def enter_executing_mode(self, iterate: HelicsIterationRequest = HelicsIterationRequest.NO_ITERATION):
         """
@@ -2176,6 +2266,17 @@ class HelicsFederate(_HelicsCHandle):
         Returns: A reference to a filter object which could be invalid if `filter_name` is not valid.
         """
         return helicsFederateGetFilterByIndex(self, filter_index)
+
+    def add_alias(self, interface_name: str, alias: str):
+        """
+        Create an alias for an interface.
+
+        **Parameters**
+
+        - **`interface_name`**: The current name of an interface.
+        - **`alias`**: The additional name to use for the given interface.
+        """
+        helicsFederateAddAlias(self, interface_name, alias)
 
     def set_global(self, name: str, value: str):
         """
@@ -3095,6 +3196,22 @@ def helicsBrokerIsConnected(broker: HelicsBroker) -> bool:
     f = loadSym("helicsBrokerIsConnected")
     result = f(broker.handle)
     return result == 1
+
+
+def helicsBrokerAddAlias(broker: HelicsBroker, interface_name: str, alias: str):
+    """
+    Create an alias for an interface.
+
+    **Parameters**
+
+    - **`interface_name`**: The current name of an interface.
+    - **`alias`**: The additional name to use for the given interface.
+    """
+    f = loadSym("helicsBrokerAddAlias")
+    err = helicsErrorInitialize()
+    f(broker.handle, cstring(interface_name), cstring(alias), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsBrokerDataLink(broker: HelicsBroker, source_name: str, target_name: str):
@@ -4314,6 +4431,68 @@ def helicsFederateEnterInitializingModeAsync(fed: HelicsFederate):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
+def helicsFederateEnterInitializingModeComplete(fed: HelicsFederate):
+    """
+    Finalize the entry to initialize mode that was initiated with `helics.helicsFederateEnterInitializingModeAsync`.
+
+    **Parameters**
+
+    - **`fed`** - The federate desiring to complete the initialization step.
+    """
+    f = loadSym("helicsFederateEnterInitializingModeComplete")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateEnterInitializingModeIterative(fed: HelicsFederate):
+    """
+    Trigger a blocking call and return to created state after all federates have either triggered an iteration or are waiting to enter initializing mode.
+
+    **Parameters**
+
+    - **`fed`** - The federate to operate on.
+    """
+    f = loadSym("helicsFederateEnterInitializingModeIterative")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateEnterInitializingModeIterativeAsync(fed: HelicsFederate):
+    """
+    Non-blocking alternative to `helics.helicsFederateEnterInitializingModeIterative`.
+
+    A call to `helics.helicsFederateEnterInitializingModeIterativeComplete` should be made to complete the call sequence.
+
+    **Parameters**
+
+    - **`fed`** - The federate to operate on.
+    """
+    f = loadSym("helicsFederateEnterInitializingModeIterativeAsync")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsFederateEnterInitializingModeIterativeComplete(fed: HelicsFederate):
+    """
+    Complete the call to enter initializing mode iterative that was initiated with `helics.helicsFederateEnterInitializingModeIterativeAsync`.
+
+    **Parameters**
+
+    - **`fed`** - The federate to operate on.
+    """
+    f = loadSym("helicsFederateEnterInitializingModeIterativeComplete")
+    err = helicsErrorInitialize()
+    f(fed.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
 def helicsFederateIsAsyncOperationCompleted(fed: HelicsFederate) -> bool:
     """
     Check if the current Asynchronous operation has completed.
@@ -4331,21 +4510,6 @@ def helicsFederateIsAsyncOperationCompleted(fed: HelicsFederate) -> bool:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return result == 1
-
-
-def helicsFederateEnterInitializingModeComplete(fed: HelicsFederate):
-    """
-    Finalize the entry to initialize mode that was initiated with `helics.helicsEnterInitializingModeAsync`.
-
-    **Parameters**
-
-    - **`fed`** - The federate desiring to complete the initialization step.
-    """
-    f = loadSym("helicsFederateEnterInitializingModeComplete")
-    err = helicsErrorInitialize()
-    f(fed.handle, err)
-    if err.error_code != 0:
-        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateEnterExecutingMode(fed: HelicsFederate):
@@ -4852,6 +5016,22 @@ def helicsFederateGetCurrentTime(fed: HelicsFederate) -> HelicsTime:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return result
+
+
+def helicsFederateAddAlias(fed: HelicsFederate, interface_name: str, alias: str):
+    """
+    Create an alias for an interface.
+
+    **Parameters**
+
+    - **`interface_name`**: The current name of an interface.
+    - **`alias`**: The additional name to use for the given interface.
+    """
+    f = loadSym("helicsFederateAddAlias")
+    err = helicsErrorInitialize()
+    f(fed.handle, cstring(interface_name), cstring(alias), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsFederateSetGlobal(fed: HelicsFederate, name: str, value: str):
@@ -9434,6 +9614,22 @@ def helicsFederateWaitCommand(fed: HelicsFederate) -> str:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     else:
         return ffi.string(result).decode()
+
+
+def helicsCoreAddAlias(core: HelicsCore, interface_name: str, alias: str):
+    """
+    Create an alias for an interface.
+
+    **Parameters**
+
+    - **`interface_name`**: The current name of an interface.
+    - **`alias`**: The additional name to use for the given interface.
+    """
+    f = loadSym("helicsCoreAddAlias")
+    err = helicsErrorInitialize()
+    f(core.handle, cstring(interface_name), cstring(alias), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsCoreSendCommand(core, target, command, err):
