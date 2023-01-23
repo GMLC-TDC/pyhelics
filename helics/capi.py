@@ -691,6 +691,8 @@ class HelicsHandleOption(IntEnum):
     - **MULTIPLE_CONNECTIONS_ALLOWED**
     - **BUFFER_DATA**
     - **STRICT_TYPE_CHECKING**
+    - **RECEIVE_ONLY**
+    - **SOURCE_ONLY**
     - **IGNORE_UNIT_MISMATCH**
     - **ONLY_TRANSMIT_ON_CHANGE**
     - **ONLY_UPDATE_ON_CHANGE**
@@ -707,6 +709,8 @@ class HelicsHandleOption(IntEnum):
     MULTIPLE_CONNECTIONS_ALLOWED = 409  # HelicsHandleOptions
     BUFFER_DATA = 411  # HelicsHandleOptions
     STRICT_TYPE_CHECKING = 414  # HelicsHandleOptions
+    RECEIVE_ONLY = 422  # HelicsHandleOptions
+    SOURCE_ONLY = 423  # HelicsHandleOptions
     IGNORE_UNIT_MISMATCH = 447  # HelicsHandleOptions
     ONLY_TRANSMIT_ON_CHANGE = 452  # HelicsHandleOptions
     ONLY_UPDATE_ON_CHANGE = 454  # HelicsHandleOptions
@@ -723,6 +727,8 @@ HELICS_HANDLE_OPTION_SINGLE_CONNECTION_ONLY = HelicsHandleOption.SINGLE_CONNECTI
 HELICS_HANDLE_OPTION_MULTIPLE_CONNECTIONS_ALLOWED = HelicsHandleOption.MULTIPLE_CONNECTIONS_ALLOWED
 HELICS_HANDLE_OPTION_BUFFER_DATA = HelicsHandleOption.BUFFER_DATA
 HELICS_HANDLE_OPTION_STRICT_TYPE_CHECKING = HelicsHandleOption.STRICT_TYPE_CHECKING
+HELICS_HANDLE_OPTION_RECEIVE_ONLY = HelicsHandleOption.RECEIVE_ONLY
+HELICS_HANDLE_OPTION_SOURCE_ONLY = HelicsHandleOption.SOURCE_ONLY
 HELICS_HANDLE_OPTION_IGNORE_UNIT_MISMATCH = HelicsHandleOption.IGNORE_UNIT_MISMATCH
 HELICS_HANDLE_OPTION_ONLY_TRANSMIT_ON_CHANGE = HelicsHandleOption.ONLY_TRANSMIT_ON_CHANGE
 HELICS_HANDLE_OPTION_ONLY_UPDATE_ON_CHANGE = HelicsHandleOption.ONLY_UPDATE_ON_CHANGE
@@ -738,6 +744,8 @@ helics_handle_option_single_connection_only = HelicsHandleOption.SINGLE_CONNECTI
 helics_handle_option_multiple_connections_allowed = HelicsHandleOption.MULTIPLE_CONNECTIONS_ALLOWED
 helics_handle_option_buffer_data = HelicsHandleOption.BUFFER_DATA
 helics_handle_option_strict_type_checking = HelicsHandleOption.STRICT_TYPE_CHECKING
+helics_handle_option_receive_only = HelicsHandleOption.RECEIVE_ONLY
+helics_handle_option_source_only = HelicsHandleOption.SOURCE_ONLY
 helics_handle_option_ignore_unit_mismatch = HelicsHandleOption.IGNORE_UNIT_MISMATCH
 helics_handle_option_only_transmit_on_change = HelicsHandleOption.ONLY_TRANSMIT_ON_CHANGE
 helics_handle_option_only_update_on_change = HelicsHandleOption.ONLY_UPDATE_ON_CHANGE
