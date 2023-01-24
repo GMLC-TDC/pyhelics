@@ -52,6 +52,7 @@ for file in files:
         data = "\n".join(lines)
         data = data.replace("HELICS_EXPORT", "")
         data = data.replace("HELICS_DEPRECATED_EXPORT", "")
+        data = data.replace("HELICS_DEPRECATED", "")
         ffi.cdef(data)
         if file.endswith("helics_api.h"):
             break
