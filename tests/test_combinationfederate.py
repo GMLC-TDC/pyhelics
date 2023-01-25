@@ -35,7 +35,7 @@ def test_combination_federate():
 
     ipt = h.helicsFederateGetInputByIndex(cfed, 1)
     assert h.helicsInputGetExtractionUnits(ipt) == ""
-    assert h.helicsSubscriptionGetTarget(ipt) == "comboFed/pub2"
+    assert h.helicsInputGetTarget(ipt) == "comboFed/pub2"
 
     h.helicsFederateClearMessages(cfed)
 

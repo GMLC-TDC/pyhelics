@@ -206,13 +206,13 @@ def test_valuefederate_subscription_and_publication_registration():
     publication_type = h.helicsPublicationGetType(pubid3)
     assert publication_type == "double"
 
-    sub_key = h.helicsSubscriptionGetTarget(subid1)
+    sub_key = h.helicsInputGetTarget(subid1)
     assert sub_key == "sub1"
     sub_type = h.helicsInputGetType(subid1)
     assert sub_type == ""
-    sub_key = h.helicsSubscriptionGetTarget(subid2)
+    sub_key = h.helicsInputGetTarget(subid2)
     assert sub_key == "sub2"
-    sub_key = h.helicsSubscriptionGetTarget(subid3)
+    sub_key = h.helicsInputGetTarget(subid3)
     assert sub_key == "sub3"
     sub_type = h.helicsInputGetType(subid3)
     assert sub_type == ""
@@ -221,8 +221,8 @@ def test_valuefederate_subscription_and_publication_registration():
     sub_type = h.helicsInputGetType(subid2)
     assert sub_type == ""
 
-    subid_b = h.helicsFederateGetSubscription(vFed, "sub1")
-    tmp = h.helicsSubscriptionGetTarget(subid_b)
+    subid_b = h.helicsFederateGetInputByTarget(vFed, "sub1")
+    tmp = h.helicsInputGetTarget(subid_b)
     assert tmp == "sub1"
     # check the getSubscriptionByIndex function
     subid_c = h.helicsFederateGetInputByIndex(vFed, 2)
