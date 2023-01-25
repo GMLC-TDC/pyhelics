@@ -2563,8 +2563,8 @@ class HelicsInput(_HelicsCHandle):
 
     @property
     def target(self) -> str:
-        """Get an associated target."""
-        return helicsSubscriptionGetTarget(self)
+        """Get the target of the input."""
+        return helicsInputGetTarget(self)
 
     @property
     def info(self) -> str:
@@ -2824,6 +2824,10 @@ class HelicsValueFederate(HelicsFederate):
     def get_subscription_by_index(self, index: int) -> HelicsInput:
         """Get a subscription by index."""
         return helicsFederateGetInputByIndex(self, index)
+
+    def get_subscription_by_target(self, target: str) -> HelicsInput:
+        """Get an input by target."""
+        return helicsFederateGetInputByTarget(self, target)
 
     @property
     def n_subscriptions(self) -> int:
@@ -7978,6 +7982,26 @@ def helicsFederateGetInputByIndex(fed: HelicsFederate, index: int) -> HelicsInpu
         return HelicsInput(result)
 
 
+def helicsFederateGetInputByTarget(fed: HelicsFederate, target: str) -> HelicsInput:
+    """
+    Get an input object from a target.
+
+    **Parameters**
+
+    - **`fed`** - The value `helics.HelicsFederate` to use to get the input.
+    - **`target`** - The name of the publication that an input is targeting.
+
+    **Returns**: `helics.HelicsInput`
+    """
+    f = loadSym("helicsFederateGetInputByTarget")
+    err = helicsErrorInitialize()
+    result = f(fed.handle, cstring(target), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsInput(result)
+
+
 def helicsFederateGetSubscription(fed: HelicsFederate, name: str) -> HelicsInput:
     """
     Get an input object from a subscription target.
@@ -7988,7 +8012,10 @@ def helicsFederateGetSubscription(fed: HelicsFederate, name: str) -> HelicsInput
     - **`name`** - The name of the publication that a subscription is targeting.
 
     **Returns**: `helics.HelicsInput`
+
+    **DEPRECATED**
     """
+    warnings.warn("This is deprecated. Use8 `helicsFederateGetInputByTarget` instead.")
     f = loadSym("helicsFederateGetSubscription")
     err = helicsErrorInitialize()
     result = f(fed.handle, cstring(name), err)
@@ -8938,15 +8965,34 @@ def helicsInputGetName(ipt: HelicsInput) -> str:
     return ffi.string(result).decode()
 
 
+def helicsInputGetTarget(ipt: HelicsInput) -> str:
+    """
+    Get the target of an input.
+
+    **Parameters**
+
+    - **`ipt`** - The input to query
+
+    **Returns**: A string with the input target.
+    """
+    f = loadSym("helicsInputGetTarget")
+    result = f(ipt.handle)
+    return ffi.string(result).decode()
+
+
 def helicsSubscriptionGetKey(ipt: HelicsInput) -> str:
     """
     Get the name of a subscription.
+
+    **Parameters**
+
+    - **`ipt`** - The input to query
 
     **Returns**: A string with the subscription name.
 
     **DEPRECATED**
     """
-    warnings.warn("This is deprecated. Use `helicsSubscriptionGetTarget` instead.")
+    warnings.warn("This is deprecated. Use `helicsInputGetTarget` instead.")
     return helicsSubscriptionGetTarget(ipt)
 
 
@@ -8954,11 +9000,18 @@ def helicsSubscriptionGetTarget(ipt: HelicsInput) -> str:
     """
     Get the target of a subscription.
 
+    **Parameters**
+
+    - **`ipt`** - The input to query
+
     **Returns**: A string with the subscription target.
+
+    **DEPRECATED**
     """
     if HELICS_VERSION == 2:
         f = loadSym("helicsSubscriptionGetKey")
     else:
+        warnings.warn("This is deprecated. Use `helicsInputGetTarget` instead.")
         f = loadSym("helicsSubscriptionGetTarget")
     result = f(ipt.handle)
     return ffi.string(result).decode()
