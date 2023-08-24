@@ -7461,7 +7461,7 @@ def helicsTranslatorGetName(translator: HelicsTranslator) -> str:
 
     **Returns**: A string with the name of the translator.
     """
-    f = loadSym("helicsPublicationGetName")
+    f = loadSym("helicsTranslatorGetName")
     result = f(translator.handle)
     return ffi.string(result).decode()
 
