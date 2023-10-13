@@ -182,7 +182,7 @@ HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 HELICS_SOURCE = os.path.join(CURRENT_DIRECTORY, "./_source")
-PYHELICS_INSTALL = os.environ.get("PYHELICS_INSTALL") if os.environ.get("PYHELICS_INSTALL") else os.path.join(CURRENT_DIRECTORY, "./helics/install")
+PYHELICS_INSTALL = os.environ.get("PYHELICS_INSTALL", os.path.join(CURRENT_DIRECTORY, "./helics/install")
 
 DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(version=HELICS_VERSION)
 
