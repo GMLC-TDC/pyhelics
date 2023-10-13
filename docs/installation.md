@@ -15,11 +15,13 @@ $ which pip    # sanity check on Unix
 $ where python # sanity check on Windows
 $ where pip    # sanity check on Windows
 
-$ python -m pip install helics
+$ python -m pip install 'helics[cli]'
 ```
 
 Using `python -m pip` invokes the `pip` module from the `python` process. This is the safest way to ensure you are installing `helics` into the place `python` will look for packages.
 If `pip` and `python` belong to the same environment, you can invoke `pip` directly.
+
+It is recommended to use the optional `[cli]` extension on the PyHELICS install to provide the use of the "runner" functionality for launching co-simulations (among other features) All of the [HELICS User Guide examples](https://docs.helics.org/en/latest/user-guide/examples/examples_index.html) use the runner.
 
 This will give you the latest version of the python helics interface.
 If you already have helics installed, you can upgrade to the latest version by using the following:
