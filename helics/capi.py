@@ -3006,10 +3006,9 @@ def helicsErrorInitialize():
     """
     f = loadSym("helicsErrorInitialize")
     result = f()
-    if HELICS_VERSION == 2:
-        return ffi.new("helics_error *", result)
-    else:
-        return ffi.new("HelicsError *", result)
+    ret_val = ffi.new("helics_error *", result) if HELICS_VERSION==2 else ffi.new("HelicsError *", result)
+    del result
+    return ret_val
 
 
 def helicsErrorClear(err: HelicsError):

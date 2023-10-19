@@ -180,13 +180,14 @@ class RunnerFile(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("file", type=werkzeug.datastructures.FileStorage, location="files")
+        parser.add_argument("file", type=werkzeug.datastructures.FileStorage, action='append', location="files")
         args = parser.parse_args()
-        file = args["file"]
+        files = args.get("file")
         path = cache["runner-folder"]
         name = cache["runner-file-name"]
         os.makedirs(path, exist_ok=True)
-        file.save(os.path.join(path, name))
+        for file in files:
+            file.save(os.path.join(path, file.filename))
         cache["runner-path"] = os.path.join(path, name)
 
 

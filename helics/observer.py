@@ -173,15 +173,17 @@ class HelicsObserverFederate:
                     )
                     continue
                 data = cast(dict, self.federate.query(name, "current_time"))
-                self.session.add(
-                    db.FederateEventLogs(
-                        name=name,
-                        updated_at=time.time(),
-                        granted_time=data["granted_time"],
-                        requested_time=data["requested_time"],
-                        state="executing",
+                logger.debug(data)
+                if len(data):
+                    self.session.add(
+                        db.FederateEventLogs(
+                            name=name,
+                            updated_at=time.time(),
+                            granted_time=data["granted_time"],
+                            requested_time=data["requested_time"],
+                            state="executing",
+                        )
                     )
-                )
             simulation_time = self.federate.request_next_step()
             d = {"simulation_time": simulation_time}
             logger.info(self.federate.subscriptions)
