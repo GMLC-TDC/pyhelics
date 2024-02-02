@@ -1393,7 +1393,7 @@ class HelicsMessage(_HelicsCHandle):
 
 class HelicsQuery(_HelicsCHandle):
     def __init__(self, handle, cleanup=False):
-        super(HelicsQueryBuffer, self).__init__(handle, cleanup)
+        super(HelicsQuery, self).__init__(handle, cleanup)
 
 
 class HelicsQueryBuffer(_HelicsCHandle):
