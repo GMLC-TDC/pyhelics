@@ -9,6 +9,7 @@ nav:
   - Usage: usage.md
   - API: api/index.md
   - Pythonic API: pythonic-interface.md
+  - Callbacks: callbacks.md 
   - CLI Interface: cli-interface.md
   - Web Interface (experimental): web-interface.md
   - Migration v2 -> v3: migration-helics2-helics3.md
