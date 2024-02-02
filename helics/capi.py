@@ -9367,7 +9367,8 @@ def helicsQueryBufferFill(buffer: HelicsQueryBuffer, string: str):
     """
     f = loadSym("helicsQueryBufferFill")
     err = helicsErrorInitialize()
-    f(buffer.handle, string, len(string), err)
+    str_ptr = ffi.new('char[]', string.encode('utf-8'))
+    f(buffer.handle, str_ptr, len(string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
