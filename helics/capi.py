@@ -1398,7 +1398,7 @@ class HelicsQuery(_HelicsCHandle):
 
 class HelicsQueryBuffer(_HelicsCHandle):
     def __init__(self, handle, cleanup=False):
-        super(HelicsQueryBuffer, self).__init__(handle, cleanup)
+        super().__init__(handle, cleanup)
 
 
 class HelicsEndpoint(_HelicsCHandle):
