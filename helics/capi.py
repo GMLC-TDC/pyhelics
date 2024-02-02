@@ -1392,11 +1392,13 @@ class HelicsMessage(_HelicsCHandle):
 
 
 class HelicsQuery(_HelicsCHandle):
-    pass
+    def __init__(self, handle, cleanup=False):
+        super(HelicsQueryBuffer, self).__init__(handle, cleanup
 
 
 class HelicsQueryBuffer(_HelicsCHandle):
-    pass
+    def __init__(self, handle, cleanup=False):
+        super(HelicsQueryBuffer, self).__init__(handle, cleanup)
 
 
 class HelicsEndpoint(_HelicsCHandle):
@@ -2823,7 +2825,8 @@ class HelicsCallbackFederate(HelicsCombinationFederate):
     pass
 
 class HelicsDataBuffer(_HelicsCHandle):
-    pass
+    def __init__(self, handle, cleanup=False):
+        super(HelicsQueryBuffer, self).__init__(handle, cleanup
 
 
 class HelicsException(Exception):
