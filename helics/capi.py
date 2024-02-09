@@ -2826,7 +2826,7 @@ class HelicsCallbackFederate(HelicsCombinationFederate):
 
 class HelicsDataBuffer(_HelicsCHandle):
     def __init__(self, handle, cleanup=False):
-        super(HelicsDataBuffer, self).__init__(handle, cleanup)
+        super().__init__(handle, cleanup)
 
 
 class HelicsException(Exception):
