@@ -19,15 +19,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install -U pip install wheel setuptools cffi
+          python -m pip install --upgrade pip
+          python -m pip install build
+      # TODO compile the ci/cd.yml files? Use pypa/cibuildwheel@v2.16.5 to build wheels, then install and run?
       - name: Download helics library and run pip install
         run: |
           python setup.py download
           python setup.py build_ext
           pip install -e ".[tests]"
-      - name: Install pytest dependencies
-        run: |
-          pip install pytest pytest-ordering pytest-cov pytest-runner
       - name: Generate coverage report
         run: |
           pytest -vvv --cov=./ --cov-report=xml:unit.coverage.xml

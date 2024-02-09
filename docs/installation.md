@@ -76,14 +76,12 @@ pip install helics
 Collecting helics
   Downloading helics-2.6.1.post0-py3-none-macosx_10_9_x86_64.whl (6.6 MB)
      |████████████████████████████████| 6.6 MB 2.3 MB/s
-Collecting enum34>=1.1.10
-  Using cached enum34-1.1.10-py3-none-any.whl (11 kB)
 Collecting cffi>=1.0.0
   Using cached cffi-1.14.3-2-cp38-cp38-macosx_10_9_x86_64.whl (176 kB)
 Collecting pycparser
   Using cached pycparser-2.20-py2.py3-none-any.whl (112 kB)
-Installing collected packages: enum34, pycparser, cffi, helics
-Successfully installed cffi-1.14.3 enum34-1.1.10 helics-2.6.1.post0 pycparser-2.20
+Installing collected packages: pycparser, cffi, helics
+Successfully installed cffi-1.14.3 helics-2.6.1.post0 pycparser-2.20
 ```
 
 Now that you have installed the python package, you can check that it works:

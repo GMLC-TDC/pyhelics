@@ -38,10 +38,7 @@ from wheel.bdist_wheel import bdist_wheel
 from distutils.dir_util import copy_tree
 from distutils import log
 
-try:
-    from urllib2 import urlopen
-except ImportError:
-    from urllib.request import urlopen
+from urllib.request import urlopen
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -553,12 +550,6 @@ class HELICSCMakeBuild(build_ext):
                 f.write(data)
 
 
-install_requires = ["cffi>=1.6.0", "strip-hints", "click>=8"]
-
-if sys.version_info < (3, 4):
-    install_requires.append("enum34")
-
-
 class HelicsBdistWheel(bdist_wheel):
     def get_tag(self):
         rv = bdist_wheel.get_tag(self)
@@ -582,18 +573,8 @@ class BinaryDistribution(Distribution):
         return False
 
 
-helics_cli_install_requires = ["flask>=2", "requests", "flask-restful", "flask-cors", "pandas", "SQLAlchemy", "matplotlib"]
-
 setup(
-    name="helics",
     version=PYHELICS_VERSION,
-    license="MIT",
-    description="Python HELICS bindings",
-    long_description=read("README.md"),
-    long_description_content_type="text/markdown",
-    author="Dheepak Krishnamurthy",
-    author_email="me@kdheepak.com",
-    url="https://github.com/GMLC-TDC/pyhelics",
     packages=["helics"],
     distclass=BinaryDistribution,
     py_modules=[splitext(basename(path))[0] for path in glob("helics/*.py")],
@@ -603,49 +584,5 @@ setup(
     ext_modules=[CMakeExtension("helics")],
     include_package_data=True,
     zip_safe=False,
-    classifiers=[
-        # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: Unix",
-        "Operating System :: POSIX",
-        "Operating System :: Microsoft :: Windows",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
-        "Topic :: Utilities",
-    ],
-    project_urls={"Issue Tracker": "https://github.com/GMLC-TDC/pyhelics/issues"},
-    keywords=["helics", "co-simulation"],
-    python_requires=">=3.6",
-    install_requires=install_requires,
-    extras_require={
-        "cli": install_requires + helics_cli_install_requires,
-        "tests": ["pytest", "pytest-ordering", "pytest-cov", "pytest-runner"],
-        "docs": [
-            "mkdocs",
-            "inari[mkdocs]",
-            "mkdocs-material",
-            "black",
-            "pygments",
-            "pymdown-extensions",
-        ],
-    },
     cmdclass=cmdclass,
-    entry_points={
-        "console_scripts": [
-            "helics=helics.cli:cli",
-            "helics-cli=helics.cli:cli",
-            "helics_app=helics.bin:helics_app",
-            "helics_broker=helics.bin:helics_broker",
-            "helics_broker_server=helics.bin:helics_broker_server",
-            "helics_player=helics.bin:helics_player",
-            "helics_recorder=helics.bin:helics_recorder",
-        ]
-    },
 )
