@@ -71,9 +71,9 @@ jobs:
           python scripts/cleanup_bdist.py ${{ matrix.target }}
       # End steps to build Python 2 wheels
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: python-dist
+          name: python-dist-${{ matrix.target }}
           path: dist/*
 
   build-sdist:
@@ -94,9 +94,9 @@ jobs:
           python setup.py sdist
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: python-dist
+          name: python-sdist
           path: dist/*
 
   publish-helics:
@@ -104,9 +104,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get the built packages
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
-          name: python-dist
+          merge-multiple: true
           path: dist
 
       - name: Publish package to TestPyPI
