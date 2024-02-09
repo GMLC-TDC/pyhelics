@@ -986,7 +986,7 @@ class _FilterOptionAccessor(_HelicsCHandle):
 
 class HelicsFilter(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
-        super(HelicsFilter, self).__init__(handle, cleanup=cleanup)
+        super().__init__(handle, cleanup=cleanup)
         self.option = _FilterOptionAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
@@ -1060,7 +1060,7 @@ class HelicsCloningFilter(HelicsFilter):
 
 class HelicsTranslator(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
-        super(HelicsTranslator, self).__init__(handle, cleanup=cleanup)
+        super().__init__(handle, cleanup=cleanup)
 
 
 class HelicsCore(_HelicsCHandle):
@@ -1365,7 +1365,7 @@ class _MessageFlagAccessor(_HelicsCHandle):
 
 class HelicsMessage(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
-        super(HelicsMessage, self).__init__(handle, cleanup=cleanup)
+        super().__init__(handle, cleanup=cleanup)
         self.flag = _MessageFlagAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
@@ -1608,8 +1608,7 @@ class _FederateInfoPropertyAccessor(_HelicsCHandle):
 
 class HelicsFederateInfo(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
-        # Python2 compatible super
-        super(HelicsFederateInfo, self).__init__(handle, cleanup)
+        super().__init__(handle, cleanup)
 
         self.property = _FederateInfoPropertyAccessor(self.handle, cleanup=False)
         self.flag = _FederateInfoFlagAccessor(self.handle, cleanup=False)
@@ -1825,8 +1824,7 @@ class _FederatePropertyAccessor(_HelicsCHandle):
 
 class HelicsFederate(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
-        # Python2 compatible super
-        super(HelicsFederate, self).__init__(handle, cleanup)
+        super().__init__(handle, cleanup)
 
         self._exec_async_iterate = False
         self.property = _FederatePropertyAccessor(self.handle, cleanup=False)
@@ -2374,7 +2372,7 @@ class _InputOptionAccessor(_HelicsCHandle):
 
 class HelicsInput(_HelicsCHandle):
     def __init__(self, handle):
-        super(HelicsInput, self).__init__(handle, cleanup=False)
+        super().__init__(handle, cleanup=False)
         self.option = _InputOptionAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
@@ -2579,7 +2577,7 @@ class HelicsInput(_HelicsCHandle):
 
 class HelicsPublication(_HelicsCHandle):
     def __init__(self, handle):
-        super(HelicsPublication, self).__init__(handle, cleanup=False)
+        super().__init__(handle, cleanup=False)
         self.option = _PublicationOptionAccessor(self.handle, cleanup=False)
 
     def __repr__(self):
@@ -2669,7 +2667,7 @@ class HelicsPublication(_HelicsCHandle):
 
 class HelicsValueFederate(HelicsFederate):
     def __init__(self, handle):
-        super(HelicsValueFederate, self).__init__(handle)
+        super().__init__(handle)
 
         for i in range(0, self.n_publications):
             pub = self.get_publication_by_index(i)
@@ -2858,7 +2856,7 @@ class HelicsValueFederate(HelicsFederate):
 
 class HelicsMessageFederate(HelicsFederate):
     def __init__(self, handle):
-        super(HelicsMessageFederate, self).__init__(handle)
+        super().__init__(handle)
 
         for i in range(0, self.n_endpoints):
             end = self.get_endpoint_by_index(i)
