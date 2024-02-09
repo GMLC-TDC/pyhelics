@@ -102,6 +102,11 @@ jobs:
   publish-helics:
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/helics
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
       - name: Get the built packages
         uses: actions/download-artifact@v4
@@ -111,7 +116,7 @@ jobs:
 
       - name: Publish package to TestPyPI
         if: startsWith(github.ref, 'refs/tags/')
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.TEST_PYPI_PASSWORD }}
@@ -119,10 +124,7 @@ jobs:
 
       - name: Publish package to PyPI
         if: startsWith(github.ref, 'refs/tags/')
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_PASSWORD }}
+        uses: pypa/gh-action-pypi-publish@release/v1
 
       - name: GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
