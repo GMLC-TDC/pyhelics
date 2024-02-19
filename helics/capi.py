@@ -10027,52 +10027,52 @@ def helicsDataBufferData(data: HelicsDataBuffer) -> bytes:
     return f(data)
 
 
-def helicsDataBufferFillFromInteger(data: HelicsDataBuffer, value: int):
+def helicsDataBufferFillFromInteger(data: HelicsDataBuffer, value: int) -> int:
     """
     Convert an integer to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromInteger")
-    f(data, value)
+    return f(data, value)
 
 
-def helicsDataBufferFillFromDouble(data: HelicsDataBuffer, value: float):
+def helicsDataBufferFillFromDouble(data: HelicsDataBuffer, value: float) -> int:
     """
     Convert a double to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromDouble")
-    f(data, cdouble(value))
+    return f(data, cdouble(value))
 
 
-def helicsDataBufferFillFromString(data: HelicsDataBuffer, string: str):
+def helicsDataBufferFillFromString(data: HelicsDataBuffer, string: str) -> int:
     """
     Convert a string to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromString")
-    f(data, cstring(string))
+    return f(data, cstring(string))
 
 
-def helicsDataBufferFillFromRawString(data: HelicsDataBuffer, string: bytes):
+def helicsDataBufferFillFromRawString(data: HelicsDataBuffer, string: bytes) -> int:
     """
     Convert a raw string to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromRawString")
-    f(data, string, len(string))
+    return f(data, string, len(string))
 
 
-def helicsDataBufferFillFromBoolean(data: HelicsDataBuffer, value: bool):
+def helicsDataBufferFillFromBoolean(data: HelicsDataBuffer, value: bool) -> int:
     """
     Convert a bool to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromBoolean")
-    f(data, value)
+    return f(data, value)
 
 
-def helicsDataBufferFillFromChar(data: HelicsDataBuffer, value: str):
+def helicsDataBufferFillFromChar(data: HelicsDataBuffer, value: str) -> int:
     """
     Convert a bool to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromChar")
-    f(data, value)
+    return f(data, value)
 
 
 def helicsDataBufferFillFromTime(data: HelicsDataBuffer, value: HelicsTime):
@@ -10083,44 +10083,44 @@ def helicsDataBufferFillFromTime(data: HelicsDataBuffer, value: HelicsTime):
     f(data, value)
 
 
-def helicsDataBufferFillFromComplex(data: HelicsDataBuffer, value: complex):
+def helicsDataBufferFillFromComplex(data: HelicsDataBuffer, value: complex) -> int:
     """
     Convert a complex to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromComplex")
-    f(data, value.real, value.imag)
+    return f(data, value.real, value.imag)
 
 
-def helicsDataBufferFillFromComplexObject(data: HelicsDataBuffer, value: complex):
+def helicsDataBufferFillFromComplexObject(data: HelicsDataBuffer, value: complex) -> int:
     """
     Convert a complex to serialized bytes
     """
     raise NotImplementedError("`helicsDataBufferFillFromComplexObject ` is not implemented.")
 
 
-def helicsDataBufferFillFromComplexVector(data: HelicsDataBuffer, value: List[complex]):
+def helicsDataBufferFillFromComplexVector(data: HelicsDataBuffer, value: List[complex]) -> int:
     """
     Convert a complex to serialized bytes
     """
     value = [x for xs in value for x in [xs.real, xs.imag]]
     f = loadSym("helicsDataBufferFillFromComplexVector")
-    f(data, value)
+    return f(data, value)
 
 
-def helicsDataBufferFillFromVector(data: HelicsDataBuffer, value: List[float]):
+def helicsDataBufferFillFromVector(data: HelicsDataBuffer, value: List[float]) -> int:
     """
     Convert a complex to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromVector")
-    f(data, value)
+    return f(data, value)
 
 
-def helicsDataBufferFillFromNamedPoint(data: HelicsDataBuffer, name: str, value: float):
+def helicsDataBufferFillFromNamedPoint(data: HelicsDataBuffer, name: str, value: float) -> int:
     """
     Convert a named point to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromNamedPoint")
-    f(data, cstring(name), cdouble(value))
+    return f(data, cstring(name), cdouble(value))
 
 
 def helicsDataBufferType(data: HelicsDataBuffer) -> int:
