@@ -8459,7 +8459,7 @@ def helicsInputGetBytes(ipt: HelicsInput) -> bytes:
         return ffi.unpack(data, length=actualSize[0])
 
 
-def helicsInputGetStringSize(ipt: HelicsInput) -> HelicsDataBuffer:
+def helicsInputGetDataBuffer(ipt: HelicsInput) -> HelicsDataBuffer:
     """
     Get the size of a value for subscription assuming return as a string.
 
