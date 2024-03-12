@@ -1470,11 +1470,13 @@ class HelicsMessage(_HelicsCHandle):
 
 
 class HelicsQuery(_HelicsCHandle):
-    pass
+    def __init__(self, handle, cleanup=False):
+        super().__init__(handle, cleanup)
 
 
 class HelicsQueryBuffer(_HelicsCHandle):
-    pass
+    def __init__(self, handle, cleanup=False):
+        super().__init__(handle, cleanup)
 
 
 class HelicsEndpoint(_HelicsCHandle):
@@ -2934,7 +2936,8 @@ class HelicsCallbackFederate(HelicsCombinationFederate):
     pass
 
 class HelicsDataBuffer(_HelicsCHandle):
-    pass
+    def __init__(self, handle, cleanup=False):
+        super().__init__(handle, cleanup)
 
 
 class HelicsException(Exception):
@@ -9603,7 +9606,8 @@ def helicsQueryBufferFill(buffer: HelicsQueryBuffer, string: str):
     """
     f = loadSym("helicsQueryBufferFill")
     err = helicsErrorInitialize()
-    f(buffer.handle, string, len(string), err)
+    str_ptr = ffi.new('char[]', string.encode('utf-8'))
+    f(buffer.handle, str_ptr, len(string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
