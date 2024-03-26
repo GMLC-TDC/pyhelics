@@ -725,7 +725,7 @@ class HelicsHandleOption(IntEnum):
     INPUT_PRIORITY_LOCATION = 510  # HelicsHandleOptions
     CLEAR_PRIORITY_LIST = 512  # HelicsHandleOptions
     CONNECTIONS = 522  # HelicsHandleOptions
-    BUFFER_DATA2 = 412  # HelicsHandleOptions
+    BUFFER_DATA2 = 572  # HelicsHandleOptions
  
 
 HELICS_HANDLE_OPTION_CONNECTION_REQUIRED = HelicsHandleOption.CONNECTION_REQUIRED
