@@ -278,6 +278,7 @@ class HelicsFederateFlag(IntEnum):
     - **SINGLE_THREAD_FEDERATE**
     - **MULTI_THREAD_CORE**
     - **SINGLE_THREAD_CORE**
+    - **REENTRANT**
     - **IGNORE_TIME_MISMATCH_WARNINGS**
     - **STRICT_CONFIG_CHECKING**
     - **USE_JSON_SERIALIZATION**
@@ -315,6 +316,8 @@ class HelicsFederateFlag(IntEnum):
     MULTI_THREAD_CORE = 28
     # flag indicating use of a single threaded core
     SINGLE_THREAD_CORE = 29
+    # flag used to specify that a federate connection can be reentrant
+    REENTRANT = 38
     # used to not display warnings on mismatched requested times
     IGNORE_TIME_MISMATCH_WARNINGS = 67
     # specify that checking on configuration files should be strict and throw and error on any invalid values
@@ -345,6 +348,7 @@ HELICS_FLAG_REALTIME = HelicsFederateFlag.REALTIME
 HELICS_FLAG_SINGLE_THREAD_FEDERATE = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
 HELICS_FLAG_MULTI_THREAD_CORE = HelicsFederateFlag.MULTI_THREAD_CORE
 HELICS_FLAG_SINGLE_THREAD_CORE = HelicsFederateFlag.SINGLE_THREAD_CORE
+HELICS_FLAG_REENTRANT = HelicsFederateFlag.REENTRANT
 HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
 HELICS_FLAG_STRICT_CONFIG_CHECKING = HelicsFederateFlag.STRICT_CONFIG_CHECKING
 HELICS_FLAG_USE_JSON_SERIALIZATION = HelicsFederateFlag.USE_JSON_SERIALIZATION
@@ -367,6 +371,7 @@ helics_flag_realtime = HelicsFederateFlag.REALTIME
 helics_flag_single_thread_federate = HelicsFederateFlag.SINGLE_THREAD_FEDERATE
 helics_flag_multi_thread_core = HelicsFederateFlag.MULTI_THREAD_CORE
 helics_flag_single_thread_core = HelicsFederateFlag.SINGLE_THREAD_CORE
+helics_flag_reentrant = HelicsFederateFlag.REENTRANT
 helics_flag_ignore_time_mismatch_warnings = HelicsFederateFlag.IGNORE_TIME_MISMATCH_WARNINGS
 helics_flag_strict_config_checking = HelicsFederateFlag.STRICT_CONFIG_CHECKING
 helics_flag_use_json_serialization = HelicsFederateFlag.USE_JSON_SERIALIZATION
