@@ -714,7 +714,7 @@ class HelicsHandleOption(IntEnum):
     SINGLE_CONNECTION_ONLY = 407  # HelicsHandleOptions
     MULTIPLE_CONNECTIONS_ALLOWED = 409  # HelicsHandleOptions
     BUFFER_DATA = 411  # HelicsHandleOptions
-    RECONNECTABLE = 412  # HelicsHandleOptions
+    NOT_RECONNECTABLE = 412  # HelicsHandleOptions
     STRICT_TYPE_CHECKING = 414  # HelicsHandleOptions
     RECEIVE_ONLY = 422  # HelicsHandleOptions
     SOURCE_ONLY = 423  # HelicsHandleOptions
