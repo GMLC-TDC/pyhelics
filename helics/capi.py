@@ -714,7 +714,6 @@ class HelicsHandleOption(IntEnum):
     SINGLE_CONNECTION_ONLY = 407  # HelicsHandleOptions
     MULTIPLE_CONNECTIONS_ALLOWED = 409  # HelicsHandleOptions
     BUFFER_DATA = 411  # HelicsHandleOptions
-    NOT_RECONNECTABLE = 412  # HelicsHandleOptions
     STRICT_TYPE_CHECKING = 414  # HelicsHandleOptions
     RECEIVE_ONLY = 422  # HelicsHandleOptions
     SOURCE_ONLY = 423  # HelicsHandleOptions
@@ -726,7 +725,8 @@ class HelicsHandleOption(IntEnum):
     INPUT_PRIORITY_LOCATION = 510  # HelicsHandleOptions
     CLEAR_PRIORITY_LIST = 512  # HelicsHandleOptions
     CONNECTIONS = 522  # HelicsHandleOptions
-
+    BUFFER_DATA2 = 412  # HelicsHandleOptions
+ 
 
 HELICS_HANDLE_OPTION_CONNECTION_REQUIRED = HelicsHandleOption.CONNECTION_REQUIRED
 HELICS_HANDLE_OPTION_CONNECTION_OPTIONAL = HelicsHandleOption.CONNECTION_OPTIONAL
