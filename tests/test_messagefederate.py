@@ -61,7 +61,6 @@ def mFed():
 
     h.helicsFederateInfoFree(fedinfo)
     h.helicsFederateFree(mFed)
-    h.helicsCloseLibrary()
 
 
 def test_message_federate_initialize(mFed):

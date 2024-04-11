@@ -138,7 +138,6 @@ def test_filter_types_tests_core_filter_registration():
     h.helicsCoreDisconnect(core2)
     # h.helicsCoreFree(core1)
     # h.helicsCoreFree(core2)
-    h.helicsCloseLibrary()
 
 
 def test_filter_type_tests_message_filter_function():
@@ -1015,4 +1014,3 @@ def test_filter_test_file_load():
 
     assert h.helicsFederateGetEndpointCount(mFed) == 3
     h.helicsFederateDisconnect(mFed)
-    h.helicsCloseLibrary()

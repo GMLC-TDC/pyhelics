@@ -8,4 +8,3 @@ def run_around_tests():
     yield
     h.helicsCleanupLibrary()
     h.helicsCloseLibrary()
-    h.helicsCloseLibrary()
