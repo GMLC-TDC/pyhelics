@@ -1,20 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
 import time
 import helics as h
-import pytest
 import pytest as pt
-
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
-
-import os
 
 
 def rm(filename, force=True):
@@ -32,11 +20,9 @@ def broker():
     yield brk
     h.helicsBrokerDisconnect(brk)
     assert h.helicsBrokerIsConnected(brk) == False
-    h.helicsCloseLibrary()
 
 
 def test_other_tests_broker_creation():
-
     argv = ["--root"]
 
     brk = h.helicsCreateBrokerFromArgs("zmq", "gbrokerc", argv)
@@ -71,14 +57,15 @@ def test_federate_info_tests_set_broker_init_string():
 
 
 def test_other_tests_core_creation(broker):
-
     cr = h.helicsCreateCoreFromArgs("zmq", "gcore", ["--broker=gbrokertest"])
 
     assert h.helicsCoreGetIdentifier(cr) == "gcore"
 
     # TODO: why is this not raising an exception?
     with pt.raises(h.HelicsException):
-        cr2 = h.helicsCreateCoreFromArgs("test", "gcore2", ["--broker=gbrokerc", "--log-level=what_logs?"])
+        cr2 = h.helicsCreateCoreFromArgs(
+            "test", "gcore2", ["--broker=gbrokerc", "--log-level=what_logs?"]
+        )
 
     h.helicsCoreDisconnect(cr)
 
@@ -103,7 +90,6 @@ def test_system_broker_global_value():
 
 
 def test_system_test_core_global_value1():
-
     brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
     cr = h.helicsCreateCore("zmq", "gcore", "--broker=gbrokerc")
 
@@ -123,10 +109,9 @@ def test_system_test_core_global_value1():
     h.helicsBrokerDisconnect(brk)
 
     assert h.helicsBrokerIsConnected(brk) is False
-    h.helicsCloseLibrary()
 
 
-@pt.mark.skip(reason = "Segfaults on linux")
+@pt.mark.skip(reason="Segfaults on linux")
 def test_system_test_core_global_value2():
     brk = h.helicsCreateBroker("zmq", "gbrokerc", "--root")
 
@@ -153,7 +138,6 @@ def test_system_test_core_global_value2():
 
 
 def test_system_test_broker_global_value():
-
     brk = h.helicsCreateBroker("inproc", "gbroker", "--root")
     globalVal = "this is a string constant that functions as a global"
     globalVal2 = "this is a second string constant that functions as a global"
@@ -175,7 +159,6 @@ def test_system_test_broker_global_value():
 
 
 def test_system_test_federate_global_value():
-
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
     cr = h.helicsCreateCore("inproc", "gcore", "--broker=gbrokerc")
 
@@ -226,7 +209,6 @@ def test_system_test_federate_global_value():
     h.helicsCoreDisconnect(cr)
 
     assert h.helicsBrokerIsConnected(brk) is False
-    h.helicsCloseLibrary()
 
 
 def test_system_tests_core_logging():
@@ -252,7 +234,6 @@ def test_system_tests_broker_logging():
 
 
 def test_system_tests_federate_logging():
-
     lfile = "log.txt"
     rm(lfile, force=True)
     core = h.helicsCreateCore("inproc", "clogf", "--autobroker --log_level=trace")
@@ -278,7 +259,6 @@ def test_system_tests_federate_logging():
 
 
 def test_federate_tests_federateGeneratedLocalError():
-
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
     cr = h.helicsCreateCore("inproc", "gcore", "--broker=gbrokerc")
 
@@ -301,11 +281,9 @@ def test_federate_tests_federateGeneratedLocalError():
     h.helicsFederateDestroy(fed1)
     h.helicsCoreDisconnect(cr)
     h.helicsBrokerDisconnect(brk)
-    h.helicsCloseLibrary()
 
 
 def test_federate_tests_federateGeneratedGlobalError():
-
     brk = h.helicsCreateBroker("inproc", "gbrokerc", "--root")
     cr = h.helicsCreateCore("inproc", "gcore", "--broker=gbrokerc")
 
@@ -328,4 +306,3 @@ def test_federate_tests_federateGeneratedGlobalError():
     h.helicsFederateDestroy(fed1)
     h.helicsCoreDisconnect(cr)
     h.helicsBrokerDisconnect(brk)
-    h.helicsCloseLibrary()

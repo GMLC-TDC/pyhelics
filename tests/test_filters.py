@@ -1,28 +1,26 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
 
 import helics as h
 import os
 
-import pytest
 import pytest as pt
 
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
+from .utils import (
+    assert_attributes,
+    create_broker,
+    destroy_federate,
+    destroy_broker,
+    create_message_federate,
+)
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
 def test_filter_type_tests_registration():
-
-    broker = createBroker(2)
-    fFed, fedinfo1 = createMessageFederate(1, "filter")
-    mFed, fedinfo2 = createMessageFederate(1, "message")
+    broker = create_broker(2)
+    fFed, fedinfo1 = create_message_federate(1, "filter")
+    mFed, fedinfo2 = create_message_federate(1, "message")
 
     h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
@@ -60,16 +58,15 @@ def test_filter_type_tests_registration():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(fFed, fedinfo1)
-    destroyFederate(mFed, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(fFed, fedinfo1)
+    destroy_federate(mFed, fedinfo2)
+    destroy_broker(broker)
 
 
 def test_filter_type_tests_info():
-
-    broker = createBroker(2)
-    fFed, fedinfo1 = createMessageFederate(1, "filter")
-    mFed, fedinfo2 = createMessageFederate(1, "message")
+    broker = create_broker(2)
+    fFed, fedinfo1 = create_message_federate(1, "filter")
+    mFed, fedinfo2 = create_message_federate(1, "message")
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
@@ -107,13 +104,12 @@ def test_filter_type_tests_info():
     h.helicsFederateDisconnect(fFed)
     h.helicsFederateDisconnectComplete(mFed)
 
-    destroyFederate(fFed, fedinfo1)
-    destroyFederate(mFed, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(fFed, fedinfo1)
+    destroy_federate(mFed, fedinfo2)
+    destroy_broker(broker)
 
 
 def test_filter_types_tests_core_filter_registration():
-
     core1 = h.helicsCreateCore("inproc", "core1", "--autobroker")
 
     core2 = h.helicsCoreClone(core1)
@@ -122,10 +118,14 @@ def test_filter_types_tests_core_filter_registration():
 
     assert core1IdentifierString == "core1"
 
-    sourceFilter1 = h.helicsCoreRegisterFilter(core1, h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter")
+    sourceFilter1 = h.helicsCoreRegisterFilter(
+        core1, h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter"
+    )
 
     h.helicsFilterAddSourceTarget(sourceFilter1, "ep1")
-    destinationFilter1 = h.helicsCoreRegisterFilter(core1, h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter")
+    destinationFilter1 = h.helicsCoreRegisterFilter(
+        core1, h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter"
+    )
 
     h.helicsFilterAddDestinationTarget(destinationFilter1, "ep2")
     cloningFilter1 = h.helicsCoreRegisterCloningFilter(core1, "ep3")
@@ -142,12 +142,13 @@ def test_filter_types_tests_core_filter_registration():
 
 
 def test_filter_type_tests_message_filter_function():
+    broker = create_broker(2)
+    fFed, fedinfo1 = create_message_federate(1, "filter")
+    mFed, fedinfo2 = create_message_federate(1, "message")
 
-    broker = createBroker(2)
-    fFed, fedinfo1 = createMessageFederate(1, "filter")
-    mFed, fedinfo2 = createMessageFederate(1, "message")
-
-    h.helicsFederateSetFlagOption(mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
+    h.helicsFederateSetFlagOption(
+        mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
+    )
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
 
@@ -195,25 +196,28 @@ def test_filter_type_tests_message_filter_function():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(fFed, fedinfo1)
-    destroyFederate(mFed, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(fFed, fedinfo1)
+    destroy_federate(mFed, fedinfo2)
+    destroy_broker(broker)
 
 
 def test_filter_test_types_function_mobj():
+    broker = create_broker(2)
+    fFed, fedinfo1 = create_message_federate(1, "filter")
+    mFed, fedinfo2 = create_message_federate(1, "message")
 
-    broker = createBroker(2)
-    fFed, fedinfo1 = createMessageFederate(1, "filter")
-    mFed, fedinfo2 = createMessageFederate(1, "message")
-
-    h.helicsFederateSetFlagOption(mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
+    h.helicsFederateSetFlagOption(
+        mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
+    )
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
 
     f1 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_DELAY, "filter1")
     h.helicsFilterAddSourceTarget(f1, "port1")
     h.helicsFilterSet(
-        f1, "delay", 2.5,
+        f1,
+        "delay",
+        2.5,
     )
 
     h.helicsFederateEnterExecutingModeAsync(fFed)
@@ -258,17 +262,16 @@ def test_filter_test_types_function_mobj():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(fFed, fedinfo1)
-    destroyFederate(mFed, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(fFed, fedinfo1)
+    destroy_federate(mFed, fedinfo2)
+    destroy_broker(broker)
 
 
 def test_filter_test_types_function_two_stage():
-
-    broker = createBroker(3)
-    fFed, fedinfo1 = createMessageFederate(1, "filter")
-    fFed2, fedinfo2 = createMessageFederate(1, "filter2")
-    mFed, fedinfo3 = createMessageFederate(1, "message")
+    broker = create_broker(3)
+    fFed, fedinfo1 = create_message_federate(1, "filter")
+    fFed2, fedinfo2 = create_message_federate(1, "filter2")
+    mFed, fedinfo3 = create_message_federate(1, "message")
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
@@ -328,17 +331,16 @@ def test_filter_test_types_function_two_stage():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(fFed, fedinfo1)
-    destroyFederate(fFed2, fedinfo2)
-    destroyFederate(mFed, fedinfo3)
-    destroyBroker(broker)
+    destroy_federate(fFed, fedinfo1)
+    destroy_federate(fFed2, fedinfo2)
+    destroy_federate(mFed, fedinfo3)
+    destroy_broker(broker)
 
 
 def test_filter_test_types_function2():
-
-    broker = createBroker(2)
-    fFed, fedinfo1 = createMessageFederate(1, "filter")
-    mFed, fedinfo2 = createMessageFederate(1, "message")
+    broker = create_broker(2)
+    fFed, fedinfo1 = create_message_federate(1, "filter")
+    mFed, fedinfo2 = create_message_federate(1, "message")
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
@@ -399,27 +401,32 @@ def test_filter_test_types_function2():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(fFed, fedinfo1)
-    destroyFederate(mFed, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(fFed, fedinfo1)
+    destroy_federate(mFed, fedinfo2)
+    destroy_broker(broker)
 
 
 def test_filter_test_types_message_filter_function3():
-
-    broker = createBroker(2)
-    fFed, fedinfo1 = createMessageFederate(1, "filter", 1)
-    mFed, fedinfo2 = createMessageFederate(1, "message", 1)
+    broker = create_broker(2)
+    fFed, fedinfo1 = create_message_federate(1, "filter", 1)
+    mFed, fedinfo2 = create_message_federate(1, "message", 1)
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "random")
 
-    f1 = h.helicsFederateRegisterGlobalFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
+    f1 = h.helicsFederateRegisterGlobalFilter(
+        fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1"
+    )
     h.helicsFilterAddSourceTarget(f1, "port1")
-    f2 = h.helicsFederateRegisterGlobalFilter(fFed, h.HELICS_FILTER_TYPE_DELAY, "filter2")
+    f2 = h.helicsFederateRegisterGlobalFilter(
+        fFed, h.HELICS_FILTER_TYPE_DELAY, "filter2"
+    )
     h.helicsFilterAddSourceTarget(f2, "port1")
 
     h.helicsFederateRegisterEndpoint(fFed, "fout", "")
-    f3 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
+    f3 = h.helicsFederateRegisterFilter(
+        fFed, h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3"
+    )
     h.helicsFilterAddSourceTarget(f3, "filter0/fout")
 
     h.helicsFilterSet(f2, "delay", 2.5)
@@ -467,17 +474,16 @@ def test_filter_test_types_message_filter_function3():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(mFed, fedinfo1)
-    destroyFederate(fFed, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(mFed, fedinfo1)
+    destroy_federate(fFed, fedinfo2)
+    destroy_broker(broker)
 
 
 def test_filter_test_types_clone_test():
-
-    broker = createBroker(3)
-    sFed, fedinfo1 = createMessageFederate(1, "source", 1)
-    dFed, fedinfo2 = createMessageFederate(1, "dest", 1)
-    dcFed, fedinfo3 = createMessageFederate(1, "dest_clone", 1)
+    broker = create_broker(3)
+    sFed, fedinfo1 = create_message_federate(1, "source", 1)
+    dFed, fedinfo2 = create_message_federate(1, "dest", 1)
+    dcFed, fedinfo3 = create_message_federate(1, "dest_clone", 1)
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(sFed, "src", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(dFed, "dest", "")
@@ -534,18 +540,21 @@ def test_filter_test_types_clone_test():
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(sFed, fedinfo1)
-    destroyFederate(dFed, fedinfo2)
-    destroyFederate(dcFed, fedinfo3)
-    destroyBroker(broker)
+    destroy_federate(sFed, fedinfo1)
+    destroy_federate(dFed, fedinfo2)
+    destroy_federate(dcFed, fedinfo3)
+    destroy_broker(broker)
 
 
 def test_filter_test_types_clone_test_connections():
-
-    broker = createBroker(3)
-    sFed, fedinfo1 = createMessageFederate(1, "source", 1.0,)
-    dFed, fedinfo2 = createMessageFederate(1, "dest", 1.0)
-    dcFed, fedinfo3 = createMessageFederate(1, "dest_clone", 1.0)
+    broker = create_broker(3)
+    sFed, fedinfo1 = create_message_federate(
+        1,
+        "source",
+        1.0,
+    )
+    dFed, fedinfo2 = create_message_federate(1, "dest", 1.0)
+    dcFed, fedinfo3 = create_message_federate(1, "dest_clone", 1.0)
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(sFed, "src", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(dFed, "dest", "")
@@ -606,17 +615,17 @@ def test_filter_test_types_clone_test_connections():
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(sFed, fedinfo1)
-    destroyFederate(dFed, fedinfo2)
-    destroyFederate(dcFed, fedinfo3)
-    destroyBroker(broker)
+    destroy_federate(sFed, fedinfo1)
+    destroy_federate(dFed, fedinfo2)
+    destroy_federate(dcFed, fedinfo3)
+    destroy_broker(broker)
 
 
 def test_filter_test_types_clone_test_broker_connections():
-    broker = createBroker(3)
-    sFed, fedinfo1 = createMessageFederate(1, "source", 1.0)
-    dFed, fedinfo2 = createMessageFederate(1, "dest", 1.0)
-    dcFed, fedinfo3 = createMessageFederate(1, "dest_clone", 1.0)
+    broker = create_broker(3)
+    sFed, fedinfo1 = create_message_federate(1, "source", 1.0)
+    dFed, fedinfo2 = create_message_federate(1, "dest", 1.0)
+    dcFed, fedinfo3 = create_message_federate(1, "dest_clone", 1.0)
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(sFed, "src", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(dFed, "dest", "")
@@ -670,18 +679,18 @@ def test_filter_test_types_clone_test_broker_connections():
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(sFed, fedinfo1)
-    destroyFederate(dFed, fedinfo2)
-    destroyFederate(dcFed, fedinfo3)
-    destroyBroker(broker)
+    destroy_federate(sFed, fedinfo1)
+    destroy_federate(dFed, fedinfo2)
+    destroy_federate(dcFed, fedinfo3)
+    destroy_broker(broker)
 
 
 @pt.mark.skip(reason="Fails to run on Windows")
 def test_filter_test_types_clone_test_dest_connections():
-    broker = createBroker(3)
-    sFed, fedinfo1 = createMessageFederate(1, "source", 1.0)
-    dFed, fedinfo2 = createMessageFederate(1, "dest", 1.0)
-    dcFed, fedinfo3 = createMessageFederate(1, "dest_clone", 2.0)
+    broker = create_broker(3)
+    sFed, fedinfo1 = create_message_federate(1, "source", 1.0)
+    dFed, fedinfo2 = create_message_federate(1, "dest", 1.0)
+    dcFed, fedinfo3 = create_message_federate(1, "dest_clone", 2.0)
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(sFed, "src", "")
     _ = h.helicsFederateRegisterGlobalEndpoint(dFed, "dest", "")
@@ -756,10 +765,10 @@ def test_filter_test_types_clone_test_dest_connections():
     # (state = h.helicsFederateGetState(sFed))
     # (state == h.helics_state_finalize)
 
-    destroyFederate(sFed, fedinfo1)
-    destroyFederate(dFed, fedinfo2)
-    destroyFederate(dcFed, fedinfo3)
-    destroyBroker(broker)
+    destroy_federate(sFed, fedinfo1)
+    destroy_federate(dFed, fedinfo2)
+    destroy_federate(dcFed, fedinfo3)
+    destroy_broker(broker)
 
 
 try:
@@ -787,26 +796,45 @@ class UserData(object):
 
 @pt.mark.skip(reason="Fails to pass on CI")
 def test_filter_callback_test():
+    broker = create_broker(2)
+    assert isinstance(broker, h.HelicsBroker)
+    assert_attributes(
+        broker, {"identifier": "mainbroker", "address": "tcp://127.0.0.1:23404"}
+    )
 
-    broker = createBroker(2)
+    fFed, fedinfo1 = create_message_federate(1, "filter", 1.0)
+    mFed, fedinfo2 = create_message_federate(1, "message", 1.0)
 
-    assert """helics.HelicsBroker(identifier = "mainbroker", address = "tcp://127.0.0.1:23404")""" in repr(broker)
-
-    fFed, fedinfo1 = createMessageFederate(1, "filter", 1.0)
-    mFed, fedinfo2 = createMessageFederate(1, "message", 1.0)
-
-    h.helicsFederateSetFlagOption(mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
+    h.helicsFederateSetFlagOption(
+        mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
+    )
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
 
-    assert (
-        """helics.HelicsEndpoint(name = "port1", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
-        in repr(p1)
+    assert isinstance(p1, h.HelicsEndpoint)
+    assert isinstance(p2, h.HelicsEndpoint)
+    assert_attributes(
+        p1,
+        {
+            "name": "port1",
+            "type": "",
+            "info": "",
+            "is_valid": True,
+            "default_destination": "",
+            "n_pending_messages": 0,
+        },
     )
-    assert (
-        """helics.HelicsEndpoint(name = "port2", type = "", info = "", is_valid = True, default_destination = "", n_pending_messages = 0)"""
-        in repr(p2)
+    assert_attributes(
+        p2,
+        {
+            "name": "port2",
+            "type": "",
+            "info": "",
+            "is_valid": True,
+            "default_destination": "",
+            "n_pending_messages": 0,
+        },
     )
 
     f1 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
@@ -814,7 +842,7 @@ def test_filter_callback_test():
 
     h.helicsFilterAddSourceTarget(f1, "port1")
 
-    assert 'name = "Testfilter/filter1"' in repr(f1)
+    assert f1.name == "Testfilter/filter1"
 
     userdata = UserData(5)
 
@@ -824,27 +852,43 @@ def test_filter_callback_test():
     with pt.raises(h.HelicsException):
         h.helicsFilterSetCustomCallback(f2, filterFunc1, handle)
 
-    assert (
-        """helics.HelicsMessageFederate(name = "Testfilter", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_subscriptions = 0, n_endpoints = 0, n_filters = 1, n_pending_messages = 0)"""
-        in repr(fFed)
+    default_federate_attributes = {
+        "name": "",
+        "state": h.HelicsFederateState.STARTUP,
+        "current_time": -9223372036.854776,
+        "n_publications": 0,
+        "n_subscriptions": 0,
+        "n_endpoints": 0,
+        "n_filters": 0,
+        "n_pending_messages": 0,
+    }
+    assert isinstance(fFed, h.HelicsMessageFederate)
+    assert isinstance(mFed, h.HelicsMessageFederate)
+
+    assert_attributes(
+        fFed,
+        {**default_federate_attributes, "name": "Testfilter", "n_filters": 1},
     )
-    assert (
-        """helics.HelicsMessageFederate(name = "Testmessage", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_subscriptions = 0, n_endpoints = 2, n_filters = 1, n_pending_messages = 0)"""
-        in repr(mFed)
+
+    assert_attributes(
+        mFed,
+        {
+            **default_federate_attributes,
+            "name": "Testmessage",
+            "n_endpoints": 2,
+            "n_filters": 1,
+        },
     )
 
     h.helicsFederateEnterExecutingModeAsync(fFed)
     h.helicsFederateEnterExecutingMode(mFed)
     h.helicsFederateEnterExecutingModeComplete(fFed)
 
-    assert (
-        """helics.HelicsMessageFederate(name = "Testfilter", state = HelicsFederateState.EXECUTION, current_time = 0.0, n_publications = 0, n_subscriptions = 0, n_endpoints = 0, n_filters = 1, n_pending_messages = 0)"""
-        in repr(fFed)
-    )
-    assert (
-        """helics.HelicsMessageFederate(name = "Testmessage", state = HelicsFederateState.EXECUTION, current_time = 0.0, n_publications = 0, n_subscriptions = 0, n_endpoints = 2, n_filters = 1, n_pending_messages = 0)"""
-        in repr(mFed)
-    )
+    assert fFed.state == h.HelicsFederateState.EXECUTION
+    assert mFed.state == h.HelicsFederateState.EXECUTION
+
+    assert fFed.current_time == 0.0
+    assert mFed.current_time == 0.0
 
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_EXECUTION
@@ -882,18 +926,17 @@ def test_filter_callback_test():
     state = h.helicsFederateGetState(fFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(fFed, fedinfo1)
-    destroyFederate(mFed, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(fFed, fedinfo1)
+    destroy_federate(mFed, fedinfo2)
+    destroy_broker(broker)
 
 
 @pt.mark.skip(reason="Fails to pass on CI")
 def test_filter_test_types_clone_test_broker_dest_connections():
-
-    broker = createBroker(3)
-    sFed, fedinfo1 = createMessageFederate(1, "source", 1.0)
-    dFed, fedinfo2 = createMessageFederate(1, "dest", 1.0)
-    dcFed, fedinfo3 = createMessageFederate(1, "dest_clone", 1.0)
+    broker = create_broker(3)
+    sFed, fedinfo1 = create_message_federate(1, "source", 1.0)
+    dFed, fedinfo2 = create_message_federate(1, "dest", 1.0)
+    dcFed, fedinfo3 = create_message_federate(1, "dest_clone", 1.0)
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(sFed, "src", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(dFed, "dest", "")
@@ -957,14 +1000,13 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     state = h.helicsFederateGetState(sFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(sFed, fedinfo1)
-    destroyFederate(dFed, fedinfo2)
-    destroyFederate(dcFed, fedinfo3)
-    destroyBroker(broker)
+    destroy_federate(sFed, fedinfo1)
+    destroy_federate(dFed, fedinfo2)
+    destroy_federate(dcFed, fedinfo3)
+    destroy_broker(broker)
 
 
 def test_filter_test_file_load():
-
     filename = os.path.join(CURRENT_DIRECTORY, "filters.json")
     mFed = h.helicsCreateMessageFederateFromConfig(filename)
 

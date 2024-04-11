@@ -1,25 +1,22 @@
 # -*- coding: utf-8 -*-
-import os
 import sys
 
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
-import time
-import pytest
 import helics as h
-
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
 import pytest as pt
-import sys
+
+from .utils import (
+    create_broker,
+    create_value_federate,
+    destroy_federate,
+    destroy_broker,
+    create_message_federate,
+)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_message_federate_message():
-    broker = createBroker(1)
-    mFed1, fedinfo = createMessageFederate(1, "test")
+    broker = create_broker(1)
+    mFed1, fedinfo = create_message_federate(1, "test")
 
     ept1 = h.helicsFederateRegisterGlobalEndpoint(mFed1, "ept1", "")
     with pt.raises(h.HelicsException):
@@ -43,15 +40,14 @@ def test_bad_input_message_federate_message():
     with pt.raises(h.HelicsException):
         h.helicsEndpointSendMessage(ept1, mess0)
 
-    destroyFederate(mFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(mFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_filter_test4():
-
-    broker = createBroker(1)
-    mFed1, fedinfo = createMessageFederate(1, "test")
+    broker = create_broker(1)
+    mFed1, fedinfo = create_message_federate(1, "test")
 
     filt1 = h.helicsFederateRegisterCloningFilter(mFed1, "filt1")
     # @test_throws h.HELICSErrorRegistrationFailure
@@ -74,15 +70,14 @@ def test_bad_input_filter_test4():
         h.helicsFilterSet(filt1, "unknown", 10.0)
     h.helicsFederateDisconnect(mFed1)
 
-    destroyFederate(mFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(mFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_filter_core_tests():
-
-    broker = createBroker(1)
-    mFed1, fedinfo = createMessageFederate(1, "test")
+    broker = create_broker(1)
+    mFed1, fedinfo = create_message_federate(1, "test")
 
     cr = h.helicsFederateGetCore(mFed1)
 
@@ -95,19 +90,21 @@ def test_bad_input_filter_core_tests():
     h.helicsFederateDisconnect(mFed1)
     h.helicsCoreDestroy(cr)
 
-    destroyFederate(mFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(mFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_type_publication_2_tests():
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "test")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "test")
 
     pubid = h.helicsFederateRegisterGlobalTypePublication(vFed1, "pub1", "string", "")
     with pt.raises(h.HelicsException):
         # @test_throws h.HELICSErrorRegistrationFailure
-        pubid2 = h.helicsFederateRegisterGlobalTypePublication(vFed1, "pub1", "string", "")
+        pubid2 = h.helicsFederateRegisterGlobalTypePublication(
+            vFed1, "pub1", "string", ""
+        )
 
     with pt.raises(h.HelicsException):
         # @test_throws h.HELICSErrorInvalidArgument
@@ -126,7 +123,9 @@ def test_bad_input_type_publication_2_tests():
 
     h.helicsFederateSetTimeProperty(vFed1, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
 
-    h.helicsFederateEnterExecutingModeIterativeAsync(vFed1, h.HELICS_ITERATION_REQUEST_NO_ITERATION)
+    h.helicsFederateEnterExecutingModeIterativeAsync(
+        vFed1, h.HELICS_ITERATION_REQUEST_NO_ITERATION
+    )
     res = h.helicsFederateEnterExecutingModeIterativeComplete(vFed1)
     assert res == h.HELICS_ITERATION_RESULT_NEXT_STEP
 
@@ -178,19 +177,22 @@ def test_bad_input_type_publication_2_tests():
     with pt.raises(h.HelicsException):
         h.helicsPublicationPublishNamedPoint(pubid, "hello world", 2.0)
 
-    destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_tests_raw_tests():
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "test")
 
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "test")
+    pubid = h.helicsFederateRegisterPublication(
+        vFed1, "pub1", h.HELICS_DATA_TYPE_RAW, ""
+    )
 
-    pubid = h.helicsFederateRegisterPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_RAW, "")
-
-    subid = h.helicsFederateRegisterGlobalInput(vFed1, "inp1", h.HELICS_DATA_TYPE_RAW, "")
+    subid = h.helicsFederateRegisterGlobalInput(
+        vFed1, "inp1", h.HELICS_DATA_TYPE_RAW, ""
+    )
 
     h.helicsPublicationAddTarget(pubid, "inp1")
 
@@ -210,18 +212,19 @@ def test_bad_input_tests_raw_tests():
 
     h.helicsFederateDisconnect(vFed1)
 
-    t, res = h.helicsFederateRequestTimeIterative(vFed1, 1.0, h.HELICS_ITERATION_REQUEST_NO_ITERATION)
+    t, res = h.helicsFederateRequestTimeIterative(
+        vFed1, 1.0, h.HELICS_ITERATION_REQUEST_NO_ITERATION
+    )
     assert res == h.HELICS_ITERATION_RESULT_HALTED
 
-    destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_duplicate_publication_and_input_pathways():
-
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "fed0")
 
     pubid = h.helicsFederateRegisterTypePublication(vFed1, "pub1", "string", "")
 
@@ -253,14 +256,14 @@ def test_bad_input_duplicate_publication_and_input_pathways():
 
     h.helicsFederateDisconnect(vFed1)
 
-    destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_input_init_error():
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "fed0")
 
     # register the publications
 
@@ -310,24 +313,27 @@ def test_bad_input_init_error():
 
     h.helicsFederateDisconnect(vFed1)
 
-    destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skip(reason="Fails to pass on CI")
 def test_bad_inputs_input_tests():
-
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "fed0")
 
     # register the publications
 
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, ""
+    )
 
     subid = h.helicsFederateRegisterInput(vFed1, "inp1", h.HELICS_DATA_TYPE_DOUBLE, "")
     # @test_throws h.HELICSErrorRegistrationFailure
     with pt.raises(h.HelicsException):
-        subid2 = h.helicsFederateRegisterInput(vFed1, "inp1", h.HELICS_DATA_TYPE_DOUBLE, "")
+        subid2 = h.helicsFederateRegisterInput(
+            vFed1, "inp1", h.HELICS_DATA_TYPE_DOUBLE, ""
+        )
 
     h.helicsInputAddTarget(subid, "pub1")
 
@@ -344,14 +350,18 @@ def test_bad_inputs_input_tests():
 
     h.helicsPublicationPublishDouble(pubid, 27.0)
 
-    comp = h.helicsFederateEnterExecutingModeIterative(vFed1, h.HELICS_ITERATION_REQUEST_FORCE_ITERATION)
+    comp = h.helicsFederateEnterExecutingModeIterative(
+        vFed1, h.HELICS_ITERATION_REQUEST_FORCE_ITERATION
+    )
     assert comp == h.HELICS_ITERATION_RESULT_ITERATING
     val = h.helicsInputGetDouble(subid)
     assert val == 27.0
     valt = h.helicsInputGetTime(subid)
     assert valt == 27.0
 
-    comp = h.helicsFederateEnterExecutingModeIterative(vFed1, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED)
+    comp = h.helicsFederateEnterExecutingModeIterative(
+        vFed1, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED
+    )
 
     assert comp == h.HELICS_ITERATION_RESULT_NEXT_STEP
 
@@ -374,14 +384,14 @@ def test_bad_inputs_input_tests():
 
     h.helicsFederateDisconnect(vFed1)
 
-    destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_core_link():
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "fed0")
 
     # register the publications
 
@@ -416,15 +426,14 @@ def test_bad_inputs_core_link():
 
     h.helicsFederateDisconnect(vFed1)
 
-    destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_broker_link():
-
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "fed0")
 
     # register the publications
 
@@ -452,17 +461,17 @@ def test_bad_inputs_broker_link():
 
     h.helicsFederateDisconnect(vFed1)
 
-    destroyFederate(vFed1, fedinfo)
+    destroy_federate(vFed1, fedinfo)
 
     h.helicsBrokerWaitForDisconnect(broker, 200)
 
-    destroyBroker(broker)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_frees():
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "fed0")
 
     fi = h.helicsCreateFederateInfo()
     h.helicsFederateInfoSetBroker(fi, "broker test")
@@ -477,15 +486,14 @@ def test_bad_inputs_frees():
 
     # @test_throws h.HELICSErrorInvalidObject
     with pt.raises(h.HelicsException):
-        destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+        destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_init_error_5():
-
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "fed0")
     # register the publications
 
     h.helicsFederateInfoSetSeparator(fedinfo, "-")
@@ -501,11 +509,15 @@ def test_bad_inputs_init_error_5():
 
     # @test_throws h.HELICSErrorConnectionFailure
     with pt.raises(h.HelicsException):
-        resIt = h.helicsFederateEnterExecutingModeIterative(vFed1, h.HELICS_ITERATION_REQUEST_NO_ITERATION)
+        resIt = h.helicsFederateEnterExecutingModeIterative(
+            vFed1, h.HELICS_ITERATION_REQUEST_NO_ITERATION
+        )
 
     # @test_throws h.HELICSErrorInvalidFunctionCall
     with pt.raises(h.HelicsException):
-        h.helicsFederateRequestTimeIterativeAsync(vFed1, 1.0, h.HELICS_ITERATION_REQUEST_NO_ITERATION)
+        h.helicsFederateRequestTimeIterativeAsync(
+            vFed1, 1.0, h.HELICS_ITERATION_REQUEST_NO_ITERATION
+        )
 
     # @test_throws h.HELICSErrorInvalidFunctionCall
     with pt.raises(h.HelicsException):
@@ -513,20 +525,25 @@ def test_bad_inputs_init_error_5():
 
     h.helicsFederateDisconnect(vFed1)
 
-    destroyFederate(vFed1, fedinfo)
+    destroy_federate(vFed1, fedinfo)
 
-    destroyBroker(broker)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_bad_inputs_misc_tests():
-
     with pt.raises(h.HelicsException):
         assert h.helicsGetPropertyIndex("") == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
     with pt.raises(h.HelicsException):
-        assert h.helicsGetPropertyIndex("not_a_property") == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
+        assert (
+            h.helicsGetPropertyIndex("not_a_property")
+            == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
+        )
 
     with pt.raises(h.HelicsException):
         assert h.helicsGetOptionIndex("") == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
     with pt.raises(h.HelicsException):
-        assert h.helicsGetOptionIndex("not_a_property") == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
+        assert (
+            h.helicsGetOptionIndex("not_a_property")
+            == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
+        )

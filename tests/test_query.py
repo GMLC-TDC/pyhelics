@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
-import time
 import helics as h
 
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
+from .utils import (
+    create_broker,
+    create_value_federate,
+    destroy_federate,
+    destroy_broker,
+)
 
 
 def test_query_federate_tests():
-
-    broker = createBroker(2)
-    vFed1, fedinfo1 = createValueFederate(1, "fed0")
-    vFed2, fedinfo2 = createValueFederate(1, "fed1")
+    broker = create_broker(2)
+    vFed1, fedinfo1 = create_value_federate(1, "fed0")
+    vFed2, fedinfo2 = create_value_federate(1, "fed1")
 
     h.helicsFederateRegisterGlobalTypePublication(vFed1, "pub1", "double", "")
     h.helicsFederateRegisterTypePublication(vFed1, "pub2", "double", "")
@@ -53,16 +48,15 @@ def test_query_federate_tests():
     h.helicsFederateDisconnect(vFed2)
     h.helicsFederateDisconnectComplete(vFed1)
 
-    destroyFederate(vFed1, fedinfo1)
-    destroyFederate(vFed2, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo1)
+    destroy_federate(vFed2, fedinfo2)
+    destroy_broker(broker)
 
 
 def test_query_broker_tests():
-
-    broker = createBroker(2)
-    vFed1, fedinfo1 = createValueFederate(1, "fed0")
-    vFed2, fedinfo2 = createValueFederate(1, "fed1")
+    broker = create_broker(2)
+    vFed1, fedinfo1 = create_value_federate(1, "fed0")
+    vFed2, fedinfo2 = create_value_federate(1, "fed1")
     core = h.helicsFederateGetCore(vFed1)
 
     q1 = h.helicsCreateQuery("root", "federates")
@@ -90,6 +84,6 @@ def test_query_broker_tests():
     h.helicsFederateDisconnect(vFed2)
     h.helicsFederateDisconnectComplete(vFed1)
 
-    destroyFederate(vFed1, fedinfo1)
-    destroyFederate(vFed2, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo1)
+    destroy_federate(vFed2, fedinfo2)
+    destroy_broker(broker)

@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
 import time
 import helics as h
 
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
+from .utils import (
+    create_broker,
+    destroy_federate,
+    destroy_broker,
+    create_message_federate,
+)
 
 
 def test_broker():
-    broker = createBroker(1)
+    broker = create_broker(1)
     initstring = "--broker="
     identifier = h.helicsBrokerGetIdentifier(broker)
     initstring = initstring + identifier
@@ -22,15 +19,14 @@ def test_broker():
     address = h.helicsBrokerGetAddress(broker)
     initstring = initstring + address
     assert initstring == "--broker=mainbroker --broker_address tcp://127.0.0.1:23404"
-    destroyBroker(broker)
+    destroy_broker(broker)
 
 
 def test_messagefilter_registration():
+    broker = create_broker(2)
 
-    broker = createBroker(2)
-
-    fFed, ffedinfo = createMessageFederate(1, "filter")
-    mFed, mfedinfo = createMessageFederate(1, "message")
+    fFed, ffedinfo = create_message_federate(1, "filter")
+    mFed, mfedinfo = create_message_federate(1, "message")
 
     h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
@@ -55,19 +51,18 @@ def test_messagefilter_registration():
     h.helicsFederateDisconnect(mFed)
     h.helicsFederateDisconnect(fFed)
 
-    destroyFederate(fFed, ffedinfo)
-    destroyFederate(mFed, mfedinfo)
+    destroy_federate(fFed, ffedinfo)
+    destroy_federate(mFed, mfedinfo)
     time.sleep(1.0)
 
-    destroyBroker(broker)
+    destroy_broker(broker)
 
 
 def test_messagefilter_info():
+    broker = create_broker(2)
 
-    broker = createBroker(2)
-
-    fFed, ffedinfo = createMessageFederate(1, "filter")
-    mFed, mfedinfo = createMessageFederate(1, "message")
+    fFed, ffedinfo = create_message_federate(1, "filter")
+    mFed, mfedinfo = create_message_federate(1, "message")
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
@@ -111,28 +106,34 @@ def test_messagefilter_info():
     h.helicsFederateDisconnect(mFed)
     h.helicsFederateDisconnect(fFed)
 
-    destroyFederate(fFed, ffedinfo)
-    destroyFederate(mFed, mfedinfo)
+    destroy_federate(fFed, ffedinfo)
+    destroy_federate(mFed, mfedinfo)
     time.sleep(1.0)
 
-    destroyBroker(broker)
+    destroy_broker(broker)
 
 
 def test_messagefilter_function():
-    broker = createBroker(2)
+    broker = create_broker(2)
 
-    fFed, ffedinfo = createMessageFederate(1, "filter")
-    mFed, mfedinfo = createMessageFederate(1, "message")
+    fFed, ffedinfo = create_message_federate(1, "filter")
+    mFed, mfedinfo = create_message_federate(1, "message")
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "random")
 
-    f1 = h.helicsFederateRegisterGlobalFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
+    f1 = h.helicsFederateRegisterGlobalFilter(
+        fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1"
+    )
     h.helicsFilterAddSourceTarget(f1, "port1")
-    f2 = h.helicsFederateRegisterGlobalFilter(fFed, h.HELICS_FILTER_TYPE_DELAY, "filter2")
+    f2 = h.helicsFederateRegisterGlobalFilter(
+        fFed, h.HELICS_FILTER_TYPE_DELAY, "filter2"
+    )
     h.helicsFilterAddSourceTarget(f2, "port1")
     h.helicsFederateRegisterEndpoint(fFed, "fout", "")
-    f3 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
+    f3 = h.helicsFederateRegisterFilter(
+        fFed, h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3"
+    )
     h.helicsFilterAddSourceTarget(f3, "filter/fout")
 
     h.helicsFilterSet(f2, "delay", 2.5)
@@ -168,7 +169,7 @@ def test_messagefilter_function():
     # ep1 = h.helicsFederateRegisterEndpoint(fFed, "fout", "")
     # f3 = h.helicsFederateRegisterSourceFilter(fFed, h.helics_custom_filter, "", "filter0/fout")
 
-    destroyFederate(fFed, ffedinfo)
-    destroyFederate(mFed, mfedinfo)
+    destroy_federate(fFed, ffedinfo)
+    destroy_federate(mFed, mfedinfo)
     time.sleep(1.0)
-    destroyBroker(broker)
+    destroy_broker(broker)
