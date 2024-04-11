@@ -2,8 +2,6 @@
 import os
 
 import helics as h
-import os
-
 import pytest as pt
 
 from .utils import (
