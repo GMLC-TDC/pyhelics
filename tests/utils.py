@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
 import time
 import helics as h
 
 
-def createBroker(number=1):
+def assert_attributes(obj, attributes: dict[str, any]):
+    for key, value in attributes.items():
+        assert hasattr(obj, key), f"{repr(obj)} does not have attribute {key}"
+        assert getattr(obj, key) == value, f"{repr(obj)}.{key} is not {value}"
+
+
+def create_broker(number=1):
     initstring = f"-f {number} --name=mainbroker"
     # @test_throws h.HELICSErrorInvalidArgument broker = h.helicsCreateBroker("mq", "", initstring)
     broker = h.helicsCreateBroker("zmq", "", initstring)
@@ -20,7 +18,7 @@ def createBroker(number=1):
     return broker
 
 
-def setupFederateInfo(name="A Core", number=1, deltat=0.01):
+def setup_federate_info(name="A Core", number=1, deltat=0.01):
     fedinitstring = f"--broker=mainbroker --federates={number}"
 
     # Create Federate Info object that describes the federate properties
@@ -47,26 +45,25 @@ def setupFederateInfo(name="A Core", number=1, deltat=0.01):
     return fedinfo
 
 
-def createValueFederate(federates=1, name="A Federate", deltat=0.01):
-    fedinfo = setupFederateInfo(name, federates, deltat)
+def create_value_federate(federates=1, name="A Federate", deltat=0.01):
+    fedinfo = setup_federate_info(name, federates, deltat)
     vFed = h.helicsCreateValueFederate(f"Test{name}", fedinfo)
     # assert vFed isa h.ValueFederate
     return vFed, fedinfo
 
 
-def createMessageFederate(federates=1, name="A Federate", deltat=0.01):
-    fedinfo = setupFederateInfo(name, federates, deltat)
+def create_message_federate(federates=1, name="A Federate", deltat=0.01):
+    fedinfo = setup_federate_info(name, federates, deltat)
     mFed = h.helicsCreateMessageFederate(f"Test{name}", fedinfo)
     # assert mFed isa h.MessageFederate
     return mFed, fedinfo
 
 
-def destroyBroker(broker):
+def destroy_broker(broker):
     h.helicsBrokerDisconnect(broker)
-    h.helicsCloseLibrary()
 
 
-def destroyFederate(fed, fedinfo, broker=None):
+def destroy_federate(fed, fedinfo, broker=None):
     h.helicsFederateDisconnect(fed)
     _ = h.helicsFederateGetState(fed)
     if broker is not None:
@@ -75,8 +72,4 @@ def destroyFederate(fed, fedinfo, broker=None):
     h.helicsFederateInfoFree(fedinfo)
     h.helicsFederateFree(fed)
     if broker is not None:
-        destroyBroker(broker)
-
-
-destroyValueFederate = destroyFederate
-destroyMessageFederate = destroyFederate
+        destroy_broker(broker)
