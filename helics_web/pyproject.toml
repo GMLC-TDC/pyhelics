@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "helics-web"
+version = "0.0.1"
+authors = [{ name = "Dheepak Krishnamurthy", email = "me@kdheepak.com" }]
+maintainers = [
+    { name = "Dheepak Krishnamurthy", email = "me@kdheepak.com" },
+    { name = "Ryan Mast", email = "mast9@llnl.gov" },
+]
+description = "Python HELICS bindings"
+readme = "README.md"
+requires-python = ">=3.6"
+keywords = ["helics", "co-simulation", "webserver"]
+license = { text = "MIT License" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Unix",
+    "Operating System :: POSIX",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Environment :: Console",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Utilities",
+    "Topic :: Software Development",
+]
+dependencies = [
+    "flask>=2",
+    "requests",
+    "flask-restful",
+    "flask-cors",
+    "pandas",
+    "SQLAlchemy",
+]
+
+[project.urls]
+Homepage = "hhttps://github.com/GMLC-TDC/pyhelics"
+Discussions = "https://github.com/GMLC-TDC/HELICS/discussions"
+Documentation = "https://python.helics.org/"
+"Issue Tracker" = "https://github.com/GMLC-TDC/pyhelics/issues"
+"Source Code" = "https://github.com/GMLC-TDC/pyhelics"
+
+[tool.setuptools.packages.find]
+include = ["helics_web", "helics_web.*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"*" = ["static/*"]
+
+
+#[tool.setuptools_scm]
+#version_file = "helics_web/_version.py"
+
+#[tool.pytest.ini_options]
+#addopts = ["--import-mode=importlib"]
+#pythonpath = "."

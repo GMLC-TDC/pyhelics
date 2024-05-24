@@ -64,110 +64,6 @@ def update_package_data(distribution):
     build_py.finalize_options()
 
 
-def js_prerelease(command, strict=False):
-    """decorator for building minified js/css prior to another command"""
-
-    class DecoratedCommand(command):
-        def run(self):
-            jsdeps = self.distribution.get_command_obj("jsdeps")
-            if not IS_REPO and all(os.path.exists(t) for t in jsdeps.targets):
-                # sdist, nothing to do
-                command.run(self)
-                return
-
-            try:
-                self.distribution.run_command("jsdeps")
-            except Exception as e:
-                missing = [t for t in jsdeps.targets if not os.path.exists(t)]
-                if strict or missing:
-                    log.warn("rebuilding js and css failed")
-                    if missing:
-                        log.error("missing files: %s" % missing)
-                    raise e
-                else:
-                    log.warn("rebuilding js and css failed (not a problem)")
-                    log.warn(str(e))
-            command.run(self)
-            update_package_data(self.distribution)
-
-    return DecoratedCommand
-
-
-class NPM(Command):
-    description = "install package.json dependencies using npm"
-
-    user_options = []
-
-    node_modules = os.path.join(NODE_ROOT, "node_modules")
-
-    targets = ["index.html"]
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def get_npm_name(self):
-        npm_name = "npm"
-        if platform.system() == "Windows":
-            npm_name = "npm.cmd"
-        return npm_name
-
-    def has_npm(self):
-        npm_name = self.get_npm_name()
-        try:
-            subprocess.check_call([npm_name, "--version"])
-            return True
-        except:
-            return False
-
-    def should_run_npm_install(self):
-        node_modules_exists = os.path.exists(self.node_modules)
-        return self.has_npm() and not node_modules_exists
-
-    def run(self):
-        has_npm = self.has_npm()
-        if not has_npm:
-            log.error("`npm` unavailable, skipping npm build.  If you're running this command using " "sudo, make sure `npm` is available to sudo")
-            return
-
-        env = os.environ.copy()
-        env["PATH"] = NPM_PATH
-
-        npm_name = self.get_npm_name()
-
-        if self.should_run_npm_install():
-            log.info("Installing build dependencies with npm.  " "This may take a while...")
-            subprocess.check_call(
-                [npm_name, "install"],
-                cwd=NODE_ROOT,
-                stdout=sys.stdout,
-                stderr=sys.stderr,
-            )
-            os.utime(self.node_modules, None)
-
-        subprocess.check_call(
-            [npm_name, "run", "build"],
-            cwd=NODE_ROOT,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-        )
-
-        copy_tree(os.path.join(NODE_ROOT, "build"), os.path.join(STATIC_DIR))
-
-        for t in self.targets:
-            if not os.path.exists(os.path.join(STATIC_DIR, t)):
-                msg = "Missing file: %s" % t
-                if not has_npm:
-                    msg += "\nnpm is required to build a development version "
-                    "of a widget extension"
-                raise ValueError(msg)
-
-        # update package data in case this created new files
-        update_package_data(self.distribution)
-
-
 def read(*names, **kwargs):
     with io.open(join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")) as fh:
         return fh.read()
@@ -567,13 +463,12 @@ class HelicsBdistWheel(bdist_wheel):
 
 cmdclass = {
     "download": HELICSDownloadCommand,
-    "build_ext": js_prerelease(HELICSCMakeBuild),
-    "bdist_wheel": js_prerelease(HelicsBdistWheel),
-    "develop": js_prerelease(develop),
-    "build_py": js_prerelease(build_py),
-    "egg_info": js_prerelease(egg_info),
-    "sdist": js_prerelease(sdist, strict=True),
-    "jsdeps": NPM,
+    "build_ext": HELICSCMakeBuild,
+    "bdist_wheel": HelicsBdistWheel,
+    "develop": develop,
+    "build_py": build_py,
+    "egg_info": egg_info,
+    "sdist": sdist,
 }
 
 
@@ -582,7 +477,7 @@ class BinaryDistribution(Distribution):
         return False
 
 
-helics_cli_install_requires = ["flask>=2", "requests", "flask-restful", "flask-cors", "pandas", "SQLAlchemy", "matplotlib"]
+helics_cli_install_requires = ["requests", "helics_web", "pandas", "SQLAlchemy", "matplotlib"]
 
 setup(
     name="helics",
