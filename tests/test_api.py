@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
 import time
 import pytest
 import pytest as pt
 import helics as h
 
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker
+from .utils import assert_attributes
 
 
 def test_misc_functions_api():
@@ -41,11 +33,9 @@ def test_broker_api():
     h.helicsBrokerDisconnect(broker2)
     # h.helicsBrokerFree(broker1)
     # h.helicsBrokerFree(broker2)
-    h.helicsCloseLibrary()
 
 
 def test_core_api():
-
     core1 = h.helicsCreateCore("inproc", "core1", "--autobroker")
     assert h.helicsCoreIsValid(core1) is True
     core2 = h.helicsCoreClone(core1)
@@ -53,9 +43,13 @@ def test_core_api():
 
     assert h.helicsCoreIsConnected(core1) == 0
 
-    sourceFilter1 = h.helicsCoreRegisterFilter(core1, h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter")
+    sourceFilter1 = h.helicsCoreRegisterFilter(
+        core1, h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter"
+    )
     h.helicsFilterAddSourceTarget(sourceFilter1, "ep1")
-    destinationFilter1 = h.helicsCoreRegisterFilter(core1, h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter")
+    destinationFilter1 = h.helicsCoreRegisterFilter(
+        core1, h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter"
+    )
     h.helicsFilterAddDestinationTarget(destinationFilter1, "ep2")
     cloningFilter1 = h.helicsCoreRegisterCloningFilter(core1, "ep3")
     h.helicsFilterRemoveDeliveryEndpoint(cloningFilter1, "ep3")
@@ -65,7 +59,6 @@ def test_core_api():
     h.helicsCoreDisconnect(core2)
     # h.helicsCoreFree(core1)
     # h.helicsCoreFree(core2)
-    h.helicsCloseLibrary()
 
 
 class UserData(object):
@@ -73,20 +66,25 @@ class UserData(object):
         self.x = x
 
 
-@h.ffi.callback("void logger(int loglevel, const char* identifier, const char* message, void* userData)")
+@h.ffi.callback(
+    "void logger(int loglevel, const char* identifier, const char* message, void* userData)"
+)
 def logger(loglevel: int, identifier: str, message: str, userData: object):
     userData = h.ffi.from_handle(userData)
-    print(f"{loglevel}, {h.ffi.string(identifier).decode()}, {h.ffi.string(message).decode()}, {userData}")
+    print(
+        f"{loglevel}, {h.ffi.string(identifier).decode()}, {h.ffi.string(message).decode()}, {userData}"
+    )
     userData.x += 1
 
 
 def test_logging_api():
-
     fi = h.helicsCreateFederateInfo()
     broker = h.helicsCreateBroker("zmq", "broker", "--federates 1")
     h.helicsFederateInfoSetCoreInitString(fi, "--federates 1")
 
-    h.helicsFederateInfoSetIntegerProperty(fi, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_TIMING)
+    h.helicsFederateInfoSetIntegerProperty(
+        fi, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_TIMING
+    )
 
     fed = h.helicsCreateValueFederate("test1", fi)
 
@@ -118,9 +116,6 @@ def test_logging_api():
     h.helicsBrokerDisconnect(broker)
     # h.helicsBrokerFree(broker)
 
-    h.helicsCleanupLibrary()
-    h.helicsCloseLibrary()
-
 
 @pt.mark.skip()
 def test_misc_api():
@@ -130,10 +125,16 @@ def test_misc_api():
     h.helicsFederateInfoSetCoreType(fedInfo1, 3)
     h.helicsFederateInfoSetCoreTypeFromString(fedInfo1, "zmq")
     h.helicsFederateInfoSetFlagOption(fedInfo1, 1, True)
-    h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_INPUT_DELAY, 1.0)
+    h.helicsFederateInfoSetTimeProperty(
+        fedInfo1, h.HELICS_PROPERTY_TIME_INPUT_DELAY, 1.0
+    )
     h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.HELICS_PROPERTY_INT_LOG_LEVEL, 1)
-    h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.HELICS_PROPERTY_INT_MAX_ITERATIONS, 100)
-    h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_OUTPUT_DELAY, 1.0)
+    h.helicsFederateInfoSetIntegerProperty(
+        fedInfo1, h.HELICS_PROPERTY_INT_MAX_ITERATIONS, 100
+    )
+    h.helicsFederateInfoSetTimeProperty(
+        fedInfo1, h.HELICS_PROPERTY_TIME_OUTPUT_DELAY, 1.0
+    )
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_OFFSET, 0.1)
@@ -144,7 +145,9 @@ def test_misc_api():
     coreInitString = "--federates 1"
     h.helicsFederateInfoSetCoreInitString(fedInfo2, coreInitString)
     h.helicsFederateInfoSetCoreTypeFromString(fedInfo2, "zmq")
-    h.helicsFederateInfoSetIntegerProperty(fedInfo2, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_WARNING)
+    h.helicsFederateInfoSetIntegerProperty(
+        fedInfo2, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_WARNING
+    )
     h.helicsFederateInfoSetTimeProperty(fedInfo2, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
     fed1 = h.helicsCreateCombinationFederate("fed1", fedInfo2)
     fed2 = h.helicsFederateClone(fed1)
@@ -152,24 +155,32 @@ def test_misc_api():
     h.helicsFederateSetFlagOption(fed2, 1, False)
 
     h.helicsFederateSetTimeProperty(fed2, h.HELICS_PROPERTY_TIME_INPUT_DELAY, 1.0)
-    h.helicsFederateSetIntegerProperty(fed1, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_WARNING)
+    h.helicsFederateSetIntegerProperty(
+        fed1, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_WARNING
+    )
     h.helicsFederateSetIntegerProperty(fed2, h.HELICS_PROPERTY_INT_MAX_ITERATIONS, 100)
     h.helicsFederateSetTimeProperty(fed2, h.HELICS_PROPERTY_TIME_OUTPUT_DELAY, 1.0)
     h.helicsFederateSetTimeProperty(fed2, h.HELICS_PROPERTY_TIME_PERIOD, 0.0)
     h.helicsFederateSetTimeProperty(fed2, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
 
     _ = h.helicsFederateRegisterCloningFilter(fed1, "fed1/Ep1")
-    fed1DestinationFilter = h.helicsFederateRegisterFilter(fed1, h.HELICS_FILTER_TYPE_DELAY, "fed1DestinationFilter")
+    fed1DestinationFilter = h.helicsFederateRegisterFilter(
+        fed1, h.HELICS_FILTER_TYPE_DELAY, "fed1DestinationFilter"
+    )
     h.helicsFilterAddDestinationTarget(fed1DestinationFilter, "Ep2")
 
     ep1 = h.helicsFederateRegisterEndpoint(fed1, "Ep1", "string")
     ep2 = h.helicsFederateRegisterGlobalEndpoint(fed1, "Ep2", "string")
-    pub1 = h.helicsFederateRegisterGlobalPublication(fed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, "")
+    pub1 = h.helicsFederateRegisterGlobalPublication(
+        fed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, ""
+    )
     pub2 = h.helicsFederateRegisterGlobalTypePublication(fed1, "pub2", "complex", "")
 
     sub1 = h.helicsFederateRegisterSubscription(fed1, "pub1")
     sub2 = h.helicsFederateRegisterSubscription(fed1, "pub2")
-    pub3 = h.helicsFederateRegisterPublication(fed1, "pub3", h.HELICS_DATA_TYPE_STRING, "")
+    pub3 = h.helicsFederateRegisterPublication(
+        fed1, "pub3", h.HELICS_DATA_TYPE_STRING, ""
+    )
 
     pub1KeyString = h.helicsPublicationGetKey(pub1)
     pub1TypeString = h.helicsPublicationGetType(pub1)
@@ -182,7 +193,9 @@ def test_misc_api():
     assert "pub1" == sub1KeyString
     assert "" == sub1UnitsString
 
-    fed1SourceFilter = h.helicsFederateRegisterFilter(fed1, h.HELICS_FILTER_TYPE_DELAY, "fed1SourceFilter")
+    fed1SourceFilter = h.helicsFederateRegisterFilter(
+        fed1, h.HELICS_FILTER_TYPE_DELAY, "fed1SourceFilter"
+    )
     h.helicsFilterAddSourceTarget(fed1SourceFilter, "Ep2")
     h.helicsFilterAddDestinationTarget(fed1SourceFilter, "fed1/Ep1")
     h.helicsFilterRemoveTarget(fed1SourceFilter, "fed1/Ep1")
@@ -199,21 +212,50 @@ def test_misc_api():
     pub5 = h.helicsFederateRegisterGlobalTypePublication(fed1, "pub5", "boolean", "")
 
     sub5 = h.helicsFederateRegisterSubscription(fed1, "pub5", "")
-    pub6 = h.helicsFederateRegisterGlobalPublication(fed1, "pub6", h.HELICS_DATA_TYPE_VECTOR, "")
+    pub6 = h.helicsFederateRegisterGlobalPublication(
+        fed1, "pub6", h.HELICS_DATA_TYPE_VECTOR, ""
+    )
     sub6 = h.helicsFederateRegisterSubscription(fed1, "pub6", "")
-    pub7 = h.helicsFederateRegisterGlobalPublication(fed1, "pub7", h.HELICS_DATA_TYPE_NAMED_POINT, "")
+    pub7 = h.helicsFederateRegisterGlobalPublication(
+        fed1, "pub7", h.HELICS_DATA_TYPE_NAMED_POINT, ""
+    )
     sub7 = h.helicsFederateRegisterSubscription(fed1, "pub7", "")
 
-    assert """helics.HelicsPublication(name = "pub1", type = "double", units = "", info = "")""" in repr(pub1)
-    assert """helics.HelicsPublication(name = "pub2", type = "complex", units = "", info = "")""" in repr(pub2)
-    assert """helics.HelicsPublication(name = "fed1/pub3", type = "string", units = "", info = "")""" in repr(pub3)
-    assert """helics.HelicsPublication(name = "fed1/pub4", type = "int", units = "", info = "")""" in repr(pub4)
-    assert """helics.HelicsPublication(name = "pub5", type = "boolean", units = "", info = "")""" in repr(pub5)
-    assert """helics.HelicsPublication(name = "pub6", type = "double_vector", units = "", info = "")""" in repr(pub6)
-    assert """helics.HelicsPublication(name = "pub7", type = "named_point", units = "", info = "")""" in repr(pub7)
-    assert (
-        """helics.HelicsInput(name = "_input_18", units = "", injection_units = "", publication_type = "", type = "", target = "pub7", info = "")"""
-        in repr(sub7)
+    for pub in [pub1, pub2, pub3, pub4, pub5, pub6, pub7]:
+        assert isinstance(pub, h.HelicsPublication)
+    assert_attributes(pub1, {"name": "pub1", "type": "double", "units": "", "info": ""})
+    assert_attributes(
+        pub2, {"name": "pub2", "type": "complex", "units": "", "info": ""}
+    )
+    assert_attributes(
+        pub3, {"name": "fed1/pub3", "type": "string", "units": "", "info": ""}
+    )
+    assert_attributes(
+        pub4, {"name": "fed1/pub4", "type": "int", "units": "", "info": ""}
+    )
+    assert_attributes(
+        pub5, {"name": "pub5", "type": "boolean", "units": "", "info": ""}
+    )
+    assert_attributes(
+        pub6, {"name": "pub6", "type": "double_vector", "units": "", "info": ""}
+    )
+    assert_attributes(
+        pub7, {"name": "pub7", "type": "named_point", "units": "", "info": ""}
+    )
+
+    for sub in [sub1, sub2, sub3, sub4, sub5, sub6, sub7]:
+        assert isinstance(sub, h.HelicsInput)
+    assert_attributes(
+        sub7,
+        {
+            "name": "_input_18",
+            "units": "",
+            "injection_units": "",
+            "publication_type": "named_point",
+            "type": "",
+            "target": "pub7",
+            "info": "",
+        },
     )
 
     h.helicsInputSetDefaultBoolean(sub5, False)
@@ -239,11 +281,18 @@ def test_misc_api():
     h.helicsFederateEnterExecutingModeAsync(fed1)
     h.helicsFederateEnterExecutingModeComplete(fed1)
 
-    assert (
-        """helics.HelicsInput(name = "_input_18", units = "", injection_units = "", publication_type = "named_point", type = "", target = "pub7", info = "")"""
-        in repr(sub7)
+    assert_attributes(
+        sub7,
+        {
+            "name": "_input_18",
+            "units": "",
+            "injection_units": "",
+            "publication_type": "named_point",
+            "type": "",
+            "target": "pub7",
+            "info": "",
+        },
     )
-
     mesg1 = h.helicsFederateCreateMessage(fed1)
     h.helicsMessageSetString(mesg1, "Hello")
     h.helicsMessageSetSource(mesg1, "fed1/Ep1")
@@ -365,8 +414,6 @@ def test_misc_api():
 
     # h.helicsBrokerFree(broker3)
 
-    h.helicsCleanupLibrary()
-    h.helicsCloseLibrary()
 
 # Exercise the Endpoint *Bytes* interfaces
 def test_send_endpoint_bytes():
@@ -376,7 +423,9 @@ def test_send_endpoint_bytes():
     coreInitString = "--federates 1"
     h.helicsFederateInfoSetCoreInitString(fedInfo, coreInitString)
     h.helicsFederateInfoSetCoreTypeFromString(fedInfo, "zmq")
-    h.helicsFederateInfoSetIntegerProperty(fedInfo, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_WARNING)
+    h.helicsFederateInfoSetIntegerProperty(
+        fedInfo, h.HELICS_PROPERTY_INT_LOG_LEVEL, h.HELICS_LOG_LEVEL_WARNING
+    )
     h.helicsFederateInfoSetTimeProperty(fedInfo, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
     fed = h.helicsCreateMessageFederate("fed", fedInfo)
 
@@ -387,9 +436,9 @@ def test_send_endpoint_bytes():
 
     h.helicsFederateEnterExecutingMode(fed)
 
-    data1 = b'\0\0Hello,\0\0World!\0\0\0\0'
+    data1 = b"\0\0Hello,\0\0World!\0\0\0\0"
     data2 = bytes(x for x in range(256))
-    data3 = b'\0' * 64
+    data3 = b"\0" * 64
 
     msg = h.helicsFederateCreateMessage(fed)
     h.helicsMessageSetData(msg, data1)
@@ -397,7 +446,7 @@ def test_send_endpoint_bytes():
 
     h.helicsEndpointSendBytesTo(ep1, data2, "fed/Ep2")
 
-    h.helicsEndpointSendBytesToAt(ep1, data3, "fed/Ep2", 1.)
+    h.helicsEndpointSendBytesToAt(ep1, data3, "fed/Ep2", 1.0)
 
     h.helicsFederateRequestNextStep(fed)
 
@@ -430,6 +479,3 @@ def test_send_endpoint_bytes():
     h.helicsFederateDisconnect(fed)
 
     h.helicsBrokerDisconnect(broker)
-
-    h.helicsCleanupLibrary()
-    h.helicsCloseLibrary()

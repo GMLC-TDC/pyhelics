@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
 import time
 import helics as h
 import pytest as pt
 
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
+from .utils import (
+    create_broker,
+    destroy_federate,
+    destroy_broker,
+    create_message_federate,
+)
 
 
 @pt.fixture
@@ -64,7 +61,6 @@ def mFed():
 
     h.helicsFederateInfoFree(fedinfo)
     h.helicsFederateFree(mFed)
-    h.helicsCloseLibrary()
 
 
 def test_message_federate_initialize(mFed):
@@ -131,7 +127,6 @@ def test_message_federate_send(mFed):
 
 
 def test_messagefederate_test_message_federate_initialize(mFed):
-
     state = h.helicsFederateGetState(mFed)
     assert state == 0
     h.helicsFederateEnterExecutingMode(mFed)
@@ -141,7 +136,6 @@ def test_messagefederate_test_message_federate_initialize(mFed):
 
 
 def test_messagefederate_test_message_federate_endpoint_registration(mFed):
-
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
     epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "ep2", "random")
 
@@ -171,7 +165,6 @@ def test_messagefederate_test_message_federate_endpoint_registration(mFed):
 
 
 def test_messagefederate_test_message_federate_send(mFed):
-
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
     epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "ep2", "random")
 
@@ -209,10 +202,9 @@ def test_messagefederate_test_message_federate_send(mFed):
 
 
 def test_messagefederate_send_receive_2fed_multisend():
-
-    broker = createBroker(2)
-    mFed1, fedinfo1 = createMessageFederate(1, "A Federate")
-    mFed2, fedinfo2 = createMessageFederate(1, "B Federate")
+    broker = create_broker(2)
+    mFed1, fedinfo1 = create_message_federate(1, "A Federate")
+    mFed2, fedinfo2 = create_message_federate(1, "B Federate")
 
     epid1 = h.helicsFederateRegisterEndpoint(mFed1, "ep1", "")
     epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed2, "ep2", "random")
@@ -253,13 +245,12 @@ def test_messagefederate_send_receive_2fed_multisend():
     # FIXME: Someday this will be implemented.
     # @test_broken h.helicsEndpointGetOption(epid1, h.HELICS_HANDLE_OPTION_IGNORE_INTERRUPTS) is True
 
-    destroyFederate(mFed1, fedinfo1)
-    destroyFederate(mFed2, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(mFed1, fedinfo1)
+    destroy_federate(mFed2, fedinfo2)
+    destroy_broker(broker)
 
 
 def test_messagefederate_message_object_tests(mFed):
-
     epid1 = h.helicsFederateRegisterEndpoint(mFed, "ep1", "")
     epid2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "ep2", "random")
 
@@ -305,18 +296,21 @@ def test_messagefederate_message_object_tests(mFed):
 
 
 def test_messagefederate_timing_tests():
-
-    broker = createBroker(1)
-    vFed1, fedinfo1 = createMessageFederate(1, "fed0")
-    vFed2, fedinfo2 = createMessageFederate(1, "fed1")
+    broker = create_broker(1)
+    vFed1, fedinfo1 = create_message_federate(1, "fed0")
+    vFed2, fedinfo2 = create_message_federate(1, "fed1")
 
     h.helicsFederateSetTimeProperty(vFed1, h.HELICS_PROPERTY_TIME_PERIOD, 0.1)
     h.helicsFederateSetTimeProperty(vFed2, h.HELICS_PROPERTY_TIME_PERIOD, 0.1)
 
     h.helicsFederateSetTimeProperty(vFed2, h.HELICS_PROPERTY_TIME_INPUT_DELAY, 0.1)
 
-    h.helicsFederateSetFlagOption(vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
-    h.helicsFederateSetFlagOption(vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
+    h.helicsFederateSetFlagOption(
+        vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
+    )
+    h.helicsFederateSetFlagOption(
+        vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
+    )
 
     ept1 = h.helicsFederateRegisterGlobalEndpoint(vFed1, "e1", "")
     h.helicsFederateRegisterGlobalEndpoint(vFed2, "e2", "")
@@ -329,16 +323,38 @@ def test_messagefederate_timing_tests():
     # check that the request is only granted at the appropriate period
     assert gtime == 1.0
 
-    assert h.helicsFederateGetIntegerProperty(vFed1, h.HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL) == -1
-    assert h.helicsFederateGetIntegerProperty(vFed2, h.HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL) == -1
+    assert (
+        h.helicsFederateGetIntegerProperty(
+            vFed1, h.HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL
+        )
+        == -1
+    )
+    assert (
+        h.helicsFederateGetIntegerProperty(
+            vFed2, h.HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL
+        )
+        == -1
+    )
 
-    assert h.helicsFederateGetFlagOption(vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS) is True
-    assert h.helicsFederateGetFlagOption(vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS) is True
+    assert (
+        h.helicsFederateGetFlagOption(
+            vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS
+        )
+        is True
+    )
+    assert (
+        h.helicsFederateGetFlagOption(
+            vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS
+        )
+        is True
+    )
 
     h.helicsEndpointSendBytesTo(ept1, "test1".encode(), "e2")
     h.helicsFederateRequestTimeAsync(vFed1, 1.9)
     gtime = h.helicsFederateRequestTimeComplete(vFed2)
-    assert gtime >= 1.1  # the message should show up at the next available time point after the impact window
+    assert (
+        gtime >= 1.1
+    )  # the message should show up at the next available time point after the impact window
     h.helicsFederateRequestTimeAsync(vFed2, 2.0)
     gtime = h.helicsFederateRequestTimeComplete(vFed1)
     assert gtime >= 1.9
@@ -355,6 +371,6 @@ def test_messagefederate_timing_tests():
     h.helicsFederateDisconnect(vFed1)
     h.helicsFederateDisconnect(vFed2)
 
-    destroyFederate(vFed1, fedinfo1)
-    destroyFederate(vFed2, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo1)
+    destroy_federate(vFed2, fedinfo2)
+    destroy_broker(broker)

@@ -1,46 +1,113 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
 import pytest as pt
 import helics as h
 import logging
+
+from .utils import assert_attributes
+
+CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+
+
+DEFAULT_SUB_OPTION_SETTINGS = {
+    h.HelicsHandleOption.CONNECTION_REQUIRED: 0,
+    h.HelicsHandleOption.CONNECTION_OPTIONAL: 0,
+    h.HelicsHandleOption.SINGLE_CONNECTION_ONLY: 0,
+    h.HelicsHandleOption.MULTIPLE_CONNECTIONS_ALLOWED: 1,
+    h.HelicsHandleOption.BUFFER_DATA: 0,
+    h.HelicsHandleOption.RECONNECTABLE: 0,
+    h.HelicsHandleOption.STRICT_TYPE_CHECKING: 0,
+    h.HelicsHandleOption.RECEIVE_ONLY: 0,
+    h.HelicsHandleOption.SOURCE_ONLY: 0,
+    h.HelicsHandleOption.IGNORE_UNIT_MISMATCH: 0,
+    h.HelicsHandleOption.ONLY_TRANSMIT_ON_CHANGE: 0,
+    h.HelicsHandleOption.ONLY_UPDATE_ON_CHANGE: 0,
+    h.HelicsHandleOption.IGNORE_INTERRUPTS: 0,
+    h.HelicsHandleOption.MULTI_INPUT_HANDLING_METHOD: 0,
+    h.HelicsHandleOption.INPUT_PRIORITY_LOCATION: -1,
+    h.HelicsHandleOption.CLEAR_PRIORITY_LIST: 1,
+    h.HelicsHandleOption.CONNECTIONS: 0,
+}
+
+DEFAULT_PUB_OPTION_SETTINGS = {
+    h.HelicsHandleOption.CONNECTION_REQUIRED: 0,
+    h.HelicsHandleOption.CONNECTION_OPTIONAL: 0,
+    h.HelicsHandleOption.SINGLE_CONNECTION_ONLY: 0,
+    h.HelicsHandleOption.MULTIPLE_CONNECTIONS_ALLOWED: 1,
+    h.HelicsHandleOption.BUFFER_DATA: 0,
+    h.HelicsHandleOption.RECONNECTABLE: 0,
+    h.HelicsHandleOption.STRICT_TYPE_CHECKING: 0,
+    h.HelicsHandleOption.RECEIVE_ONLY: 0,
+    h.HelicsHandleOption.SOURCE_ONLY: 0,
+    h.HelicsHandleOption.IGNORE_UNIT_MISMATCH: 0,
+    h.HelicsHandleOption.ONLY_TRANSMIT_ON_CHANGE: 0,
+    h.HelicsHandleOption.ONLY_UPDATE_ON_CHANGE: 0,
+    h.HelicsHandleOption.IGNORE_INTERRUPTS: 0,
+    h.HelicsHandleOption.MULTI_INPUT_HANDLING_METHOD: 0,
+    h.HelicsHandleOption.INPUT_PRIORITY_LOCATION: 0,
+    h.HelicsHandleOption.CLEAR_PRIORITY_LIST: 0,
+    h.HelicsHandleOption.CONNECTIONS: 0,
+}
+
+
+def assert_entries(dict_like, expected: dict):
+    for key, value in expected.items():
+        assert dict_like[key] == value, f"{repr(dict_like)}.{repr(key)} is not {value}"
 
 
 def test_python_api0():
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker0")
     fedinfo = h.helicsCreateFederateInfo()
-    assert "HelicsFederateInfo()" in repr(fedinfo)
+    assert isinstance(fedinfo, h.HelicsFederateInfo)
     fedinfo.core_name = "TestFederate"
     fedinfo.core_type = "zmq"
     fedinfo.core_init = "-f 1 --broker=mainbroker0 --name=core0"
     mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
-    assert (
-        """HelicsCombinationFederate(name = "TestFederate", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_subscriptions = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
-        in repr(mFed)
+    assert_attributes(
+        mFed,
+        {
+            "name": "TestFederate",
+            "state": h.HelicsFederateState.STARTUP,
+            "current_time": -9223372036.854776,
+            "n_publications": 0,
+            "n_subscriptions": 0,
+            "n_endpoints": 0,
+            "n_filters": 0,
+            "n_pending_messages": 0,
+        },
     )
 
     _ = mFed.register_endpoint("ep1")
     _ = mFed.register_global_endpoint("ep2")
 
-    pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
-    assert """HelicsPublication(name = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
+    pub = mFed.register_publication(
+        "publication", h.HELICS_DATA_TYPE_STRING, "custom-units"
+    )
+    assert_attributes(
+        pub,
+        {
+            "name": "TestFederate/publication",
+            "type": "string",
+            "units": "custom-units",
+            "info": "",
+        },
+    )
 
     sub = mFed.register_subscription("TestFederate/publication", "custom-units")
-    assert (
-        """HelicsInput(name = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "TestFederate/publication", info = "")"""
-        in repr(sub)
+    assert_attributes(
+        sub,
+        {
+            "name": "_input_3",
+            "units": "custom-units",
+            "injection_units": "",
+            "publication_type": "",
+            "type": "",
+            "target": "TestFederate/publication",
+            "info": "",
+        },
     )
-    assert (
-        """{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 1, 'BUFFER_DATA' = 0, 'RECONNECTABLE' = 0, 'STRICT_TYPE_CHECKING' = 0, 'RECEIVE_ONLY' = 0, 'SOURCE_ONLY' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = -1, 'CLEAR_PRIORITY_LIST' = 1, 'CONNECTIONS' = 0 }"""
-        in repr(sub.option)
-    )
+    assert_entries(sub.option, DEFAULT_SUB_OPTION_SETTINGS)
     sub.option["CONNECTION_REQUIRED"] = 1
     sub.option[h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED] = 1
     assert sub.option["CONNECTION_REQUIRED"] == 1
@@ -53,42 +120,61 @@ def test_python_api0():
 
     mFed.enter_executing_mode()
 
-    h.helicsCloseLibrary()
-
-    del mFed
-    del broker
-
 
 def test_python_api1():
-
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker1")
     fedinfo = h.helicsCreateFederateInfo()
-    assert "HelicsFederateInfo()" in repr(fedinfo)
+    assert isinstance(fedinfo, h.HelicsFederateInfo)
     fedinfo.core_name = "TestFederate"
     fedinfo.core_type = "zmq"
     fedinfo.core_init = "-f 1 --broker=mainbroker1  --name=core0"
     mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
-    assert (
-        """HelicsCombinationFederate(name = "TestFederate", state = HelicsFederateState.STARTUP, current_time = -9223372036.854776, n_publications = 0, n_subscriptions = 0, n_endpoints = 0, n_filters = 0, n_pending_messages = 0)"""
-        in repr(mFed)
+    assert_attributes(
+        mFed,
+        {
+            "name": "TestFederate",
+            "state": h.HelicsFederateState.STARTUP,
+            "current_time": -9223372036.854776,
+            "n_publications": 0,
+            "n_subscriptions": 0,
+            "n_endpoints": 0,
+            "n_filters": 0,
+            "n_pending_messages": 0,
+        },
     )
 
     _ = mFed.register_endpoint("ep1")
     _ = mFed.register_global_endpoint("ep2")
 
-    pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
-    assert """HelicsPublication(name = "TestFederate/publication", type = "string", units = "custom-units", info = "")""" in repr(pub)
+    pub = mFed.register_publication(
+        "publication", h.HELICS_DATA_TYPE_STRING, "custom-units"
+    )
+    assert_attributes(
+        pub,
+        {
+            "name": "TestFederate/publication",
+            "type": "string",
+            "units": "custom-units",
+            "info": "",
+        },
+    )
 
     sub = mFed.register_subscription("TestFederate/publication", "custom-units")
-    assert (
-        """HelicsInput(name = "_input_3", units = "custom-units", injection_units = "", publication_type = "", type = "", target = "TestFederate/publication", info = "")"""
-        in repr(sub)
+    assert_attributes(
+        sub,
+        {
+            "name": "_input_3",
+            "units": "custom-units",
+            "injection_units": "",
+            "publication_type": "",
+            "type": "",
+            "target": "TestFederate/publication",
+            "info": "",
+        },
     )
-    assert (
-        """{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 1, 'BUFFER_DATA' = 0, 'RECONNECTABLE' = 0, 'STRICT_TYPE_CHECKING' = 0, 'RECEIVE_ONLY' = 0, 'SOURCE_ONLY' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = -1, 'CLEAR_PRIORITY_LIST' = 1, 'CONNECTIONS' = 0 }"""
-        in repr(sub.option)
-    )
+
+    assert_entries(sub.option, DEFAULT_SUB_OPTION_SETTINGS)
     sub.option["CONNECTION_REQUIRED"] = 1
     assert sub.option["CONNECTION_REQUIRED"] == 1
 
@@ -120,12 +206,14 @@ def test_python_api1():
     sub.info = "hello world"
     assert sub.info == "hello world"
 
-    assert (
-        """{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 1, 'BUFFER_DATA' = 0, 'RECONNECTABLE' = 0, 'STRICT_TYPE_CHECKING' = 0, 'RECEIVE_ONLY' = 0, 'SOURCE_ONLY' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = 0, 'CLEAR_PRIORITY_LIST' = 0, 'CONNECTIONS' = 0 }"""
-        in repr(mFed.publications["TestFederate/publication"].option)
+    assert_entries(
+        mFed.publications["TestFederate/publication"].option,
+        DEFAULT_PUB_OPTION_SETTINGS,
     )
     mFed.publications["TestFederate/publication"].option["CONNECTION_REQUIRED"] = 1
-    assert mFed.publications["TestFederate/publication"].option["CONNECTION_REQUIRED"] == 1
+    assert (
+        mFed.publications["TestFederate/publication"].option["CONNECTION_REQUIRED"] == 1
+    )
 
     mFed.enter_executing_mode()
 
@@ -159,19 +247,20 @@ def test_python_api1():
 
     message = mFed.endpoints["ep2"].get_message()
 
-    assert message.message_id == 55
     assert message.is_valid() is True
-    assert message.data == "random-data"
-    assert message.raw_data == b"random-data"
-    assert len(message.raw_data) == 11
-    assert message.original_destination == ""
-    assert message.original_source == "TestFederate/ep1"
-    assert message.source == "TestFederate/ep1"
-    assert message.time == 1.0
 
-    assert (
-        """HelicsMessage(source = "TestFederate/ep1", destination = "ep2", original_source = "TestFederate/ep1", original_destination = "", time = 1.0, id = 55, message = "random-data")"""
-        in repr(message)
+    assert_attributes(
+        message,
+        {
+            "source": "TestFederate/ep1",
+            "destination": "ep2",
+            "original_source": "TestFederate/ep1",
+            "original_destination": "",
+            "time": 1.0,
+            "message_id": 55,
+            "data": "random-data",
+            "raw_data": b"random-data",
+        },
     )
 
     message.append("-random")
@@ -201,10 +290,8 @@ def test_python_api1():
     assert message.time == 2.0
 
     assert message.is_valid() is True
-    assert (
-        """<{ 1 = False, 2 = False, 3 = False, 4 = False, 5 = False, 6 = False, 7 = False, 8 = False, 9 = False, 10 = False, 11 = False, 12 = False, 13 = False, 14 = False, 15 = False }>"""
-        in repr(message.flag)
-    )
+    # TODO(josephmckinsey): This will probably fail
+    assert_entries(message.flag, {i: False for i in range(1, 16)})
     assert message.is_valid() is True
     message.flag[1] = True
     assert message.flag[1] is True
@@ -245,28 +332,41 @@ def test_python_api1():
 
     assert mFed.subscriptions["TestFederate/publication"].boolean is False
     m = mFed.create_message()
-    assert (
-        """HelicsMessage(source = "", destination = "", original_source = "", original_destination = "", time = 0.0, id = 0, message = "")"""
-        in repr(m)
+    assert_attributes(
+        m,
+        {
+            "source": "",
+            "destination": "",
+            "original_source": "",
+            "original_destination": "",
+            "time": 0.0,
+            "data": "",
+            "message_id": 0,
+        },
     )
     mFed.info = "hello-world"
     assert mFed.info == "hello-world"
 
     m = mFed.endpoints["ep2"].create_message()
-    assert (
-        """HelicsMessage(source = "", destination = "", original_source = "", original_destination = "", time = 0.0, id = 0, message = "")"""
-        in repr(m)
+    assert_attributes(
+        m,
+        {
+            "source": "",
+            "destination": "",
+            "original_source": "",
+            "original_destination": "",
+            "time": 0.0,
+            "data": "",
+            "message_id": 0,
+        },
     )
-
     mFed.disconnect()
-
-    del mFed
-    del broker
 
 
 def test_python_api2():
-
-    broker = h.helicsCreateBroker("zmq", "broker", "--federates 1 --loglevel=warning  --name=mainbroker2")
+    broker = h.helicsCreateBroker(
+        "zmq", "broker", "--federates 1 --loglevel=warning  --name=mainbroker2"
+    )
     assert broker.is_connected()
 
     broker.set_global("hello", "world")
@@ -277,7 +377,9 @@ def test_python_api2():
     try:
         assert broker.query("hello", "world") == "#invalid"
     except AssertionError:
-        assert broker.query("hello", "world") == {"error": {"code": 404, "message": "query not valid"}}
+        assert broker.query("hello", "world") == {
+            "error": {"code": 404, "message": "query not valid"}
+        }
 
     fi = h.helicsCreateFederateInfo()
     fi.core_init = "--federates 1 --brokername=mainbroker2 --name=core2"
@@ -285,16 +387,17 @@ def test_python_api2():
 
     fed = h.helicsCreateCombinationFederate("test1", fi)
 
-    assert "HelicsCore" in repr(fed.core)
-    assert 'address = "tcp://127.0.0.1' in repr(fed.core)
+    assert isinstance(fed.core, h.HelicsCore)
+    # assert ignores port intentionally
+    assert "tcp://127.0.0.1" in fed.core.address
 
     assert fed.core.is_connected()
     fed.core.set_ready_to_init()
 
-    assert "n_publications = 0" in repr(fed)
-    assert "n_subscriptions = 0" in repr(fed)
-    assert "n_endpoints = 0" in repr(fed)
-    assert "n_filters = 0" in repr(fed)
+    assert_attributes(
+        fed,
+        {"n_publications": 0, "n_subscriptions": 0, "n_endpoints": 0, "n_filters": 0},
+    )
 
     assert fed.property["DELTA"] == 1e-09
     assert fed.property["PERIOD"] == 0.0
@@ -343,19 +446,6 @@ def test_python_api2():
     assert fed.property[h.HelicsProperty.INT_FILE_LOG_LEVEL.value] == 5
     assert fed.property[h.HelicsProperty.INT_CONSOLE_LOG_LEVEL.value] == 5
 
-    assert "'TIME_DELTA' = 1e-09" in repr(fed.property)
-    assert "'TIME_PERIOD' = 0.0" in repr(fed.property)
-    assert "'TIME_OFFSET' = 0.0" in repr(fed.property)
-    assert "'TIME_RT_LAG' = 0.0" in repr(fed.property)
-    assert "'TIME_RT_LEAD' = 0.0" in repr(fed.property)
-    assert "'TIME_RT_TOLERANCE' = 0.0" in repr(fed.property)
-    assert "'TIME_INPUT_DELAY' = 0.0" in repr(fed.property)
-    assert "'TIME_OUTPUT_DELAY' = 0.0" in repr(fed.property)
-    assert "'INT_MAX_ITERATIONS' = 50" in repr(fed.property)
-    assert "'INT_LOG_LEVEL' = 5" in repr(fed.property)
-    assert "'INT_FILE_LOG_LEVEL' = 5" in repr(fed.property)
-    assert "'INT_CONSOLE_LOG_LEVEL' = 5" in repr(fed.property)
-
     assert fed.flag[h.HELICS_FLAG_OBSERVER] is False
     assert fed.flag[h.HELICS_FLAG_UNINTERRUPTIBLE] is False
     assert fed.flag[h.HELICS_FLAG_INTERRUPTIBLE] is True
@@ -385,19 +475,6 @@ def test_python_api2():
     assert fed.flag[h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS.value] is False
     assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR.value] is False
 
-    assert "'OBSERVER' = False" in repr(fed.flag)
-    assert "'UNINTERRUPTIBLE' = False" in repr(fed.flag)
-    assert "'INTERRUPTIBLE' = True" in repr(fed.flag)
-    assert "'SOURCE_ONLY' = False" in repr(fed.flag)
-    assert "'ONLY_TRANSMIT_ON_CHANGE' = False" in repr(fed.flag)
-    assert "'ONLY_UPDATE_ON_CHANGE' = False" in repr(fed.flag)
-    assert "'WAIT_FOR_CURRENT_TIME_UPDATE' = False" in repr(fed.flag)
-    assert "'RESTRICTIVE_TIME_POLICY' = False" in repr(fed.flag)
-    assert "'REALTIME' = False" in repr(fed.flag)
-    assert "'SLOW_RESPONDING' = False," in repr(fed.flag)
-    assert "'IGNORE_TIME_MISMATCH_WARNINGS' = False," in repr(fed.flag)
-    assert "'TERMINATE_ON_ERROR' = False" in repr(fed.flag)
-
     fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] = True
 
     assert fed.flag[h.HELICS_FLAG_TERMINATE_ON_ERROR] is True
@@ -416,7 +493,9 @@ def test_python_api2():
     try:
         assert fed.core.query("broker", "something") == "#invalid"
     except AssertionError:
-        assert fed.core.query("broker", "something") == {"error": {"code": 400, "message": "unrecognized broker query"}}
+        assert fed.core.query("broker", "something") == {
+            "error": {"code": 400, "message": "unrecognized broker query"}
+        }
 
     fed.add_dependency("hello")
 
@@ -424,33 +503,31 @@ def test_python_api2():
 
     assert fed.core.wait_for_disconnect()
 
-    del fed
-
     broker.disconnect()
     assert broker.wait_for_disconnect()
-
-    del broker
-
-    h.helicsCleanupLibrary()
-    h.helicsCloseLibrary()
 
 
 def test_python_api3():
     core1 = h.helicsCreateCore("inproc", "core3", "--autobroker")
 
-    assert """HelicsCore(identifier = "core3", address = "core3")""" in repr(core1)
+    assert_attributes(core1, {"identifier": "core3", "address": "core3"})
 
     core2 = core1.clone()
 
     assert core1.identifier == "core3"
 
-    source_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core3SourceFilter")
+    source_filter1 = core1.register_filter(
+        h.HELICS_FILTER_TYPE_DELAY, "core3SourceFilter"
+    )
 
     source_filter1.add_source_target("ep1")
 
-    assert (
-        """<{ 'CONNECTION_REQUIRED' = 0, 'CONNECTION_OPTIONAL' = 0, 'SINGLE_CONNECTION_ONLY' = 0, 'MULTIPLE_CONNECTIONS_ALLOWED' = 0, 'BUFFER_DATA' = 0, 'RECONNECTABLE' = 0, 'STRICT_TYPE_CHECKING' = 0, 'RECEIVE_ONLY' = 0, 'SOURCE_ONLY' = 0, 'IGNORE_UNIT_MISMATCH' = 0, 'ONLY_TRANSMIT_ON_CHANGE' = 0, 'ONLY_UPDATE_ON_CHANGE' = 0, 'IGNORE_INTERRUPTS' = 0, 'MULTI_INPUT_HANDLING_METHOD' = 0, 'INPUT_PRIORITY_LOCATION' = 0, 'CLEAR_PRIORITY_LIST' = 0, 'CONNECTIONS' = 0 }>"""
-        in repr(source_filter1.option)
+    assert_entries(
+        source_filter1.option,
+        {
+            **DEFAULT_PUB_OPTION_SETTINGS,
+            h.HelicsHandleOption.MULTIPLE_CONNECTIONS_ALLOWED: 0,
+        },
     )
 
     source_filter1.option["CONNECTION_REQUIRED"] = 1
@@ -465,7 +542,9 @@ def test_python_api3():
 
     source_filter1.set("hello", 1)
 
-    destination_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter")
+    destination_filter1 = core1.register_filter(
+        h.HELICS_FILTER_TYPE_DELAY, "core1DestinationFilter"
+    )
 
     destination_filter1.add_destination_target("ep2")
     cloning_filter1 = core1.register_cloning_filter("ep3")
@@ -479,11 +558,6 @@ def test_python_api3():
 
     core1.disconnect()
     core2.disconnect()
-
-    del core1
-    del core2
-
-    h.helicsCloseLibrary()
 
 
 def test_python_api4():
@@ -512,18 +586,10 @@ def test_python_api5():
         fed.register_interfaces("unknownfile.json")
 
     fed.core.disconnect()
-
     assert fed.core.wait_for_disconnect()
-
-    del fed
 
     broker.disconnect()
     assert broker.wait_for_disconnect()
-
-    del broker
-
-    h.helicsCleanupLibrary()
-    h.helicsCloseLibrary()
 
 
 def test_python_api6():
@@ -537,14 +603,9 @@ def test_python_api6():
 
     fed.core.disconnect()
     assert fed.core.wait_for_disconnect()
-    del fed
 
     broker.disconnect()
     assert broker.wait_for_disconnect()
-    del broker
-
-    h.helicsCleanupLibrary()
-    h.helicsCloseLibrary()
 
 
 @pt.mark.skip(reason="Fails to pass on windows and linux")
@@ -556,7 +617,10 @@ def test_python_api7():
 
     _ = fed.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter")
 
-    assert fed.get_filter_by_name("core1SourceFilter").name == fed.get_filter_by_index(0).name
+    assert (
+        fed.get_filter_by_name("core1SourceFilter").name
+        == fed.get_filter_by_index(0).name
+    )
 
     fed.set_global("hello", "world")
 
@@ -584,7 +648,9 @@ def test_python_api7():
     try:
         assert fed.query("hello", "world") == "#disconnected"
     except AssertionError:
-        assert fed.query("hello", "world") == {"error": {"code": 404, "message": "query not valid"}}
+        assert fed.query("hello", "world") == {
+            "error": {"code": 404, "message": "query not valid"}
+        }
 
     fed.local_error(0, "local")
     fed.global_error(0, "global")
@@ -600,21 +666,17 @@ def test_python_api7():
 
     fed.core.disconnect()
     assert fed.core.wait_for_disconnect()
-    del fed
 
     broker.disconnect()
     assert broker.wait_for_disconnect()
-    del broker
-
-    h.helicsCleanupLibrary()
-    h.helicsCloseLibrary()
 
 
 def test_python_api8():
-
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker8")
 
-    cfed = h.helicsCreateCombinationFederateFromConfig(os.path.join(CURRENT_DIRECTORY, "combinationfederate.json"))
+    cfed = h.helicsCreateCombinationFederateFromConfig(
+        os.path.join(CURRENT_DIRECTORY, "combinationfederate.json")
+    )
 
     assert len(cfed.endpoints) == 2
     assert len(cfed.subscriptions) == 2
@@ -622,20 +684,20 @@ def test_python_api8():
     h.helicsFederateDestroy(cfed)
     h.helicsFederateFree(cfed)
     h.helicsBrokerDestroy(broker)
-    h.helicsCloseLibrary()
 
 
 def test_python_api9():
-
     broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
     fedinfo = h.helicsCreateFederateInfo()
-    assert "HelicsFederateInfo()" in repr(fedinfo)
+    assert isinstance(fedinfo, h.HelicsFederateInfo)
     fedinfo.core_name = "TestFederate"
     fedinfo.core_type = "zmq"
     fedinfo.core_init = "-f 1 --broker=mainbroker"
     mFed = h.helicsCreateCombinationFederate("TestFederate", fedinfo)
 
-    pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_COMPLEX_VECTOR, "custom-units")
+    pub = mFed.register_publication(
+        "publication", h.HELICS_DATA_TYPE_COMPLEX_VECTOR, "custom-units"
+    )
     assert pub.type == "complex_vector"
 
     sub = mFed.register_subscription("TestFederate/publication", "custom-units")
@@ -647,6 +709,3 @@ def test_python_api9():
     print(sub.value)
 
     mFed.disconnect()
-
-    del mFed
-    del broker

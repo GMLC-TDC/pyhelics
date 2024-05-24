@@ -2,26 +2,23 @@
 import os
 import sys
 
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
 import helics as h
-import os
 import pytest as pt
 
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker
+from .utils import (
+    create_broker,
+)
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
-@pt.mark.skipif(sys.platform == "linux", reason = "Fails on CI on Linux")
+@pt.mark.skipif(sys.platform == "linux", reason="Fails on CI on Linux")
 def test_combination_federate():
+    broker = create_broker()
 
-    broker = createBroker()
-
-    cfed = h.helicsCreateCombinationFederateFromConfig(os.path.join(CURRENT_DIRECTORY, "combinationfederate.json"))
+    cfed = h.helicsCreateCombinationFederateFromConfig(
+        os.path.join(CURRENT_DIRECTORY, "combinationfederate.json")
+    )
 
     assert h.helicsFederateIsValid(cfed)
 
@@ -42,4 +39,3 @@ def test_combination_federate():
     h.helicsFederateDestroy(cfed)
     h.helicsFederateFree(cfed)
     h.helicsBrokerDestroy(broker)
-    h.helicsCloseLibrary()
