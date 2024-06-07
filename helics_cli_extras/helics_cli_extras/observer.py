@@ -11,6 +11,8 @@ from datetime import datetime
 import helics as h
 
 from . import database as db
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 hdlr = logging.StreamHandler()
@@ -38,11 +40,11 @@ class HelicsObserverFederate:
         db_file = os.path.abspath(os.path.join(self._folder, "helics-cli.sqlite.db"))
         if os.path.exists(db_file):
             os.remove(db_file)
-        self.engine = db.create_engine(
+        self.engine = create_engine(
             "sqlite+pysqlite:///{}".format(db_file), echo=False, future=True
         )
         db.Base.metadata.create_all(self.engine)
-        self.session = db.Session(bind=self.engine)
+        self.session = Session(bind=self.engine)
         self.session.add(db.MetaData(name="helics_version", value=h.helicsGetVersion()))
         self.session.add(db.MetaData(name="created", value=datetime.now().isoformat()))
         self.session.add(db.SystemInfo(data=h.helicsGetSystemInfo()))
