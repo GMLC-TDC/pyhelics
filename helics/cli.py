@@ -3,6 +3,7 @@
 HELICS command line interface
 """
 
+from dataclasses import dataclass
 import json
 import os
 import io
@@ -158,9 +159,6 @@ def profile_plot(path, save, invert):
     from . import profile as p
 
     p.plot(p.profile(path, invert), save=save, kind="realtime")
-
-
-from dataclasses import dataclass
 
 
 @dataclass
