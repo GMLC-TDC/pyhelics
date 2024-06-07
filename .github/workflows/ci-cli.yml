@@ -1,4 +1,4 @@
-name: CI - Web
+name: CI - CLI
 
 on:
   push:
@@ -41,9 +41,16 @@ jobs:
           python setup.py download
           python setup.py build_ext
           pip install -e ".[cli]"
-      - name: Run CLI
+      - name: Run Server
         run: |
           helics server &
+          sleep 5
+          curl http://localhost:5000
+          kill %+
+      - name: Run Observer
+        run: |
+          mkdir db
+          helics observer &
           sleep 5
           curl http://localhost:5000
           kill %+
