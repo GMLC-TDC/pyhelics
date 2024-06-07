@@ -41,6 +41,7 @@ classifiers = [
     "Topic :: Software Development",
 ]
 dependencies = [
+    "helics>=3.0.0",
     "flask>=2",
     "requests",
     "flask-restful",
@@ -64,11 +65,3 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 "*" = ["static/*"]
-
-
-#[tool.setuptools_scm]
-#version_file = "helics_web/_version.py"
-
-#[tool.pytest.ini_options]
-#addopts = ["--import-mode=importlib"]
-#pythonpath = "."

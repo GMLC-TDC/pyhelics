@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-import logging
 import json
 import time
 import os
 import shlex
 import subprocess
 import sys
-from dataclasses import dataclass
 from typing import cast
 
-from flask import Flask, render_template, send_from_directory, request, jsonify
+from flask import Flask, send_from_directory
 from flask_restful import Resource, Api, reqparse, abort
 from flask_cors import CORS
 import sqlalchemy as sa
@@ -18,6 +16,7 @@ import werkzeug
 
 import re
 
+# HELICS must be installed but cannot be a build depencency
 from helics import database as db
 
 current_directory = os.path.realpath(os.path.dirname(__file__))
@@ -627,5 +626,4 @@ def run():
         host = "0.0.0.0"
         cli = sys.modules["flask.cli"]
         cli.show_server_banner = lambda *x: None
-        # os.environ["WERKZEUG_RUN_MAIN"] = "true"
     app.run(host=host, debug=debug)
