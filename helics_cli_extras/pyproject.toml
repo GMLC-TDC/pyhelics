@@ -63,4 +63,4 @@ include = ["helics_cli_extras", "helics_cli_extras.*"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-"*" = ["static/*"]
+"*" = ["static/**"]
