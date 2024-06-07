@@ -14,7 +14,7 @@ import platform
 import urllib.request
 import logging
 from ._version import __version__
-from .status_checker import CheckStatusThread, HELICSRuntimeError
+from .status_checker import CheckStatusThread
 
 import click
 import pathlib
@@ -106,11 +106,11 @@ def server(open: bool):
     Run helics web server to access web interface
     """
     import webbrowser
-    import helics_web
+    import helics_cli_extras
 
     if open:
         webbrowser.open("http://127.0.0.1:5000", 1)
-    helics_web.run()
+    helics_cli_extras.run()
 
 
 @cli.command()
