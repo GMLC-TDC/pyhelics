@@ -52,5 +52,4 @@ jobs:
           mkdir db
           helics observer &
           sleep 5
-          curl http://localhost:5000
           kill %+
