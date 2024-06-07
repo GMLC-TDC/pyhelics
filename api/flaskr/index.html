@@ -1,0 +1,1256 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
+    
+    
+      
+        <title>helics.flaskr - PyHELICS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-helicsflaskr" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PyHELICS" class="md-header__button md-logo" aria-label="PyHELICS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PyHELICS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              helics.flaskr
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/GMLC-TDC/pyhelics/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PyHELICS" class="md-nav__button md-logo" aria-label="PyHELICS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    PyHELICS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/GMLC-TDC/pyhelics/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pythonic-interface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pythonic API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../callbacks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Callbacks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli-interface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI Interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../web-interface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Web Interface (experimental)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-helics2-helics3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migration v2 -> v3
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Classes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#APIException" class="md-nav__link">
+    <span class="md-ellipsis">
+      APIException
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#BrokerServer" class="md-nav__link">
+    <span class="md-ellipsis">
+      BrokerServer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Cores" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cores
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#DataTable" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataTable
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#DatabaseManager" class="md-nav__link">
+    <span class="md-ellipsis">
+      DatabaseManager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Federates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Federates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Graph
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inputs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Profile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Publications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Publications
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerFile" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerFile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerFileEdit" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerFileEdit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerFileFolder" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerFileFolder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerFileName" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerFileName
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerFilePath" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerFilePath
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerKillBroker" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerKillBroker
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerLog" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerLog
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerRun" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerRun
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#RunnerStatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      RunnerStatus
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subscriptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#SystemInfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      SystemInfo
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      index
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      run
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="module-helicsflaskr">Module helics.flaskr<a class="headerlink" href="#module-helicsflaskr" title="Permanent link">&para;</a></h1>
+<h2 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h2>
+<h3 id="APIException">APIException<a class="headerlink" href="#APIException" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">APIException</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+</code></pre></div>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<hr />
+<h4 id="APIException-bases">Base classes<a class="headerlink" href="#APIException-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>builtins.Exception</code></li>
+</ul>
+<hr />
+<h4 id="APIException-attrs">Instance attributes<a class="headerlink" href="#APIException-attrs" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong id="APIException.code">code</strong></p>
+</li>
+<li>
+<p><strong id="APIException.message">message</strong></p>
+</li>
+</ul>
+<hr />
+<h3 id="BrokerServer">BrokerServer<a class="headerlink" href="#BrokerServer" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BrokerServer</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="BrokerServer-bases">Base classes<a class="headerlink" href="#BrokerServer-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="BrokerServer-methods">Methods<a class="headerlink" href="#BrokerServer-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#BrokerServer.get" id="BrokerServer.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#BrokerServer.post" id="BrokerServer.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Cores">Cores<a class="headerlink" href="#Cores" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Cores</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Cores-bases">Base classes<a class="headerlink" href="#Cores-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Cores-methods">Methods<a class="headerlink" href="#Cores-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Cores.get" id="Cores.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="DataTable">DataTable<a class="headerlink" href="#DataTable" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DataTable</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="DataTable-bases">Base classes<a class="headerlink" href="#DataTable-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="DataTable-methods">Methods<a class="headerlink" href="#DataTable-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#DataTable.get" id="DataTable.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Database">Database<a class="headerlink" href="#Database" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Database</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Database-bases">Base classes<a class="headerlink" href="#Database-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Database-methods">Methods<a class="headerlink" href="#Database-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Database.get" id="Database.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#Database.post" id="Database.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="DatabaseManager">DatabaseManager<a class="headerlink" href="#DatabaseManager" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DatabaseManager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_to_helics_db</span><span class="o">=</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
+</code></pre></div>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<hr />
+<h4 id="DatabaseManager-methods">Methods<a class="headerlink" href="#DatabaseManager-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#DatabaseManager.instaniate" id="DatabaseManager.instaniate"><strong>instaniate</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">instaniate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Federates">Federates<a class="headerlink" href="#Federates" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Federates</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Federates-bases">Base classes<a class="headerlink" href="#Federates-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Federates-methods">Methods<a class="headerlink" href="#Federates-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Federates.get" id="Federates.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Graph">Graph<a class="headerlink" href="#Graph" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Graph</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Graph-bases">Base classes<a class="headerlink" href="#Graph-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Graph-methods">Methods<a class="headerlink" href="#Graph-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Graph.get" id="Graph.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Health">Health<a class="headerlink" href="#Health" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Health</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Health-bases">Base classes<a class="headerlink" href="#Health-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Health-methods">Methods<a class="headerlink" href="#Health-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Health.get" id="Health.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Inputs">Inputs<a class="headerlink" href="#Inputs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Inputs</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Inputs-bases">Base classes<a class="headerlink" href="#Inputs-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Inputs-methods">Methods<a class="headerlink" href="#Inputs-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Inputs.get" id="Inputs.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Profile">Profile<a class="headerlink" href="#Profile" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Profile</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Profile-bases">Base classes<a class="headerlink" href="#Profile-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Profile-methods">Methods<a class="headerlink" href="#Profile-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Profile.get" id="Profile.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#Profile.post" id="Profile.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Publications">Publications<a class="headerlink" href="#Publications" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Publications</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Publications-bases">Base classes<a class="headerlink" href="#Publications-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Publications-methods">Methods<a class="headerlink" href="#Publications-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Publications.get" id="Publications.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerFile">RunnerFile<a class="headerlink" href="#RunnerFile" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerFile</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerFile-bases">Base classes<a class="headerlink" href="#RunnerFile-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerFile-methods">Methods<a class="headerlink" href="#RunnerFile-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerFile.get" id="RunnerFile.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#RunnerFile.post" id="RunnerFile.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerFileEdit">RunnerFileEdit<a class="headerlink" href="#RunnerFileEdit" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerFileEdit</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerFileEdit-bases">Base classes<a class="headerlink" href="#RunnerFileEdit-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerFileEdit-methods">Methods<a class="headerlink" href="#RunnerFileEdit-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerFileEdit.delete" id="RunnerFileEdit.delete"><strong>delete</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#RunnerFileEdit.post" id="RunnerFileEdit.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#RunnerFileEdit.put" id="RunnerFileEdit.put"><strong>put</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerFileFolder">RunnerFileFolder<a class="headerlink" href="#RunnerFileFolder" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerFileFolder</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerFileFolder-bases">Base classes<a class="headerlink" href="#RunnerFileFolder-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerFileFolder-methods">Methods<a class="headerlink" href="#RunnerFileFolder-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerFileFolder.post" id="RunnerFileFolder.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerFileName">RunnerFileName<a class="headerlink" href="#RunnerFileName" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerFileName</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerFileName-bases">Base classes<a class="headerlink" href="#RunnerFileName-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerFileName-methods">Methods<a class="headerlink" href="#RunnerFileName-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerFileName.post" id="RunnerFileName.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerFilePath">RunnerFilePath<a class="headerlink" href="#RunnerFilePath" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerFilePath</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerFilePath-bases">Base classes<a class="headerlink" href="#RunnerFilePath-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerFilePath-methods">Methods<a class="headerlink" href="#RunnerFilePath-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerFilePath.post" id="RunnerFilePath.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerKillBroker">RunnerKillBroker<a class="headerlink" href="#RunnerKillBroker" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerKillBroker</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerKillBroker-bases">Base classes<a class="headerlink" href="#RunnerKillBroker-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerKillBroker-methods">Methods<a class="headerlink" href="#RunnerKillBroker-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerKillBroker.post" id="RunnerKillBroker.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerLog">RunnerLog<a class="headerlink" href="#RunnerLog" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerLog</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerLog-bases">Base classes<a class="headerlink" href="#RunnerLog-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerLog-methods">Methods<a class="headerlink" href="#RunnerLog-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerLog.get" id="RunnerLog.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerRun">RunnerRun<a class="headerlink" href="#RunnerRun" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerRun</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerRun-bases">Base classes<a class="headerlink" href="#RunnerRun-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerRun-methods">Methods<a class="headerlink" href="#RunnerRun-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerRun.delete" id="RunnerRun.delete"><strong>delete</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#RunnerRun.get" id="RunnerRun.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#RunnerRun.post" id="RunnerRun.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="RunnerStatus">RunnerStatus<a class="headerlink" href="#RunnerStatus" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunnerStatus</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="RunnerStatus-bases">Base classes<a class="headerlink" href="#RunnerStatus-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="RunnerStatus-methods">Methods<a class="headerlink" href="#RunnerStatus-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#RunnerStatus.get" id="RunnerStatus.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a href="#RunnerStatus.post" id="RunnerStatus.post"><strong>post</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="Subscriptions">Subscriptions<a class="headerlink" href="#Subscriptions" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Subscriptions</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="Subscriptions-bases">Base classes<a class="headerlink" href="#Subscriptions-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="Subscriptions-methods">Methods<a class="headerlink" href="#Subscriptions-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#Subscriptions.get" id="Subscriptions.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="SystemInfo">SystemInfo<a class="headerlink" href="#SystemInfo" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SystemInfo</span><span class="p">()</span>
+</code></pre></div>
+<p>Represents an abstract RESTful resource. Concrete resources should
+extend from this class and expose methods for each supported HTTP
+method. If a resource is invoked with an unsupported HTTP method,
+the API will return a response with status 405 Method Not Allowed.
+Otherwise the appropriate method is called and passed all arguments
+from the url rule used when adding the resource to an Api instance. See
+:meth:<code>~flask_restful.Api.add_resource</code> for details.</p>
+<hr />
+<h4 id="SystemInfo-bases">Base classes<a class="headerlink" href="#SystemInfo-bases" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>flask_restful.Resource</code></li>
+</ul>
+<hr />
+<h4 id="SystemInfo-methods">Methods<a class="headerlink" href="#SystemInfo-methods" title="Permanent link">&para;</a></h4>
+<p><a href="#SystemInfo.get" id="SystemInfo.get"><strong>get</strong></a></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
+<h3 id="index">index<a class="headerlink" href="#index" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="run">run<a class="headerlink" href="#run" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">()</span>
+</code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      
+    
+  </body>
+</html>
