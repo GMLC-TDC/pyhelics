@@ -125,7 +125,7 @@ def observer(db_folder: pathlib.Path):
     """
     Run helics observer and write data to sqlite file
     """
-    from .observer import HelicsObserverFederate
+    from helics_cli_extras import HelicsObserverFederate
 
     o = HelicsObserverFederate(folder=db_folder)
     o.run()
