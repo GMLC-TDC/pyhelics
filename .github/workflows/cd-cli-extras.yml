@@ -27,6 +27,9 @@ jobs:
       - name: Build cli_extras wheel
         run: |
           cd helics_cli_extras
+          npm install
+          npm run build
+          cp -r build helics_cli_extras/static
           python -m build
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -38,7 +41,7 @@ jobs:
     needs: [build-wheels]
     runs-on: ubuntu-latest
     environment:
-      name: pypi
+      name: pypi-cli-extras
       url: https://pypi.org/p/helics-cli-extras
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
