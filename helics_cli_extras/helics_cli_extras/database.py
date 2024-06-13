@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, Integer, Float, String, JSON, Sequence, Table, Boolean, create_engine
+from sqlalchemy import (
+    Column,
+    Integer,
+    Float,
+    String,
+    JSON,
+    Sequence,
+    Boolean,
+)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
