@@ -50,7 +50,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "hhttps://github.com/GMLC-TDC/pyhelics"
+Homepage = "https://github.com/GMLC-TDC/pyhelics"
 Discussions = "https://github.com/GMLC-TDC/HELICS/discussions"
 Documentation = "https://python.helics.org/"
 "Issue Tracker" = "https://github.com/GMLC-TDC/pyhelics/issues"
