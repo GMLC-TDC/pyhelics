@@ -73,11 +73,6 @@ if(SKBUILD_STATE STREQUAL "wheel")
     message(WARNING "Building HELICS from source (some features including ZeroMQ Core, IPC Core, and web server won't be available)")
 endif()
 
-# Only fetch source code files if it is building an sdist; this should make builds from a source distribution work without internet connections
-if(NOT SKBUILD_STATE STREQUAL "sdist")
-    set(FETCHCONTENT_SOURCE_DIR_helics ${CMAKE_CURRENT_SOURCE_DIR}/helics-src)
-endif()
-
 set(CMAKE_CXX_STANDARD 17)
 set(HELICS_DISABLE_GIT_OPERATIONS ON)
 set(HELICS_ZMQ_SUBPROJECT ON)
