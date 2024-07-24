@@ -1,5 +1,6 @@
 __helics-server
 helics/static
+helics-src
 helics/install
 docs/api
 _source
