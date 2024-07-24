@@ -2,6 +2,7 @@ __helics-server
 helics/static
 helics-src
 helics/install
+helics/_version.py
 docs/api
 _source
 *.db

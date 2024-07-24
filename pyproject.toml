@@ -67,7 +67,7 @@ test-command = ["helics --version"]
 minimum-version = "0.8"
 cmake.version = ">=3.15"
 #build-dir = "build/{wheel_tag}"  # this can be used to speed up builds while testing
-sdist.include = ["helics", "helics-src"]
+sdist.include = ["helics-src", "helics/_version.py"]
 sdist.exclude = ["build", "dist", "client", ".github", "helics_cli_extras"]
 #sdist.include = ["helics/_version.py"]
 wheel.install-dir = "helics/install"
