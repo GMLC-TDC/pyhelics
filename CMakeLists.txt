@@ -81,6 +81,13 @@ set(HELICS_ENABLE_ZMQ_CORE ON) # TODO: vendor libzmq similar to other 3rd party 
 set(HELICS_DISABLE_BOOST OFF) # TODO: headers are just needed to compile, maybe tell users to have it installed as prereq for building from source?
 set(HELICS_BUILD_APP_LIBRARY ON)
 set(HELICS_BUILD_APP_EXECUTABLES ON)
+
+if (NOT SKBUILD_STATE STREQUAL "sdist" AND
+    EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/helics-src/CMakeLists.txt")
+    message(STATUS "Using existing HELICS source directory")
+    set(FETCHCONTENT_SOURCE_DIR_helics "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
+    set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+endif()
 FetchContent_Declare(
     helics
     URL https://github.com/GMLC-TDC/HELICS/releases/download/v${SKBUILD_PROJECT_VERSION}/Helics-v${SKBUILD_PROJECT_VERSION}-source.tar.gz
