@@ -25,7 +25,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install -U pip install wheel setuptools cffi
+          python -m pip install -U pip wheel setuptools cffi
       - name: Build NPM
         run: |
           cd helics_cli_extras/client

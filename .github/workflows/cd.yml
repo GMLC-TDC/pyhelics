@@ -38,7 +38,7 @@ jobs:
 
       - name: Install python3 dependencies
         run: |
-          python -m pip install -U pip install wheel setuptools cffi
+          python -m pip install -U pip wheel setuptools cffi
 
       - name: Download helics library
         run: python setup.py download --plat-name=${{ matrix.target }}

@@ -24,7 +24,7 @@ jobs:
 
       - name: Install python3 dependencies
         run: |
-          python -m pip install -U pip install wheel setuptools cffi build
+          python -m pip install -U pip wheel setuptools cffi build
       - name: Build cli_extras wheel
         run: |
           cd helics_cli_extras/client
