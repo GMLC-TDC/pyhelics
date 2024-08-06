@@ -36,7 +36,7 @@ jobs:
             use_qemu: false
           - os: ubuntu-20.04
             arch: "aarch64"
-            build: "manylinux_arm"
+            build: "manylinux_"
             artifact_suffix: "manylinux_aarch64"
             use_qemu: true
           - os: windows-2019
@@ -81,6 +81,11 @@ jobs:
       with:
         fetch-depth: 0  # for setuptools_scm to find tags
 
+    - name: Install boost
+      uses: MarkusJx/install-boost@v2.4.5
+      id: install-boost
+      with:
+        boost_version: 1.85.0
     - name: Build sdist
       run: pipx run build --sdist
 
