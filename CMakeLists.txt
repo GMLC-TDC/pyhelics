@@ -7,7 +7,7 @@ include(FetchContent)
 
 # Note: Linux requires a hint for whether this wheel should be for manylinux (glibc) or musllinux
 # -- The CIBW_ARTIFACT_TYPE environment variable is only expected to be set during official release builds using cibuildwheel on GHA CI systems
-if(LINUX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND "$ENV{CIBW_ARTIFACT_TYPE}" STREQUAL "manylinux_x86_64")
+if(LINUX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
     set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${SKBUILD_PROJECT_VERSION}/Helics-${SKBUILD_PROJECT_VERSION}-Linux-x86_64.tar.gz)
 elseif(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${SKBUILD_PROJECT_VERSION}/Helics-${SKBUILD_PROJECT_VERSION}-macOS-universal2.zip)
