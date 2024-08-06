@@ -88,8 +88,8 @@ jobs:
     
     - name: Install boost
       run:
-        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2'
-        mkdir /boost
+        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
+        mkdir /boost &&
         (cd boost; tar xf boost_1_76_0.tar.bz2)
     - name: Build sdist
       run: BOOST_ROOT=/boost pipx run build --sdist
