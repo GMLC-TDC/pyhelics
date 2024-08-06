@@ -18,6 +18,8 @@ jobs:
         python-version: ["3.9"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ensure history is present for automatic versioning
       - uses: actions/setup-node@v4
       - name: Set up Python
         uses: actions/setup-python@v5
