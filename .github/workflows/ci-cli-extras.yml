@@ -38,9 +38,7 @@ jobs:
           pip install .
       - name: Download helics library and run pip install
         run: |
-          python setup.py download
-          python setup.py build_ext
-          pip install -e ".[cli]"
+          DOWNLOAD_BINARIES=1 pip install ".[cli]"
       - name: Run Server
         run: |
           helics server &
