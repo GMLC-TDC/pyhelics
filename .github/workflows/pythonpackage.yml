@@ -70,9 +70,11 @@ jobs:
         CIBW_BUILD_VERBOSITY: 3
         CIBW_ENVIRONMENT: "CIBW_ARTIFACT_TYPE=${{ matrix.artifact_suffix }}"
         CIBW_BEFORE_ALL_LINUX: >
-            yum install -y wget &&
+            yum install -y wget && mkdir /boost &&
+            pushd /boost &&
             wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' && 
-            (cd boost; tar xf boost_1_76_0.tar.bz2)
+            tar xf boost_1_76_0.tar.bz2 &&
+            popd
         CIBW_ENVIRONMENT_LINUX: BOOST_ROOT=/boost
     - uses: actions/upload-artifact@v4
       with:
@@ -88,9 +90,11 @@ jobs:
     
     - name: Install boost
       run:
-        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
         mkdir boost &&
-        (cd boost; tar xf boost_1_76_0.tar.bz2)
+        pushd boost &&
+        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
+        tar xf boost_1_76_0.tar.bz2 &&
+        popd
     - name: Build sdist
       run: BOOST_ROOT="$(pwd)/boost" pipx run build --sdist
     - name: Upload artifacts
