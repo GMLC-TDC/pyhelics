@@ -19,7 +19,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip wheel setuptools
-          DOWNLOAD_BINARIES=1 pip install ".[cli,docs]"
+          pip install ".[cli,docs]"
+        env:
+          DOWNLOAD_BINARIES: 1
       - name: Copy README.md
         run: |
           cp README.md docs/index.md

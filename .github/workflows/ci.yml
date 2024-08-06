@@ -30,13 +30,15 @@ jobs:
           python -m pip install -U pip wheel setuptools cffi
       - name: Download helics library and run pip install
         run: |
-          DOWNLOAD_BINARIES=1 pip install ".[tests]"
+          pip install ".[tests]"
+        env:
+          DOWNLOAD_BINARIES: 1
       - name: Install pytest dependencies
         run: |
           pip install pytest pytest-ordering pytest-cov pytest-runner
       - name: Generate coverage report
         run: |
-          pytest -vvv --cov=./ --cov-report=xml:unit.coverage.xml
+          pytest --import-mode importlib -vvv --cov=./ --cov-report=xml:unit.coverage.xml
       - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
