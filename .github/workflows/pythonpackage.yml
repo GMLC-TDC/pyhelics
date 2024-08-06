@@ -69,6 +69,11 @@ jobs:
         CIBW_BUILD: "cp39-${{ matrix.build }}*"
         CIBW_BUILD_VERBOSITY: 3
         CIBW_ENVIRONMENT: "CIBW_ARTIFACT_TYPE=${{ matrix.artifact_suffix }}"
+        CIBW_BEFORE_ALL_LINUX: >
+            yum install -y wget &&
+            wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' && 
+            (cd boost; tar xf boost_1_76_0.tar.bz2)
+        CIBW_ENVIRONMENT_LINUX: BOOST_ROOT=/boost
     - uses: actions/upload-artifact@v4
       with:
         name: pyhelics-python-dist-${{matrix.artifact_suffix}}
@@ -80,15 +85,14 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0  # for setuptools_scm to find tags
-
+    
     - name: Install boost
-      uses: MarkusJx/install-boost@v2.4.5
-      id: install-boost
-      with:
-        boost_version: 1.85.0
+      run:
+        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2'
+        mkdir /boost
+        (cd boost; tar xf boost_1_76_0.tar.bz2)
     - name: Build sdist
-      run: pipx run build --sdist
-
+      run: BOOST_ROOT=/boost pipx run build --sdist
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -96,7 +100,7 @@ jobs:
         path: dist/*.tar.gz
 
 
-  check_helics_apps-dist:
+  check_helics-dist:
     name: Check helics_apps Python packages
     needs: [build-helics, build-helics-sdist]
     runs-on: ubuntu-20.04
@@ -107,7 +111,7 @@ jobs:
           merge-multiple: true
       - run: pipx run twine check --strict dist/*
 
-  publish-helics_apps:
+  publish-helics:
     needs: [build-helics, build-helics-sdist, check_helics_apps-dist]
     runs-on: ubuntu-latest
     if: github.event.action == 'published' || endsWith(github.ref, 'main')
