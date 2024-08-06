@@ -112,7 +112,7 @@ jobs:
       - run: pipx run twine check --strict dist/*
 
   publish-helics:
-    needs: [build-helics, build-helics-sdist, check_helics_apps-dist]
+    needs: [build-helics, build-helics-sdist, check_helics-dist]
     runs-on: ubuntu-latest
     if: github.event.action == 'published' || endsWith(github.ref, 'main')
     environment:
