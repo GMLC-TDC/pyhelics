@@ -10,6 +10,8 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ensure history is present for automatic versioning
       - name: Setup Python
         uses: actions/setup-python@v5
         with:

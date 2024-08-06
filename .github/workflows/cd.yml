@@ -29,8 +29,9 @@ jobs:
             python3-version: "3.8"
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ensure history is present for automatic versioning
       - uses: actions/setup-node@v4
-
       - name: Set up Python3
         uses: actions/setup-python@v5
         with:
