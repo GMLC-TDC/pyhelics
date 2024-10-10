@@ -106,7 +106,13 @@ def server(open: bool):
     Run helics web server to access web interface
     """
     import webbrowser
-    import helics_cli_extras
+
+    try:
+        import helics_cli_extras
+    except ImportError:
+        error(
+            'helics-cli\'s web interface is not installed. You may want to run `pip install "helics[cli]"`.'
+        )
 
     if open:
         webbrowser.open("http://127.0.0.1:5000", 1)
@@ -125,7 +131,12 @@ def observer(db_folder: pathlib.Path):
     """
     Run helics observer and write data to sqlite file
     """
-    from helics_cli_extras import HelicsObserverFederate
+    try:
+        from helics_cli_extras import HelicsObserverFederate
+    except ImportError:
+        error(
+            'helics-cli\'s observer functionality is not installed. You may want to run `pip install "helics[cli]"`.'
+        )
 
     o = HelicsObserverFederate(folder=db_folder)
     o.run()
