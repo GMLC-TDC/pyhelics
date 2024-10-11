@@ -64,117 +64,19 @@ def update_package_data(distribution):
     build_py.finalize_options()
 
 
-def js_prerelease(command, strict=False):
-    """decorator for building minified js/css prior to another command"""
-
-    class DecoratedCommand(command):
-        def run(self):
-            jsdeps = self.distribution.get_command_obj("jsdeps")
-            if not IS_REPO and all(os.path.exists(t) for t in jsdeps.targets):
-                # sdist, nothing to do
-                command.run(self)
-                return
-
-            try:
-                self.distribution.run_command("jsdeps")
-            except Exception as e:
-                missing = [t for t in jsdeps.targets if not os.path.exists(t)]
-                if strict or missing:
-                    log.warn("rebuilding js and css failed")
-                    if missing:
-                        log.error("missing files: %s" % missing)
-                    raise e
-                else:
-                    log.warn("rebuilding js and css failed (not a problem)")
-                    log.warn(str(e))
-            command.run(self)
-            update_package_data(self.distribution)
-
-    return DecoratedCommand
-
-
-class NPM(Command):
-    description = "install package.json dependencies using npm"
-
-    user_options = []
-
-    node_modules = os.path.join(NODE_ROOT, "node_modules")
-
-    targets = ["index.html"]
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def get_npm_name(self):
-        npm_name = "npm"
-        if platform.system() == "Windows":
-            npm_name = "npm.cmd"
-        return npm_name
-
-    def has_npm(self):
-        npm_name = self.get_npm_name()
-        try:
-            subprocess.check_call([npm_name, "--version"])
-            return True
-        except:
-            return False
-
-    def should_run_npm_install(self):
-        node_modules_exists = os.path.exists(self.node_modules)
-        return self.has_npm() and not node_modules_exists
-
-    def run(self):
-        has_npm = self.has_npm()
-        if not has_npm:
-            log.error("`npm` unavailable, skipping npm build.  If you're running this command using " "sudo, make sure `npm` is available to sudo")
-            return
-
-        env = os.environ.copy()
-        env["PATH"] = NPM_PATH
-
-        npm_name = self.get_npm_name()
-
-        if self.should_run_npm_install():
-            log.info("Installing build dependencies with npm.  " "This may take a while...")
-            subprocess.check_call(
-                [npm_name, "install"],
-                cwd=NODE_ROOT,
-                stdout=sys.stdout,
-                stderr=sys.stderr,
-            )
-            os.utime(self.node_modules, None)
-
-        subprocess.check_call(
-            [npm_name, "run", "build"],
-            cwd=NODE_ROOT,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-        )
-
-        copy_tree(os.path.join(NODE_ROOT, "build"), os.path.join(STATIC_DIR))
-
-        for t in self.targets:
-            if not os.path.exists(os.path.join(STATIC_DIR, t)):
-                msg = "Missing file: %s" % t
-                if not has_npm:
-                    msg += "\nnpm is required to build a development version "
-                    "of a widget extension"
-                raise ValueError(msg)
-
-        # update package data in case this created new files
-        update_package_data(self.distribution)
-
-
 def read(*names, **kwargs):
-    with io.open(join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")) as fh:
+    with io.open(
+        join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")
+    ) as fh:
         return fh.read()
 
 
-PYHELICS_VERSION = read(os.path.join(os.path.dirname(__file__), "helics", "_version.py"), encoding="utf-8")
-PYHELICS_VERSION = PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
+PYHELICS_VERSION = read(
+    os.path.join(os.path.dirname(__file__), "helics", "_version.py"), encoding="utf-8"
+)
+PYHELICS_VERSION = (
+    PYHELICS_VERSION.splitlines()[1].split()[2].strip('"').strip("'").lstrip("v")
+)
 
 HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
 # HELICS_VERSION = "{}-beta".format(HELICS_VERSION)
@@ -182,18 +84,22 @@ HELICS_VERSION = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", PYHELICS_VERSION)[0]
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 HELICS_SOURCE = os.path.join(CURRENT_DIRECTORY, "./_source")
-PYHELICS_INSTALL = os.environ.get("PYHELICS_INSTALL", os.path.join(CURRENT_DIRECTORY, "./helics/install"))
+PYHELICS_INSTALL = os.environ.get(
+    "PYHELICS_INSTALL", os.path.join(CURRENT_DIRECTORY, "./helics/install")
+)
 
-DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(version=HELICS_VERSION)
+DOWNLOAD_URL = "https://github.com/GMLC-TDC/HELICS/releases/download/v{version}/Helics-v{version}-source.tar.gz".format(
+    version=HELICS_VERSION
+)
 
 
 def create_default_url(helics_version, plat_name=""):
     if "macos" in plat_name.lower():
-        if helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1:  # >= 3.1.x
-            default_url = (
-                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
-                    helics_version=helics_version
-                )
+        if (
+            helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1
+        ):  # >= 3.1.x
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
+                helics_version=helics_version
             )
         else:
             default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-x86_64.zip".format(
@@ -214,11 +120,11 @@ def create_default_url(helics_version, plat_name=""):
             helics_version=helics_version
         )
     elif platform.system() == "Darwin":
-        if helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1:  # >= 3.1.x
-            default_url = (
-                "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
-                    helics_version=helics_version
-                )
+        if (
+            helics_version.startswith("3") and int(helics_version.split(".")[1]) >= 1
+        ):  # >= 3.1.x
+            default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-universal2.zip".format(
+                helics_version=helics_version
             )
         else:
             default_url = "https://github.com/GMLC-TDC/HELICS/releases/download/v{helics_version}/Helics-{helics_version}-macOS-x86_64.zip".format(
@@ -347,7 +253,6 @@ def unzip(zip_file_path, output_dir, permission=None):
     """
     extracted_path = None
     with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
-
         # For each item in the zip file, extract the file and set permissions if available
         for file_info in zip_ref.infolist():
             extracted_path = _extract(file_info, output_dir, zip_ref)
@@ -389,10 +294,14 @@ class HELICSDownloadCommand(Command):
                 unzip("./tmp.zip", self.pyhelics_install)
                 os.remove("./tmp.zip")
 
-                if len(os.listdir(self.pyhelics_install)) == 1 and os.listdir(self.pyhelics_install)[0].startswith("Helics-"):
+                if len(os.listdir(self.pyhelics_install)) == 1 and os.listdir(
+                    self.pyhelics_install
+                )[0].startswith("Helics-"):
                     tmp = os.listdir(self.pyhelics_install)[0]
                     for folder in os.listdir(os.path.join(self.pyhelics_install, tmp)):
-                        p = Path(os.path.join(self.pyhelics_install, tmp, folder)).absolute()
+                        p = Path(
+                            os.path.join(self.pyhelics_install, tmp, folder)
+                        ).absolute()
                         parent_dir = p.parents[1]
                         p.rename(parent_dir / p.name)
             else:
@@ -424,9 +333,13 @@ class HELICSDownloadCommand(Command):
             IGNOREBLOCK = False
             print("Writing to {}".format(os.path.abspath(self.pyhelics_install)))
             for file in files:
-                if not os.path.isfile(os.path.join(self.pyhelics_install, "include", "helics", file)):
+                if not os.path.isfile(
+                    os.path.join(self.pyhelics_install, "include", "helics", file)
+                ):
                     continue
-                with open(os.path.join(self.pyhelics_install, "include", "helics", file)) as f:
+                with open(
+                    os.path.join(self.pyhelics_install, "include", "helics", file)
+                ) as f:
                     lines = []
                     for line in f:
                         if line.startswith("#ifdef __cplusplus"):
@@ -443,7 +356,9 @@ class HELICSDownloadCommand(Command):
                     data = "\n".join(lines)
                     data = data.replace("HELICS_EXPORT", "")
                     data = data.replace("HELICS_DEPRECATED_EXPORT", "")
-                with open(os.path.join(self.pyhelics_install, "include", "helics", file), "w") as f:
+                with open(
+                    os.path.join(self.pyhelics_install, "include", "helics", file), "w"
+                ) as f:
                     f.write(data)
 
 
@@ -457,14 +372,19 @@ class HELICSCMakeBuild(build_ext):
     def run(self):
         try:
             out = subprocess.check_output(["cmake", "--version"])
-            cmake_version = re.search(r"version\s*([\d.]+)", out.decode().lower()).group(1)
+            cmake_version = re.search(
+                r"version\s*([\d.]+)", out.decode().lower()
+            ).group(1)
             cmake_version = [int(i) for i in cmake_version.split(".")]
             if cmake_version < [3, 5, 1]:
                 raise RuntimeError("CMake >= 3.5.1 is required to build helics")
 
         except OSError:
             if not os.path.exists(PYHELICS_INSTALL):
-                raise RuntimeError("CMake must be installed to build the following extensions: " + ", ".join(e.name for e in self.extensions))
+                raise RuntimeError(
+                    "CMake must be installed to build the following extensions: "
+                    + ", ".join(e.name for e in self.extensions)
+                )
 
         for ext in self.extensions:
             self.build_extension(ext)
@@ -501,7 +421,9 @@ class HELICSCMakeBuild(build_ext):
         build_args = ["--config", cfg]
 
         if platform.system() == "Windows":
-            cmake_args += ["-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir)]
+            cmake_args += [
+                "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir)
+            ]
             if sys.maxsize > 2**32:
                 cmake_args += ["-A", "x64"]
                 build_args += ["--", "/m"]
@@ -512,7 +434,9 @@ class HELICSCMakeBuild(build_ext):
         env = os.environ.copy()
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
-        subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
+        subprocess.check_call(
+            ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env
+        )
         cmd = " ".join(["cmake", "--build", ".", "--target", "install"] + build_args)
         print(cmd)
         subprocess.check_call(shlex.split(cmd), cwd=self.build_temp)
@@ -567,13 +491,12 @@ class HelicsBdistWheel(bdist_wheel):
 
 cmdclass = {
     "download": HELICSDownloadCommand,
-    "build_ext": js_prerelease(HELICSCMakeBuild),
-    "bdist_wheel": js_prerelease(HelicsBdistWheel),
-    "develop": js_prerelease(develop),
-    "build_py": js_prerelease(build_py),
-    "egg_info": js_prerelease(egg_info),
-    "sdist": js_prerelease(sdist, strict=True),
-    "jsdeps": NPM,
+    "build_ext": HELICSCMakeBuild,
+    "bdist_wheel": HelicsBdistWheel,
+    "develop": develop,
+    "build_py": build_py,
+    "egg_info": egg_info,
+    "sdist": sdist,
 }
 
 
@@ -582,7 +505,10 @@ class BinaryDistribution(Distribution):
         return False
 
 
-helics_cli_install_requires = ["flask>=2", "requests", "flask-restful", "flask-cors", "pandas", "SQLAlchemy", "matplotlib"]
+helics_cli_install_requires = [
+    "helics_cli_extras==0.0.1",
+    "matplotlib",
+]
 
 setup(
     name="helics",
