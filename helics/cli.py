@@ -57,17 +57,10 @@ def _get_version():
         pass
 
     try:
-        import flask
+        import helics_cli_extras
     except ImportError:
         echo(
-            'helics-cli\'s web interface is not installed. You may want to run `pip install "helics[cli]"`.'
-        )
-
-    try:
-        import sqlalchemy
-    except ImportError:
-        echo(
-            'helics-cli\'s observer functionality is not installed. You may want to run `pip install "helics[cli]"`.'
+            'helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.'
         )
 
     return """{}
@@ -111,7 +104,7 @@ def server(open: bool):
         import helics_cli_extras
     except ImportError:
         error(
-            'helics-cli\'s web interface is not installed. You may want to run `pip install "helics[cli]"`.'
+            'helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.'
         )
 
     if open:

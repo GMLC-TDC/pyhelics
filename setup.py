@@ -506,10 +506,7 @@ class BinaryDistribution(Distribution):
 
 
 helics_cli_install_requires = [
-    "requests",
     "helics_cli_extras==0.0.1",
-    "pandas",
-    "SQLAlchemy",
     "matplotlib",
 ]
 
