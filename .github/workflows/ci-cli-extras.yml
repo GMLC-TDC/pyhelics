@@ -1,4 +1,4 @@
-name: CI
+name: CI - CLI
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macOS-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: ["3.9"]
     steps:
       - uses: actions/checkout@v4
@@ -29,23 +29,30 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip wheel setuptools cffi
+      - name: Build NPM
+        run: |
+          cd helics_cli_extras/client
+          npm install
+          npm run build
+          cp -r build ../helics_cli_extras/static
+      - name: Build the web interface first
+        run: |
+          cd helics_cli_extras
+          pip install .
       - name: Download helics library and run pip install
         run: |
-          pip install ".[tests]"
+          pip install ".[cli]"
         env:
           DOWNLOAD_BINARIES: 1
-      - name: Install pytest dependencies
+      - name: Run Server
         run: |
-          pip install pytest pytest-ordering pytest-cov pytest-runner
-      - name: Generate coverage report
+          helics server &
+          sleep 5
+          curl http://localhost:5000
+          kill %+
+      - name: Run Observer
         run: |
-          pytest --import-mode importlib -vvv --cov=./ --cov-report=xml:unit.coverage.xml
-      - name: Upload unit test coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./unit.coverage.xml
-          flags: unit
-          env_vars: PYTHON
-          name: codecov-unit
-          fail_ci_if_error: false
+          mkdir db
+          helics observer &
+          sleep 5
+          kill %+
