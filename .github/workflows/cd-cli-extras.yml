@@ -59,7 +59,7 @@ jobs:
           path: helics_cli_extras/dist
 
       - name: Publish package to TestPyPI
-        if: ${{ github.event.inputs.publish_to_pypi == true }}
+        if: github.event.inputs.publish_to_pypi
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
@@ -68,7 +68,7 @@ jobs:
           packages-dir: helics_cli_extras/dist
 
       - name: Publish package to PyPI
-        if: ${{ github.event.inputs.publish_to_pypi == true }}
+        if: github.event.inputs.publish_to_pypi
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: helics_cli_extras/dist
