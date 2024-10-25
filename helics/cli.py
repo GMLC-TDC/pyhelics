@@ -3,6 +3,7 @@
 HELICS command line interface
 """
 
+from dataclasses import dataclass
 import json
 import os
 import io
@@ -13,7 +14,7 @@ import platform
 import urllib.request
 import logging
 from ._version import __version__
-from .status_checker import CheckStatusThread, HELICSRuntimeError
+from .status_checker import CheckStatusThread
 
 import click
 import pathlib
@@ -31,7 +32,9 @@ def _get_version():
     try:
         import helics as h
 
-        helics_version = "Python HELICS version {}\n\nHELICS Library version {}".format(h.__version__, h.helicsGetVersion())
+        helics_version = "Python HELICS version {}\n\nHELICS Library version {}".format(
+            h.__version__, h.helicsGetVersion()
+        )
     except ImportError:
         helics_version = "Python `helics` package not installed. Install using `pip install helics --upgrade`."
     try:
@@ -47,28 +50,25 @@ def _get_version():
         import helics_apps as ha
 
         if not h.helicsGetVersion().startswith(ha.__version__.strip("v")):
-            echo("`helics` and `helics-apps` versions don't match. You may want to run `pip install helics helics-apps --upgrade`.")
+            echo(
+                "`helics` and `helics-apps` versions don't match. You may want to run `pip install helics helics-apps --upgrade`."
+            )
     except ImportError:
         pass
 
     try:
-        import flask
+        import helics_cli_extras
     except ImportError:
-        echo('helics-cli\'s web interface is not installed. You may want to run `pip install "helics[cli]"`.')
-
-    try:
-        import sqlalchemy
-    except ImportError:
-        echo('helics-cli\'s observer functionality is not installed. You may want to run `pip install "helics[cli]"`.')
+        echo(
+            'helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.'
+        )
 
     return """{}
 
 {}
 
 {}
-""".format(
-        __version__, helics_version, helics_apps_version
-    ).strip()
+""".format(__version__, helics_version, helics_apps_version).strip()
 
 
 VERSION = _get_version()
@@ -99,20 +99,37 @@ def server(open: bool):
     Run helics web server to access web interface
     """
     import webbrowser
-    from . import flaskr
+
+    try:
+        import helics_cli_extras
+    except ImportError:
+        error(
+            'helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.'
+        )
 
     if open:
         webbrowser.open("http://127.0.0.1:5000", 1)
-    flaskr.run()
+    helics_cli_extras.run()
 
 
 @cli.command()
-@click.option("--db-folder", prompt="path to database folder", type=click.Path(exists=True, file_okay=False, writable=True, path_type=pathlib.Path))
+@click.option(
+    "--db-folder",
+    prompt="path to database folder",
+    type=click.Path(
+        exists=True, file_okay=False, writable=True, path_type=pathlib.Path
+    ),
+)
 def observer(db_folder: pathlib.Path):
     """
     Run helics observer and write data to sqlite file
     """
-    from .observer import HelicsObserverFederate
+    try:
+        from helics_cli_extras import HelicsObserverFederate
+    except ImportError:
+        error(
+            'helics-cli\'s observer functionality is not installed. You may want to run `pip install "helics[cli]"`.'
+        )
 
     o = HelicsObserverFederate(folder=db_folder)
     o.run()
@@ -131,7 +148,14 @@ def observer(db_folder: pathlib.Path):
     default=True,
     help="Invert plot",
 )
-@click.option("--save", prompt=True, prompt_required=False, type=click.Path(), default=None, help="Path to save the plot")
+@click.option(
+    "--save",
+    prompt=True,
+    prompt_required=False,
+    type=click.Path(),
+    default=None,
+    help="Path to save the plot",
+)
 def profile_plot(path, save, invert):
     """
     Plot profiler output using matplotlib
@@ -139,9 +163,6 @@ def profile_plot(path, save, invert):
     from . import profile as p
 
     p.plot(p.profile(path, invert), save=save, kind="realtime")
-
-
-from dataclasses import dataclass
 
 
 @dataclass
@@ -164,7 +185,9 @@ def fetch(url, data={}, method="POST"):
     r.add_header("Content-Length", str(len(bytes)))
     try:
         with urllib.request.urlopen(r, bytes) as response:
-            return json.loads(response.read().decode(response.info().get_param("charset") or "utf-8"))
+            return json.loads(
+                response.read().decode(response.info().get_param("charset") or "utf-8")
+            )
     except Exception as e:
         logger.exception("Unable to post to helics-cli server: {}".format(e))
 
@@ -179,7 +202,12 @@ def fetch(url, data={}, method="POST"):
 @click.option("--silent", is_flag=True)
 @click.option("--connect-server", is_flag=True)
 @click.option("--no-log-files", is_flag=True, default=False)
-@click.option("--no-kill-on-error", is_flag=True, default=False, help="Do not kill all federates on error")
+@click.option(
+    "--no-kill-on-error",
+    is_flag=True,
+    default=False,
+    help="Do not kill all federates on error",
+)
 def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     """
     Run HELICS federation
@@ -192,7 +220,12 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
         if connect_server:
             with urllib.request.urlopen(r) as response:
                 helics_server_available = (
-                    json.loads(response.read().decode(response.info().get_param("charset") or "utf-8")).get("status", None) == 200
+                    json.loads(
+                        response.read().decode(
+                            response.info().get_param("charset") or "utf-8"
+                        )
+                    ).get("status", None)
+                    == 200
                 )
     except Exception:
         warn("Unable to connect to helics-cli web server")
@@ -205,7 +238,9 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
 
     if not os.path.exists(path_to_config):
         info(
-            "Unable to find file `config.json` in path: {path_to_config}".format(path_to_config=path_to_config),
+            "Unable to find file `config.json` in path: {path_to_config}".format(
+                path_to_config=path_to_config
+            ),
         )
         return None
 
@@ -218,17 +253,28 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     if "broker" in config.keys() and config["broker"] is not False:
         if not silent:
             info(
-                "Adding auto broker (i.e. `helics_broker -f{f}`) to helics-cli subprocesses.".format(f=len(config["federates"])),
+                "Adding auto broker (i.e. `helics_broker -f{f}`) to helics-cli subprocesses.".format(
+                    f=len(config["federates"])
+                ),
                 blink=True,
             )
         config["federates"].append(
-            {"directory": ".", "exec": "helics_broker -f{}".format(len(config["federates"])), "host": "localhost", "name": "broker"}
+            {
+                "directory": ".",
+                "exec": "helics_broker -f{}".format(len(config["federates"])),
+                "host": "localhost",
+                "name": "broker",
+            }
         )
 
     names = [c["name"] for c in config["federates"]]
     if len(set(n for n in names)) != len(config["federates"]):
         error("Repeated names found in runner.json federates.", blink=True)
-        for n, c in [(item, count) for item, count in collections.Counter(names).items() if count > 1]:
+        for n, c in [
+            (item, count)
+            for item, count in collections.Counter(names).items()
+            if count > 1
+        ]:
             info('Found name "{}" {} times'.format(n, c))
         return -1
 
@@ -241,7 +287,9 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     for f in config["federates"]:
         if not silent:
             info(
-                "Running federate {name} as a background process".format(name=f["name"]),
+                "Running federate {name} as a background process".format(
+                    name=f["name"]
+                ),
             )
 
         fname = os.path.abspath(os.path.join(path, "{}.log".format(f["name"])))
@@ -300,8 +348,16 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     finally:
         for p in process_list:
             t.status(p)
-            if p.process.returncode != 0 and p.process.returncode != -9 and p.process.returncode is not None:
-                error("Process {} exited with return code {}".format(p.name, p.process.returncode))
+            if (
+                p.process.returncode != 0
+                and p.process.returncode != -9
+                and p.process.returncode is not None
+            ):
+                error(
+                    "Process {} exited with return code {}".format(
+                        p.name, p.process.returncode
+                    )
+                )
                 if os.path.exists(p.file):
                     with open(p.file) as f:
                         warn("Last 10 lines of {}.log:".format(p.name), blink=False)
@@ -351,7 +407,9 @@ def list_brokers():
 
     else:
         cmd = "ps aux"
-        p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        p = subprocess.Popen(
+            shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+        )
         p.wait()
         out, _ = p.communicate()
         for line in out.decode("utf-8").splitlines():

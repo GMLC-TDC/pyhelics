@@ -7,9 +7,12 @@ import tempfile
 from typing import Dict, List, cast
 from datetime import datetime
 
+# HELICS is a runtime dependency here.
 import helics as h
 
 from . import database as db
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 hdlr = logging.StreamHandler()
@@ -37,9 +40,11 @@ class HelicsObserverFederate:
         db_file = os.path.abspath(os.path.join(self._folder, "helics-cli.sqlite.db"))
         if os.path.exists(db_file):
             os.remove(db_file)
-        self.engine = db.create_engine("sqlite+pysqlite:///{}".format(db_file), echo=False, future=True)
+        self.engine = create_engine(
+            "sqlite+pysqlite:///{}".format(db_file), echo=False, future=True
+        )
         db.Base.metadata.create_all(self.engine)
-        self.session = db.Session(bind=self.engine)
+        self.session = Session(bind=self.engine)
         self.session.add(db.MetaData(name="helics_version", value=h.helicsGetVersion()))
         self.session.add(db.MetaData(name="created", value=datetime.now().isoformat()))
         self.session.add(db.SystemInfo(data=h.helicsGetSystemInfo()))
@@ -76,7 +81,9 @@ class HelicsObserverFederate:
 
     @property
     def subscriptions(self) -> List[str]:
-        return [cast(str, name) for name in self.federate.query("root", "subscriptions")]
+        return [
+            cast(str, name) for name in self.federate.query("root", "subscriptions")
+        ]
 
     @property
     def inputs(self) -> List[str]:
@@ -106,7 +113,13 @@ class HelicsObserverFederate:
             for federate in core["federates"]:
                 assert federate["attributes"]["parent"] == core["attributes"]["id"]
                 logger.info(f"Adding federate {federate}")
-                self.session.add(db.Federates(id=federate["attributes"]["id"], name=federate["attributes"]["name"], parent=core["attributes"]["id"]))
+                self.session.add(
+                    db.Federates(
+                        id=federate["attributes"]["id"],
+                        name=federate["attributes"]["name"],
+                        parent=core["attributes"]["id"],
+                    )
+                )
 
                 if "inputs" in federate.keys():
                     for input in federate["inputs"]:
@@ -115,16 +128,28 @@ class HelicsObserverFederate:
                             self.session.add(db.Inputs(source=input["federate"]))
                         else:
                             for s in input["sources"]:
-                                self.session.add(db.Inputs(source=input["federate"], target=s["federate"]))
+                                self.session.add(
+                                    db.Inputs(
+                                        source=input["federate"], target=s["federate"]
+                                    )
+                                )
 
                 if "publications" in federate.keys():
                     for publication in federate["publications"]:
                         logger.info(f"Adding publication {publication}")
                         if "targets" not in publication.keys():
-                            self.session.add(db.Publications(source=publication["federate"]))
+                            self.session.add(
+                                db.Publications(source=publication["federate"])
+                            )
                         else:
                             for t in publication["targets"]:
-                                self.session.add(db.Publications(name=publication["key"], target=publication["federate"], source=t["federate"]))
+                                self.session.add(
+                                    db.Publications(
+                                        name=publication["key"],
+                                        target=publication["federate"],
+                                        source=t["federate"],
+                                    )
+                                )
 
         self.session.commit()
 
@@ -138,7 +163,12 @@ class HelicsObserverFederate:
         ]
         columns.insert(0, db.Column("simulation_time", db.Float))
         columns.insert(0, db.Column("updated_at", db.Float))
-        columns.insert(0, db.Column("id", db.Integer, db.Sequence("id"), primary_key=True, nullable=False))
+        columns.insert(
+            0,
+            db.Column(
+                "id", db.Integer, db.Sequence("id"), primary_key=True, nullable=False
+            ),
+        )
         datatable = db.Table("datatable", db.Base.metadata, *columns)
 
         class DataTable(db.Base):
@@ -154,7 +184,9 @@ class HelicsObserverFederate:
 
     def wait(self):
         federates = self.federates
-        while not all(self.federate.query(name, "isinit") is True for name in federates):
+        while not all(
+            self.federate.query(name, "isinit") is True for name in federates
+        ):
             for name in federates:
                 logger.debug(f"{name} isinit = {self.federate.query(name, 'isinit')}")
             time.sleep(1)
@@ -191,7 +223,11 @@ class HelicsObserverFederate:
             self.session.commit()
 
             if (
-                all(self.federate.query(name, "state") == "disconnected" for name in self.federates if name != "__observer__")
+                all(
+                    self.federate.query(name, "state") == "disconnected"
+                    for name in self.federates
+                    if name != "__observer__"
+                )
                 or simulation_time >= 9223372036.3
             ):
                 break

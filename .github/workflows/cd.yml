@@ -6,6 +6,7 @@ on:
       - main
     tags:
       - v*
+  workflow_dispatch:
 
 jobs:
   build-wheels:
@@ -37,7 +38,7 @@ jobs:
 
       - name: Install python3 dependencies
         run: |
-          python -m pip install -U pip install wheel setuptools cffi
+          python -m pip install -U pip wheel setuptools cffi
 
       - name: Download helics library
         run: python setup.py download --plat-name=${{ matrix.target }}
@@ -97,7 +98,7 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.TEST_PYPI_PASSWORD }}
-          repository_url: https://test.pypi.org/legacy/
+          repository-url: https://test.pypi.org/legacy/
 
       - name: Publish package to PyPI
         if: startsWith(github.ref, 'refs/tags/')
