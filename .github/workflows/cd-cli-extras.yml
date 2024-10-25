@@ -7,7 +7,12 @@ on:
   workflow_dispatch:
     inputs:
       publish_to_pypi:
-        description: 'Publish to TestPyPI and PyPI'
+        description: 'Publish to PyPI'
+        required: true
+        type: boolean
+        default: false
+      publish_to_test_pypi:
+        description: 'Publish to TestPyPI'
         required: true
         type: boolean
         default: false
@@ -59,7 +64,7 @@ jobs:
           path: helics_cli_extras/dist
 
       - name: Publish package to TestPyPI
-        if: github.event.inputs.publish_to_pypi
+        if: github.event.inputs.publish_to_test_pypi
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
