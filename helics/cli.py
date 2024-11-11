@@ -13,6 +13,7 @@ import collections
 import platform
 import urllib.request
 import logging
+import sys
 from ._version import __version__
 from .status_checker import CheckStatusThread
 
@@ -305,8 +306,11 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
             if "env" in f:
                 for k, v in f["env"].items():
                     env[k] = v
+            p_args = shlex.split(f["exec"])
+            if p_args[0] == 'python':
+                p_args[0] = sys.executable
             p = subprocess.Popen(
-                shlex.split(f["exec"]),
+                p_args,
                 cwd=os.path.abspath(os.path.expanduser(directory)),
                 stdout=o.file,
                 stderr=o.file,
