@@ -13,7 +13,7 @@ import collections
 import platform
 import urllib.request
 import logging
-import sys
+import shutil
 from ._version import __version__
 from .status_checker import CheckStatusThread
 
@@ -307,8 +307,11 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
                 for k, v in f["env"].items():
                     env[k] = v
             p_args = shlex.split(f["exec"])
-            if p_args[0] == 'python':
-                p_args[0] = sys.executable
+            p_args[0] = shutil.which(p_args[0])
+            if p_args[0] is None:
+                raise click.ClickException("UnrecognizedCommandError: The command specified in exec string is not a "
+                                           "recognized command in the system. The user provided exec string is "
+                                           f"{f["exec"]}.")
             p = subprocess.Popen(
                 p_args,
                 cwd=os.path.abspath(os.path.expanduser(directory)),
