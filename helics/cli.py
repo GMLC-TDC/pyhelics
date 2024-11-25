@@ -235,6 +235,14 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     if helics_server_available:
         fetch("/runner/file/name", {"name": os.path.basename(path_to_config)})
         fetch("/runner/file/folder", {"folder": os.path.dirname(path_to_config)})
+    
+    # Default to logging in the same location as the config file; this is the 
+    # historical behavior of the cli. If there's a "logging_path" in the runner
+    # JSON, use that path    
+    if "logging_path" in config.keys():
+        logging_path = config["logging_path"]
+    else:
+        logging_path = path
 
     process_list = []
     output_list = []
@@ -244,7 +252,7 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
                 "Running federate {name} as a background process".format(name=f["name"]),
             )
 
-        fname = os.path.abspath(os.path.join(path, "{}.log".format(f["name"])))
+        fname = os.path.abspath(os.path.join(logging_path, "{}.log".format(f["name"])))
         if log is True:
             o = Output(fname, open(fname, "w"))
         else:
