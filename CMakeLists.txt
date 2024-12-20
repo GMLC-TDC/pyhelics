@@ -2,20 +2,19 @@ cmake_minimum_required(VERSION 3.15...3.26)
 project(HELICS LANGUAGES CXX) # Must be "HELICS" due to its CMake files requiring CMAKE_PROJECT_NAME == PROJECT_NAME in order to build app executables
 include(FetchContent)
 
-# NOTE: SKBUILD_PROJECT_VERSION strips some of the extra Python version components out, like postN and devM
-# The setuptools_scm "no-guess-dev" version_scheme works well, since that leaves it with just the HELICS version
+include(helics_version.cmake)
 
 # Note: Linux requires a hint for whether this wheel should be for manylinux (glibc) or musllinux
 # -- The CIBW_ARTIFACT_TYPE environment variable is only expected to be set during official release builds using cibuildwheel on GHA CI systems
 if(LINUX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-    set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${SKBUILD_PROJECT_VERSION}/Helics-${SKBUILD_PROJECT_VERSION}-Linux-x86_64.tar.gz)
+    set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-${HELICS_VERSION}-Linux-x86_64.tar.gz)
 elseif(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${SKBUILD_PROJECT_VERSION}/Helics-${SKBUILD_PROJECT_VERSION}-macOS-universal2.zip)
+    set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-${HELICS_VERSION}-macOS-universal2.zip)
 elseif(WIN32)
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${SKBUILD_PROJECT_VERSION}/Helics-${SKBUILD_PROJECT_VERSION}-win64.zip)
+        set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-${HELICS_VERSION}-win64.zip)
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${SKBUILD_PROJECT_VERSION}/Helics-${SKBUILD_PROJECT_VERSION}-win32.zip)
+        set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-${HELICS_VERSION}-win32.zip)
     endif()
 endif()
 
@@ -90,7 +89,7 @@ if (NOT SKBUILD_STATE STREQUAL "sdist" AND
 endif()
 FetchContent_Declare(
     helics
-    URL https://github.com/GMLC-TDC/HELICS/releases/download/v${SKBUILD_PROJECT_VERSION}/Helics-v${SKBUILD_PROJECT_VERSION}-source.tar.gz
+    URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-v${HELICS_VERSION}-source.tar.gz
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/helics-src
 )
 

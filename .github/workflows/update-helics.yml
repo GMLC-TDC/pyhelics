@@ -25,6 +25,24 @@ jobs:
 
     - name: Update HELICS version number
       run: |
+        version_line="set(HELICS_VERSION ${{ inputs.version }})
+        echo "::group::set_version line"
+        echo "$version_line"
+        echo "::endgroup::"
+        sed -i "/set/c ${version_line}" helics_version.cmake
+
+        git add helics_version.cmake
+
+        echo "::group::git diff --staged"
+        git diff --staged
+        echo "::endgroup::"
+
+        git commit -m "build(release): Bump to v${{ inputs.version }}"
+
+        echo "::group::git show"
+        git show
+        echo "::endgroup::"
+
         if [ "${{ inputs.dryrun }}" = "false" ]; then
           echo "Pushing changes"
           git push
