@@ -25,15 +25,13 @@ jobs:
 
     - name: Update HELICS version number
       run: |
-        # Update lines in the package file
-        version_line="__version__ = \"v${{ inputs.version }}\""
- 
-        echo "::group::__version__ line"
+        version_line="set(HELICS_VERSION ${{ inputs.version }})"
+        echo "::group::set_version line"
         echo "$version_line"
         echo "::endgroup::"
-        sed -i "/__version__ =/c ${version_line}" helics/_version.py
+        echo $version_line > helics_version.cmake
 
-        git add helics/_version.py
+        git add helics_version.cmake
 
         echo "::group::git diff --staged"
         git diff --staged
