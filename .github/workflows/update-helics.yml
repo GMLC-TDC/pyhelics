@@ -25,11 +25,11 @@ jobs:
 
     - name: Update HELICS version number
       run: |
-        version_line="set(HELICS_VERSION ${{ inputs.version }})
+        version_line="set(HELICS_VERSION ${{ inputs.version }})"
         echo "::group::set_version line"
         echo "$version_line"
         echo "::endgroup::"
-        sed -i "/set/c ${version_line}" helics_version.cmake
+        echo $version_line > helics_version.cmake
 
         git add helics_version.cmake
 
