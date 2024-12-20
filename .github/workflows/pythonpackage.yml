@@ -73,7 +73,7 @@ jobs:
             curl -L -o boost_1_76_0.tar.bz2 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' && 
             tar xf boost_1_76_0.tar.bz2 &&
             popd
-        CIBW_ENVIRONMENT_LINUX: BOOST_ROOT=/boost
+        CIBW_ENVIRONMENT_LINUX: BOOST_ROOT=/boost/boost_1_76_0
     - uses: actions/upload-artifact@v4
       with:
         name: pyhelics-python-dist-${{matrix.artifact_suffix}}
@@ -94,7 +94,7 @@ jobs:
         tar xf boost_1_76_0.tar.bz2 &&
         popd
     - name: Build sdist
-      run: BOOST_ROOT="/tmp/boost" pipx run build --sdist
+      run: BOOST_ROOT="/tmp/boost/boost_1_76_0" pipx run build --sdist
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
