@@ -95,12 +95,14 @@ class HelicsCoreType(IntEnum):
     - **TCP**
     - **UDP**
     - **NNG**
-    - **ZMQ_TEST**
+    - **ZMQ_SS**
     - **TCP_SS**
     - **HTTP**
     - **WEBSOCKET**
     - **INPROC**
     - **NULL**
+    - **EMPTY**
+    - **EXTRACT**
     """
 
     DEFAULT = 0  # HelicsCoreType
@@ -112,12 +114,14 @@ class HelicsCoreType(IntEnum):
     TCP = 6  # HelicsCoreType
     UDP = 7  # HelicsCoreType
     NNG = 9  # HelicsCoreType
-    ZMQ_TEST = 10  # HelicsCoreType
+    ZMQ_SS = 10  # HelicsCoreType
     TCP_SS = 11  # HelicsCoreType
     HTTP = 12  # HelicsCoreType
     WEBSOCKET = 14  # HelicsCoreType
     INPROC = 18  # HelicsCoreType
     NULL = 66  # HelicsCoreType
+    EMPTY = 77 # HelicsCoreType
+    EXTRACT = 101 #HelicsCoreType
 
 
 HELICS_CORE_TYPE_DEFAULT = HelicsCoreType.DEFAULT
@@ -128,13 +132,16 @@ HELICS_CORE_TYPE_INTERPROCESS = HelicsCoreType.INTERPROCESS
 HELICS_CORE_TYPE_IPC = HelicsCoreType.IPC
 HELICS_CORE_TYPE_TCP = HelicsCoreType.TCP
 HELICS_CORE_TYPE_UDP = HelicsCoreType.UDP
-HELICS_CORE_TYPE_ZMQ_TEST = HelicsCoreType.ZMQ_TEST
+HELICS_CORE_TYPE_ZMQ_SS = HelicsCoreType.ZMQ_SS
+HELICS_CORE_TYPE_TEST = HelicsCoreType.ZMQ_SS
 HELICS_CORE_TYPE_NNG = HelicsCoreType.NNG
 HELICS_CORE_TYPE_TCP_SS = HelicsCoreType.TCP_SS
 HELICS_CORE_TYPE_HTTP = HelicsCoreType.HTTP
 HELICS_CORE_TYPE_WEBSOCKET = HelicsCoreType.WEBSOCKET
 HELICS_CORE_TYPE_INPROC = HelicsCoreType.INPROC
 HELICS_CORE_TYPE_NULL = HelicsCoreType.NULL
+HELICS_CORE_TYPE_EMPTY = HelicsCoreType.EMPTY
+HELICS_CORE_TYPE_EXTRACT = HelicsCoreType.EXTRACT
 
 helics_core_type_default = HelicsCoreType.DEFAULT
 helics_core_type_zmq = HelicsCoreType.ZMQ
@@ -144,6 +151,7 @@ helics_core_type_interprocess = HelicsCoreType.INTERPROCESS
 helics_core_type_ipc = HelicsCoreType.IPC
 helics_core_type_tcp = HelicsCoreType.TCP
 helics_core_type_udp = HelicsCoreType.UDP
+helics_core_type_zmq_ss = HelicsCoreType.ZMQ_SS
 helics_core_type_zmq_test = HelicsCoreType.ZMQ_TEST
 helics_core_type_nng = HelicsCoreType.NNG
 helics_core_type_tcp_ss = HelicsCoreType.TCP_SS
@@ -151,6 +159,8 @@ helics_core_type_http = HelicsCoreType.HTTP
 helics_core_type_websocket = HelicsCoreType.WEBSOCKET
 helics_core_type_inproc = HelicsCoreType.INPROC
 helics_core_type_null = HelicsCoreType.NULL
+helics_core_type_empty = HelicsCoreType.EMPTY
+helics_core_type_extract = HelicsCoreType.EXTRACT
 
 
 @unique
@@ -940,6 +950,8 @@ def generate_cleanup_callback(obj):
         f = loadSym("helicsBrokerFree")
     elif isinstance(obj, HelicsCore):
         f = loadSym("helicsCoreFree")
+    elif isinstance(obj, HelicsApp):
+        f = loadSym("helicsAppFree")
     elif isinstance(obj, HelicsQuery):
         f = loadSym("helicsQueryFree")
     elif isinstance(obj, HelicsMessage):
@@ -1071,6 +1083,10 @@ class HelicsTranslator(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
         super().__init__(handle, cleanup=cleanup)
 
+class HelicsApp(_HelicsCHandle):
+    def __init__(self, handle, cleanup=True):
+        super().__init__(handle, cleanup=cleanup)
+        
 
 class HelicsCore(_HelicsCHandle):
     def __repr__(self):
@@ -3572,6 +3588,12 @@ def helicsFederateDestroy(fed: HelicsFederate):
     f = loadSym("helicsFederateDestroy")
     f(fed.handle)
 
+def helicsAppDestroy(app: HelicsApp):
+    """
+    Disconnect and free an app.
+    """
+    f = loadSym("helicsAppDestroy")
+    f(app.handle)
 
 def helicsBrokerDestroy(broker: HelicsBroker):
     """
@@ -3780,6 +3802,54 @@ def helicsCreateCallbackFederateFromConfig(config_file: str) -> HelicsCallbackFe
         return HelicsCallbackFederate(result)
 
 
+def helicsCreateApp(app_name: str, app_type:str, config_file:str, fedInfo: HelicsFederateInfo = None) -> HelicsApp:
+    """
+    Creation and destruction of a HELICS app
+    Create `helics.HelicsApp` from `helics.HelicsFederateInfo` and type and config information.
+    `helics.HelicsValueFederate` objects can be used in all functions that take a `helics.HelicsFederate` as an argument.
+
+    **Parameters**
+
+    - **`app_name`** - The name of the federate to create, can NULL or an empty string to use the default name from fi or an assigned name.
+    - **`app_type`** - the type of app to create
+    - **`config_file`** - Configuration file or string to pass into the app, can be empty
+    - **`fedInfo`** - The federate info object that contains details on the federate.
+
+    **Returns**: `helics.HelicsApp`.
+    """
+    f = loadSym("helicsCreateApp")
+    err = helicsErrorInitialize()
+    if fedInfo is None:
+        fedInfo = helicsCreateFederateInfo()
+    if config_file is None:
+        config_file=''
+    
+    result = f(cstring(app_name),cstring(app_type),cstring(config_file), fedInfo.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsApp(result)
+  
+def helicsAppGetFederate(app: HelicsApp) -> HelicsFederate:
+    """
+    Create a new federate reference from an app.
+    This will create a new `helics.HelicsFederate` object that references the existing federate.
+    The new object must be freed as well.
+
+    **Parameters**
+
+    - **`app`** - An existing `helics.HelicsApp`.
+
+    **Returns**: `helics.HelicsFederate`.
+    """
+    f = loadSym("helicsAppGetFederate")
+    err = helicsErrorInitialize()
+    result = f(app.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    else:
+        return HelicsFederate(result)
+      
 def helicsFederateClone(fed: HelicsFederate) -> HelicsFederate:
     """
     Create a new reference to an existing federate.
@@ -3940,6 +4010,16 @@ def helicsFederateIsValid(fed: HelicsFederate) -> bool:
     result = f(fed.handle)
     return result == 1
 
+
+def helicsAppIsActive(app: HelicsApp) -> bool:
+    """
+    Check if a `helics.HelicsApp` is active.
+
+    **Returns**: `True` if the app is a valid active app, `False` otherwise.
+    """
+    f = loadSym("helicsAppIsActive")
+    result = f(app.handle)
+    return result == 1
 
 def helicsFederateInfoSetCoreName(fedInfo: HelicsFederateInfo, core_name: str):
     """
@@ -4274,6 +4354,20 @@ def helicsFederateRegisterInterfaces(fed: HelicsFederate, file: str):
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
+def helicsAppLoadFile(app: HelicsApp, file: str):
+    """
+    Load a configuration for an app from a file.
+
+    **Parameters**
+
+    - **`app`** - The federate to which to load interfaces.
+    - **`file`** - The name of a file to load the interfaces from either JSON, or TOML.
+    """
+    f = loadSym("helicsAppLoadFile")
+    err = helicsErrorInitialize()
+    f(app.handle, cstring(file), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string: str):
     """
@@ -4342,6 +4436,15 @@ def helicsFederateFinalize(fed: HelicsFederate):
     warnings.warn("This function is deprecated. Use `helicsFederateDisconnect` instead.")
     helicsFederateDisconnect(fed)
 
+def helicsAppFinalize(app: HelicsApp):
+    """
+    Disconnect the federate. This function halts all communication in the federate and disconnects it from the core.
+    """
+    f = loadSym("helicsAppFinalize")
+    err = helicsErrorInitialize()
+    f(app.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 def helicsFederateFinalizeAsync(fed: HelicsFederate):
     """
@@ -4412,6 +4515,12 @@ def helicsFederateFree(fed: HelicsFederate):
     f = loadSym("helicsFederateFree")
     f(fed.handle)
 
+def helicsAppFree(app: HelicsApp):
+    """
+    Release the memory associated with an App.
+    """
+    f = loadSym("helicsAppFree")
+    f(app.handle)
 
 def helicsCloseLibrary():
     """
@@ -4438,7 +4547,54 @@ def helicsFederateEnterInitializingMode(fed: HelicsFederate):
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
+def helicsAppInitialize(app: HelicsApp):
+    """
+    Initialization a helics application.
+    Generate all the interfaces and load data for the application.
 
+    **Parameters**
+
+    - **`app`** - The app to operate on.
+    """
+    f = loadSym("helicsAppInitialize")
+    err = helicsErrorInitialize()
+    f(app.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsAppRun(app: HelicsApp):
+    """
+    Run the HelicsApp.
+    Execute the app to completion.
+
+    **Parameters**
+
+    - **`app`** - The app to operate on.
+    """
+    f = loadSym("helicsAppRun")
+    err = helicsErrorInitialize()
+    f(app.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+
+
+def helicsAppRunTo(app: HelicsApp,time:HelicsTime):
+    """
+    Run the HelicsApp to a specified stop time
+    It is possible to call this method repeatedly with different times.
+
+    **Parameters**
+
+    - **`app`** - The app to operate on.
+    - **`time`** - The desired stop time
+    """
+    f = loadSym("helicsAppRunTo")
+    err = helicsErrorInitialize()
+    f(app.handle,time, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+        
 def helicsFederateEnterInitializingModeAsync(fed: HelicsFederate):
     """
     Non blocking alternative to `helics.helicsFederateEnterInitializingMode`.
@@ -5633,6 +5789,22 @@ def helicsEndpointSendBytes(endpoint: HelicsEndpoint, data: bytes):
 
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    
+def helicsEndpointSendString(endpoint: HelicsEndpoint, data: str):
+    """
+    Send a message from a specific endpoint.
+
+    **Parameters**
+
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`data`** - The string to send
+    """
+    err = helicsErrorInitialize()
+    f = loadSym("helicsEndpointSendString")
+    f(endpoint.handle, cstring(data), err)
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination: str):
@@ -5664,7 +5836,23 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
+def helicsEndpointSendString(endpoint: HelicsEndpoint, data: str, destination: str):
+    """
+    Send a message from a specific endpoint.
 
+    **Parameters**
+
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`data`** - The string to send
+    - **`destination`** - The target destination.
+    """
+    err = helicsErrorInitialize()
+    f = loadSym("helicsEndpointSendStringTo")
+    f(endpoint.handle, cstring(data),cstring(destination), err)
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    
 def helicsEndpointSendMessageRaw(endpoint: HelicsEndpoint, destination: str, data: bytes):
     """
     Send a message to the specified destination.
@@ -5707,7 +5895,23 @@ def helicsEndpointSendBytesAt(endpoint: HelicsEndpoint, data: bytes, time: Helic
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
+def helicsEndpointSendStringAt(endpoint: HelicsEndpoint, data: str, time: HelicsTime):
+    """
+    Send a message from a specific endpoint.
 
+    **Parameters**
+
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`data`** - The string to send
+    - **`time`**: The time the message should be sent.
+    """
+    err = helicsErrorInitialize()
+    f = loadSym("helicsEndpointSendStringAt")
+    f(endpoint.handle, cstring(data),time, err)
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    
 def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destination: str, time: HelicsTime):
     """
     Send a message at a specific time to the specified destination.
@@ -5740,7 +5944,24 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
+def helicsEndpointSendStringToAt(endpoint: HelicsEndpoint, data: str, destination: str, time: HelicsTime):
+    """
+    Send a message from a specific endpoint.
 
+    **Parameters**
+
+    - **`endpoint`** - The endpoint to send the data from.
+    - **`data`** - The string to send
+    - **`destination`** - The target destination.
+    - **`time`**: The time the message should be sent.
+    """
+    err = helicsErrorInitialize()
+    f = loadSym("helicsEndpointSendStringToAt")
+    f(endpoint.handle, cstring(data),cstring(destination),time, err)
+
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
+    
 def helicsEndpointSendEventRaw(
     endpoint: HelicsEndpoint,
     destination: str,
@@ -6338,6 +6559,8 @@ def helicsFilterGetTag(filter: HelicsFilter, tagname: str):
     return ffi.string(result).decode()
 
 
+
+
 def helicsFilterSetTag(filter: HelicsFilter, tagname: str, tagvalue: str):
     """
     Set the data in a specific tag for a filter.
@@ -6352,6 +6575,41 @@ def helicsFilterSetTag(filter: HelicsFilter, tagname: str, tagvalue: str):
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
+def helicsFilterGetPropertyString(filter: HelicsFilter, propertyname: str):
+    """
+    Get the value of a string property in a filter.
+
+    **Parameters**
+
+    - **`filter`**: The filter object to query.
+    - **`property`**: The name of the tag to query.
+
+    **Returns**
+
+    A string with the tag data.
+    """
+
+    f = loadSym("helicsFilterGetPropertyString")
+    result = f(filter.handle, cstring(propertyname))
+    return ffi.string(result).decode()
+
+def helicsFilterGetPropertyDouble(filter: HelicsFilter, propertyname: str)->float:
+    """
+    Get the value of a floating point property property in a filter.
+
+    **Parameters**
+
+    - **`filter`**: The filter object to query.
+    - **`property`**: The name of the tag to query.
+
+    **Returns**
+
+    A string with the tag data.
+    """
+
+    f = loadSym("helicsFilterGetPropertyDouble")
+    result = f(filter.handle, cstring(propertyname))
+    return result
 
 def helicsEndpointSetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption, value: int):
     """
@@ -6384,6 +6642,7 @@ def helicsEndpointGetOption(endpoint: HelicsEndpoint, option: HelicsHandleOption
     f = loadSym("helicsEndpointGetOption")
     result = f(endpoint.handle, HelicsHandleOption(option))
     return result
+
 
 
 def helicsMessageGetSource(message: HelicsMessage) -> str:
