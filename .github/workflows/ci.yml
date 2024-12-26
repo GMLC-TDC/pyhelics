@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
     - main
+  workflow_dispatch:
 
 jobs:
   test:
@@ -18,6 +19,8 @@ jobs:
         python-version: ["3.9"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ensure history is present for automatic versioning
       - uses: actions/setup-node@v4
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,15 +31,15 @@ jobs:
           python -m pip install -U pip wheel setuptools cffi
       - name: Download helics library and run pip install
         run: |
-          python setup.py download
-          python setup.py build_ext
-          pip install -e ".[tests]"
+          pip install ".[tests]"
+        env:
+          DOWNLOAD_BINARIES: 1
       - name: Install pytest dependencies
         run: |
           pip install pytest pytest-ordering pytest-cov pytest-runner
       - name: Generate coverage report
         run: |
-          pytest -vvv --cov=./ --cov-report=xml:unit.coverage.xml
+          pytest --import-mode importlib -vvv --cov=./ --cov-report=xml:unit.coverage.xml
       - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
