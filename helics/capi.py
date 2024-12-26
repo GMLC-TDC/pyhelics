@@ -3802,6 +3802,14 @@ def helicsCreateCallbackFederateFromConfig(config_file: str) -> HelicsCallbackFe
         return HelicsCallbackFederate(result)
 
 
+def helicsAppEnabled() -> bool:
+    """
+    Returns true if the app library is enabled.
+    """
+    f = loadSym("helicsAppEnabled")
+    return f(app.handle)
+
+
 def helicsCreateApp(app_name: str, app_type:str, config_file:str, fedInfo: HelicsFederateInfo = None) -> HelicsApp:
     """
     Creation and destruction of a HELICS app
@@ -3811,8 +3819,8 @@ def helicsCreateApp(app_name: str, app_type:str, config_file:str, fedInfo: Helic
     **Parameters**
 
     - **`app_name`** - The name of the federate to create, can NULL or an empty string to use the default name from fi or an assigned name.
-    - **`app_type`** - the type of app to create
-    - **`config_file`** - Configuration file or string to pass into the app, can be empty
+    - **`app_type`** - The type of app to create.
+    - **`config_file`** - Configuration file or string to pass into the app, can be empty.
     - **`fedInfo`** - The federate info object that contains details on the federate.
 
     **Returns**: `helics.HelicsApp`.
@@ -4361,7 +4369,7 @@ def helicsAppLoadFile(app: HelicsApp, file: str):
     **Parameters**
 
     - **`app`** - The federate to which to load interfaces.
-    - **`file`** - The name of a file to load the interfaces from either JSON, or TOML.
+    - **`file`** - The name of a file to load the interfaces from, either JSON, or TOML.
     """
     f = loadSym("helicsAppLoadFile")
     err = helicsErrorInitialize()
@@ -4549,7 +4557,7 @@ def helicsFederateEnterInitializingMode(fed: HelicsFederate):
 
 def helicsAppInitialize(app: HelicsApp):
     """
-    Initialization a helics application.
+    Initialize a helics application.
     Generate all the interfaces and load data for the application.
 
     **Parameters**
@@ -4579,15 +4587,15 @@ def helicsAppRun(app: HelicsApp):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsAppRunTo(app: HelicsApp,time:HelicsTime):
+def helicsAppRunTo(app: HelicsApp, time: HelicsTime):
     """
-    Run the HelicsApp to a specified stop time
+    Run the HelicsApp to a specified stop time.
     It is possible to call this method repeatedly with different times.
 
     **Parameters**
 
     - **`app`** - The app to operate on.
-    - **`time`** - The desired stop time
+    - **`time`** - The desired stop time.
     """
     f = loadSym("helicsAppRunTo")
     err = helicsErrorInitialize()
@@ -5797,7 +5805,7 @@ def helicsEndpointSendString(endpoint: HelicsEndpoint, data: str):
     **Parameters**
 
     - **`endpoint`** - The endpoint to send the data from.
-    - **`data`** - The string to send
+    - **`data`** - The string to send.
     """
     err = helicsErrorInitialize()
     f = loadSym("helicsEndpointSendString")
@@ -5836,14 +5844,14 @@ def helicsEndpointSendBytesTo(endpoint: HelicsEndpoint, data: bytes, destination
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
-def helicsEndpointSendString(endpoint: HelicsEndpoint, data: str, destination: str):
+def helicsEndpointSendStringTo(endpoint: HelicsEndpoint, data: str, destination: str):
     """
-    Send a message from a specific endpoint.
+    Send a message from a specific endpoint to a specific target destination.
 
     **Parameters**
 
     - **`endpoint`** - The endpoint to send the data from.
-    - **`data`** - The string to send
+    - **`data`** - The string to send.
     - **`destination`** - The target destination.
     """
     err = helicsErrorInitialize()
@@ -5897,12 +5905,12 @@ def helicsEndpointSendBytesAt(endpoint: HelicsEndpoint, data: bytes, time: Helic
 
 def helicsEndpointSendStringAt(endpoint: HelicsEndpoint, data: str, time: HelicsTime):
     """
-    Send a message from a specific endpoint.
+    Send a message from a specific endpoint at a specified time.
 
     **Parameters**
 
     - **`endpoint`** - The endpoint to send the data from.
-    - **`data`** - The string to send
+    - **`data`** - The string to send.
     - **`time`**: The time the message should be sent.
     """
     err = helicsErrorInitialize()
@@ -5946,12 +5954,12 @@ def helicsEndpointSendBytesToAt(endpoint: HelicsEndpoint, data: bytes, destinati
 
 def helicsEndpointSendStringToAt(endpoint: HelicsEndpoint, data: str, destination: str, time: HelicsTime):
     """
-    Send a message from a specific endpoint.
+    Send a message from a specific endpoint to a specific target destination at a specified time.
 
     **Parameters**
 
     - **`endpoint`** - The endpoint to send the data from.
-    - **`data`** - The string to send
+    - **`data`** - The string to send.
     - **`destination`** - The target destination.
     - **`time`**: The time the message should be sent.
     """
@@ -6582,11 +6590,11 @@ def helicsFilterGetPropertyString(filter: HelicsFilter, propertyname: str):
     **Parameters**
 
     - **`filter`**: The filter object to query.
-    - **`property`**: The name of the tag to query.
+    - **`property`**: The name of the property to query.
 
     **Returns**
 
-    A string with the tag data.
+    A string with the value of the property.
     """
 
     f = loadSym("helicsFilterGetPropertyString")
@@ -6595,16 +6603,16 @@ def helicsFilterGetPropertyString(filter: HelicsFilter, propertyname: str):
 
 def helicsFilterGetPropertyDouble(filter: HelicsFilter, propertyname: str)->float:
     """
-    Get the value of a floating point property property in a filter.
+    Get the value of a floating point property in a filter.
 
     **Parameters**
 
     - **`filter`**: The filter object to query.
-    - **`property`**: The name of the tag to query.
+    - **`property`**: The name of the property to query.
 
     **Returns**
 
-    A string with the tag data.
+    A float with the value of the property.
     """
 
     f = loadSym("helicsFilterGetPropertyDouble")
