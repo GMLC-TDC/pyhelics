@@ -985,6 +985,8 @@ def generate_cleanup_callback(obj):
         f = loadSym("helicsQueryFree")
     elif isinstance(obj, HelicsMessage):
         f = loadSym("helicsMessageFree")
+    elif isinstance(obj, HelicsApp):
+        f = loadSym("helicsAppFree")
     elif isinstance(obj, HelicsFilter) or isinstance(obj, HelicsTranslator):
         f = None
     else:
@@ -8216,7 +8218,7 @@ def helicsFilterSet(filter: HelicsFilter, property: str, value: float):
 
 def helicsFilterSetString(filter: HelicsFilter, property: str, value: str):
     """
-    Set a string property on a filter.
+    Set a string property on a filter. Valid properties depend on the type of filter.
 
     **Parameters**
 
@@ -11671,26 +11673,34 @@ def helicsAppEnabled() -> bool:
 
 
 def helicsCreateApp(
-    app_name: str, app_type: str, config_file: str, fed_info: HelicsFederateInfo
+    app_name: str,
+    app_type: str,
+    config_file: str = None,
+    fed_info: HelicsFederateInfo = None,
 ) -> HelicsApp:
-    """
-    Create an application object. TODO: Figure out actual usage
+    """Create a HeliscApp object
 
-    **Parameters**
+    Parameters
 
-    - **`app_name`**: The name of the application.
-    - **`app_type`**: The type of the application.
-    - **`config_file`**: The configuration file to use for the application.
-    - **`fed_info`**: The federate info object to use for the application.
+    Either `config_file` or `fed_info` must be provided.
 
-    **Returns**
+    - **`app_name`**: A string with the name of the app, can be NULL or an empty string to pull the default name from fedInfo or the config file.
+    - **`app_type`**: The type of app to create.
+    - **`config_file`**: Configuration file or string to pass into the app, can be NULL or empty.
+    - **`fed_info`**: The federate information to pass into the app, can be NULL.
 
-    - `HelicsApp`: The created application object.
+    Returns
+
+    - A HelicsApp object
     """
     f = loadSym("helicsCreateApp")
     err = helicsErrorInitialize()
     result = f(
-        cstring(app_name), cstring(app_type), cstring(config_file), fed_info, err
+        cstring(app_name),
+        cstring(app_type),
+        cstring(config_file) if config_file else ffi.NULL,
+        fed_info.handle if fed_info else ffi.NULL,
+        err,
     )
     if err.error_code != 0:
         raise HelicsException(

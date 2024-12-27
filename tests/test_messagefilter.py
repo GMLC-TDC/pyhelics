@@ -173,3 +173,17 @@ def test_messagefilter_function():
     destroy_federate(mFed, mfedinfo)
     time.sleep(1.0)
     destroy_broker(broker)
+
+
+def test_filter_property():
+    _ = create_broker(1)
+
+    fFed, _ = create_message_federate(1, "filter")
+
+    f1 = h.helicsFederateRegisterGlobalFilter(
+        fFed, h.HELICS_FILTER_TYPE_DELAY, "filter1"
+    )
+    h.helicsFilterSet(f1, "delay", 1.0)
+    assert h.helicsFilterGetPropertyDouble(f1, "delay") == 1.0
+    assert h.helicsFilterGetPropertyString(f1, "delay").startswith("1.0")
+    assert f1.get("delay") == 1.0
