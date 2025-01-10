@@ -386,7 +386,10 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
         if errored:
             sys.exit(1)
 
-    info("Done.")
+    if errored:
+        info("Done (with errors.")
+    else:
+        info("Done.")
 
 
 @cli.command()
