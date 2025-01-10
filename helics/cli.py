@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import json
 import os
 import io
+import sys
 import shlex
 import subprocess
 import collections
@@ -282,10 +283,10 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     if helics_server_available:
         fetch("/runner/file/name", {"name": os.path.basename(path_to_config)})
         fetch("/runner/file/folder", {"folder": os.path.dirname(path_to_config)})
-    
-    # Default to logging in the same location as the config file; this is the 
+
+    # Default to logging in the same location as the config file; this is the
     # historical behavior of the cli. If there's a "logging_path" in the runner
-    # JSON, use that path    
+    # JSON, use that path
     if "logging_path" in config.keys():
         logging_path = config["logging_path"]
     else:
@@ -361,6 +362,7 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
             for p in process_list:
                 p.process.kill()
     finally:
+        errored = False
         for p in process_list:
             t.status(p)
             if (
@@ -368,6 +370,7 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
                 and p.process.returncode != -9
                 and p.process.returncode is not None
             ):
+                errored = True
                 error(
                     "Process {} exited with return code {}".format(
                         p.name, p.process.returncode
@@ -380,6 +383,8 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
                         for line in f.readlines()[-10:]:
                             print(line, end="")
                         print("...")
+        if errored:
+            sys.exit(1)
 
     info("Done.")
 
