@@ -42,6 +42,7 @@ docs = [
   "black",
   "pygments",
   "pymdown-extensions",
+  "mkdocs-click",
 ]
 
 [project.scripts]

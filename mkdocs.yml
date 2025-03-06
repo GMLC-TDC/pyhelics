@@ -47,3 +47,5 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: True
   - pymdownx.tilde
+  - mkdocs-click
+  - attr_list
