@@ -199,11 +199,18 @@ def fetch(url, data={}, method="POST"):
     "--path",
     required=True,
     type=click.Path(file_okay=True, exists=True),
-    help="Path to config.json that describes how to run a federation",
+    help="Path to config.json that describes all federates",
 )
-@click.option("--silent", is_flag=True)
-@click.option("--connect-server", is_flag=True)
-@click.option("--no-log-files", is_flag=True, default=False)
+@click.option("--silent", is_flag=True, help="Suppress informational output")
+@click.option(
+    "--connect-server", is_flag=True, help="Attempt to connect to helics-cli server"
+)
+@click.option(
+    "--no-log-files",
+    is_flag=True,
+    default=False,
+    help="Disable writing log files to federate",
+)
 @click.option(
     "--no-kill-on-error",
     is_flag=True,
@@ -212,7 +219,74 @@ def fetch(url, data={}, method="POST"):
 )
 def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     """
-    Run HELICS federation
+    Run HELICS federation defined by a JSON configuration file.
+
+    We load a list of federates and a broker from a JSON file and launches
+    federates as separate processes on the local system. We do not
+    handle multi-node environments like a Slurm job or Kubernetes. It
+    starts processes in the background with minimal log routing
+    and error handling.
+
+    At the top-level, the configuration file contains
+    - name: Federation name
+    - federates: List of federate configurations
+    - logging_path: (Optional) Custom path for log files
+    - broker: (Optional) Boolean to auto-add broker
+
+    Each federate is described by a dictionary with the following keys
+    - name: Unique federate name
+    - directory: Working directory for the federate
+    - exec: Command to execute
+    - env: (Optional) Environment variables to set
+
+    Example configuration file:
+
+    \b
+    ```
+    {
+        "name": "ExampleFederation",
+        "federates": [
+            {
+                "name": "federate1",
+                "directory": "./federate1",
+                "exec": "python simulator.py --name=fed1",
+                "env": {
+                    "HELICS_BROKER_ADDRESS": "127.0.0.1"
+                }
+            },
+            {
+                "name": "federate2",
+                "directory": "./federate2",
+                "exec": "python simulator.py --name=fed2"
+            }
+        ],
+        "broker": true,
+        "logging_path": "./logs"
+    }
+    ```
+
+    \b
+    - Optionally add a broker to the federation
+    - Log output from all federates to files (can be disabled)
+    - Kill all processes if one fails (can be disabled)
+    - Displays errors for all processes if one fails
+    - Handle custom environment variables for each federate
+
+    When called, `helics run`:
+
+    \b
+    1. Checks if the helics-cli server is available (if --connect-server)
+    2. Loads and validates the configuration
+    3. Creates log files for each federate (if logging enabled)
+    4. Launches all federate processes
+    5. Monitors processes for completion or errors
+    6. Handles graceful termination on errors or user interruption
+    7. Shows error information for failed federates
+
+    **Returns**:
+
+    Exits with 0 on success, -1 if duplicate federate names found, or error code
+    1 on failure.
     """
 
     r = urllib.request.Request("{}/health".format(HELICS_CLI_SERVER_API))
@@ -318,9 +392,11 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
             p_args = shlex.split(f["exec"])
             p_args[0] = shutil.which(p_args[0])
             if p_args[0] is None:
-                raise click.ClickException("UnrecognizedCommandError: The command specified in exec string is not a "
-                                           "recognized command in the system. The user provided exec string is "
-                                           f"{f['exec']}.")
+                raise click.ClickException(
+                    "UnrecognizedCommandError: The command specified in exec string is not a "
+                    "recognized command in the system. The user provided exec string is "
+                    f"{f['exec']}."
+                )
             p = subprocess.Popen(
                 p_args,
                 cwd=os.path.abspath(os.path.expanduser(directory)),
