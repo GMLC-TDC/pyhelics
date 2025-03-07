@@ -1,13 +1,20 @@
 # Usage
 
-This document will a simple 2 federate co-simulation in Python.
+The following is simple example HELICS federation implemented in Python. The example files containing this code can be [found here](./examples/website_usage/). The federation can be run from the command line with
+
+```sh
+$ helics run --path=runner.json
+```
+
+Many more Python-based HELICS examples can be found in the [HELICS Examples repository](https://github.com/GMLC-TDC/HELICS-Examples/user_guide_examples) with many of them having corresponding documentation in the [HELICS User Guide](https://docs.helics.org/en/latest/user-guide/examples/examples_index.html)
 
 # Broker
 
 ```python
 import helics as h
+import time
 
-broker = h.helicsCreateBroker("zmq", "", "-f 2 --name=mainbroker")
+broker = h.helicsCreateBroker("zmq", "", "-f 2 --loglevel=trace")
 
 while h.helicsBrokerIsConnected(broker):
     time.sleep(1)
@@ -24,7 +31,7 @@ fedinfo = h.helicsCreateFederateInfo()
 
 h.helicsFederateInfoSetCoreName(fedinfo, "Federate1")
 h.helicsFederateInfoSetCoreTypeFromString(fedinfo, "zmq")
-h.helicsFederateInfoSetCoreInitString(fedinfo, "--broker=mainbroker --federates=1")
+h.helicsFederateInfoSetCoreInitString(fedinfo, "--federates=1")
 h.helicsFederateInfoSetTimeProperty(fedinfo, h.HELICS_PROPERTY_TIME_DELTA, 0.01)
 
 vfed = h.helicsCreateValueFederate("Federate1", fedinfo)
@@ -44,10 +51,8 @@ for t in range(5, 10):
 
     time.sleep(1)
 
-h.helicsFederateFinalize(vfed)
-
-h.helicsFederateFree(vfed)
-h.helicsCloseLibrary()
+h.helicsFederateDisconnect(vfed)
+h.helicsFederateDestroy(vfed)
 ```
 
 # Federate 2
@@ -77,8 +82,6 @@ while currenttime <= 100:
     value = h.helicsInputGetString(sub)
     print("RECEIVER: Received value = {} at time {} from SENDER".format(value, currenttime))
 
-h.helicsFederateFinalize(vfed)
-
-h.helicsFederateFree(vfed)
-h.helicsCloseLibrary()
+h.helicsFederateDisconnect(vfed)
+h.helicsFederateDestroy(vfed)
 ```
