@@ -1,34 +1,28 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
-
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
-import time
 import helics as h
-import os
-import pytest as pt
 
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker, createMessageFederate
+from .utils import (
+    create_broker,
+    create_value_federate,
+    destroy_federate,
+    destroy_broker,
+)
 
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
 def test_valuefederate_creation():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_state():
-
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     state = h.helicsFederateGetState(vFed)
     assert state == 0
@@ -38,13 +32,13 @@ def test_valuefederate_state():
     state = h.helicsFederateGetState(vFed)
     assert state == 2
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_publication_registration():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     pubid1 = h.helicsFederateRegisterTypePublication(vFed, "pub1", "string", "")
     pubid2 = h.helicsFederateRegisterGlobalTypePublication(vFed, "pub2", "int", "")
@@ -59,13 +53,13 @@ def test_valuefederate_publication_registration():
     assert h.helicsPublicationGetType(pubid3) == "double"
     assert h.helicsPublicationGetUnits(pubid3) == "V"
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_named_point():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     defaultValue = "start of a longer string in place of the shorter one and now this should be very long"
     defVal = 5.3
@@ -75,7 +69,9 @@ def test_valuefederate_named_point():
     testValue2 = "I am a string"
     testVal2 = 0.0
 
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_NAMED_POINT, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_NAMED_POINT, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
 
     h.helicsInputSetDefaultNamedPoint(subid, defaultValue, defVal)
@@ -107,20 +103,22 @@ def test_valuefederate_named_point():
     # # make sure the value was updated
     assert h.helicsInputGetNamedPoint(subid) == (testValue2, testVal2)
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_bool():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     defaultValue = True
     testValue1 = True
     testValue2 = False
 
     # register the publications
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_BOOLEAN, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_BOOLEAN, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
 
     h.helicsInputSetDefaultBoolean(subid, defaultValue)
@@ -156,17 +154,23 @@ def test_valuefederate_test_bool():
     val = h.helicsInputGetBoolean(subid)
     assert val == testValue2
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_publisher_registration():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
-    pubid1 = h.helicsFederateRegisterPublication(vFed, "pub1", h.HELICS_DATA_TYPE_STRING, "")
-    pubid2 = h.helicsFederateRegisterGlobalPublication(vFed, "pub2", h.HELICS_DATA_TYPE_INT, "")
-    pubid3 = h.helicsFederateRegisterPublication(vFed, "pub3", h.HELICS_DATA_TYPE_DOUBLE, "V")
+    pubid1 = h.helicsFederateRegisterPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_STRING, ""
+    )
+    pubid2 = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub2", h.HELICS_DATA_TYPE_INT, ""
+    )
+    pubid3 = h.helicsFederateRegisterPublication(
+        vFed, "pub3", h.HELICS_DATA_TYPE_DOUBLE, "V"
+    )
     h.helicsFederateEnterExecutingMode(vFed)
 
     publication_key = h.helicsPublicationGetName(pubid1)
@@ -184,17 +188,20 @@ def test_valuefederate_publisher_registration():
     publication_type = h.helicsPublicationGetType(pubid2)
     assert publication_type == "int64"
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_subscription_and_publication_registration():
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate(1, "fed0")
 
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate(1, "fed0")
-
-    pubid = h.helicsFederateRegisterPublication(vFed, "pub1", h.HELICS_DATA_TYPE_STRING, "")
-    pubid2 = h.helicsFederateRegisterGlobalPublication(vFed, "pub2", h.HELICS_DATA_TYPE_INT, "volts")
+    pubid = h.helicsFederateRegisterPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_STRING, ""
+    )
+    pubid2 = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub2", h.HELICS_DATA_TYPE_INT, "volts"
+    )
     pubid3 = h.helicsFederateRegisterTypePublication(vFed, "pub3", "double", "V")
 
     subid1 = h.helicsFederateRegisterSubscription(vFed, "sub1", "")
@@ -260,16 +267,17 @@ def test_valuefederate_subscription_and_publication_registration():
     state = h.helicsFederateGetState(vFed)
     assert state == h.HELICS_STATE_FINALIZE
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_single_transfer():
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
-
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_STRING, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_STRING, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
 
     h.helicsFederateEnterExecutingMode(vFed)
@@ -282,17 +290,19 @@ def test_valuefederate_single_transfer():
     s = h.helicsInputGetString(subid)
     assert s == "string1"
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_double():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     defaultValue = 1.0
     testValue = 2.0
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_DOUBLE, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_DOUBLE, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
     h.helicsInputSetDefaultDouble(subid, defaultValue)
 
@@ -319,19 +329,21 @@ def test_valuefederate_test_double():
     value = h.helicsInputGetDouble(subid)
     assert value == testValue + 1
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_complex():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     rDefaultValue = 1.0
     iDefaultValue = 1.0
     rTestValue = 2.0
     iTestValue = 2.0
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_COMPLEX, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_COMPLEX, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
     h.helicsInputSetDefaultComplex(subid, complex(rDefaultValue, iDefaultValue))
 
@@ -347,18 +359,19 @@ def test_valuefederate_test_complex():
 
     assert complex(rTestValue, iTestValue) == h.helicsInputGetComplex(subid)
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_integer():
-
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     defaultValue = 1
     testValue = 2
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_INT, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_INT, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
     h.helicsInputSetDefaultInteger(subid, defaultValue)
 
@@ -383,17 +396,19 @@ def test_valuefederate_test_integer():
     value = h.helicsInputGetInteger(subid)
     assert value == testValue + 1
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_string():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     defaultValue = "String1"
     testValue = "String2"
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_STRING, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_STRING, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
     h.helicsInputSetDefaultString(subid, defaultValue)
 
@@ -410,17 +425,19 @@ def test_valuefederate_test_string():
     value = h.helicsInputGetString(subid)
     assert value == testValue
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_vectord():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     defaultValue = [0.0, 1.0, 2.0]
     testValue = [3.0, 4.0, 5.0]
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_VECTOR, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_VECTOR, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
     h.helicsInputSetDefaultVector(subid, defaultValue)
 
@@ -437,17 +454,19 @@ def test_valuefederate_test_vectord():
 
     assert value == testValue
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_single_transfer():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
 
     s = "n2"
 
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_STRING, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_STRING, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
 
     h.helicsFederateEnterExecutingMode(vFed)
@@ -466,35 +485,53 @@ def test_valuefederate_test_single_transfer():
 
     h.helicsPublicationPublishString(pubid, "string2")
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_default_value_tests():
-    broker = createBroker()
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker()
+    vFed1, fedinfo = create_value_federate(1, "fed0")
 
-    inp_raw1 = h.helicsFederateRegisterInput(vFed1, "key1", h.HELICS_DATA_TYPE_RAW, "raw")
-    inp_raw2 = h.helicsFederateRegisterInput(vFed1, "key2", h.HELICS_DATA_TYPE_RAW, "raw")
+    inp_raw1 = h.helicsFederateRegisterInput(
+        vFed1, "key1", h.HELICS_DATA_TYPE_RAW, "raw"
+    )
+    inp_raw2 = h.helicsFederateRegisterInput(
+        vFed1, "key2", h.HELICS_DATA_TYPE_RAW, "raw"
+    )
 
-    inp_bool = h.helicsFederateRegisterInput(vFed1, "key3", h.HELICS_DATA_TYPE_BOOLEAN, "")
+    inp_bool = h.helicsFederateRegisterInput(
+        vFed1, "key3", h.HELICS_DATA_TYPE_BOOLEAN, ""
+    )
 
     inp_time = h.helicsFederateRegisterInput(vFed1, "key4", h.HELICS_DATA_TYPE_TIME, "")
 
-    inp_char = h.helicsFederateRegisterInput(vFed1, "key5", h.HELICS_DATA_TYPE_STRING, "")
+    inp_char = h.helicsFederateRegisterInput(
+        vFed1, "key5", h.HELICS_DATA_TYPE_STRING, ""
+    )
 
-    inp_vect = h.helicsFederateRegisterInput(vFed1, "key6", h.HELICS_DATA_TYPE_VECTOR, "V")
+    inp_vect = h.helicsFederateRegisterInput(
+        vFed1, "key6", h.HELICS_DATA_TYPE_VECTOR, "V"
+    )
 
-    inp_double = h.helicsFederateRegisterInput(vFed1, "key7", h.HELICS_DATA_TYPE_DOUBLE, "kW")
+    inp_double = h.helicsFederateRegisterInput(
+        vFed1, "key7", h.HELICS_DATA_TYPE_DOUBLE, "kW"
+    )
 
-    inp_double2 = h.helicsFederateRegisterInput(vFed1, "key8", h.HELICS_DATA_TYPE_DOUBLE, "")
+    inp_double2 = h.helicsFederateRegisterInput(
+        vFed1, "key8", h.HELICS_DATA_TYPE_DOUBLE, ""
+    )
 
-    inp_np = h.helicsFederateRegisterInput(vFed1, "key9", h.HELICS_DATA_TYPE_NAMED_POINT, "")
+    inp_np = h.helicsFederateRegisterInput(
+        vFed1, "key9", h.HELICS_DATA_TYPE_NAMED_POINT, ""
+    )
 
     h.helicsInputSetMinimumChange(inp_double, 1100.0)
     h.helicsInputSetDefaultDouble(inp_double, 10000.0)
 
-    h.helicsInputSetOption(inp_double2, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED, True)
+    h.helicsInputSetOption(
+        inp_double2, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED, True
+    )
 
     pub = h.helicsFederateRegisterPublication(vFed1, "", h.HELICS_DATA_TYPE_INT, "MW")
     h.helicsPublicationSetOption(pub, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED, True)
@@ -522,10 +559,14 @@ def test_valuefederate_default_value_tests():
     assert c2 == "q"
     h.helicsInputGetVector(inp_vect)
 
-    optset = h.helicsInputGetOption(inp_double2, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED)
+    optset = h.helicsInputGetOption(
+        inp_double2, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED
+    )
     assert optset == 1
 
-    optset = h.helicsPublicationGetOption(pub, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED)
+    optset = h.helicsPublicationGetOption(
+        pub, h.HELICS_HANDLE_OPTION_CONNECTION_REQUIRED
+    )
     assert optset == 1
     h.helicsPublicationPublishInteger(pub, 12)
 
@@ -564,16 +605,17 @@ def test_valuefederate_default_value_tests():
 
     h.helicsFederateDisconnect(vFed1)
 
-    destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_info_filed():
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate(1, "fed0")
 
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate(1, "fed0")
-
-    h.helicsFederateSetFlagOption(vFed, h.HELICS_HANDLE_OPTION_CONNECTION_OPTIONAL, True)
+    h.helicsFederateSetFlagOption(
+        vFed, h.HELICS_HANDLE_OPTION_CONNECTION_OPTIONAL, True
+    )
     # register the publications/subscriptions
 
     subid1 = h.helicsFederateRegisterSubscription(vFed, "sub1", "")
@@ -598,12 +640,11 @@ def test_valuefederate_test_info_filed():
         wait = h.helicsCoreWaitForDisconnect(cr, 500)
     assert wait is True
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)
 
 
 def test_valuefederate_test_file_load():
-
     filename = os.path.join(CURRENT_DIRECTORY, "valuefederate.json")
     vFed = h.helicsCreateValueFederateFromConfig(filename)
 
@@ -615,15 +656,16 @@ def test_valuefederate_test_file_load():
 
     h.helicsFederateDisconnect(vFed)
     h.helicsFederateFree(vFed)
-    h.helicsCloseLibrary()
 
 
 def test_valuefederate_test_bytes():
-    broker = createBroker()
-    vFed, fedinfo = createValueFederate()
+    broker = create_broker()
+    vFed, fedinfo = create_value_federate()
     defaultValue = bytes([1, 2, 3, 4, 5])
     testValue = bytes([5, 4, 3, 2, 1, 0, 255, 30, 17, 18, 19])
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_RAW, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed, "pub1", h.HELICS_DATA_TYPE_RAW, ""
+    )
     subid = h.helicsFederateRegisterSubscription(vFed, "pub1", "")
     h.helicsInputSetDefaultBytes(subid, defaultValue)
 
@@ -640,5 +682,5 @@ def test_valuefederate_test_bytes():
     value = h.helicsInputGetBytes(subid)
     assert value == testValue
 
-    destroyFederate(vFed, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed, fedinfo)
+    destroy_broker(broker)

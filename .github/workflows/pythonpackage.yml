@@ -1,0 +1,142 @@
+name: Build Python Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      use_qemu:
+        description: 'Use qemu to build linux, ppc64le & s390x'
+        required: false
+        default: 'false'
+  workflow_run:
+    workflows: ["HELICS Version Update"]
+    branches: [main]
+    types:
+      - completed
+  release:
+    types: published
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build-helics:
+    # No container needed, since the package is version agnostic
+    name: Build ${{ matrix.build }}${{ matrix.arch }} wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            arch: "x86_64"
+            build: "manylinux_"
+            artifact_suffix: "manylinux_x86_64"
+            use_qemu: false
+          - os: ubuntu-24.04-arm
+            arch: "aarch64"
+            build: "manylinux_"
+            artifact_suffix: "manylinux_aarch64"
+            use_qemu: false
+          - os: windows-2019
+            arch: "AMD64"
+            build: ""
+            artifact_suffix: "windows_x86_64"
+            use_qemu: false
+          - os: windows-2019
+            arch: "x86"
+            build: ""
+            artifact_suffix: "windows_x86"
+            use_qemu: false
+          - os: macos-14
+            arch: "universal2"
+            build: ""
+            artifact_suffix: "macos"
+            use_qemu: false
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # ensure history is present for automatic versioning
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3.1.0
+      if: runner.os == 'Linux' && matrix.use_qemu
+    - name: Build wheels
+      uses: pypa/cibuildwheel@v2.17.0
+      env:
+        CIBW_ARCHS: "${{ matrix.arch }}"
+        CIBW_ARCHS_MACOS: "universal2"
+        CIBW_BUILD: "cp39-${{ matrix.build }}*"
+        CIBW_BUILD_VERBOSITY: 3
+        CIBW_ENVIRONMENT: "CIBW_ARTIFACT_TYPE=${{ matrix.artifact_suffix }}"
+        CIBW_BEFORE_ALL_LINUX: >
+            mkdir /boost &&
+            pushd /boost &&
+            curl -L -o boost_1_76_0.tar.bz2 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' && 
+            tar xf boost_1_76_0.tar.bz2 &&
+            popd
+        CIBW_ENVIRONMENT_LINUX: BOOST_ROOT=/boost/boost_1_76_0
+    - uses: actions/upload-artifact@v4
+      with:
+        name: pyhelics-python-dist-${{matrix.artifact_suffix}}
+        path: wheelhouse/*.whl
+
+  build-helics-sdist:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # for setuptools_scm to find tags
+    
+    - name: Install boost
+      run:
+        mkdir /tmp/boost &&
+        pushd /tmp/boost &&
+        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
+        tar xf boost_1_76_0.tar.bz2 &&
+        popd
+    - name: Build sdist
+      run: BOOST_ROOT="/tmp/boost/boost_1_76_0" pipx run build --sdist
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: pyhelics-python-sdist
+        path: dist/*.tar.gz
+
+
+  check_helics-dist:
+    name: Check helics_apps Python packages
+    needs: [build-helics, build-helics-sdist]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - run: pipx run twine check --strict dist/*
+
+  publish-helics:
+    needs: [build-helics, build-helics-sdist, check_helics-dist]
+    runs-on: ubuntu-latest
+    if: github.event.action == 'published' || endsWith(github.ref, 'main')
+    environment:
+      name: pypi
+      url: https://pypi.org/p/helics
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    steps:
+    - name: Get the built packages
+      uses: actions/download-artifact@v4
+      with:
+        merge-multiple: true
+        path: dist
+
+    - name: Publish package to TestPyPI
+      if: endsWith(github.ref, 'main')
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.test_pypi_helics_password }}
+        repository-url: https://test.pypi.org/legacy/
+
+    - name: Publish package to PyPI
+      if: github.event.action == 'published'
+      uses: pypa/gh-action-pypi-publish@release/v1

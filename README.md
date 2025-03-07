@@ -52,3 +52,6 @@ Please share the output of the following command when creating an issue:
 ```
 $ python -c "import helics as h; import json; print(json.dumps(h.helicsGetSystemInfo(), indent=4, sort_keys=True))"
 ```
+# Citation
+General citation for HELICS:
+T. Hardy, B. Palmintier, P. Top, D. Krishnamurthy and J. Fuller, "HELICS: A Co-Simulation Framework for Scalable Multi-Domain Modeling and Analysis," in IEEE Access, doi: 10.1109/ACCESS.2024.3363615, available at [https://ieeexplore.ieee.org/document/10424422](https://ieeexplore.ieee.org/document/10424422/)

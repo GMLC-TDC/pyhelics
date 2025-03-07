@@ -1,0 +1,1 @@
+set(HELICS_VERSION 3.6.1)

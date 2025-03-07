@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
-import os
 import sys
 
-CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-
-sys.path.append(CURRENT_DIRECTORY)
-sys.path.append(os.path.dirname(CURRENT_DIRECTORY))
-
-import time
 import helics as h
 import pytest as pt
 
-from test_init import createBroker, createValueFederate, destroyFederate, destroyBroker
+from .utils import (
+    create_broker,
+    create_value_federate,
+    destroy_federate,
+    destroy_broker,
+)
+
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_iteration_execution_iteration_test():
-
-    broker = createBroker(1)
-    vFed1, fedinfo = createValueFederate(1, "fed0")
+    broker = create_broker(1)
+    vFed1, fedinfo = create_value_federate(1, "fed0")
     # register the publications
 
-    pubid = h.helicsFederateRegisterGlobalPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, "")
+    pubid = h.helicsFederateRegisterGlobalPublication(
+        vFed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, ""
+    )
 
     subid = h.helicsFederateRegisterSubscription(vFed1, "pub1", "")
     h.helicsFederateSetTimeProperty(vFed1, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
@@ -28,12 +28,16 @@ def test_iteration_execution_iteration_test():
     h.helicsFederateEnterInitializingMode(vFed1)
     h.helicsPublicationPublishDouble(pubid, 27.0)
 
-    comp = h.helicsFederateEnterExecutingModeIterative(vFed1, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED)
+    comp = h.helicsFederateEnterExecutingModeIterative(
+        vFed1, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED
+    )
     assert comp == h.HELICS_ITERATION_RESULT_ITERATING
     val = h.helicsInputGetDouble(subid)
     assert val == 27.0
 
-    comp = h.helicsFederateEnterExecutingModeIterative(vFed1, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED)
+    comp = h.helicsFederateEnterExecutingModeIterative(
+        vFed1, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED
+    )
 
     assert comp == h.HELICS_ITERATION_RESULT_NEXT_STEP
 
@@ -42,22 +46,25 @@ def test_iteration_execution_iteration_test():
     assert val2 == val
 
     h.helicsFederateDisconnect(vFed1)
-    destroyFederate(vFed1, fedinfo)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo)
+    destroy_broker(broker)
 
 
 @pt.mark.skipif(sys.platform == "win32", reason="Fails to pass on windows")
 def test_iteration_async_test():
-
-    broker = createBroker(1)
-    vFed1, fedinfo1 = createValueFederate(1, "fed0")
-    vFed2, fedinfo2 = createValueFederate(1, "fed1")
+    broker = create_broker(1)
+    vFed1, fedinfo1 = create_value_federate(1, "fed0")
+    vFed2, fedinfo2 = create_value_federate(1, "fed1")
 
     # register the publications
-    pub1 = h.helicsFederateRegisterGlobalPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_INT)
+    pub1 = h.helicsFederateRegisterGlobalPublication(
+        vFed1, "pub1", h.HELICS_DATA_TYPE_INT
+    )
 
     sub1 = h.helicsFederateRegisterSubscription(vFed2, "pub1")
-    pub2 = h.helicsFederateRegisterGlobalPublication(vFed2, "pub2", h.HELICS_DATA_TYPE_INT)
+    pub2 = h.helicsFederateRegisterGlobalPublication(
+        vFed2, "pub2", h.HELICS_DATA_TYPE_INT
+    )
 
     sub2 = h.helicsFederateRegisterSubscription(vFed1, "pub2")
     h.helicsFederateSetTimeProperty(vFed1, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
@@ -89,9 +96,13 @@ def test_iteration_async_test():
             h.helicsPublicationPublishInteger(pub1, c1)
             h.helicsPublicationPublishInteger(pub2, c2)
 
-        h.helicsFederateRequestTimeIterativeAsync(vFed1, 1.0, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED)
+        h.helicsFederateRequestTimeIterativeAsync(
+            vFed1, 1.0, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED
+        )
 
-        grantedTime, state = h.helicsFederateRequestTimeIterative(vFed2, 1.0, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED)
+        grantedTime, state = h.helicsFederateRequestTimeIterative(
+            vFed2, 1.0, h.HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED
+        )
         if c1 <= 10:
             # assert state == h.HELICS_ITERATION_RESULT_ITERATING
             assert grantedTime == 0.0
@@ -106,6 +117,6 @@ def test_iteration_async_test():
             # assert state == h.HELICS_ITERATION_RESULT_NEXT_STEP
             # assert grantedTime == 1.0
 
-    destroyFederate(vFed1, fedinfo1)
-    destroyFederate(vFed2, fedinfo2)
-    destroyBroker(broker)
+    destroy_federate(vFed1, fedinfo1)
+    destroy_federate(vFed2, fedinfo2)
+    destroy_broker(broker)

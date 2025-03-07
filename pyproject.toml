@@ -1,0 +1,82 @@
+[build-system]
+requires = ["scikit-build-core"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "helics"
+authors = [{ name = "GMLC-TDC", email = "helicsdevelopers@helics.org" }]
+description = "Python HELICS bindings"
+readme = "README.md"
+readme_content_type = "text/markdown"
+requires-python = ">=3.8"
+keywords = ["helics", "co-simulation"]
+license = { text = "BSD License" }
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Unix",
+  "Operating System :: POSIX",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Utilities",
+]
+dependencies = ["cffi>=1.6.0", "strip-hints", "click>=8"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+cli = [
+  "helics_cli_extras==0.0.1",
+  "matplotlib",
+]
+tests = ["pytest", "pytest-ordering", "pytest-cov", "pytest-runner"]
+dev = ["build", "pre-commit"]
+docs = [
+  "mkdocs",
+  "inari[mkdocs]",
+  "mkdocs-material",
+  "black",
+  "pygments",
+  "pymdown-extensions",
+]
+
+[project.scripts]
+helics = "helics.cli:cli"
+helics-cli = "helics.cli:cli"
+helics_app = "helics.bin:helics_app"
+helics_broker = "helics.bin:helics_broker"
+helics_broker_server = "helics.bin:helics_broker_server"
+helics_player = "helics.bin:helics_player"
+helics_recorder = "helics.bin:helics_recorder"
+
+[project.urls]
+Homepage = "https://github.com/GMLC-TDC/pyhelics"
+Discussions = "https://github.com/GMLC-TDC/HELICS/discussions"
+Documentation = "https://python.helics.org/"
+"Issue Tracker" = "https://github.com/GMLC-TDC/pyhelics/issues"
+"Source Code" = "https://github.com/GMLC-TDC/pyhelics"
+
+[tool.cibuildwheel]
+test-command = ["helics --version"]
+linux.manylinux-x86_64-image = "manylinux_2_28"
+linux.manylinux-aarch64-image = "manylinux_2_28"
+
+[tool.scikit-build]
+minimum-version = "0.8"
+cmake.version = ">=3.15"
+sdist.include = ["helics-src", "helics/_version.py"]
+sdist.exclude = ["build", "dist", "client", ".github", "helics_cli_extras"]
+wheel.install-dir = "helics/install"
+wheel.py-api = "py2.py3"
+wheel.expand-macos-universal-tags = true
+metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+sdist.cmake = true
+
+[tool.setuptools_scm] # Section required
+version_scheme = "no-guess-dev"     # Works well with SKBUILD version having postN and devM tags dropped, good for getting current HELICS version to download
+root = "."
+version_file = "helics/_version.py"

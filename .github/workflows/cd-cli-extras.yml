@@ -1,0 +1,81 @@
+name: CD - CLI Extras
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      publish_to_pypi:
+        description: 'Publish to PyPI'
+        required: true
+        type: boolean
+        default: false
+      publish_to_test_pypi:
+        description: 'Publish to TestPyPI'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  build-wheels:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ensure history is present for automatic versioning
+      - uses: actions/setup-node@v4
+
+      - name: Set up Python3
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+
+      - name: Install python3 dependencies
+        run: |
+          python -m pip install -U pip wheel setuptools cffi build
+      - name: Build cli_extras wheel
+        run: |
+          cd helics_cli_extras/client
+          npm install
+          npm run build
+          cp -r build ../helics_cli_extras/static
+          cd ..
+          python -m build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-cli-extras-dist
+          path: helics_cli_extras/dist/*
+
+  publish-helics:
+    needs: [build-wheels]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi-cli-extras
+      url: https://pypi.org/p/helics-cli-extras
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    steps:
+      - name: Get the built packages
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: helics_cli_extras/dist
+
+      - name: Publish package to TestPyPI
+        if: github.event.inputs.publish_to_test_pypi == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_PASSWORD }}
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: helics_cli_extras/dist
+
+      - name: Publish package to PyPI
+        if: github.event.inputs.publish_to_pypi == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: helics_cli_extras/dist
