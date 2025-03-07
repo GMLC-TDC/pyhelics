@@ -1,6 +1,6 @@
 # Pythonic interface
 
-Example of what it looks like to use the Pythonic interface:
+Example of what it looks like to use the Pythonic interface; [this code can also be found here](./examples/website_pythonic_interface). A more extensive example can be found in the [HELICS-Examples repository.](https://github.com/GMLC-TDC/HELICS-Examples/tree/main/user_guide_examples/advanced/advanced_default_pythonic)
 
 ```python
 import helics as h
@@ -40,16 +40,27 @@ data = "random-data"
 
 mFed.endpoints["TestFederate/ep1"].default_destination = "ep2"
 mFed.endpoints["TestFederate/ep1"].info = "information"
-
 mFed.endpoints["TestFederate/ep1"].send_data(data, "ep2", 1.0)
 
-mFed.publications["TestFederate/publication"].publish("first-time")
+print("Publishing string and reading as various data types")
 
+# Read data as bytes
+mFed.publications["TestFederate/publication"].publish(b"bytes")
 assert mFed.request_time(2.0) == 1.0
+print(f'mFed.subscriptions["TestFederate/publication"].bytes: {mFed.subscriptions["TestFederate/publication"].bytes}')
+assert mFed.subscriptions["TestFederate/publication"].bytes == b"bytes"
 
-print("""mFed.subscriptions["TestFederate/publication"].bytes: """, mFed.subscriptions["TestFederate/publication"].bytes)
+# Read data as a string
+mFed.publications["TestFederate/publication"].publish("string")
+mFed.request_time(3.0)
+print(f'mFed.subscriptions["TestFederate/publication"].string: {mFed.subscriptions["TestFederate/publication"].string}')
+assert mFed.subscriptions["TestFederate/publication"].string == "string"
 
-assert mFed.subscriptions["TestFederate/publication"].bytes == b"first-time"
+# Read data as a value and let HELICS figure out the right data type
+mFed.publications["TestFederate/publication"].publish("value")
+mFed.request_time(4.0)
+print(f'mFed.subscriptions["TestFederate/publication"].value: {mFed.subscriptions["TestFederate/publication"].value}')
+assert mFed.subscriptions["TestFederate/publication"].value == "value"
 
-print("Exiting...")
+print("Example complete")
 ```
