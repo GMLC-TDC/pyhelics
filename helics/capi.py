@@ -3807,7 +3807,7 @@ def helicsAppEnabled() -> bool:
     Returns true if the app library is enabled.
     """
     f = loadSym("helicsAppEnabled")
-    return f(app.handle)
+    return f()
 
 
 def helicsCreateApp(app_name: str, app_type:str, config_file:str, fedInfo: HelicsFederateInfo = None) -> HelicsApp:
