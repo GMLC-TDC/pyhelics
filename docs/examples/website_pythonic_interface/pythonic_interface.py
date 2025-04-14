@@ -1,14 +1,3 @@
-# Pythonic interface
-
-The following is an example of using the Pythonic interface for HELICS. This example shows the flexibility in data type reading of a HELICS publication. The code for this example can be [found here](https://github.com/GMLC-TDC/pyhelics/tree/main/docs/examples/website_pythonic_inteface) and is run with
-
-```shell
-$ python pythonic_interface.py
-```
-
-A more comprehensive example using the Pythonic interface can be found in the [HELICS-Examples repository](https://github.com/GMLC-TDC/HELICS-Examples/tree/main/user_guide_examples/advanced/advanced_default_pythonic).
-
-```python
 import helics as h
 
 broker = h.helicsCreateBroker("zmq", "", "-f 1 --name=mainbroker")
@@ -69,4 +58,3 @@ print(f'mFed.subscriptions["TestFederate/publication"].value: {mFed.subscription
 assert mFed.subscriptions["TestFederate/publication"].value == "value"
 
 print("Example complete")
-```
