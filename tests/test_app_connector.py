@@ -24,7 +24,7 @@ def test_connector_simple_tags():
         return
         
     fed_info = h.helicsCreateFederateInfo()
-    h.helicsFederateInfoSetCoreType(fed_info, h.HELICS_CORE_TYPE_TEST)
+    h.helicsFederateInfoSetCoreType(fed_info, h.HELICS_CORE_TYPE_INPROC)
     h.helicsFederateInfoSetTimeProperty(fed_info, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
     h.helicsFederateInfoSetCoreName(fed_info, "ccoref5")
     h.helicsFederateInfoSetCoreInitString(fed_info, "-f2 --brokername=conn_broker --autobroker")
