@@ -54,7 +54,7 @@ def test_connector_simple_tags():
     assert ret_time == 1.0
 
     val = h.helicsInputGetDouble(inp1)
-    assert math.isnan(val)
+    assert val == -1e49 #TODO: HELICS_INVALID_DOUBLE not defined in pyhelics yet
 
     val = h.helicsInputGetDouble(inp2)
     assert val == test_value
