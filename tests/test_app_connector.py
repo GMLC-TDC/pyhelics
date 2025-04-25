@@ -36,10 +36,10 @@ def test_connector_simple_tags():
 
     vFed = h.helicsCreateValueFederate("c1", fed_info)
 
-    pub1 = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_DOUBLE, None)
+    pub1 = h.helicsFederateRegisterGlobalPublication(vFed, "pub1", h.HELICS_DATA_TYPE_DOUBLE)
 
-    inp1 = h.helicsFederateRegisterGlobalInput(vFed, "inp1", h.HELICS_DATA_TYPE_DOUBLE, None)
-    inp2 = h.helicsFederateRegisterGlobalInput(vFed, "inp2", h.HELICS_DATA_TYPE_DOUBLE, None)
+    inp1 = h.helicsFederateRegisterGlobalInput(vFed, "inp1", h.HELICS_DATA_TYPE_DOUBLE)
+    inp2 = h.helicsFederateRegisterGlobalInput(vFed, "inp2", h.HELICS_DATA_TYPE_DOUBLE)
     h.helicsFederateSetGlobal(vFed, "tag2", "true")
 
     thread1 = threading.Thread(target=h.helicsAppRun, args=(conn1,))
