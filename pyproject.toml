@@ -10,11 +10,11 @@ readme = "README.md"
 readme_content_type = "text/markdown"
 requires-python = ">=3.8"
 keywords = ["helics", "co-simulation"]
-license = { text = "BSD License" }
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: Unix",
   "Operating System :: POSIX",
   "Operating System :: Microsoft :: Windows",
