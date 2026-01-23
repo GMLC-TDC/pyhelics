@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import Fa from 'svelte-fa/src/fa.svelte'
+  import Fa from 'svelte-fa'
   import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 </script>
 
@@ -192,7 +192,7 @@
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          {N} <span class="px-1" />
+          {N} <span class="px-1"></span>
           <Fa icon={faCaretDown} />
         </button>
         <ul
