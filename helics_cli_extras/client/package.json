@@ -15,7 +15,7 @@
 	},
 	"devDependencies": {
 		"@fortawesome/free-brands-svg-icons": "^5.15.4",
-		"@fortawesome/free-regular-svg-icons": "^5.15.4",
+		"@fortawesome/free-regular-svg-icons": "^7.1.0",
 		"@fortawesome/free-solid-svg-icons": "^5.15.4",
 		"@playwright/test": "^1.58.0",
 		"@sveltejs/adapter-static": "^1.0.0-next.29",
