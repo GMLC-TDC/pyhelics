@@ -72,7 +72,7 @@ if(SKBUILD_STATE STREQUAL "wheel")
     message(WARNING "Building HELICS from source (some features including ZeroMQ Core, IPC Core, and web server won't be available)")
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(HELICS_DISABLE_GIT_OPERATIONS ON)
 set(HELICS_ZMQ_SUBPROJECT ON)
 set(HELICS_ZMQ_FORCE_SUBPROJECT ON)
