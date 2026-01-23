@@ -14,6 +14,11 @@ from .utils import (
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
+pytestmark = pt.mark.skipif(
+    os.name == 'nt',
+    reason="Access violations during probably shut down in way too many of these tests"
+)
+
 
 def test_filter_type_tests_registration():
     broker = create_broker(2)
