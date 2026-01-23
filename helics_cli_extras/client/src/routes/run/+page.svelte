@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import { base } from "$app/paths";
   import { onMount, onDestroy, tick } from "svelte";
   import Fa from "svelte-fa";
@@ -360,15 +360,16 @@
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
           data-bs-dismiss="modal"
           aria-label="Close"
-        />
+        ></button>
       </div>
       <div class="modal-body relative p-4">
         <h5
           class="text-xl font-medium mb-2 text-blue-600 hover:text-blue-700 transition duration-300 ease-in-out"
         >
-          <label>Federate Name</label>
+          <label for="federate-name-input">Federate Name</label>
           <input
             type="text"
+            id="federate-name-input"
             class="
               form-control
               block
@@ -391,10 +392,11 @@
           />
         </h5>
         <p>
-          <label>exec:</label>
+          <label for="federate-executable-input">exec:</label>
           <code class="text-gray-700">
             <input
               type="text"
+              id="federate-executable-input"
               class="
               form-control
               block
@@ -418,10 +420,11 @@
           </code>
         </p>
         <p>
-          <label>dir:</label>
+          <label for="federate-dir-input">dir:</label>
           <span class="text-gray-700">
             <input
               type="text"
+              id="federate-dir-input"
               class="
               form-control
               block
@@ -491,14 +494,15 @@
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
           data-bs-dismiss="modal"
           aria-label="Close"
-        />
+        ></button>
       </div>
       <div class="modal-body relative p-4">
         <p>
-          <label>runner.json:</label>
+          <label for="runner-json-input">runner.json:</label>
           <span class="text-gray-700">
             <input
               type="text"
+              id="runner-json-input"
               class="
               form-control
               block
@@ -568,15 +572,16 @@
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
           data-bs-dismiss="modal"
           aria-label="Close"
-        />
+        ></button>
       </div>
       <div class="modal-body relative p-4">
         <h5
           class="text-xl font-medium mb-2 text-blue-600 hover:text-blue-700 transition duration-300 ease-in-out"
         >
-          <label>Federate Name</label>
+          <label for="federate-name-input-2">Federate Name</label>
           <input
             type="text"
+            id="federate-name-input-2"
             class="
               form-control
               block
@@ -599,10 +604,11 @@
           />
         </h5>
         <p>
-          <label>exec:</label>
+          <label for="federate-executable-input-2">exec:</label>
           <code class="text-gray-700">
             <input
               type="text"
+              id="federate-executable-input-2"
               class="
               form-control
               block
@@ -626,10 +632,11 @@
           </code>
         </p>
         <p>
-          <label>dir:</label>
+          <label for="federate-dir-input-2">dir:</label>
           <span class="text-gray-700">
             <input
               type="text"
+              id="federate-dir-input-2"
               class="
               form-control
               block
@@ -699,7 +706,7 @@
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
           data-bs-dismiss="modal"
           aria-label="Close"
-        />
+        ></button>
       </div>
       <pre class="overflow-scroll">
         <code class="text-gray-700 block whitespace-pre-wrap">

@@ -193,7 +193,7 @@
 <svelte:window on:resize={resize} />
 
 <div class="container">
-  <canvas bind:this={canvas} width={$width} height={$height} />
+  <canvas bind:this={canvas} width={$width} height={$height}></canvas>
 </div>
 
 <style>

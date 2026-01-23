@@ -48,7 +48,7 @@
       aria-checked={checked}
       aria-labelledby={`switch-${uniqueID}`}
       on:click={handleClick}
-    />
+    ></button>
   </div>
 {:else}
   <div class="s s--multi">

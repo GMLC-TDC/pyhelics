@@ -1,6 +1,6 @@
 <script>
   import '../app.css'
-  import { browser } from '$app/env'
+  import { browser } from '$app/environment'
   import { onMount } from 'svelte'
   import Navbar from '$lib/Navbar.svelte'
   onMount(async () => {
