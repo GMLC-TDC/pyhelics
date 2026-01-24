@@ -65,9 +65,6 @@ test-command = ["helics --version"]
 linux.manylinux-x86_64-image = "manylinux_2_28"
 linux.manylinux-aarch64-image = "manylinux_2_28"
 
-[tool.cibuildwheel.macos.environment]
-MACOSX_DEPLOYMENT_TARGET = "10.15"
-
 [tool.scikit-build]
 minimum-version = "0.8"
 cmake.version = ">=3.15"
