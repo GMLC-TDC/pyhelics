@@ -60,7 +60,7 @@ jobs:
       uses: docker/setup-qemu-action@v3.7.0
       if: runner.os == 'Linux' && matrix.use_qemu
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.17.0
+      uses: pypa/cibuildwheel@v3.3.1
       env:
         CIBW_ARCHS: "${{ matrix.arch }}"
         CIBW_ARCHS_MACOS: "universal2"
@@ -74,7 +74,7 @@ jobs:
             tar xf boost_1_76_0.tar.bz2 &&
             popd
         CIBW_ENVIRONMENT_LINUX: "${{ matrix.arch == 'aarch64' && 'BOOST_ROOT=/boost/boost_1_76_0 CMAKE_ARGS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5' || 'BOOST_ROOT=/boost/boost_1_76_0' }}"
-        CIBW_ENVIRONMENT_MACOS: "CMAKE_ARGS=-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
+        CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET=10.15 CMAKE_ARGS=-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
     - uses: actions/upload-artifact@v4
       with:
         name: pyhelics-python-dist-${{matrix.artifact_suffix}}
