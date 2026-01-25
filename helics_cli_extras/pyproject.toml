@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "helics-cli-extras"
-version = "0.0.1"
+version = "0.0.2"
 authors = [{ name = "Dheepak Krishnamurthy", email = "me@kdheepak.com" }]
 maintainers = [
     { name = "Dheepak Krishnamurthy", email = "me@kdheepak.com" },
