@@ -108,7 +108,7 @@ jobs:
     needs: [build-helics, build-helics-sdist]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           path: dist
           merge-multiple: true
@@ -125,7 +125,7 @@ jobs:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
     - name: Get the built packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         merge-multiple: true
         path: dist
