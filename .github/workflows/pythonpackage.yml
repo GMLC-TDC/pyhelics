@@ -75,7 +75,7 @@ jobs:
             popd
         CIBW_ENVIRONMENT_LINUX: "${{ matrix.arch == 'aarch64' && 'BOOST_ROOT=/boost/boost_1_76_0 CMAKE_ARGS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5' || 'BOOST_ROOT=/boost/boost_1_76_0' }}"
         CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET=10.15 CMAKE_ARGS=-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: pyhelics-python-dist-${{matrix.artifact_suffix}}
         path: wheelhouse/*.whl
@@ -97,7 +97,7 @@ jobs:
     - name: Build sdist
       run: BOOST_ROOT="/tmp/boost/boost_1_76_0" pipx run build --sdist
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: pyhelics-python-sdist
         path: dist/*.tar.gz
