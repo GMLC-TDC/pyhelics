@@ -127,7 +127,9 @@ class HelicsCoreType(IntEnum):
 HELICS_CORE_TYPE_DEFAULT = HelicsCoreType.DEFAULT
 HELICS_CORE_TYPE_ZMQ = HelicsCoreType.ZMQ
 HELICS_CORE_TYPE_MPI = HelicsCoreType.MPI
-HELICS_CORE_TYPE_TEST = HelicsCoreType.TEST
+# pyHELICS uses the normal ZMQ core for its test core alias; keep
+# HelicsCoreType.TEST available for the C enum value.
+HELICS_CORE_TYPE_TEST = HelicsCoreType.ZMQ
 HELICS_CORE_TYPE_INTERPROCESS = HelicsCoreType.INTERPROCESS
 HELICS_CORE_TYPE_IPC = HelicsCoreType.IPC
 HELICS_CORE_TYPE_TCP = HelicsCoreType.TCP
@@ -145,13 +147,13 @@ HELICS_CORE_TYPE_EXTRACT = HelicsCoreType.EXTRACT
 helics_core_type_default = HelicsCoreType.DEFAULT
 helics_core_type_zmq = HelicsCoreType.ZMQ
 helics_core_type_mpi = HelicsCoreType.MPI
-helics_core_type_test = HelicsCoreType.TEST
+helics_core_type_test = HelicsCoreType.ZMQ
 helics_core_type_interprocess = HelicsCoreType.INTERPROCESS
 helics_core_type_ipc = HelicsCoreType.IPC
 helics_core_type_tcp = HelicsCoreType.TCP
 helics_core_type_udp = HelicsCoreType.UDP
 helics_core_type_zmq_ss = HelicsCoreType.ZMQ_SS
-helics_core_type_zmq_test = HelicsCoreType.ZMQ_SS
+helics_core_type_zmq_test = HelicsCoreType.ZMQ
 helics_core_type_nng = HelicsCoreType.NNG
 helics_core_type_tcp_ss = HelicsCoreType.TCP_SS
 helics_core_type_http = HelicsCoreType.HTTP

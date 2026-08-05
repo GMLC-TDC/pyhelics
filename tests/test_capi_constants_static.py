@@ -68,9 +68,11 @@ def _module_alias(name):
     raise AssertionError("unsupported assignment for {}".format(name))
 
 
-def test_core_type_test_is_not_overwritten():
+def test_core_type_test_enum_and_pyhelics_aliases():
     assert _class_constant("HelicsCoreType", "TEST") == 3
-    assert _module_alias("HELICS_CORE_TYPE_TEST") == "HelicsCoreType.TEST"
+    assert _module_alias("HELICS_CORE_TYPE_TEST") == "HelicsCoreType.ZMQ"
+    assert _module_alias("helics_core_type_test") == "HelicsCoreType.ZMQ"
+    assert _module_alias("helics_core_type_zmq_test") == "HelicsCoreType.ZMQ"
 
 
 def test_current_data_type_constants():
