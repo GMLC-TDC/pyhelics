@@ -68,6 +68,18 @@ def _module_alias(name):
     raise AssertionError("unsupported assignment for {}".format(name))
 
 
+def _class_constant_names(class_name):
+    names = []
+    for node in _class(class_name).body:
+        if (
+            isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+        ):
+            names.append(node.targets[0].id)
+    return set(names)
+
+
 def test_core_type_test_enum_and_pyhelics_aliases():
     assert _class_constant("HelicsCoreType", "TEST") == 3
     assert _module_alias("HELICS_CORE_TYPE_TEST") == "HelicsCoreType.ZMQ"
@@ -100,9 +112,14 @@ def test_current_property_and_handle_option_constants():
 
 
 def test_current_iteration_request_and_state_constants():
-    assert _class_constant("HelicsIterationRequest", "HALT_OPERATIONS") == 5
-    assert _class_constant("HelicsIterationRequest", "ERROR") == 7
+    assert _class_constant("HelicsIterationRequest", "NO_ITERATION") == 0
+    assert _class_constant("HelicsIterationRequest", "FORCE_ITERATION") == 1
+    assert _class_constant("HelicsIterationRequest", "ITERATE_IF_NEEDED") == 2
     assert _class_constant("HelicsFederateState", "UNKNOWN") == -1
-    assert _module_alias("HELICS_ITERATION_REQUEST_HALT_OPERATIONS") == "HelicsIterationRequest.HALT_OPERATIONS"
-    assert _module_alias("HELICS_ITERATION_REQUEST_ERROR") == "HelicsIterationRequest.ERROR"
+    assert "HALT_OPERATIONS" not in _class_constant_names("HelicsIterationRequest")
+    assert "ERROR" not in _class_constant_names("HelicsIterationRequest")
+    assert not _module_assignments("HELICS_ITERATION_REQUEST_HALT_OPERATIONS")
+    assert not _module_assignments("HELICS_ITERATION_REQUEST_ERROR")
+    assert not _module_assignments("helics_iteration_request_halt_operations")
+    assert not _module_assignments("helics_iteration_request_error")
     assert _module_alias("HELICS_STATE_UNKNOWN") == "HelicsFederateState.UNKNOWN"

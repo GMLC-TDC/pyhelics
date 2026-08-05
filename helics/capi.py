@@ -843,21 +843,20 @@ class HelicsIterationRequest(IntEnum):
     NO_ITERATION = 0  # HelicsIterationRequest
     FORCE_ITERATION = 1  # HelicsIterationRequest
     ITERATE_IF_NEEDED = 2  # HelicsIterationRequest
-    HALT_OPERATIONS = 5  # HelicsIterationRequest
-    ERROR = 7  # HelicsIterationRequest
+
+
+# HELICS also defines HELICS_ITERATION_REQUEST_HALT_OPERATIONS and
+# HELICS_ITERATION_REQUEST_ERROR for internal coordination; pyHELICS
+# intentionally does not expose them as regular iteration requests.
 
 
 HELICS_ITERATION_REQUEST_NO_ITERATION = HelicsIterationRequest.NO_ITERATION
 HELICS_ITERATION_REQUEST_FORCE_ITERATION = HelicsIterationRequest.FORCE_ITERATION
 HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED = HelicsIterationRequest.ITERATE_IF_NEEDED
-HELICS_ITERATION_REQUEST_HALT_OPERATIONS = HelicsIterationRequest.HALT_OPERATIONS
-HELICS_ITERATION_REQUEST_ERROR = HelicsIterationRequest.ERROR
 
 helics_iteration_request_no_iteration = HelicsIterationRequest.NO_ITERATION
 helics_iteration_request_force_iteration = HelicsIterationRequest.FORCE_ITERATION
 helics_iteration_request_iterate_if_needed = HelicsIterationRequest.ITERATE_IF_NEEDED
-helics_iteration_request_halt_operations = HelicsIterationRequest.HALT_OPERATIONS
-helics_iteration_request_error = HelicsIterationRequest.ERROR
 
 
 @unique
