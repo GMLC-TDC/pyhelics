@@ -1233,6 +1233,10 @@ class HelicsCore(_HelicsCHandle):
         """Check if the core is connected to the broker."""
         return helicsCoreIsConnected(self)
 
+    def is_open_to_new_federates(self) -> bool:
+        """Check if the core is open to new federates."""
+        return helicsCoreIsOpenToNewFederates(self)
+
     def clone(self):
         return helicsCoreClone(self)
 
@@ -1358,6 +1362,14 @@ class HelicsBroker(_HelicsCHandle):
     def is_connected(self):
         """Check if the broker is connected."""
         return helicsBrokerIsConnected(self) is True
+
+    def is_root(self) -> bool:
+        """Check if the broker is the root broker."""
+        return helicsBrokerIsRoot(self)
+
+    def is_open_to_new_federates(self) -> bool:
+        """Check if the broker is open to new federates."""
+        return helicsBrokerIsOpenToNewFederates(self)
 
     def wait_for_disconnect(self, ms_to_wait: int = -1):
         """
@@ -3375,6 +3387,28 @@ def helicsBrokerIsConnected(broker: HelicsBroker) -> bool:
     return result == 1
 
 
+def helicsBrokerIsRoot(broker: HelicsBroker) -> bool:
+    """
+    Check if a broker is the root broker.
+
+    **Returns**: `True` if the broker is the root broker, `False` otherwise.
+    """
+    f = loadSym("helicsBrokerIsRoot")
+    result = f(broker.handle)
+    return result == 1
+
+
+def helicsBrokerIsOpenToNewFederates(broker: HelicsBroker) -> bool:
+    """
+    Check if a broker is open to new federates.
+
+    **Returns**: `True` if new federates can still join, `False` otherwise.
+    """
+    f = loadSym("helicsBrokerIsOpenToNewFederates")
+    result = f(broker.handle)
+    return result == 1
+
+
 def helicsBrokerAddAlias(broker: HelicsBroker, interface_name: str, alias: str):
     """
     Create an alias for an interface.
@@ -3502,6 +3536,17 @@ def helicsCoreIsConnected(core: HelicsCore) -> bool:
     **Returns**: `True` if connected, `False` if not connected.
     """
     f = loadSym("helicsCoreIsConnected")
+    result = f(core.handle)
+    return result == 1
+
+
+def helicsCoreIsOpenToNewFederates(core: HelicsCore) -> bool:
+    """
+    Check if a core is open to new federates.
+
+    **Returns**: `True` if new federates can still join, `False` otherwise.
+    """
+    f = loadSym("helicsCoreIsOpenToNewFederates")
     result = f(core.handle)
     return result == 1
 
@@ -4538,7 +4583,7 @@ def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string
 def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
     f = loadSym("helicsBrokerGlobalError")
     err = helicsErrorInitialize()
-    f(broker.handle, error_code, error_string, err)
+    f(broker.handle, error_code, cstring(error_string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4546,7 +4591,7 @@ def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string:
 def helicsCoreGlobalError(core: HelicsCore, error_code: int, error_string: str):
     f = loadSym("helicsCoreGlobalError")
     err = helicsErrorInitialize()
-    f(core.handle, error_code, error_string, err)
+    f(core.handle, error_code, cstring(error_string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -6598,7 +6643,10 @@ def helicsFederateGetTag(fed: HelicsFederate, tagname: str):
     """
 
     f = loadSym("helicsFederateGetTag")
-    result = f(fed.handle, cstring(tagname))
+    err = helicsErrorInitialize()
+    result = f(fed.handle, cstring(tagname), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     return ffi.string(result).decode()
 
 
@@ -7227,7 +7275,10 @@ def helicsMessageClear(message: HelicsMessage):
     - **`message`** - The message object in question.
     """
     f = loadSym("helicsMessageClear")
-    f(message.handle)
+    err = helicsErrorInitialize()
+    f(message.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsMessageSetFlagOption(message: HelicsMessage, flag: int, value: bool):
@@ -7336,7 +7387,7 @@ def helicsMessageCopy(source_message: HelicsMessage, destination_message: Helics
     """
     f = loadSym("helicsMessageCopy")
     err = helicsErrorInitialize()
-    f(source_message, destination_message, err)
+    f(source_message.handle, destination_message.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -8706,7 +8757,8 @@ def helicsPublicationPublishVector(pub: HelicsPublication, vectorInput: List[flo
     f = loadSym("helicsPublicationPublishVector")
     err = helicsErrorInitialize()
     vectorLength = len(vectorInput)
-    f(pub.handle, vectorInput, vectorLength, err)
+    values = ffi.NULL if vectorLength == 0 else ffi.new("double[]", vectorInput)
+    f(pub.handle, values, vectorLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -8723,7 +8775,9 @@ def helicsPublicationPublishComplexVector(pub: HelicsPublication, vectorInput: L
     f = loadSym("helicsPublicationPublishComplexVector")
     err = helicsErrorInitialize()
     vectorLength = len(vectorInput)
-    f(pub.handle, [item for c in vectorInput for item in [c.real, c.imag]], vectorLength * 2, err)
+    vectorValues = [item for c in vectorInput for item in [c.real, c.imag]]
+    values = ffi.NULL if vectorLength == 0 else ffi.new("double[]", vectorValues)
+    f(pub.handle, values, vectorLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -10090,8 +10144,9 @@ def helicsQueryBufferFill(buffer: HelicsQueryBuffer, string: str):
     """
     f = loadSym("helicsQueryBufferFill")
     err = helicsErrorInitialize()
-    str_ptr = ffi.new('char[]', string.encode('utf-8'))
-    f(buffer.handle, str_ptr, len(string), err)
+    query_result = string.encode("utf-8")
+    str_ptr = ffi.new("char[]", query_result)
+    f(buffer.handle, str_ptr, len(query_result), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
