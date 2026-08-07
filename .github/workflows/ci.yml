@@ -41,7 +41,7 @@ jobs:
         run: |
           pytest --import-mode importlib -vvv --cov=./ --cov-report=xml:unit.coverage.xml
       - name: Upload unit test coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./unit.coverage.xml
