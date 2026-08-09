@@ -127,13 +127,14 @@ class HelicsCoreType(IntEnum):
 HELICS_CORE_TYPE_DEFAULT = HelicsCoreType.DEFAULT
 HELICS_CORE_TYPE_ZMQ = HelicsCoreType.ZMQ
 HELICS_CORE_TYPE_MPI = HelicsCoreType.MPI
-HELICS_CORE_TYPE_TEST = HelicsCoreType.TEST
+# pyHELICS uses the normal ZMQ core for its test core alias; keep
+# HelicsCoreType.TEST available for the C enum value.
+HELICS_CORE_TYPE_TEST = HelicsCoreType.ZMQ
 HELICS_CORE_TYPE_INTERPROCESS = HelicsCoreType.INTERPROCESS
 HELICS_CORE_TYPE_IPC = HelicsCoreType.IPC
 HELICS_CORE_TYPE_TCP = HelicsCoreType.TCP
 HELICS_CORE_TYPE_UDP = HelicsCoreType.UDP
 HELICS_CORE_TYPE_ZMQ_SS = HelicsCoreType.ZMQ_SS
-HELICS_CORE_TYPE_TEST = HelicsCoreType.ZMQ_SS
 HELICS_CORE_TYPE_NNG = HelicsCoreType.NNG
 HELICS_CORE_TYPE_TCP_SS = HelicsCoreType.TCP_SS
 HELICS_CORE_TYPE_HTTP = HelicsCoreType.HTTP
@@ -146,13 +147,13 @@ HELICS_CORE_TYPE_EXTRACT = HelicsCoreType.EXTRACT
 helics_core_type_default = HelicsCoreType.DEFAULT
 helics_core_type_zmq = HelicsCoreType.ZMQ
 helics_core_type_mpi = HelicsCoreType.MPI
-helics_core_type_test = HelicsCoreType.TEST
+helics_core_type_test = HelicsCoreType.ZMQ
 helics_core_type_interprocess = HelicsCoreType.INTERPROCESS
 helics_core_type_ipc = HelicsCoreType.IPC
 helics_core_type_tcp = HelicsCoreType.TCP
 helics_core_type_udp = HelicsCoreType.UDP
 helics_core_type_zmq_ss = HelicsCoreType.ZMQ_SS
-helics_core_type_zmq_test = HelicsCoreType.ZMQ_SS
+helics_core_type_zmq_test = HelicsCoreType.ZMQ
 helics_core_type_nng = HelicsCoreType.NNG
 helics_core_type_tcp_ss = HelicsCoreType.TCP_SS
 helics_core_type_http = HelicsCoreType.HTTP
@@ -181,6 +182,7 @@ class HelicsDataType(IntEnum):
     - **ANY**
     """
 
+    UNKNOWN = -1  # HelicsDataType
     STRING = 0  # HelicsDataType
     DOUBLE = 1  # HelicsDataType
     INT = 2  # HelicsDataType
@@ -190,14 +192,16 @@ class HelicsDataType(IntEnum):
     NAMED_POINT = 6  # HelicsDataType
     BOOLEAN = 7  # HelicsDataType
     TIME = 8  # HelicsDataType
+    CHAR = 9  # HelicsDataType
     RAW = 25  # HelicsDataType
     JSON = 30  # HelicsDataType
     MULTI = 33  # HelicsDataType
     ANY = 25262  # HelicsDataType
 
 
+HELICS_DATA_TYPE_UNKNOWN = HelicsDataType.UNKNOWN
 HELICS_DATA_TYPE_STRING = HelicsDataType.STRING
-HELICS_DATA_TYPE_CHAR = HelicsDataType.STRING
+HELICS_DATA_TYPE_CHAR = HelicsDataType.CHAR
 HELICS_DATA_TYPE_DOUBLE = HelicsDataType.DOUBLE
 HELICS_DATA_TYPE_INT = HelicsDataType.INT
 HELICS_DATA_TYPE_COMPLEX = HelicsDataType.COMPLEX
@@ -211,8 +215,9 @@ HELICS_DATA_TYPE_JSON = HelicsDataType.JSON
 HELICS_DATA_TYPE_MULTI = HelicsDataType.MULTI
 HELICS_DATA_TYPE_ANY = HelicsDataType.ANY
 
+helics_data_type_unknown = HELICS_DATA_TYPE_UNKNOWN
 helics_data_type_string = HelicsDataType.STRING
-helics_data_type_char = HelicsDataType.STRING
+helics_data_type_char = HelicsDataType.CHAR
 helics_data_type_double = HelicsDataType.DOUBLE
 helics_data_type_int = HelicsDataType.INT
 helics_data_type_complex = HelicsDataType.COMPLEX
@@ -401,9 +406,11 @@ class HelicsCoreFlag(IntEnum):
 
 HELICS_FLAG_DELAY_INIT_ENTRY = HelicsCoreFlag.DELAY_INIT_ENTRY
 HELICS_FLAG_ENABLE_INIT_ENTRY = HelicsCoreFlag.ENABLE_INIT_ENTRY
+HELICS_FLAG_IGNORE = HelicsCoreFlag.IGNORE
 
 helics_flag_delay_init_entry = HelicsCoreFlag.DELAY_INIT_ENTRY
 helics_flag_enable_init_entry = HelicsCoreFlag.ENABLE_INIT_ENTRY
+helics_flag_ignore = HelicsCoreFlag.IGNORE
 
 if HELICS_VERSION == 2:
 
@@ -519,7 +526,7 @@ class HelicsError(IntEnum):
     FATAL = -404  # HelicsErrorTypes
     EXTERNAL_TYPE = -203  # HelicsErrorTypes
     OTHER = -101  # HelicsErrorTypes
-    USER_ABORT = -27  # HelicsErrorTypes
+    USER_EXCEPTION = -29  # HelicsErrorTypes
     INSUFFICIENT_SPACE = -18  # HelicsErrorTypes
     EXECUTION_FAILURE = -14  # HelicsErrorTypes
     INVALID_FUNCTION_CALL = -10  # HelicsErrorTypes
@@ -532,11 +539,14 @@ class HelicsError(IntEnum):
     CONNECTION_FAILURE = -2  # HelicsErrorTypes
     REGISTRATION_FAILURE = -1  # HelicsErrorTypes
     OK = 0  # HelicsErrorTypes
+    USER_ABORT = 130  # HelicsErrorTypes
+    TERMINATED = 143  # HelicsErrorTypes
 
 
 HELICS_ERROR_FATAL = HelicsError.FATAL
 HELICS_ERROR_EXTERNAL_TYPE = HelicsError.EXTERNAL_TYPE
 HELICS_ERROR_OTHER = HelicsError.OTHER
+HELICS_USER_EXCEPTION = HelicsError.USER_EXCEPTION
 HELICS_ERROR_USER_ABORT = HelicsError.USER_ABORT
 HELICS_ERROR_INSUFFICIENT_SPACE = HelicsError.INSUFFICIENT_SPACE
 HELICS_ERROR_EXECUTION_FAILURE = HelicsError.EXECUTION_FAILURE
@@ -550,10 +560,12 @@ HELICS_ERROR_INVALID_OBJECT = HelicsError.INVALID_OBJECT
 HELICS_ERROR_CONNECTION_FAILURE = HelicsError.CONNECTION_FAILURE
 HELICS_ERROR_REGISTRATION_FAILURE = HelicsError.REGISTRATION_FAILURE
 HELICS_OK = HelicsError.OK
+HELICS_ERROR_TERMINATED = HelicsError.TERMINATED
 
 helics_error_fatal = HelicsError.FATAL
 helics_error_external_type = HelicsError.EXTERNAL_TYPE
 helics_error_other = HelicsError.OTHER
+helics_user_exception = HelicsError.USER_EXCEPTION
 helics_error_user_abort = HelicsError.USER_ABORT
 helics_error_insufficient_space = HelicsError.INSUFFICIENT_SPACE
 helics_error_execution_failure = HelicsError.EXECUTION_FAILURE
@@ -567,6 +579,7 @@ helics_error_invalid_object = HelicsError.INVALID_OBJECT
 helics_error_connection_failure = HelicsError.CONNECTION_FAILURE
 helics_error_registration_failure = HelicsError.REGISTRATION_FAILURE
 helics_ok = HelicsError.OK
+helics_error_terminated = HelicsError.TERMINATED
 
 
 @unique
@@ -607,7 +620,8 @@ class HelicsProperty(IntEnum):
     INT_FILE_LOG_LEVEL = 272  # HelicsProperties
     INT_CONSOLE_LOG_LEVEL = 274  # HelicsProperties
     INT_LOG_BUFFER = 276  # HelicsProperties
-    INT_INDEX_GROUP = 278  # HelicsProperties
+    INT_INDEX_GROUP = 282  # HelicsProperties
+    INT_VALUE_BUFFER_WARNING = 283  # HelicsProperties
 
 
 HELICS_INVALID_OPTION_INDEX = -101
@@ -631,6 +645,7 @@ HELICS_PROPERTY_INT_FILE_LOG_LEVEL = HelicsProperty.INT_FILE_LOG_LEVEL
 HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL = HelicsProperty.INT_CONSOLE_LOG_LEVEL
 HELICS_PROPERTY_INT_LOG_BUFFER = HelicsProperty.INT_LOG_BUFFER
 HELICS_PROPERTY_INT_INDEX_GROUP = HelicsProperty.INT_INDEX_GROUP
+HELICS_PROPERTY_INT_VALUE_BUFFER_WARNING = HelicsProperty.INT_VALUE_BUFFER_WARNING
 
 helics_property_time_delta = HelicsProperty.TIME_DELTA
 helics_property_time_period = HelicsProperty.TIME_PERIOD
@@ -649,6 +664,7 @@ helics_property_int_file_log_level = HelicsProperty.INT_FILE_LOG_LEVEL
 helics_property_int_console_log_level = HelicsProperty.INT_CONSOLE_LOG_LEVEL
 helics_property_int_log_buffer = HelicsProperty.INT_LOG_BUFFER
 helics_property_int_index_group = HelicsProperty.INT_INDEX_GROUP
+helics_property_int_value_buffer_warning = HelicsProperty.INT_VALUE_BUFFER_WARNING
 
 
 @unique
@@ -736,6 +752,7 @@ class HelicsHandleOption(IntEnum):
     INPUT_PRIORITY_LOCATION = 510  # HelicsHandleOptions
     CLEAR_PRIORITY_LIST = 512  # HelicsHandleOptions
     CONNECTIONS = 522  # HelicsHandleOptions
+    TIME_RESTRICTED = 557  # HelicsHandleOptions
  
 
 HELICS_HANDLE_OPTION_CONNECTION_REQUIRED = HelicsHandleOption.CONNECTION_REQUIRED
@@ -755,6 +772,7 @@ HELICS_HANDLE_OPTION_MULTI_INPUT_HANDLING_METHOD = HelicsHandleOption.MULTI_INPU
 HELICS_HANDLE_OPTION_INPUT_PRIORITY_LOCATION = HelicsHandleOption.INPUT_PRIORITY_LOCATION
 HELICS_HANDLE_OPTION_CLEAR_PRIORITY_LIST = HelicsHandleOption.CLEAR_PRIORITY_LIST
 HELICS_HANDLE_OPTION_CONNECTIONS = HelicsHandleOption.CONNECTIONS
+HELICS_HANDLE_OPTION_TIME_RESTRICTED = HelicsHandleOption.TIME_RESTRICTED
 
 helics_handle_option_connection_required = HelicsHandleOption.CONNECTION_REQUIRED
 helics_handle_option_connection_optional = HelicsHandleOption.CONNECTION_OPTIONAL
@@ -773,6 +791,7 @@ helics_handle_option_multi_input_handling_method = HelicsHandleOption.MULTI_INPU
 helics_handle_option_input_priority_location = HelicsHandleOption.INPUT_PRIORITY_LOCATION
 helics_handle_option_clear_priority_list = HelicsHandleOption.CLEAR_PRIORITY_LIST
 helics_handle_option_connections = HelicsHandleOption.CONNECTIONS
+helics_handle_option_time_restricted = HelicsHandleOption.TIME_RESTRICTED
 
 
 @unique
@@ -826,6 +845,11 @@ class HelicsIterationRequest(IntEnum):
     ITERATE_IF_NEEDED = 2  # HelicsIterationRequest
 
 
+# HELICS also defines HELICS_ITERATION_REQUEST_HALT_OPERATIONS and
+# HELICS_ITERATION_REQUEST_ERROR for internal coordination; pyHELICS
+# intentionally does not expose them as regular iteration requests.
+
+
 HELICS_ITERATION_REQUEST_NO_ITERATION = HelicsIterationRequest.NO_ITERATION
 HELICS_ITERATION_REQUEST_FORCE_ITERATION = HelicsIterationRequest.FORCE_ITERATION
 HELICS_ITERATION_REQUEST_ITERATE_IF_NEEDED = HelicsIterationRequest.ITERATE_IF_NEEDED
@@ -877,6 +901,7 @@ class HelicsFederateState(IntEnum):
     - **FINISHED**
     """
 
+    UNKNOWN = -1  # HelicsFederateState
     STARTUP = 0  # HelicsFederateState
     INITIALIZATION = 1  # HelicsFederateState
     EXECUTION = 2  # HelicsFederateState
@@ -890,6 +915,7 @@ class HelicsFederateState(IntEnum):
     FINISHED = 10  # HelicsFederateState
 
 
+HELICS_STATE_UNKNOWN = HelicsFederateState.UNKNOWN
 HELICS_STATE_STARTUP = HelicsFederateState.STARTUP
 HELICS_STATE_INITIALIZATION = HelicsFederateState.INITIALIZATION
 HELICS_STATE_EXECUTION = HelicsFederateState.EXECUTION
@@ -902,6 +928,7 @@ HELICS_STATE_PENDING_ITERATIVE_TIME = HelicsFederateState.PENDING_ITERATIVE_TIME
 HELICS_STATE_PENDING_FINALIZE = HelicsFederateState.PENDING_FINALIZE
 HELICS_STATE_FINISHED = HelicsFederateState.FINISHED
 
+helics_state_unknown = HelicsFederateState.UNKNOWN
 helics_state_startup = HelicsFederateState.STARTUP
 helics_state_initialization = HelicsFederateState.INITIALIZATION
 helics_state_execution = HelicsFederateState.EXECUTION
@@ -1005,6 +1032,31 @@ class _FilterOptionAccessor(_HelicsCHandle):
         raise NotImplementedError("Cannot delete index: {}".format(index))
 
 
+class _TranslatorOptionAccessor(_HelicsCHandle):
+    def __getitem__(self, index):
+        if type(index) == str:
+            idx = helicsGetOptionIndex(index)
+        else:
+            idx = HelicsHandleOption(index)
+        return helicsTranslatorGetOption(HelicsTranslator(self.handle, cleanup=False), idx)
+
+    def __setitem__(self, index, value):
+        if type(index) == str:
+            idx = helicsGetOptionIndex(index)
+        else:
+            idx = HelicsHandleOption(index)
+        return helicsTranslatorSetOption(HelicsTranslator(self.handle, cleanup=False), idx, value)
+
+    def __repr__(self):
+        lst = []
+        for o in HelicsHandleOption:
+            lst.append("'{}' = {}".format(o.name, self[o]))
+        return "<{{ {} }}>".format(", ".join(lst))
+
+    def __delitem__(self, index):
+        raise NotImplementedError("Cannot delete index: {}".format(index))
+
+
 class HelicsFilter(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
         super().__init__(handle, cleanup=cleanup)
@@ -1082,6 +1134,70 @@ class HelicsCloningFilter(HelicsFilter):
 class HelicsTranslator(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
         super().__init__(handle, cleanup=cleanup)
+        self.option = _TranslatorOptionAccessor(self.handle, cleanup=False)
+
+    def __repr__(self):
+        name = self.name
+        info = self.info
+        return """<helics.{class_name}(name = "{name}", info = "{info}") at {id}>""".format(
+            class_name=self.__class__.__name__, name=name, info=info, id=hex(id(self))
+        )
+
+    def is_valid(self) -> bool:
+        """Check if the translator is valid."""
+        return helicsTranslatorIsValid(self)
+
+    @property
+    def name(self) -> str:
+        """Get the name of the translator."""
+        return helicsTranslatorGetName(self)
+
+    @property
+    def info(self) -> str:
+        """Get the interface information field of the translator."""
+        return helicsTranslatorGetInfo(self)
+
+    @info.setter
+    def info(self, info: str):
+        """Set the interface information field of the translator."""
+        helicsTranslatorSetInfo(self, info)
+
+    def set(self, property: str, value: float):
+        """Set a numerical property on a translator."""
+        helicsTranslatorSet(self, property, value)
+
+    def set_string(self, property: str, value: str):
+        """Set a string property on a translator."""
+        helicsTranslatorSetString(self, property, value)
+
+    def add_input_target(self, input: str):
+        """Add an input target to a translator."""
+        helicsTranslatorAddInputTarget(self, input)
+
+    def add_publication_target(self, publication: str):
+        """Add a publication target to a translator."""
+        helicsTranslatorAddPublicationTarget(self, publication)
+
+    def add_source_endpoint(self, source: str):
+        """Add a source endpoint target to a translator."""
+        helicsTranslatorAddSourceEndpoint(self, source)
+
+    def add_destination_endpoint(self, destination: str):
+        """Add a destination endpoint target to a translator."""
+        helicsTranslatorAddDestinationEndpoint(self, destination)
+
+    def remove_target(self, target: str):
+        """Remove a target from a translator."""
+        helicsTranslatorRemoveTarget(self, target)
+
+    def get_tag(self, tagname: str) -> str:
+        """Get a tag value from a translator."""
+        return helicsTranslatorGetTag(self, tagname)
+
+    def set_tag(self, tagname: str, tagvalue: str):
+        """Set a tag value on a translator."""
+        helicsTranslatorSetTag(self, tagname, tagvalue)
+
 
 class HelicsApp(_HelicsCHandle):
     def __init__(self, handle, cleanup=True):
@@ -1116,6 +1232,10 @@ class HelicsCore(_HelicsCHandle):
     def is_connected(self) -> bool:
         """Check if the core is connected to the broker."""
         return helicsCoreIsConnected(self)
+
+    def is_open_to_new_federates(self) -> bool:
+        """Check if the core is open to new federates."""
+        return helicsCoreIsOpenToNewFederates(self)
 
     def clone(self):
         return helicsCoreClone(self)
@@ -1242,6 +1362,14 @@ class HelicsBroker(_HelicsCHandle):
     def is_connected(self):
         """Check if the broker is connected."""
         return helicsBrokerIsConnected(self) is True
+
+    def is_root(self) -> bool:
+        """Check if the broker is the root broker."""
+        return helicsBrokerIsRoot(self)
+
+    def is_open_to_new_federates(self) -> bool:
+        """Check if the broker is open to new federates."""
+        return helicsBrokerIsOpenToNewFederates(self)
 
     def wait_for_disconnect(self, ms_to_wait: int = -1):
         """
@@ -1576,11 +1704,32 @@ class HelicsEndpoint(_HelicsCHandle):
 
     def send_data(self, data: Union[bytes, HelicsMessage], destination: str = None, time=None):
         if type(data) == HelicsMessage:
-            helicsEndpointSendMessage(self, cast(HelicsMessage, data))
+            message = cast(HelicsMessage, data)
+            if destination is not None:
+                message.destination = destination
+            if time is not None:
+                message.time = time
+            helicsEndpointSendMessage(self, message)
+        elif destination is None and time is None:
+            helicsEndpointSendBytes(self, cast(bytes, data))
+        elif destination is None:
+            helicsEndpointSendBytesAt(self, cast(bytes, data), time)
         elif time is None:
             helicsEndpointSendBytesTo(self, cast(bytes, data), cast(str, destination))
         else:
             helicsEndpointSendBytesToAt(self, cast(bytes, data), cast(str, destination), time)
+
+    def add_source_target(self, source: str):
+        """Add a source target to an endpoint."""
+        helicsEndpointAddSourceTarget(self, source)
+
+    def add_destination_target(self, destination: str):
+        """Add a destination target to an endpoint."""
+        helicsEndpointAddDestinationTarget(self, destination)
+
+    def remove_target(self, target: str):
+        """Remove a target from an endpoint."""
+        helicsEndpointRemoveTarget(self, target)
 
     def subscribe(self, name: str):
         """Subscribe an endpoint to a publication."""
@@ -3238,6 +3387,28 @@ def helicsBrokerIsConnected(broker: HelicsBroker) -> bool:
     return result == 1
 
 
+def helicsBrokerIsRoot(broker: HelicsBroker) -> bool:
+    """
+    Check if a broker is the root broker.
+
+    **Returns**: `True` if the broker is the root broker, `False` otherwise.
+    """
+    f = loadSym("helicsBrokerIsRoot")
+    result = f(broker.handle)
+    return result == 1
+
+
+def helicsBrokerIsOpenToNewFederates(broker: HelicsBroker) -> bool:
+    """
+    Check if a broker is open to new federates.
+
+    **Returns**: `True` if new federates can still join, `False` otherwise.
+    """
+    f = loadSym("helicsBrokerIsOpenToNewFederates")
+    result = f(broker.handle)
+    return result == 1
+
+
 def helicsBrokerAddAlias(broker: HelicsBroker, interface_name: str, alias: str):
     """
     Create an alias for an interface.
@@ -3365,6 +3536,17 @@ def helicsCoreIsConnected(core: HelicsCore) -> bool:
     **Returns**: `True` if connected, `False` if not connected.
     """
     f = loadSym("helicsCoreIsConnected")
+    result = f(core.handle)
+    return result == 1
+
+
+def helicsCoreIsOpenToNewFederates(core: HelicsCore) -> bool:
+    """
+    Check if a core is open to new federates.
+
+    **Returns**: `True` if new federates can still join, `False` otherwise.
+    """
+    f = loadSym("helicsCoreIsOpenToNewFederates")
     result = f(core.handle)
     return result == 1
 
@@ -4401,7 +4583,7 @@ def helicsFederateGlobalError(fed: HelicsFederate, error_code: int, error_string
 def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string: str):
     f = loadSym("helicsBrokerGlobalError")
     err = helicsErrorInitialize()
-    f(broker.handle, error_code, error_string, err)
+    f(broker.handle, error_code, cstring(error_string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -4409,7 +4591,7 @@ def helicsBrokerGlobalError(broker: HelicsBroker, error_code: int, error_string:
 def helicsCoreGlobalError(core: HelicsCore, error_code: int, error_string: str):
     f = loadSym("helicsCoreGlobalError")
     err = helicsErrorInitialize()
-    f(core.handle, error_code, error_string, err)
+    f(core.handle, error_code, cstring(error_string), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -5897,7 +6079,7 @@ def helicsEndpointSendBytesAt(endpoint: HelicsEndpoint, data: bytes, time: Helic
 
     inputDataLength = len(data)
 
-    f = loadSym("helicsEndpointSendBytesToAt")
+    f = loadSym("helicsEndpointSendBytesAt")
     f(endpoint.handle, data, inputDataLength, time, err)
 
     if err.error_code != 0:
@@ -6461,7 +6643,10 @@ def helicsFederateGetTag(fed: HelicsFederate, tagname: str):
     """
 
     f = loadSym("helicsFederateGetTag")
-    result = f(fed.handle, cstring(tagname))
+    err = helicsErrorInitialize()
+    result = f(fed.handle, cstring(tagname), err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
     return ffi.string(result).decode()
 
 
@@ -7090,7 +7275,10 @@ def helicsMessageClear(message: HelicsMessage):
     - **`message`** - The message object in question.
     """
     f = loadSym("helicsMessageClear")
-    f(message.handle)
+    err = helicsErrorInitialize()
+    f(message.handle, err)
+    if err.error_code != 0:
+        raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
 def helicsMessageSetFlagOption(message: HelicsMessage, flag: int, value: bool):
@@ -7160,7 +7348,7 @@ def helicsMessageSetDataBuffer(message: HelicsMessage, data: HelicsDataBuffer):
     """
     f = loadSym("helicsMessageSetDataBuffer")
     err = helicsErrorInitialize()
-    f(message.handle, data, err)
+    f(message.handle, data.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -7199,7 +7387,7 @@ def helicsMessageCopy(source_message: HelicsMessage, destination_message: Helics
     """
     f = loadSym("helicsMessageCopy")
     err = helicsErrorInitialize()
-    f(source_message, destination_message, err)
+    f(source_message.handle, destination_message.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -7804,7 +7992,7 @@ def helicsTranslatorSetString(translator: HelicsTranslator, property: str, value
     - **`property`**: A string containing the property to set.
     - **`value`**: A string value for the property.
     """
-    f = loadSym("helicsMessageSetString")
+    f = loadSym("helicsTranslatorSetString")
     err = helicsErrorInitialize()
     f(translator.handle, cstring(property), cstring(value), err)
     if err.error_code != 0:
@@ -7883,7 +8071,7 @@ def helicsTranslatorRemoveTarget(translator: HelicsTranslator, target: str):
     - **`translator`** - The given translator.
     - **`target_name`** - The name of the translator to remove.
     """
-    f = loadSym("helicsTranslatorAddRemoveTarget")
+    f = loadSym("helicsTranslatorRemoveTarget")
     err = helicsErrorInitialize()
     f(translator.handle, cstring(target), err)
     if err.error_code != 0:
@@ -7921,33 +8109,35 @@ def helicsTranslatorSetInfo(translator: HelicsTranslator, info: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsTranslatorGetTag(translator: HelicsTranslator) -> str:
+def helicsTranslatorGetTag(translator: HelicsTranslator, tagname: str) -> str:
     """
-    Get the data in the tag for an translator.
+    Get the data in a specified tag of a translator.
 
     **Parameters**
 
     - **`translator`** - The translator to query.
+    - **`tagname`** - The name of the tag to query.
 
-    **Returns**: A string with the info field string.
+    **Returns**: A string with the tag data.
     """
     f = loadSym("helicsTranslatorGetTag")
-    result = f(translator.handle)
+    result = f(translator.handle, cstring(tagname))
     return ffi.string(result).decode()
 
 
-def helicsTranslatorSetTag(translator: HelicsTranslator, tag: str):
+def helicsTranslatorSetTag(translator: HelicsTranslator, tagname: str, tagvalue: str):
     """
-    Set the data in the tag for an translator.
+    Set the data in a specific tag for a translator.
 
     **Parameters**
 
-    - **`translator`** - The translator to query.
-    - **`tag`** - The string to set.
+    - **`translator`** - The translator to set a tag for.
+    - **`tagname`** - The name of the tag to set.
+    - **`tagvalue`** - The string value to associate with a tag.
     """
     f = loadSym("helicsTranslatorSetTag")
     err = helicsErrorInitialize()
-    f(translator.handle, cstring(tag), err)
+    f(translator.handle, cstring(tagname), cstring(tagvalue), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -8130,7 +8320,7 @@ def helicsFederateRegisterInput(fed: HelicsFederate, name: str, type: HelicsData
     **Parameters**
 
     - **`fed`** - The `helics.HelicsFederate` in which to create an input.
-    - **`name`** - The identifier for the publication the global input name will be prepended with the federate name.
+    - **`name`** - The identifier for the input the global input name will be prepended with the federate name.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
     - **`units`** - A string listing the units of the input (optional).
 
@@ -8158,7 +8348,7 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, u
     - **`type`** - A string describing the expected type of the input.
     - **`units`** - A string listing the units of the input (optional).
 
-    **Returns**: `helics.HelicsPublication`.
+    **Returns**: `helics.HelicsInput`.
     """
     f = loadSym("helicsFederateRegisterTypeInput")
     err = helicsErrorInitialize()
@@ -8172,16 +8362,16 @@ def helicsFederateRegisterTypeInput(fed: HelicsFederate, name: str, type: str, u
 def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: HelicsDataType, units: str = "") -> HelicsInput:
     """
     Register a global named input.
-    The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
+    The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions, inputs, and publications.
 
     **Parameters**
 
-    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`name`** - The identifier for the publication.
+    - **`fed`** - The `helics.HelicsFederate` in which to create an input.
+    - **`name`** - The identifier for the input.
     - **`type`** - A code identifying the type of the input see `helics.HelicsDataType` for available options.
-    - **`units`** - A string listing the units of the subscription (optional).
+    - **`units`** - A string listing the units of the input (optional).
 
-    **Returns**: `helics.HelicsPublication`.
+    **Returns**: `helics.HelicsInput`.
     """
     f = loadSym("helicsFederateRegisterGlobalInput")
     err = helicsErrorInitialize()
@@ -8194,17 +8384,17 @@ def helicsFederateRegisterGlobalInput(fed: HelicsFederate, name: str, type: Heli
 
 def helicsFederateRegisterGlobalTypeInput(fed: HelicsFederate, name: str, type: str, units: str = "") -> HelicsInput:
     """
-    Register a global publication with an arbitrary type.
-    The publication becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions and publications.
+    Register a global input with an arbitrary type.
+    The input becomes part of the federate and is destroyed when the federate is freed so there are no separate free functions for subscriptions, inputs, and publications.
 
     **Parameters**
 
-    - **`fed`** - The `helics.HelicsFederate` in which to create a publication.
-    - **`name`** - The identifier for the publication.
+    - **`fed`** - The `helics.HelicsFederate` in which to create an input.
+    - **`name`** - The identifier for the input.
     - **`type`** - A string defining the type of the input.
-    - **`units`** - A string listing the units of the subscription (optional).
+    - **`units`** - A string listing the units of the input (optional).
 
-    **Returns**: `helics.HelicsPublication`.
+    **Returns**: `helics.HelicsInput`.
     """
     f = loadSym("helicsFederateRegisterGlobalTypeInput")
     err = helicsErrorInitialize()
@@ -8567,7 +8757,8 @@ def helicsPublicationPublishVector(pub: HelicsPublication, vectorInput: List[flo
     f = loadSym("helicsPublicationPublishVector")
     err = helicsErrorInitialize()
     vectorLength = len(vectorInput)
-    f(pub.handle, vectorInput, vectorLength, err)
+    values = ffi.NULL if vectorLength == 0 else ffi.new("double[]", vectorInput)
+    f(pub.handle, values, vectorLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -8584,7 +8775,9 @@ def helicsPublicationPublishComplexVector(pub: HelicsPublication, vectorInput: L
     f = loadSym("helicsPublicationPublishComplexVector")
     err = helicsErrorInitialize()
     vectorLength = len(vectorInput)
-    f(pub.handle, [item for c in vectorInput for item in [c.real, c.imag]], vectorLength * 2, err)
+    vectorValues = [item for c in vectorInput for item in [c.real, c.imag]]
+    values = ffi.NULL if vectorLength == 0 else ffi.new("double[]", vectorValues)
+    f(pub.handle, values, vectorLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -8617,7 +8810,7 @@ def helicsPublicationPublishDataBuffer(pub: HelicsPublication, buffer: HelicsDat
     """
     f = loadSym("helicsPublicationPublishDataBuffer")
     err = helicsErrorInitialize()
-    f(pub.handle, buffer, err)
+    f(pub.handle, buffer.handle, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -9174,7 +9367,8 @@ def helicsInputSetDefaultVector(ipt: HelicsInput, vectorInput: List[float]):
     f = loadSym("helicsInputSetDefaultVector")
     err = helicsErrorInitialize()
     vectorLength = len(vectorInput)
-    f(ipt.handle, vectorInput, vectorLength, err)
+    values = ffi.NULL if vectorLength == 0 else ffi.new("double[]", vectorInput)
+    f(ipt.handle, values, vectorLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -9188,10 +9382,12 @@ def helicsInputSetDefaultComplexVector(ipt: HelicsInput, vectorInput: List[compl
     - **`ipt`** - The input to set the default for.
     - **`vectorInput`** - A pointer to an array of double data.
     """
-    f = loadSym("helicsInputSetDefaultVector")
+    f = loadSym("helicsInputSetDefaultComplexVector")
     err = helicsErrorInitialize()
     vectorLength = len(vectorInput)
-    f(ipt.handle, [item for c in vectorInput for item in [c.real, c.imag]], vectorLength * 2, err)
+    vectorValues = [item for c in vectorInput for item in [c.real, c.imag]]
+    values = ffi.NULL if vectorLength == 0 else ffi.new("double[]", vectorValues)
+    f(ipt.handle, values, vectorLength, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -9948,8 +10144,9 @@ def helicsQueryBufferFill(buffer: HelicsQueryBuffer, string: str):
     """
     f = loadSym("helicsQueryBufferFill")
     err = helicsErrorInitialize()
-    str_ptr = ffi.new('char[]', string.encode('utf-8'))
-    f(buffer.handle, str_ptr, len(string), err)
+    query_result = string.encode("utf-8")
+    str_ptr = ffi.new("char[]", query_result)
+    f(buffer.handle, str_ptr, len(query_result), err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
@@ -10037,7 +10234,7 @@ def helicsCoreAddAlias(core: HelicsCore, interface_name: str, alias: str):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsCoreSendCommand(core, target, command, err):
+def helicsCoreSendCommand(core, target, command):
     """
     Send a command to another helics object through a core using asynchronous(fast) messages.
 
@@ -10053,7 +10250,7 @@ def helicsCoreSendCommand(core, target, command, err):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsCoreSendOrderedCommand(core, target, command, err):
+def helicsCoreSendOrderedCommand(core, target, command):
     """
     Send a command to another helics object through a core using ordered sequencing.
 
@@ -10069,7 +10266,7 @@ def helicsCoreSendOrderedCommand(core, target, command, err):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsBrokerSendCommand(broker, target, command, err):
+def helicsBrokerSendCommand(broker, target, command):
     """
     Send a command to another helics object through a broker using asynchronous(fast) messages.
 
@@ -10085,7 +10282,7 @@ def helicsBrokerSendCommand(broker, target, command, err):
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())
 
 
-def helicsBrokerSendOrderedCommand(broker, target, command, err):
+def helicsBrokerSendOrderedCommand(broker, target, command):
     """
     Send a command to another helics object through a broker using ordered sequencing.
 
@@ -10176,7 +10373,7 @@ def helicsEndpointRemoveTarget(endpoint: HelicsEndpoint, target: str):
     - **`endpoint`** - The given endpoint.
     - **`target_name`** - The name of the endpoint to remove.
     """
-    f = loadSym("helicsEndpointAddRemoveTarget")
+    f = loadSym("helicsEndpointRemoveTarget")
     err = helicsErrorInitialize()
     f(endpoint.handle, cstring(target), err)
     if err.error_code != 0:
@@ -10238,73 +10435,87 @@ def helicsWrapDataInBuffer(data: bytes, data_capacity: int) -> HelicsDataBuffer:
     """
     Wrap user data in a buffer object
     """
+    if isinstance(data, str):
+        data = data.encode()
+    if data_capacity < len(data):
+        raise HelicsException("Data capacity must be at least the size of the data.")
+    user_data = ffi.new("char[]", data_capacity)
+    ffi.memmove(user_data, data, len(data))
     f = loadSym("helicsWrapDataInBuffer")
-    result = f(data, len(data), data_capacity)
-    return HelicsDataBuffer(result)
+    result = f(user_data, len(data), data_capacity)
+    buffer = HelicsDataBuffer(result)
+    buffer._user_data = user_data
+    return buffer
 
 
 def helicsDataBufferFree(data: HelicsDataBuffer):
     f = loadSym("helicsDataBufferFree")
-    f(data)
+    f(data.handle)
 
 
 def helicsDataBufferIsValid(data: HelicsDataBuffer) -> bool:
     f = loadSym("helicsDataBufferIsValid")
-    return f(data) == 1
+    return f(data.handle) == 1
 
 
 def helicsDataBufferConvertToType(data: HelicsDataBuffer, new_data_type: int):
     f = loadSym("helicsDataBufferConvertToType")
-    return f(data, new_data_type) == 1
+    return f(data.handle, new_data_type) == 1
 
 
 def helicsDataBufferClone(data: HelicsDataBuffer) -> HelicsDataBuffer:
     f = loadSym("helicsDataBufferClone")
-    return HelicsDataBuffer(f(data))
+    return HelicsDataBuffer(f(data.handle))
 
 
 def helicsDataBufferCapacity(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferCapacity")
-    return f(data)
+    return f(data.handle)
 
 
 def helicsDataBufferSize(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferSize")
-    return f(data)
+    return f(data.handle)
 
 
 def helicsDataBufferStringSize(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferStringSize")
-    return f(data)
+    return f(data.handle)
 
 
 def helicsDataBufferToTime(data: HelicsDataBuffer) -> HelicsTime:
     f = loadSym("helicsDataBufferToTime")
-    return f(data)
+    return f(data.handle)
 
 
 def helicsDataBufferVectorSize(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferVectorSize")
-    return f(data)
+    return f(data.handle)
 
 
 def helicsDataBufferToVector(data: HelicsDataBuffer) -> List[float]:
-    maxlen = helicsDataBufferVectorSize(data) + 1024
+    maxlen = helicsDataBufferVectorSize(data)
+    if maxlen <= 0:
+        return []
     values = ffi.new("double[{maxlen}]".format(maxlen=maxlen))
     actualSize = ffi.new("int[1]")
     f = loadSym("helicsDataBufferToVector")
     f(data.handle, values, maxlen, actualSize)
-    return values
+    return list(values[0:actualSize[0]])
 
 
 def helicsDataBufferReserve(data: HelicsDataBuffer, new_capacity) -> bool:
     f = loadSym("helicsDataBufferReserve")
-    return f(data, new_capacity) == 1
+    return f(data.handle, new_capacity) == 1
 
 
 def helicsDataBufferData(data: HelicsDataBuffer) -> bytes:
     f = loadSym("helicsDataBufferData")
-    return f(data)
+    size = helicsDataBufferSize(data)
+    if size <= 0:
+        return b""
+    result = f(data.handle)
+    return ffi.buffer(result, size)[:]
 
 
 def helicsDataBufferFillFromInteger(data: HelicsDataBuffer, value: int) -> int:
@@ -10312,7 +10523,7 @@ def helicsDataBufferFillFromInteger(data: HelicsDataBuffer, value: int) -> int:
     Convert an integer to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromInteger")
-    return f(data, value)
+    return f(data.handle, value)
 
 
 def helicsDataBufferFillFromDouble(data: HelicsDataBuffer, value: float) -> int:
@@ -10320,7 +10531,7 @@ def helicsDataBufferFillFromDouble(data: HelicsDataBuffer, value: float) -> int:
     Convert a double to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromDouble")
-    return f(data, cdouble(value))
+    return f(data.handle, cdouble(value))
 
 
 def helicsDataBufferFillFromString(data: HelicsDataBuffer, string: str) -> int:
@@ -10328,7 +10539,7 @@ def helicsDataBufferFillFromString(data: HelicsDataBuffer, string: str) -> int:
     Convert a string to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromString")
-    return f(data, cstring(string))
+    return f(data.handle, cstring(string))
 
 
 def helicsDataBufferFillFromRawString(data: HelicsDataBuffer, string: bytes) -> int:
@@ -10336,7 +10547,7 @@ def helicsDataBufferFillFromRawString(data: HelicsDataBuffer, string: bytes) -> 
     Convert a raw string to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromRawString")
-    return f(data, string, len(string))
+    return f(data.handle, string, len(string))
 
 
 def helicsDataBufferFillFromBoolean(data: HelicsDataBuffer, value: bool) -> int:
@@ -10344,23 +10555,26 @@ def helicsDataBufferFillFromBoolean(data: HelicsDataBuffer, value: bool) -> int:
     Convert a bool to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromBoolean")
-    return f(data, value)
+    return f(data.handle, int(bool(value)))
 
 
 def helicsDataBufferFillFromChar(data: HelicsDataBuffer, value: str) -> int:
     """
     Convert a bool to serialized bytes
     """
+    char_value = cchar(value)
+    if len(char_value) != 1:
+        raise HelicsException("Char values must encode to exactly one byte.")
     f = loadSym("helicsDataBufferFillFromChar")
-    return f(data, value)
+    return f(data.handle, char_value)
 
 
-def helicsDataBufferFillFromTime(data: HelicsDataBuffer, value: HelicsTime):
+def helicsDataBufferFillFromTime(data: HelicsDataBuffer, value: HelicsTime) -> int:
     """
     Convert a bool to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromTime")
-    f(data, value)
+    return f(data.handle, value)
 
 
 def helicsDataBufferFillFromComplex(data: HelicsDataBuffer, value: complex) -> int:
@@ -10368,31 +10582,40 @@ def helicsDataBufferFillFromComplex(data: HelicsDataBuffer, value: complex) -> i
     Convert a complex to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromComplex")
-    return f(data, value.real, value.imag)
+    return f(data.handle, value.real, value.imag)
 
 
 def helicsDataBufferFillFromComplexObject(data: HelicsDataBuffer, value: complex) -> int:
     """
     Convert a complex to serialized bytes
     """
-    raise NotImplementedError("`helicsDataBufferFillFromComplexObject ` is not implemented.")
+    f = loadSym("helicsDataBufferFillFromComplexObject")
+    value = complex(value)
+    helics_complex = ffi.new("HelicsComplex *")
+    helics_complex[0].real = value.real
+    helics_complex[0].imag = value.imag
+    return f(data.handle, helics_complex[0])
 
 
 def helicsDataBufferFillFromComplexVector(data: HelicsDataBuffer, value: List[complex]) -> int:
     """
     Convert a complex to serialized bytes
     """
+    vector_length = len(value)
     value = [x for xs in value for x in [xs.real, xs.imag]]
+    c_values = ffi.NULL if vector_length == 0 else ffi.new("double[]", value)
     f = loadSym("helicsDataBufferFillFromComplexVector")
-    return f(data, value)
+    return f(data.handle, c_values, vector_length)
 
 
 def helicsDataBufferFillFromVector(data: HelicsDataBuffer, value: List[float]) -> int:
     """
     Convert a complex to serialized bytes
     """
+    vector_length = len(value)
+    c_values = ffi.NULL if vector_length == 0 else ffi.new("double[]", value)
     f = loadSym("helicsDataBufferFillFromVector")
-    return f(data, value)
+    return f(data.handle, c_values, vector_length)
 
 
 def helicsDataBufferFillFromNamedPoint(data: HelicsDataBuffer, name: str, value: float) -> int:
@@ -10400,22 +10623,25 @@ def helicsDataBufferFillFromNamedPoint(data: HelicsDataBuffer, name: str, value:
     Convert a named point to serialized bytes
     """
     f = loadSym("helicsDataBufferFillFromNamedPoint")
-    return f(data, cstring(name), cdouble(value))
+    return f(data.handle, cstring(name), cdouble(value))
 
 
 def helicsDataBufferType(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferType")
-    return f(data)
+    return f(data.handle)
 
 
 def helicsDataBufferToInteger(data: HelicsDataBuffer) -> int:
     f = loadSym("helicsDataBufferToInteger")
-    return f(data)
+    return f(data.handle)
 
 
 def helicsDataBufferToChar(data: HelicsDataBuffer) -> str:
     f = loadSym("helicsDataBufferToChar")
-    return f(data)
+    result = f(data.handle)
+    if isinstance(result, bytes):
+        return result.decode()
+    return chr(result)
 
 
 def helicsDataBufferToString(data: HelicsDataBuffer) -> str:
@@ -10423,50 +10649,52 @@ def helicsDataBufferToString(data: HelicsDataBuffer) -> str:
     maxStringLen = helicsDataBufferStringSize(data) + 1024
     outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen=maxStringLen))
     actualLength = ffi.new("int[1]")
-    value = ffi.new("double[1]")
-    f(data.handle, outputString, maxStringLen, actualLength, value)
-    return outputString
+    f(data.handle, outputString, maxStringLen, actualLength)
+    return ffi.unpack(outputString, actualLength[0]).decode()
 
 
-def helicsDataBufferToRawString(data: HelicsDataBuffer) -> str:
+def helicsDataBufferToRawString(data: HelicsDataBuffer) -> bytes:
     f = loadSym("helicsDataBufferToRawString")
     maxStringLen = helicsDataBufferCapacity(data) + 1024
     outputString = ffi.new("char[{maxStringLen}]".format(maxStringLen=maxStringLen))
     actualLength = ffi.new("int[1]")
-    value = ffi.new("double[1]")
-    f(data.handle, outputString, maxStringLen, actualLength, value)
-    return outputString
+    f(data.handle, outputString, maxStringLen, actualLength)
+    return ffi.unpack(outputString, actualLength[0])
 
 
 def helicsDataBufferToDouble(data: HelicsDataBuffer) -> float:
     f = loadSym("helicsDataBufferToDouble")
-    return f(data)
+    return f(data.handle)
 
 
 def helicsDataBufferToBoolean(data: HelicsDataBuffer) -> bool:
     f = loadSym("helicsDataBufferToBoolean")
-    return f(data)
+    return f(data.handle) == 1
 
 
 def helicsDataBufferToComplex(data: HelicsDataBuffer) -> complex:
     f = loadSym("helicsDataBufferToComplex")
     real = ffi.new("double *")
     imag = ffi.new("double *")
-    f(data, real, imag)
+    f(data.handle, real, imag)
     return complex(real[0], imag[0])
 
 
 def helicsDataBufferToComplexObject(data: HelicsDataBuffer) -> complex:
-    raise NotImplementedError("`helicsDataBufferToComplexObject` is not implemented.")
+    f = loadSym("helicsDataBufferToComplexObject")
+    result = f(data.handle)
+    return complex(result.real, result.imag)
 
 
 def helicsDataBufferToComplexVector(data: HelicsDataBuffer) -> List[complex]:
-    maxlen = helicsDataBufferCapacity(data) + 1024
-    values = ffi.new("double[{maxlen}]".format(maxlen=maxlen))
+    maxlen = helicsDataBufferVectorSize(data)
+    if maxlen <= 0:
+        return []
+    values = ffi.new("double[{maxlen}]".format(maxlen=maxlen * 2))
     actualSize = ffi.new("int[1]")
     f = loadSym("helicsDataBufferToComplexVector")
     f(data.handle, values, maxlen, actualSize)
-    return [complex(r, i) for r, i in zip(values[0::2], values[1::2])]
+    return [complex(values[index * 2], values[index * 2 + 1]) for index in range(actualSize[0])]
 
 
 def helicsDataBufferToNamedPoint(data: HelicsDataBuffer) -> Tuple[str, float]:
@@ -10476,7 +10704,7 @@ def helicsDataBufferToNamedPoint(data: HelicsDataBuffer) -> Tuple[str, float]:
     actualLength = ffi.new("int[1]")
     value = ffi.new("double[1]")
     f(data.handle, outputString, maxStringLen, actualLength, value)
-    return (outputString, value)
+    return (ffi.unpack(outputString, actualLength[0]).decode(), value[0])
 
 
 def helicsLoadThreadedSignalHandler():
