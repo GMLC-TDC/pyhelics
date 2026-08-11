@@ -1,6 +1,7 @@
 __helics-server
 helics/static
 helics-src
+helics-src.downloaded
 helics/install
 helics/_version.py
 docs/api

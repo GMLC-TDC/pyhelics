@@ -33,7 +33,24 @@ cli = [
   "helics_cli_extras==0.0.2",
   "matplotlib",
 ]
-tests = ["pytest", "pytest-ordering", "pytest-cov", "pytest-runner"]
+server = [
+  "fastapi>=0.115; python_version >= '3.9'",
+  "fastapi>=0.115,<0.116; python_version < '3.9'",
+  "pydantic>=2.6,<3; python_version >= '3.9'",
+  "pydantic>=2.6,<2.11; python_version < '3.9'",
+  "uvicorn[standard]>=0.30",
+]
+tests = [
+  "pytest",
+  "pytest-ordering",
+  "pytest-cov",
+  "pytest-runner",
+  "fastapi>=0.115; python_version >= '3.9'",
+  "fastapi>=0.115,<0.116; python_version < '3.9'",
+  "pydantic>=2.6,<3; python_version >= '3.9'",
+  "pydantic>=2.6,<2.11; python_version < '3.9'",
+  "httpx>=0.27",
+]
 dev = ["build", "pre-commit"]
 docs = [
   "mkdocs",
@@ -48,6 +65,7 @@ docs = [
 [project.scripts]
 helics = "helics.cli:cli"
 helics-cli = "helics.cli:cli"
+helics_server = "helics.webserver:main"
 helics_app = "helics.bin:helics_app"
 helics_broker = "helics.bin:helics_broker"
 helics_broker_server = "helics.bin:helics_broker_server"

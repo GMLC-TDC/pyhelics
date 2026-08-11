@@ -1487,6 +1487,18 @@ class HelicsBroker(_HelicsCHandle):
         helicsQueryFree(q)
         return result
 
+    def send_command(self, target: str, command: str) -> None:
+        """Send an asynchronous command through this broker."""
+        helicsBrokerSendCommand(self, target, command)
+
+    def set_time_barrier(self, barrier_time: HelicsTime) -> None:
+        """Prevent time grants past ``barrier_time`` in this broker's federation."""
+        helicsBrokerSetTimeBarrier(self, barrier_time)
+
+    def clear_time_barrier(self) -> None:
+        """Remove this broker's active time barrier."""
+        helicsBrokerClearTimeBarrier(self)
+
     def global_error(self, error_code: int, error_string: str):
         """
         Generate a global error to terminate the federation.
@@ -3125,6 +3137,20 @@ def cstring(s: str) -> str:
     return ffi.new("char[]", s.encode())
 
 
+def cstring_array(strings: List[str]):
+    """Convert strings to ``char*[]`` while retaining the backing buffers.
+
+    CFFI does not retain a ``char[]`` allocation merely because its address is
+    assigned into another CFFI array.  Callers must therefore keep the list of
+    string buffers alive until the corresponding C API call has returned.
+    """
+    buffers = [cstring(value) for value in strings]
+    argv = ffi.new(f"char*[{len(buffers)}]")
+    for index, buffer in enumerate(buffers):
+        argv[index] = buffer
+    return argv, buffers
+
+
 def cdouble(d: float) -> float:
     # Convert python float to cfloat
     return d
@@ -3247,9 +3273,7 @@ def helicsCreateCoreFromArgs(type: str, name: str, arguments: List[str]) -> Heli
     """
     f = loadSym("helicsCreateCoreFromArgs")
     argc = len(arguments)
-    argv = ffi.new("char*[{argc}]".format(argc=argc))
-    for i, s in enumerate(arguments):
-        argv[i] = cstring(s)
+    argv, argument_buffers = cstring_array(arguments)
     err = helicsErrorInitialize()
     result = f(cstring(type), cstring(name), argc, argv, err)
     if err.error_code != 0:
@@ -3329,9 +3353,7 @@ def helicsCreateBrokerFromArgs(type: str, name: str, arguments: List[str]) -> He
     """
     f = loadSym("helicsCreateBrokerFromArgs")
     argc = len(arguments)
-    argv = ffi.new("char*[{argc}]".format(argc=argc))
-    for i, s in enumerate(arguments):
-        argv[i] = cstring(s)
+    argv, argument_buffers = cstring_array(arguments)
     err = helicsErrorInitialize()
     result = f(cstring(type), cstring(name), argc, argv, err)
     if err.error_code != 0:
@@ -4158,9 +4180,7 @@ def helicsFederateInfoLoadFromArgs(fedInfo: HelicsFederateInfo, arguments: List[
     f = loadSym("helicsFederateInfoLoadFromArgs")
     err = helicsErrorInitialize()
     argc = len(arguments)
-    argv = ffi.new("char*[{argc}]".format(argc=argc))
-    for i, s in enumerate(arguments):
-        argv[i] = cstring(s)
+    argv, argument_buffers = cstring_array(arguments)
     f(fedInfo.handle, argc, argv, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())

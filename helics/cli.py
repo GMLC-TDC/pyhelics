@@ -94,24 +94,25 @@ def cli(ctx, verbose):
     is_flag=True,
     default=True,
     show_default=True,
-    help="Open browser on startup",
+    help="Open the API documentation in a browser on startup",
 )
-def server(open: bool):
+@click.option("--host", default="127.0.0.1", show_default=True, help="Interface to bind")
+@click.option("--port", default=8000, show_default=True, type=click.IntRange(1, 65535))
+def server(open: bool, host: str, port: int):
     """
-    Run helics web server to access web interface
+    Run the HELICS FastAPI server.
     """
     import webbrowser
 
     try:
-        import helics_cli_extras
+        from .webserver import run
     except ImportError:
-        error(
-            'helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.'
-        )
+        error('Server support is not installed. Run `pip install "helics[server]"`.')
+        return
 
     if open:
-        webbrowser.open("http://127.0.0.1:5000", 1)
-    helics_cli_extras.run()
+        webbrowser.open(f"http://{host}:{port}/docs", 1)
+    run(host=host, port=port)
 
 
 @cli.command()
