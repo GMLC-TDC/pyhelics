@@ -238,6 +238,14 @@ def test_messagefederate_send_receive_2fed_multisend():
     res = h.helicsFederatePendingMessageCount(mFed2)
     assert res == 3
 
+    for _ in range(3):
+        msg = h.helicsEndpointGetMessage(epid2)
+        assert h.helicsMessageGetByteCount(msg) == 1
+        assert h.helicsMessageGetBytes(msg) == b"a"
+
+    assert h.helicsEndpointPendingMessageCount(epid2) == 0
+    assert h.helicsFederatePendingMessageCount(mFed2) == 0
+
     assert h.helicsEndpointGetDefaultDestination(epid1) == "ep2"
 
     # FIXME: Someday this will be implemented.
@@ -274,10 +282,9 @@ def test_messagefederate_message_object_tests(mFed):
 
     msg = h.helicsEndpointGetMessage(epid2)
     assert h.helicsMessageGetByteCount(msg) == 500
-    # TODO: segfaults
-    # @test_broken False
-    # segfaults
-    # assert Char(unsafe_load(Ptr{Cchar}(rdata), 245)) == 'a'
+    payload = h.helicsMessageGetBytes(msg)
+    assert payload == b"a" * 500
+    assert payload[245] == ord("a")
 
     h.helicsFederateDisconnect(mFed)
 
