@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 HELICS command line interface
 """
@@ -20,8 +19,6 @@ from .status_checker import CheckStatusThread
 
 import click
 import pathlib
-
-from typing import Union
 
 from .utils import echo, info, warn, error
 
@@ -177,7 +174,7 @@ class Job:
 @dataclass
 class Output:
     name: str
-    file: Union[io.TextIOWrapper, None]
+    file: io.TextIOWrapper | None
 
 
 def fetch(url, data={}, method="POST"):

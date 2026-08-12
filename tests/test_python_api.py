@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import pytest as pt
 import helics as h

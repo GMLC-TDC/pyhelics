@@ -229,3 +229,5 @@ dmypy.json
 
 profile.txt
 plot.png
+/*.downloaded/
+/helics-src.downloaded

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import time
 import helics as h
 import pytest as pt
@@ -198,7 +197,6 @@ def test_messagefederate_test_message_federate_send(mFed):
     assert h.helicsMessageGetSource(message) == "TestA Federate/ep1"
     assert h.helicsMessageGetTime(message) == 1.0
     # @test_broken False
-    # assert h.helicsMessageGetRawData(message) == None
 
 
 def test_messagefederate_send_receive_2fed_multisend():
@@ -277,10 +275,8 @@ def test_messagefederate_message_object_tests(mFed):
     msg = h.helicsEndpointGetMessage(epid2)
     assert h.helicsMessageGetByteCount(msg) == 500
     # TODO: segfaults
-    # print(h.helicsMessageGetRawData(msg))
     # @test_broken False
     # segfaults
-    # rawdata = h.helicsMessageGetRawDataPointer(msg)
     # assert Char(unsafe_load(Ptr{Cchar}(rdata), 245)) == 'a'
 
     h.helicsFederateDisconnect(mFed)
@@ -363,7 +359,6 @@ def test_messagefederate_timing_tests():
     assert tres == 0.1
 
     # m = h.helicsEndpointGetMessage(ept1)
-    # @show h.helicsMessageGetRawData(m)
     # TODO: null pointer received from C
 
     gtime = h.helicsFederateRequestTimeComplete(vFed2)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import ast
 import sys
 from pathlib import Path
@@ -117,6 +116,11 @@ INTENTIONAL_PYHELICS_CONSTANT_OVERRIDES = {
     "HELICS_CORE_TYPE_TEST": "pyHELICS uses ZMQ as its test core alias",
 }
 
+DEPRECATED_C_EXPORTS_OMITTED_FROM_PYHELICS = {
+    "helicsEndpointClearMessages",
+    "helicsSubscriptionGetTarget",
+}
+
 
 @pytest.fixture(scope="module")
 def c_api_header():
@@ -138,7 +142,11 @@ def c_enum_constants(c_api_header):
 
 def test_pyhelics_wraps_all_current_c_exports(c_prototypes):
     wrappers = capi_functions()
-    missing = sorted(name for name in c_prototypes if name not in wrappers)
+    missing = sorted(
+        name
+        for name in c_prototypes
+        if name not in wrappers and name not in DEPRECATED_C_EXPORTS_OMITTED_FROM_PYHELICS
+    )
 
     assert missing == []
 

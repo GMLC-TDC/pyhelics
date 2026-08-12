@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import ast
 import os
 import re
@@ -43,32 +42,7 @@ def capi_module():
 
 def active_capi_body():
     """Return the capi.py body for current HELICS 3 wrappers."""
-    return _active_nodes(capi_module().body)
-
-
-def _active_nodes(nodes):
-    active = []
-    for node in nodes:
-        if isinstance(node, ast.If):
-            current_branch = _current_branch(node.test)
-            if current_branch is True:
-                active.extend(_active_nodes(node.body))
-            elif current_branch is False:
-                active.extend(_active_nodes(node.orelse))
-            else:
-                active.append(node)
-        else:
-            active.append(node)
-    return active
-
-
-def _current_branch(test):
-    text = ast.unparse(test)
-    if text == "HELICS_VERSION == 2":
-        return False
-    if text == "HELICS_VERSION != 2":
-        return True
-    return None
+    return capi_module().body
 
 
 def capi_functions():

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 
 import helics as h
@@ -773,25 +772,14 @@ def test_filter_test_types_clone_test_dest_connections():
     destroy_broker(broker)
 
 
-try:
-
-    @h.ffi.callback("void logger(helics_message_object, void* userData)")
-    def filterFunc1(mess, userData):
-        m = h.HelicsMessage(mess)
-        time = h.helicsMessageGetTime(m)
-        h.helicsMessageSetTime(m, time + 2.5)
+@h.ffi.callback("void logger(HelicsMessage, void* userData)")
+def filterFunc1(mess, userData):
+    m = h.HelicsMessage(mess)
+    time = h.helicsMessageGetTime(m)
+    h.helicsMessageSetTime(m, time + 2.5)
 
 
-except:
-
-    @h.ffi.callback("void logger(HelicsMessage, void* userData)")
-    def filterFunc1(mess, userData):
-        m = h.HelicsMessage(mess)
-        time = h.helicsMessageGetTime(m)
-        h.helicsMessageSetTime(m, time + 2.5)
-
-
-class UserData(object):
+class UserData:
     def __init__(self, x):
         self.x = x
 

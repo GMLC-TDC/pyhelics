@@ -64,7 +64,7 @@ jobs:
       env:
         CIBW_ARCHS: "${{ matrix.arch }}"
         CIBW_ARCHS_MACOS: "universal2"
-        CIBW_BUILD: "cp39-${{ matrix.build }}*"
+        CIBW_BUILD: "cp311-${{ matrix.build }}*"
         CIBW_BUILD_VERBOSITY: 3
         CIBW_ENVIRONMENT: "CIBW_ARTIFACT_TYPE=${{ matrix.artifact_suffix }}"
         CIBW_BEFORE_ALL_LINUX: >

@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 import logging
 import os
 import time
 import tempfile
-from typing import Dict, List, cast
+from typing import Any, cast
 from datetime import datetime
 
 # HELICS is a runtime dependency here.
@@ -68,35 +66,35 @@ class HelicsObserverFederate:
         self.hook()
 
     @property
-    def federates(self) -> List[str]:
+    def federates(self) -> list[str]:
         return [cast(str, name) for name in self.federate.query("root", "federates")]
 
     @property
-    def brokers(self) -> List[str]:
+    def brokers(self) -> list[str]:
         return [cast(str, name) for name in self.federate.query("root", "brokers")]
 
     @property
-    def publications(self) -> List[str]:
+    def publications(self) -> list[str]:
         return [cast(str, name) for name in self.federate.query("root", "publications")]
 
     @property
-    def subscriptions(self) -> List[str]:
+    def subscriptions(self) -> list[str]:
         return [
             cast(str, name) for name in self.federate.query("root", "subscriptions")
         ]
 
     @property
-    def inputs(self) -> List[str]:
+    def inputs(self) -> list[str]:
         return [cast(str, name) for name in self.federate.query("root", "inputs")]
 
     def get_data(self):
         data = self.federate.query("root", "federate_map")
-        data = cast(Dict, data)
+        data = cast(dict[str, Any], data)
         logger.info("Adding federategraph")
         self.session.add(db.FederateGraph(data=data))
 
         data = self.federate.query("root", "data_flow_graph")
-        data = cast(Dict, data)
+        data = cast(dict[str, Any], data)
         logger.info("Adding datagraph")
         self.session.add(db.DataGraph(data=data))
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import cffi
 import os
 import platform
