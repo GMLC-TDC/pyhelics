@@ -1,0 +1,24 @@
+{
+  "name": "website_usage",
+  "broker": false,
+  "federates": [
+    {
+      "directory": ".",
+      "exec": "python -u broker.py",
+      "host": "localhost",
+      "name": "broker"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u federate_1.py",
+      "host": "localhost",
+      "name": "federate_1"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u federate_2.py",
+      "host": "localhost",
+      "name": "federate_2"
+    }
+  ]
+}
