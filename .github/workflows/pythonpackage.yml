@@ -53,7 +53,7 @@ jobs:
             artifact_suffix: "macos"
             use_qemu: false
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0 # ensure history is present for automatic versioning
     - name: Set up QEMU
@@ -83,7 +83,7 @@ jobs:
   build-helics-sdist:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0  # for setuptools_scm to find tags
     
