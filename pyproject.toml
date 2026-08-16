@@ -6,8 +6,7 @@ build-backend = "scikit_build_core.build"
 name = "helics"
 authors = [{ name = "GMLC-TDC", email = "helicsdevelopers@helics.org" }]
 description = "Python HELICS bindings"
-readme = "README.md"
-readme_content_type = "text/markdown"
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.11"
 keywords = ["helics", "co-simulation"]
 license = "BSD-3-Clause"

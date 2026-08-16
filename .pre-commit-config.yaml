@@ -68,5 +68,6 @@ repos:
         args: ["--no-build-isolation"]
         additional_dependencies:
           - build
+          - ninja
           - scikit-build-core
           - setuptools-scm
