@@ -10,7 +10,7 @@ The callback function generally exists outside the scope of other code and thus,
 # A reference to this object is passed to the filter callback.
 # You don't need to use this if you don't want to.
 class UserData:
-    def __init__(self, iteration_count = None):
+    def __init__(self, iteration_count=None):
         self.pi = 3.14
         self.e = 2.718
         self.interation_count = iteration_count
@@ -24,13 +24,17 @@ This is where the real C-to-Python magic happens, using the "cffi" library. As t
 @h.ffi.callback("void logger(HelicsMessage, void* userData)")
 def filter_callback(mess, userData):
     # Filter operation code here
+    pass
 
 # Query callback
-@h.ffi.callback("void query(const char *query, int querySize, HelicsQueryBuffer buffer, void *user_data)")
-def query_callback(query_ptr, size:int, query_buffer_ptr, user_data):
-    query_str = h.ffi.string(query_ptr,size).decode()
+@h.ffi.callback(
+    "void query(const char *query, int querySize, HelicsQueryBuffer buffer, void *user_data)"
+)
+def query_callback(query_ptr, size: int, query_buffer_ptr, user_data):
+    query_str = h.ffi.string(query_ptr, size).decode()
     query_buffer = h.HelicsQueryBuffer(query_buffer_ptr)
     # Query operation code here
+    pass
 
 ```
 
@@ -49,7 +53,7 @@ Last step, with the callback defined we need to "register" it so that HELICS kno
 def main():
     ...
     f1 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
-    userdata = UserData(iteration_count = 10)
+    userdata = UserData(iteration_count=10)
     user_data_handle = h.ffi.new_handle(userdata)
     h.helicsFilterSetCustomCallback(f1, filter_callback, user_data_handle)
 
@@ -58,7 +62,7 @@ def main():
 def main():
     ...
     fed = h.helicsCreateValueFederateFromConfig("math_fed.json")
-    user_data = UserData(iteration_count = 10)
+    user_data = UserData(iteration_count=10)
     user_data_handle = h.ffi.new_handle(user_data)
     h.helicsFederateSetQueryCallback(fed, query_callback, user_data_handle)
 
@@ -74,7 +78,7 @@ Here are the full code for completeness sake. As of this writing, there is not a
 ``` python
 
 class UserData:
-    def __init__(self, iteration_count = None):
+    def __init__(self, iteration_count=None):
         self.pi = 3.14
         self.e = 2.718
         self.interation_count = iteration_count
@@ -82,12 +86,13 @@ class UserData:
 @h.ffi.callback("void logger(HelicsMessage, void* userData)")
 def filter_callback(mess, userData):
     # Filter operation code here
+    pass
 
 
 def main():
     fed = h.helicsCreateValueFederateFromConfig("math_fed.json")
     f1 = h.helicsFederateRegisterFilter(fed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
-    userdata = UserData(iteration_count = 10)
+    userdata = UserData(iteration_count=10)
     user_data_handle = h.ffi.new_handle(userdata)
     h.helicsFilterSetCustomCallback(f1, filter_callback, user_data_handle)
 ```
@@ -95,21 +100,25 @@ def main():
 ### Query Response Code
 ```Python
 class UserData:
-    def __init__(self, iteration_count = None):
+    def __init__(self, iteration_count=None):
         self.pi = 3.14
         self.e = 2.718
         self.interation_count = iteration_count
 
-@h.ffi.callback("void query(const char *query, int querySize, HelicsQueryBuffer buffer, void *user_data)")
-def query_callback(query_ptr, size:int, query_buffer_ptr, user_data):
-    query_str = h.ffi.string(query_ptr,size).decode()
+
+@h.ffi.callback(
+    "void query(const char *query, int querySize, HelicsQueryBuffer buffer, void *user_data)"
+)
+def query_callback(query_ptr, size: int, query_buffer_ptr, user_data):
+    query_str = h.ffi.string(query_ptr, size).decode()
     query_buffer = h.HelicsQueryBuffer(query_buffer_ptr)
     # Query operation code here
+    pass
 
 
 def main():
     fed = h.helicsCreateValueFederateFromConfig("math_fed.json")
-    user_data = UserData(iteration_count = 10)
+    user_data = UserData(iteration_count=10)
     user_data_handle = h.ffi.new_handle(user_data)
     h.helicsFederateSetQueryCallback(fed, query_callback, user_data_handle)
 
