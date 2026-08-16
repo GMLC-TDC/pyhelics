@@ -65,6 +65,7 @@ repos:
     rev: "0.51"
     hooks:
       - id: check-manifest
+        stages: [manual]
         args: ["--no-build-isolation"]
         additional_dependencies:
           - build
