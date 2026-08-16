@@ -3,7 +3,8 @@
 This package uses `cffi` to interface with the HELICS library.
 The source for this package contains only pure python code.
 
-Python helics packages with version numbers greater than `v2.6.0` use this new cffi interface.
+Current Python helics packages require Python 3 and HELICS 3 or newer at runtime.
+Python helics packages with version numbers greater than `v2.6.0` use the cffi interface.
 Versions equal to and prior to `v2.6.0` used swig to generate the Python API.
 
 ## Install from PyPI (recommended)
@@ -50,12 +51,12 @@ See the next section for more information about how to do that.
 ### Custom version of HELICS
 
 The python package in this repository uses a environment variable called `PYHELICS_INSTALL` to choose the location of the precompiled binaries of the C HELICS library.
-If you wish to change the version of HELICS used, you can set this environment variable to point to the location of an HELICS installation.
+If you wish to change the version of HELICS used, you can set this environment variable to point to the location of a HELICS 3 or newer installation.
 
 For example, let's say as a user you want to use HELICS in a Conda environment.
 
 ```bash
-$ conda create -n helics-py3-env python=3 -y
+$ conda create -n helics-py3-env python=3.11 -y
 $ conda activate helics-py3-env
 ```
 
@@ -72,56 +73,52 @@ You can install `helics` using `pip`.
 
 ```bash
 $ pip install helics
-pip install helics
 Collecting helics
-  Downloading helics-2.6.1.post0-py3-none-macosx_10_9_x86_64.whl (6.6 MB)
-     |████████████████████████████████| 6.6 MB 2.3 MB/s
-Collecting enum34>=1.1.10
-  Using cached enum34-1.1.10-py3-none-any.whl (11 kB)
+  Downloading helics-3.x.y-py3-none-*.whl
 Collecting cffi>=1.0.0
-  Using cached cffi-1.14.3-2-cp38-cp38-macosx_10_9_x86_64.whl (176 kB)
+  Using cached cffi-1.14.3-cp311-cp311-macosx_10_9_x86_64.whl (176 kB)
 Collecting pycparser
-  Using cached pycparser-2.20-py2.py3-none-any.whl (112 kB)
-Installing collected packages: enum34, pycparser, cffi, helics
-Successfully installed cffi-1.14.3 enum34-1.1.10 helics-2.6.1.post0 pycparser-2.20
+  Using cached pycparser-2.20-py3-none-any.whl (112 kB)
+Installing collected packages: pycparser, cffi, helics
+Successfully installed cffi-1.14.3 helics-3.x.y pycparser-2.20
 ```
 
 Now that you have installed the python package, you can check that it works:
 
 ```bash
 $ python -c "import helics; print(helics.helicsGetVersion())"
-2.6.1 (2020-10-15)
+3.x.y (...)
 ```
 
-This installs the Python package `helics-2.6.1.post0` and it comes with precompiled binaries for HELICS version 2.6.1 that we released on 2020-10-15.
+This installs the Python package and precompiled binaries for a supported HELICS 3 release when they are available for your platform.
 
 Let's say you've made modification to the HELICS library or compiled it with some different flags.
-Or you are interested in a using an older version of HELICS.
+Or you are interested in using a different supported version of HELICS.
 You can do that with this python package by changing the `PYHELICS_INSTALL` environment variable.
 
-As an example, if you want to use the Python package with HELICS v2.5.2, you can clone the git repository for HELICS, build from source and install it to any location.
-In this example, I chose to install it in `~/local/helics-v2.5.2`.
+As an example, if you want to use the Python package with HELICS v3.6.1, you can clone the git repository for HELICS, build from source and install it to any location.
+In this example, I chose to install it in `~/local/helics-v3.6.1`.
 
 ```bash
 $ git clone https://github.com/GMLC-TDC/HELICS
 $ cd HELICS
-$ git checkout v2.5.2
+$ git checkout v3.6.1
 $ mkdir -p build
-$ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-v2.5.2 ..
+$ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-v3.6.1 ..
 $ make -j8 && make install
 ```
 
 Now in bash, you can set the environment variable:
 
 ```bash
-$ export PYHELICS_INSTALL=~/local/helics-v2.5.2
+$ export PYHELICS_INSTALL=~/local/helics-v3.6.1
 ```
 
-Now when you `import helics` and print the version you'll get `2.5.2 (2020-06-14)`.
+Now when you `import helics` and print the version you'll get the HELICS version installed in that prefix.
 
 ```bash
 $ python -c "import helics; print(helics.helicsGetVersion())"
-2.5.2 (2020-06-14)
+3.6.1 (...)
 ```
 
 If you want to build from source and use the `develop` branch:
@@ -133,11 +130,12 @@ $ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-develop ..
 $ make -j8 && make install
 $ export PYHELICS_INSTALL=~/local/helics-develop
 $ python -c "import helics; print(helics.helicsGetVersion())"
-2.6.0-develop-g3a460f1f (2020-09-24)
+3.x.y-develop (...)
 ```
 
-The Python HELICS cffi interface is tested with the latest version of HELICS.
-If you find any issues with earlier versions of HELICS, please report them on <https://github.com/GMLC-TDC/HELICS/issues>.
+The Python HELICS cffi interface is tested with the latest supported version of HELICS.
+HELICS 2 runtime libraries are not supported by current pyhelics releases.
+If you find any issues with supported HELICS versions, please report them on <https://github.com/GMLC-TDC/HELICS/issues>.
 
 ## From Source
 
@@ -173,9 +171,9 @@ helics_installation
 │ └── helics
 ├── lib
 │ ├── cmake
-│ ├── libhelicsSharedLib.2.6.1.dylib
-│ ├── libhelicsSharedLib.2.dylib - > libhelicsSharedLib.2.6.1.dylib
-│ ├── libhelicsSharedLib.dylib - > libhelicsSharedLib.2.dylib
+│ ├── libhelicsSharedLib.3.6.1.dylib
+│ ├── libhelicsSharedLib.3.dylib - > libhelicsSharedLib.3.6.1.dylib
+│ ├── libhelicsSharedLib.dylib - > libhelicsSharedLib.3.dylib
 │ ├── libzmq.5.2.2.dylib
 │ ├── libzmq.5.dylib - > libzmq.5.2.2.dylib
 │ ├── libzmq.dylib - > libzmq.5.dylib
@@ -209,7 +207,7 @@ print(h.__file__) # this should print the path to the __init__.py file in the py
 print(h.helicsGetVersion()) # this should print the version of the HELICS library in the PYHELICS_INSTALL environment or the latest version of HELICS
 ```
 
-See [Migration from HELICS2 to HELICS3](./migration-helics2-helics3.md) for more information on changes between this version and the SWIG version of the HELICS library.
+See [Migration from HELICS2 to HELICS3](./migration-helics2-helics3.md) for more information on updating older Python code written against HELICS 2-era APIs.
 
 ### Linking HELICS library
 

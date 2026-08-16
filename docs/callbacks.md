@@ -9,7 +9,7 @@ The callback function generally exists outside the scope of other code and thus,
 # Store what ever data you'd like. 
 # A reference to this object is passed to the filter callback. 
 # You don't need to use this if you don't want to.
-class UserData(object):
+class UserData:
     def __init__(self, iteration_count = None):
         self.pi = 3.14
         self.e = 2.718
@@ -73,7 +73,7 @@ Here are the full code for completeness sake. As of this writing, there is not a
 ### Filter Federate Code
 ``` python
 
-class UserData(object):
+class UserData:
     def __init__(self, iteration_count = None):
         self.pi = 3.14
         self.e = 2.718
@@ -94,7 +94,7 @@ def main():
 
 ### Query Response Code
 ```Python
-class UserData(object):
+class UserData:
     def __init__(self, iteration_count = None):
         self.pi = 3.14
         self.e = 2.718

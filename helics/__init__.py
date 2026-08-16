@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .capi import *
 from ._version import __version__
 

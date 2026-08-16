@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import time
 import pytest
 import pytest as pt
@@ -61,7 +60,7 @@ def test_core_api():
     # h.helicsCoreFree(core2)
 
 
-class UserData(object):
+class UserData:
     def __init__(self, x):
         self.x = x
 
@@ -182,10 +181,10 @@ def test_misc_api():
         fed1, "pub3", h.HELICS_DATA_TYPE_STRING, ""
     )
 
-    pub1KeyString = h.helicsPublicationGetKey(pub1)
+    pub1KeyString = h.helicsPublicationGetName(pub1)
     pub1TypeString = h.helicsPublicationGetType(pub1)
     pub1UnitsString = h.helicsPublicationGetUnits(pub1)
-    sub1KeyString = h.helicsSubscriptionGetKey(sub1)
+    sub1KeyString = h.helicsInputGetTarget(sub1)
     sub1UnitsString = h.helicsInputGetUnits(sub1)
     assert "pub1" == pub1KeyString
     assert "double" == pub1TypeString
@@ -316,7 +315,7 @@ def test_misc_api():
     assert ep1NameString == "fed1/Ep1"
     assert ep1TypeString == "string"
 
-    _ = h.helicsFederateGetCoreObject(fed1)
+    _ = h.helicsFederateGetCore(fed1)
 
     fed1Time = h.helicsFederateGetCurrentTime(fed1)
     assert fed1Time == 0.0
@@ -346,7 +345,7 @@ def test_misc_api():
 
     returnTime = h.helicsFederateRequestTimeComplete(fed1)
     assert returnTime == 1.0
-    ep2MsgCount = h.helicsEndpointPendingMessages(ep2)
+    ep2MsgCount = h.helicsEndpointPendingMessageCount(ep2)
     assert ep2MsgCount == 0
     ep2HasMsg = h.helicsEndpointHasMessage(ep2)
     assert ep2HasMsg == 0
@@ -370,7 +369,7 @@ def test_misc_api():
     assert h.helicsMessageGetDestination(msg2) == "Ep2"
     assert h.helicsMessageGetOriginalDestination(msg2) == "Ep2"
 
-    fed1MsgCount = h.helicsFederatePendingMessages(fed1)
+    fed1MsgCount = h.helicsFederatePendingMessageCount(fed1)
     assert fed1MsgCount == 1
 
     assert h.helicsFederateHasMessage(fed1) == 1
@@ -397,10 +396,6 @@ def test_misc_api():
     assert sub7DoubleValue == 20.0
     assert h.helicsInputGetBoolean(sub5) == True
     assert h.helicsInputGetString(sub3) == "Mayhem"
-
-    # TODO: this test is failing in HELICS3
-    # sub3ValueSize = h.helicsInputGetRawValueSize(sub3)
-    # assert sub3ValueSize == 6
 
     assert h.helicsInputGetVector(sub6) == [4.5, 56.5]
 

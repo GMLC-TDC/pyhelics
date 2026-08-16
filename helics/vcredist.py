@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 import os
 import urllib
@@ -23,7 +22,7 @@ def download_file(url, filepath):
         f.write(content)
 
 
-class VcRedist(object):
+class VcRedist:
     name = "vcredist"
     description = "Visual studio redistributable packages"
     default = "2015"

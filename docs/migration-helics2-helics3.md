@@ -2,7 +2,9 @@
 
 This document will describe the path to migrate your python code from HELICS version 2.x.x to version 3.x.x.
 
-**pyhelics** is backward and forward compatible. So you won't need to make any of these changes. The following document is for reference only.
+Current **pyhelics** releases require a HELICS 3 or newer runtime library.
+Most HELICS 2-era Python aliases have been removed, and `PYHELICS_INSTALL` can no longer point at a HELICS 2 installation.
+The following document is a migration reference for updating older code to the HELICS 3 API names and calling conventions.
 
 [See this commit for a diff of all the changes](https://github.com/GMLC-TDC/pyhelics/commit/366a4c5cb7fdfe44e48a85acdde0be43d56df3a3).
 
@@ -34,11 +36,12 @@ m = h.helicsEndpointGetMessage(endpoint)
 assert h.helicsMessageGetSource(m) == "port1"
 assert h.helicsMessageGetOriginalSource(m) == "port1"
 assert h.helicsMessageGetDestination(m) == "port2"
-assert h.helicsMessageGetRawDataSize(m) == len(data)
+assert h.helicsMessageGetByteCount(m) == len(data)
 assert h.helicsMessageGetTime(m) == 2.5
 ```
 
-Functions named with `MessageObject` are renamed to use `Message`. This is all handled transparently in pyhelics, so you don't need to deal with it.
+Functions named with `MessageObject` are renamed to use `Message`.
+Update old code to use the HELICS 3 names directly.
 
 This function has been renamed: `helicsMessageCheckFlag` -> `helicsMessageGetFlagOption` to be consistent with `helicsMessageSetFlagOption`.
 
@@ -125,7 +128,7 @@ def filterFunc1(mess, user_data):
     user_data += 1
 
 
-class UserData(object):
+class UserData:
     def __init__(self, x):
         self.x = x
 
@@ -139,19 +142,8 @@ h.helicsFilterSetCustomCallback(f1, filterFunc1, handle)
 ...
 ```
 
-Find the signature of the function that you'd like to call, use `h.ffi.callback` as a python decorator for that function.
-
-In HELICS v3,
-
-```python
-@h.ffi.callback("void logger(HelicsMessage, void* userData)")
-```
-
-In HELICS v2.x.x, use `helics_message_object` instead.
-
-```python
-@h.ffi.callback("void logger(helics_message_object, void* userData)")
-```
+Find the signature of the function that you'd like to call, and use `h.ffi.callback` as a python decorator for that function.
+Current pyhelics releases use the HELICS 3 callback type names, such as `HelicsMessage`.
 
 Then, you can pass the variable that contains a reference to this C function to a helics callback function.
 The user is responsible for managing memory with relation to these objects.
