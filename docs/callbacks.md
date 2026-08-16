@@ -3,11 +3,11 @@
 There are several HELICS functionalities that allow for the definition of custom behavior through the use of custom callback functions. Two specific examples are the definition of the filter behavior when implementing a filter federate and the other is the response to a custom query. In both cases custom code needs to be written to define behavior when HELICS needs to perform a specific action (filter a message, respond to a query). There are a few steps to implement callbacks in PyHELICS
 
 ## Define User Data
-The callback function generally exists outside the scope of other code and thus, if the functionality defined in the callback needs data from, say, the federate, that data has to be carried into the callback through a custom class generically called "user data". This user data is defined as a class that is instantiated and filled as a part of federate operation.  
+The callback function generally exists outside the scope of other code and thus, if the functionality defined in the callback needs data from, say, the federate, that data has to be carried into the callback through a custom class generically called "user data". This user data is defined as a class that is instantiated and filled as a part of federate operation.
 
 ```python
-# Store what ever data you'd like. 
-# A reference to this object is passed to the filter callback. 
+# Store what ever data you'd like.
+# A reference to this object is passed to the filter callback.
 # You don't need to use this if you don't want to.
 class UserData:
     def __init__(self, iteration_count = None):
@@ -31,12 +31,12 @@ def query_callback(query_ptr, size:int, query_buffer_ptr, user_data):
     query_str = h.ffi.string(query_ptr,size).decode()
     query_buffer = h.HelicsQueryBuffer(query_buffer_ptr)
     # Query operation code here
-    
+
 ```
 
 In the case of the query callback, you can see there are two other bits that need to be added in.
-  
-  1 - The query string is passed in as a C pointer. If you've only worked in Python, you might wonder what a "pointer" is. So does Python; the "cffi" library is used to translate the data the pointer is referencing into something Python recognizes as a string. 
+
+  1 - The query string is passed in as a C pointer. If you've only worked in Python, you might wonder what a "pointer" is. So does Python; the "cffi" library is used to translate the data the pointer is referencing into something Python recognizes as a string.
   2 - The query response that will be created by the callback function must be put into a pre-constructed databuffer that is passed in when the callback is made ("HelicsQueryBuffer buffer" in the above C signature). HELICS will read this buffer to get the response of the callback. Again, pointers are involved so we use the "cffi" library to make them something Python can deal with.
 
 ## Register the Callback
@@ -78,11 +78,11 @@ class UserData:
         self.pi = 3.14
         self.e = 2.718
         self.interation_count = iteration_count
-        
+
 @h.ffi.callback("void logger(HelicsMessage, void* userData)")
 def filter_callback(mess, userData):
     # Filter operation code here
-    
+
 
 def main():
     fed = h.helicsCreateValueFederateFromConfig("math_fed.json")
@@ -105,7 +105,7 @@ def query_callback(query_ptr, size:int, query_buffer_ptr, user_data):
     query_str = h.ffi.string(query_ptr,size).decode()
     query_buffer = h.HelicsQueryBuffer(query_buffer_ptr)
     # Query operation code here
-    
+
 
 def main():
     fed = h.helicsCreateValueFederateFromConfig("math_fed.json")

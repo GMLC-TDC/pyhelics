@@ -24,7 +24,9 @@ mFed.register_endpoint("ep1")
 mFed.register_global_endpoint("ep2")
 mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
 
-pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
+pub = mFed.register_publication(
+    "publication", h.HELICS_DATA_TYPE_STRING, "custom-units"
+)
 
 sub = mFed.register_subscription("TestFederate/publication", "custom-units")
 sub.option["CONNECTION_REQUIRED"] = 1
@@ -53,19 +55,25 @@ print("Publishing string and reading as various data types")
 # Read data as bytes
 mFed.publications["TestFederate/publication"].publish(b"bytes")
 assert mFed.request_time(2.0) == 1.0
-print(f'mFed.subscriptions["TestFederate/publication"].bytes: {mFed.subscriptions["TestFederate/publication"].bytes}')
+print(
+    f'mFed.subscriptions["TestFederate/publication"].bytes: {mFed.subscriptions["TestFederate/publication"].bytes}'
+)
 assert mFed.subscriptions["TestFederate/publication"].bytes == b"bytes"
 
 # Read data as a string
 mFed.publications["TestFederate/publication"].publish("string")
 mFed.request_time(3.0)
-print(f'mFed.subscriptions["TestFederate/publication"].string: {mFed.subscriptions["TestFederate/publication"].string}')
+print(
+    f'mFed.subscriptions["TestFederate/publication"].string: {mFed.subscriptions["TestFederate/publication"].string}'
+)
 assert mFed.subscriptions["TestFederate/publication"].string == "string"
 
 # Read data as a value and let HELICS figure out the right data type
 mFed.publications["TestFederate/publication"].publish("value")
 mFed.request_time(4.0)
-print(f'mFed.subscriptions["TestFederate/publication"].value: {mFed.subscriptions["TestFederate/publication"].value}')
+print(
+    f'mFed.subscriptions["TestFederate/publication"].value: {mFed.subscriptions["TestFederate/publication"].value}'
+)
 assert mFed.subscriptions["TestFederate/publication"].value == "value"
 
 print("Example complete")

@@ -313,12 +313,8 @@ def test_messagefederate_timing_tests():
 
     h.helicsFederateSetTimeProperty(vFed2, h.HELICS_PROPERTY_TIME_INPUT_DELAY, 0.1)
 
-    h.helicsFederateSetFlagOption(
-        vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
-    )
-    h.helicsFederateSetFlagOption(
-        vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
-    )
+    h.helicsFederateSetFlagOption(vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
+    h.helicsFederateSetFlagOption(vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
 
     ept1 = h.helicsFederateRegisterGlobalEndpoint(vFed1, "e1", "")
     h.helicsFederateRegisterGlobalEndpoint(vFed2, "e2", "")
@@ -331,31 +327,11 @@ def test_messagefederate_timing_tests():
     # check that the request is only granted at the appropriate period
     assert gtime == 1.0
 
-    assert (
-        h.helicsFederateGetIntegerProperty(
-            vFed1, h.HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL
-        )
-        == -1
-    )
-    assert (
-        h.helicsFederateGetIntegerProperty(
-            vFed2, h.HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL
-        )
-        == -1
-    )
+    assert h.helicsFederateGetIntegerProperty(vFed1, h.HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL) == -1
+    assert h.helicsFederateGetIntegerProperty(vFed2, h.HELICS_PROPERTY_INT_CONSOLE_LOG_LEVEL) == -1
 
-    assert (
-        h.helicsFederateGetFlagOption(
-            vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS
-        )
-        is True
-    )
-    assert (
-        h.helicsFederateGetFlagOption(
-            vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS
-        )
-        is True
-    )
+    assert h.helicsFederateGetFlagOption(vFed1, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS) is True
+    assert h.helicsFederateGetFlagOption(vFed2, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS) is True
 
     h.helicsEndpointSendBytesTo(ept1, "test1".encode(), "e2")
     h.helicsFederateRequestTimeAsync(vFed1, 1.9)

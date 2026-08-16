@@ -64,7 +64,9 @@ def profile(filename, invert=True):
         for name in set(names):
             profile[name].append({})
 
-    for (name, state, message, simtime, realtime) in zip(names, states, messages, simtimes, realtimes):
+    for name, state, message, simtime, realtime in zip(
+        names, states, messages, simtimes, realtimes
+    ):
         if state == "created":
             continue
         if "ENTRY" in message and not invert:
@@ -119,7 +121,14 @@ def plot(profile, save=None, kind="simulation", **kwargs):
     for d in profiles:
         d[enter] = d[enter] - m_enter
         d[end] = d[end] - m_enter
-        ax.barh(names[d["name"]], d[end] - d[enter], left=d[enter], edgecolor=d["color"], color=d["color"], **kwargs)
+        ax.barh(
+            names[d["name"]],
+            d[end] - d[enter],
+            left=d[enter],
+            edgecolor=d["color"],
+            color=d["color"],
+            **kwargs,
+        )
 
     if kind == "Simulation":
         ax.set_xlabel("Simulation Time (s)")
@@ -136,4 +145,7 @@ def plot(profile, save=None, kind="simulation", **kwargs):
 
 
 if __name__ == "__main__":
-    plot(profile(os.path.abspath(os.path.join(CURRENT_DIR, "../examples/pi-exchange/profile.txt"))), kind="realtime")
+    plot(
+        profile(os.path.abspath(os.path.join(CURRENT_DIR, "../examples/pi-exchange/profile.txt"))),
+        kind="realtime",
+    )

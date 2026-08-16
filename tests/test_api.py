@@ -129,16 +129,10 @@ def test_misc_api():
     h.helicsFederateInfoSetCoreType(fedInfo1, 3)
     h.helicsFederateInfoSetCoreTypeFromString(fedInfo1, "zmq")
     h.helicsFederateInfoSetFlagOption(fedInfo1, 1, True)
-    h.helicsFederateInfoSetTimeProperty(
-        fedInfo1, h.HELICS_PROPERTY_TIME_INPUT_DELAY, 1.0
-    )
+    h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_INPUT_DELAY, 1.0)
     h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.HELICS_PROPERTY_INT_LOG_LEVEL, 1)
-    h.helicsFederateInfoSetIntegerProperty(
-        fedInfo1, h.HELICS_PROPERTY_INT_MAX_ITERATIONS, 100
-    )
-    h.helicsFederateInfoSetTimeProperty(
-        fedInfo1, h.HELICS_PROPERTY_TIME_OUTPUT_DELAY, 1.0
-    )
+    h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.HELICS_PROPERTY_INT_MAX_ITERATIONS, 100)
+    h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_OUTPUT_DELAY, 1.0)
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_DELTA, 1.0)
     h.helicsFederateInfoSetTimeProperty(fedInfo1, h.HELICS_PROPERTY_TIME_OFFSET, 0.1)
@@ -175,16 +169,12 @@ def test_misc_api():
 
     ep1 = h.helicsFederateRegisterEndpoint(fed1, "Ep1", "string")
     ep2 = h.helicsFederateRegisterGlobalEndpoint(fed1, "Ep2", "string")
-    pub1 = h.helicsFederateRegisterGlobalPublication(
-        fed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, ""
-    )
+    pub1 = h.helicsFederateRegisterGlobalPublication(fed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, "")
     pub2 = h.helicsFederateRegisterGlobalTypePublication(fed1, "pub2", "complex", "")
 
     sub1 = h.helicsFederateRegisterSubscription(fed1, "pub1")
     sub2 = h.helicsFederateRegisterSubscription(fed1, "pub2")
-    pub3 = h.helicsFederateRegisterPublication(
-        fed1, "pub3", h.HELICS_DATA_TYPE_STRING, ""
-    )
+    pub3 = h.helicsFederateRegisterPublication(fed1, "pub3", h.HELICS_DATA_TYPE_STRING, "")
 
     pub1KeyString = h.helicsPublicationGetName(pub1)
     pub1TypeString = h.helicsPublicationGetType(pub1)
@@ -216,9 +206,7 @@ def test_misc_api():
     pub5 = h.helicsFederateRegisterGlobalTypePublication(fed1, "pub5", "boolean", "")
 
     sub5 = h.helicsFederateRegisterSubscription(fed1, "pub5", "")
-    pub6 = h.helicsFederateRegisterGlobalPublication(
-        fed1, "pub6", h.HELICS_DATA_TYPE_VECTOR, ""
-    )
+    pub6 = h.helicsFederateRegisterGlobalPublication(fed1, "pub6", h.HELICS_DATA_TYPE_VECTOR, "")
     sub6 = h.helicsFederateRegisterSubscription(fed1, "pub6", "")
     pub7 = h.helicsFederateRegisterGlobalPublication(
         fed1, "pub7", h.HELICS_DATA_TYPE_NAMED_POINT, ""
@@ -228,24 +216,12 @@ def test_misc_api():
     for pub in [pub1, pub2, pub3, pub4, pub5, pub6, pub7]:
         assert isinstance(pub, h.HelicsPublication)
     assert_attributes(pub1, {"name": "pub1", "type": "double", "units": "", "info": ""})
-    assert_attributes(
-        pub2, {"name": "pub2", "type": "complex", "units": "", "info": ""}
-    )
-    assert_attributes(
-        pub3, {"name": "fed1/pub3", "type": "string", "units": "", "info": ""}
-    )
-    assert_attributes(
-        pub4, {"name": "fed1/pub4", "type": "int", "units": "", "info": ""}
-    )
-    assert_attributes(
-        pub5, {"name": "pub5", "type": "boolean", "units": "", "info": ""}
-    )
-    assert_attributes(
-        pub6, {"name": "pub6", "type": "double_vector", "units": "", "info": ""}
-    )
-    assert_attributes(
-        pub7, {"name": "pub7", "type": "named_point", "units": "", "info": ""}
-    )
+    assert_attributes(pub2, {"name": "pub2", "type": "complex", "units": "", "info": ""})
+    assert_attributes(pub3, {"name": "fed1/pub3", "type": "string", "units": "", "info": ""})
+    assert_attributes(pub4, {"name": "fed1/pub4", "type": "int", "units": "", "info": ""})
+    assert_attributes(pub5, {"name": "pub5", "type": "boolean", "units": "", "info": ""})
+    assert_attributes(pub6, {"name": "pub6", "type": "double_vector", "units": "", "info": ""})
+    assert_attributes(pub7, {"name": "pub7", "type": "named_point", "units": "", "info": ""})
 
     for sub in [sub1, sub2, sub3, sub4, sub5, sub6, sub7]:
         assert isinstance(sub, h.HelicsInput)

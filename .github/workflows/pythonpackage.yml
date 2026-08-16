@@ -70,7 +70,7 @@ jobs:
         CIBW_BEFORE_ALL_LINUX: >
             mkdir /boost &&
             pushd /boost &&
-            curl -L -o boost_1_76_0.tar.bz2 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' && 
+            curl -L -o boost_1_76_0.tar.bz2 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
             tar xf boost_1_76_0.tar.bz2 &&
             popd
         CIBW_ENVIRONMENT_LINUX: "${{ matrix.arch == 'aarch64' && 'BOOST_ROOT=/boost/boost_1_76_0 CMAKE_ARGS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5' || 'BOOST_ROOT=/boost/boost_1_76_0' }}"
@@ -86,7 +86,7 @@ jobs:
     - uses: actions/checkout@v7
       with:
         fetch-depth: 0  # for setuptools_scm to find tags
-    
+
     - name: Install boost
       run:
         mkdir /tmp/boost &&

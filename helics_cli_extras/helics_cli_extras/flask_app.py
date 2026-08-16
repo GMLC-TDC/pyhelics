@@ -31,9 +31,7 @@ app = Flask(
 api = Api(app)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-app.config["UPLOAD_FOLDER"] = os.path.abspath(
-    os.path.join(os.getcwd(), "__helics-server")
-)
+app.config["UPLOAD_FOLDER"] = os.path.abspath(os.path.join(os.getcwd(), "__helics-server"))
 
 cache = {
     "path": os.path.join(app.config["UPLOAD_FOLDER"], "helics-cli.sqlite.db"),
@@ -61,16 +59,12 @@ class Database(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            "file", type=werkzeug.datastructures.FileStorage, location="files"
-        )
+        parser.add_argument("file", type=werkzeug.datastructures.FileStorage, location="files")
         args = parser.parse_args()
         file = args["file"]
         os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], "helics-cli.sqlite.db"))
-        cache["path"] = os.path.join(
-            app.config["UPLOAD_FOLDER"], "helics-cli.sqlite.db"
-        )
+        cache["path"] = os.path.join(app.config["UPLOAD_FOLDER"], "helics-cli.sqlite.db")
         dm = DatabaseManager()
         return {"filename": dm.path_to_helics_db}
 
@@ -193,9 +187,7 @@ class RunnerFile(Resource):
                     os.path.join(data["folder"], federate["directory"])
                 )
             federate["old_name"] = federate["name"]
-            if os.path.exists(
-                os.path.join(data["folder"], "{}.log".format(federate["name"]))
-            ):
+            if os.path.exists(os.path.join(data["folder"], "{}.log".format(federate["name"]))):
                 federate["log_available"] = True
             else:
                 federate["log_available"] = False
@@ -208,9 +200,7 @@ class RunnerFile(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            "file", type=werkzeug.datastructures.FileStorage, location="files"
-        )
+        parser.add_argument("file", type=werkzeug.datastructures.FileStorage, location="files")
         args = parser.parse_args()
         file = args["file"]
         path = cache["runner-folder"]
@@ -230,9 +220,7 @@ class RunnerFileName(Resource):
         args = parser.parse_args()
         name = args["name"]
         cache["runner-file-name"] = name
-        cache["runner-path"] = os.path.join(
-            cache["runner-folder"], cache["runner-file-name"]
-        )
+        cache["runner-path"] = os.path.join(cache["runner-folder"], cache["runner-file-name"])
 
 
 api.add_resource(RunnerFileName, "/api/runner/file/name")
@@ -245,9 +233,7 @@ class RunnerFileFolder(Resource):
         args = parser.parse_args()
         folder = args["folder"]
         cache["runner-folder"] = os.path.abspath(os.path.expanduser(folder))
-        cache["runner-path"] = os.path.join(
-            cache["runner-folder"], cache["runner-file-name"]
-        )
+        cache["runner-path"] = os.path.join(cache["runner-folder"], cache["runner-file-name"])
 
 
 api.add_resource(RunnerFileFolder, "/api/runner/file/folder")
@@ -354,9 +340,7 @@ class RunnerLog(Resource):
     def get(self, name):
         with open(cache["runner-path"]) as f:
             data = json.loads(f.read())
-        with open(
-            os.path.join(os.path.dirname(cache["runner-path"]), "{}.log".format(name))
-        ) as f:
+        with open(os.path.join(os.path.dirname(cache["runner-path"]), "{}.log".format(name))) as f:
             data = f.read()
         return {"log": data}
 
@@ -377,9 +361,7 @@ class RunnerRun(Resource):
         if self.get()["status"]:
             self.delete()
         p = subprocess.Popen(
-            shlex.split(
-                "helics run --path {} --connect-server".format(cache["runner-path"])
-            )
+            shlex.split("helics run --path {} --connect-server".format(cache["runner-path"]))
         )
         self.runner_server["process"] = p
         return {"status": True}
@@ -436,9 +418,7 @@ class RunnerStatus(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("name", type=str, required=True, help="Name of federate")
-        parser.add_argument(
-            "status", type=str, required=True, help="Status of federate"
-        )
+        parser.add_argument("status", type=str, required=True, help="Status of federate")
         args = parser.parse_args()
         status_tracker[args["name"]] = args["status"]
         return {"status": status_tracker[args["name"]]}
@@ -542,9 +522,7 @@ class Profile(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            "file", type=werkzeug.datastructures.FileStorage, location="files"
-        )
+        parser.add_argument("file", type=werkzeug.datastructures.FileStorage, location="files")
         args = parser.parse_args()
         file = args["file"]
         os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)

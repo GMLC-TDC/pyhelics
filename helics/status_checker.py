@@ -74,7 +74,9 @@ class CheckStatusThread(threading.Thread):
             r.add_header("Content-Length", str(len(bytes)))
             try:
                 with urllib.request.urlopen(r, bytes) as response:
-                    json.loads(response.read().decode(response.info().get_param("charset") or "utf-8"))
+                    json.loads(
+                        response.read().decode(response.info().get_param("charset") or "utf-8")
+                    )
             except Exception as e:
                 logger.exception("Severing connection with helics-cli server: {}".format(e))
                 self._helics_server_available = False

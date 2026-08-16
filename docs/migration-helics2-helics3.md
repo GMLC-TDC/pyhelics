@@ -105,13 +105,17 @@ Enumerations are constants now, and are represented by upper case variables:
 ```python
 # helics v2
 h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.helics_property_int_log_level, 1)
-h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.helics_property_int_max_iterations, 100)
+h.helicsFederateInfoSetIntegerProperty(
+    fedInfo1, h.helics_property_int_max_iterations, 100
+)
 ```
 
 ```python
 # helics v3
 h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.HELICS_PROPERTY_INT_LOG_LEVEL, 1)
-h.helicsFederateInfoSetIntegerProperty(fedInfo1, h.HELICS_PROPERTY_INT_MAX_ITERATIONS, 100)
+h.helicsFederateInfoSetIntegerProperty(
+    fedInfo1, h.HELICS_PROPERTY_INT_MAX_ITERATIONS, 100
+)
 ```
 
 ### New functionality

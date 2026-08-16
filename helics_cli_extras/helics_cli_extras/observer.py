@@ -84,9 +84,7 @@ class HelicsObserverFederate:
 
     @property
     def subscriptions(self) -> list[str]:
-        return [
-            cast(str, name) for name in self.federate.query("root", "subscriptions")
-        ]
+        return [cast(str, name) for name in self.federate.query("root", "subscriptions")]
 
     @property
     def inputs(self) -> list[str]:
@@ -132,18 +130,14 @@ class HelicsObserverFederate:
                         else:
                             for s in input["sources"]:
                                 self.session.add(
-                                    db.Inputs(
-                                        source=input["federate"], target=s["federate"]
-                                    )
+                                    db.Inputs(source=input["federate"], target=s["federate"])
                                 )
 
                 if "publications" in federate.keys():
                     for publication in federate["publications"]:
                         logger.info(f"Adding publication {publication}")
                         if "targets" not in publication.keys():
-                            self.session.add(
-                                db.Publications(source=publication["federate"])
-                            )
+                            self.session.add(db.Publications(source=publication["federate"]))
                         else:
                             for t in publication["targets"]:
                                 self.session.add(
@@ -168,9 +162,7 @@ class HelicsObserverFederate:
         columns.insert(0, db.Column("updated_at", db.Float))
         columns.insert(
             0,
-            db.Column(
-                "id", db.Integer, db.Sequence("id"), primary_key=True, nullable=False
-            ),
+            db.Column("id", db.Integer, db.Sequence("id"), primary_key=True, nullable=False),
         )
         datatable = db.Table("datatable", db.Base.metadata, *columns)
 
@@ -187,9 +179,7 @@ class HelicsObserverFederate:
 
     def wait(self):
         federates = self.federates
-        while not all(
-            self.federate.query(name, "isinit") is True for name in federates
-        ):
+        while not all(self.federate.query(name, "isinit") is True for name in federates):
             for name in federates:
                 logger.debug(f"{name} isinit = {self.federate.query(name, 'isinit')}")
             time.sleep(1)

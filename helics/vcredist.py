@@ -37,7 +37,11 @@ class VcRedist:
     }
 
     exes = [
-        {"version": "2015", "arch": "amd64", "url": "https://aka.ms/vs/16/release/vc_redist.x64.exe"},
+        {
+            "version": "2015",
+            "arch": "amd64",
+            "url": "https://aka.ms/vs/16/release/vc_redist.x64.exe",
+        },
         {"version": "2015", "arch": "x86", "url": "https://aka.ms/vs/16/release/vc_redist.x86.exe"},
     ]
 
@@ -71,5 +75,7 @@ class VcRedist:
 
         download_file(url, filepath)
 
-        cmd = "{} {}".format(os.path.join(CURRENT_DIRECTORY, filepath), " /install /quiet /norestart")
+        cmd = "{} {}".format(
+            os.path.join(CURRENT_DIRECTORY, filepath), " /install /quiet /norestart"
+        )
         os.system(cmd)

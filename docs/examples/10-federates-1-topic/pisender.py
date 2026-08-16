@@ -38,7 +38,9 @@ def main(n):
         fed.request_next_step()
 
         fed.publications[f"globaltopic"].publish(value)
-        print(f"{federate_name}: Sending value pi = {value} at time {fed.current_time} on globaltopic")
+        print(
+            f"{federate_name}: Sending value pi = {value} at time {fed.current_time} on globaltopic"
+        )
 
         # Computing user needs
         time.sleep(float(n) * (1 + (0.5 - random.random()) / 10))

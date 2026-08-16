@@ -27,6 +27,7 @@ To use the project:
 
 ```python
 import helics as h
+
 h.helicsGetVersion()
 ```
 

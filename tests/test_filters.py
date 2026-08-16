@@ -19,8 +19,8 @@ from .utils import (
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 pytestmark = pt.mark.skipif(
-    os.name == 'nt',
-    reason="Access violations during probably shut down in way too many of these tests"
+    os.name == "nt",
+    reason="Access violations during probably shut down in way too many of these tests",
 )
 
 
@@ -152,9 +152,7 @@ def test_filter_type_tests_message_filter_function():
     fFed, fedinfo1 = create_message_federate(1, "filter")
     mFed, fedinfo2 = create_message_federate(1, "message")
 
-    h.helicsFederateSetFlagOption(
-        mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
-    )
+    h.helicsFederateSetFlagOption(mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
 
@@ -212,9 +210,7 @@ def test_filter_test_types_function_mobj():
     fFed, fedinfo1 = create_message_federate(1, "filter")
     mFed, fedinfo2 = create_message_federate(1, "message")
 
-    h.helicsFederateSetFlagOption(
-        mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
-    )
+    h.helicsFederateSetFlagOption(mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")
 
@@ -420,19 +416,13 @@ def test_filter_test_types_message_filter_function3():
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "random")
 
-    f1 = h.helicsFederateRegisterGlobalFilter(
-        fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1"
-    )
+    f1 = h.helicsFederateRegisterGlobalFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
     h.helicsFilterAddSourceTarget(f1, "port1")
-    f2 = h.helicsFederateRegisterGlobalFilter(
-        fFed, h.HELICS_FILTER_TYPE_DELAY, "filter2"
-    )
+    f2 = h.helicsFederateRegisterGlobalFilter(fFed, h.HELICS_FILTER_TYPE_DELAY, "filter2")
     h.helicsFilterAddSourceTarget(f2, "port1")
 
     h.helicsFederateRegisterEndpoint(fFed, "fout", "")
-    f3 = h.helicsFederateRegisterFilter(
-        fFed, h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3"
-    )
+    f3 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
     h.helicsFilterAddSourceTarget(f3, "filter0/fout")
 
     h.helicsFilterSet(f2, "delay", 2.5)
@@ -793,16 +783,12 @@ class UserData:
 def test_filter_callback_test():
     broker = create_broker(2)
     assert isinstance(broker, h.HelicsBroker)
-    assert_attributes(
-        broker, {"identifier": "mainbroker", "address": "tcp://127.0.0.1:23404"}
-    )
+    assert_attributes(broker, {"identifier": "mainbroker", "address": "tcp://127.0.0.1:23404"})
 
     fFed, fedinfo1 = create_message_federate(1, "filter", 1.0)
     mFed, fedinfo2 = create_message_federate(1, "message", 1.0)
 
-    h.helicsFederateSetFlagOption(
-        mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True
-    )
+    h.helicsFederateSetFlagOption(mFed, h.HELICS_FLAG_IGNORE_TIME_MISMATCH_WARNINGS, True)
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "")

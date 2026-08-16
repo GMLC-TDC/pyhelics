@@ -40,7 +40,9 @@ def _get_version():
             h.__version__, h.helicsGetVersion()
         )
     except ImportError:
-        helics_version = "Python `helics` package not installed. Install using `pip install helics --upgrade`."
+        helics_version = (
+            "Python `helics` package not installed. Install using `pip install helics --upgrade`."
+        )
     try:
         import helics_apps as ha
 
@@ -63,9 +65,7 @@ def _get_version():
     try:
         import helics_cli_extras
     except ImportError:
-        echo(
-            'helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.'
-        )
+        echo('helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.')
 
     return """{}
 
@@ -120,9 +120,7 @@ def server(open: bool):
 @click.option(
     "--db-folder",
     prompt="path to database folder",
-    type=click.Path(
-        exists=True, file_okay=False, writable=True, path_type=pathlib.Path
-    ),
+    type=click.Path(exists=True, file_okay=False, writable=True, path_type=pathlib.Path),
 )
 def observer(db_folder: pathlib.Path):
     """
@@ -204,9 +202,7 @@ def fetch(url, data={}, method="POST"):
     help="Path to config.json that describes all federates",
 )
 @click.option("--silent", is_flag=True, help="Suppress informational output")
-@click.option(
-    "--connect-server", is_flag=True, help="Attempt to connect to helics-cli server"
-)
+@click.option("--connect-server", is_flag=True, help="Attempt to connect to helics-cli server")
 @click.option(
     "--no-log-files",
     is_flag=True,
@@ -299,9 +295,7 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
             with urllib.request.urlopen(r) as response:
                 helics_server_available = (
                     json.loads(
-                        response.read().decode(
-                            response.info().get_param("charset") or "utf-8"
-                        )
+                        response.read().decode(response.info().get_param("charset") or "utf-8")
                     ).get("status", None)
                     == 200
                 )
@@ -349,9 +343,7 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     if len(set(n for n in names)) != len(config["federates"]):
         error("Repeated names found in runner.json federates.", blink=True)
         for n, c in [
-            (item, count)
-            for item, count in collections.Counter(names).items()
-            if count > 1
+            (item, count) for item, count in collections.Counter(names).items() if count > 1
         ]:
             info('Found name "{}" {} times'.format(n, c))
         return -1
@@ -373,9 +365,7 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     for f in config["federates"]:
         if not silent:
             info(
-                "Running federate {name} as a background process".format(
-                    name=f["name"]
-                ),
+                "Running federate {name} as a background process".format(name=f["name"]),
             )
 
         fname = os.path.abspath(os.path.join(logging_path, "{}.log".format(f["name"])))
@@ -449,11 +439,7 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
                 and p.process.returncode is not None
             ):
                 errored = True
-                error(
-                    "Process {} exited with return code {}".format(
-                        p.name, p.process.returncode
-                    )
-                )
+                error("Process {} exited with return code {}".format(p.name, p.process.returncode))
                 if os.path.exists(p.file):
                     with open(p.file) as f:
                         warn("Last 10 lines of {}.log:".format(p.name), blink=False)

@@ -126,18 +126,12 @@ def test_messagefilter_function():
     p1 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port1", "")
     p2 = h.helicsFederateRegisterGlobalEndpoint(mFed, "port2", "random")
 
-    f1 = h.helicsFederateRegisterGlobalFilter(
-        fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1"
-    )
+    f1 = h.helicsFederateRegisterGlobalFilter(fFed, h.HELICS_FILTER_TYPE_CUSTOM, "filter1")
     h.helicsFilterAddSourceTarget(f1, "port1")
-    f2 = h.helicsFederateRegisterGlobalFilter(
-        fFed, h.HELICS_FILTER_TYPE_DELAY, "filter2"
-    )
+    f2 = h.helicsFederateRegisterGlobalFilter(fFed, h.HELICS_FILTER_TYPE_DELAY, "filter2")
     h.helicsFilterAddSourceTarget(f2, "port1")
     h.helicsFederateRegisterEndpoint(fFed, "fout", "")
-    f3 = h.helicsFederateRegisterFilter(
-        fFed, h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3"
-    )
+    f3 = h.helicsFederateRegisterFilter(fFed, h.HELICS_FILTER_TYPE_RANDOM_DELAY, "filter3")
     h.helicsFilterAddSourceTarget(f3, "filter/fout")
 
     h.helicsFilterSet(f2, "delay", 2.5)
