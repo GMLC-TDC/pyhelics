@@ -106,9 +106,7 @@ def test_bad_input_type_publication_2_tests():
     pubid = h.helicsFederateRegisterGlobalTypePublication(vFed1, "pub1", "string", "")
     with pt.raises(h.HelicsException):
         # @test_throws h.HELICSErrorRegistrationFailure
-        pubid2 = h.helicsFederateRegisterGlobalTypePublication(
-            vFed1, "pub1", "string", ""
-        )
+        pubid2 = h.helicsFederateRegisterGlobalTypePublication(vFed1, "pub1", "string", "")
 
     with pt.raises(h.HelicsException):
         # @test_throws h.HELICSErrorInvalidArgument
@@ -127,9 +125,7 @@ def test_bad_input_type_publication_2_tests():
 
     h.helicsFederateSetTimeProperty(vFed1, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
 
-    h.helicsFederateEnterExecutingModeIterativeAsync(
-        vFed1, h.HELICS_ITERATION_REQUEST_NO_ITERATION
-    )
+    h.helicsFederateEnterExecutingModeIterativeAsync(vFed1, h.HELICS_ITERATION_REQUEST_NO_ITERATION)
     res = h.helicsFederateEnterExecutingModeIterativeComplete(vFed1)
     assert res == h.HELICS_ITERATION_RESULT_NEXT_STEP
 
@@ -190,13 +186,9 @@ def test_bad_input_tests_raw_tests():
     broker = create_broker(1)
     vFed1, fedinfo = create_value_federate(1, "test")
 
-    pubid = h.helicsFederateRegisterPublication(
-        vFed1, "pub1", h.HELICS_DATA_TYPE_RAW, ""
-    )
+    pubid = h.helicsFederateRegisterPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_RAW, "")
 
-    subid = h.helicsFederateRegisterGlobalInput(
-        vFed1, "inp1", h.HELICS_DATA_TYPE_RAW, ""
-    )
+    subid = h.helicsFederateRegisterGlobalInput(vFed1, "inp1", h.HELICS_DATA_TYPE_RAW, "")
 
     h.helicsPublicationAddTarget(pubid, "inp1")
 
@@ -328,16 +320,12 @@ def test_bad_inputs_input_tests():
 
     # register the publications
 
-    pubid = h.helicsFederateRegisterGlobalPublication(
-        vFed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, ""
-    )
+    pubid = h.helicsFederateRegisterGlobalPublication(vFed1, "pub1", h.HELICS_DATA_TYPE_DOUBLE, "")
 
     subid = h.helicsFederateRegisterInput(vFed1, "inp1", h.HELICS_DATA_TYPE_DOUBLE, "")
     # @test_throws h.HELICSErrorRegistrationFailure
     with pt.raises(h.HelicsException):
-        subid2 = h.helicsFederateRegisterInput(
-            vFed1, "inp1", h.HELICS_DATA_TYPE_DOUBLE, ""
-        )
+        subid2 = h.helicsFederateRegisterInput(vFed1, "inp1", h.HELICS_DATA_TYPE_DOUBLE, "")
 
     h.helicsInputAddTarget(subid, "pub1")
 
@@ -539,15 +527,9 @@ def test_bad_inputs_misc_tests():
     with pt.raises(h.HelicsException):
         assert h.helicsGetPropertyIndex("") == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
     with pt.raises(h.HelicsException):
-        assert (
-            h.helicsGetPropertyIndex("not_a_property")
-            == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
-        )
+        assert h.helicsGetPropertyIndex("not_a_property") == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
 
     with pt.raises(h.HelicsException):
         assert h.helicsGetOptionIndex("") == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
     with pt.raises(h.HelicsException):
-        assert (
-            h.helicsGetOptionIndex("not_a_property")
-            == h.HELICS_PROPERTY_INVALID_OPTION_INDEX
-        )
+        assert h.helicsGetOptionIndex("not_a_property") == h.HELICS_PROPERTY_INVALID_OPTION_INDEX

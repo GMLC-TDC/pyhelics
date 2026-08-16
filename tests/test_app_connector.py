@@ -14,6 +14,7 @@ import threading
 CURRENT_DIRECTORY = Path(os.path.dirname(os.path.abspath(__file__)))
 TEST_FILE_PATH = CURRENT_DIRECTORY / "test_files" / "connector"
 
+
 def test_connector_simple_tags():
     """
     Test the connector with simple tags.
@@ -21,13 +22,13 @@ def test_connector_simple_tags():
     and checks the functionality of the connector with simple tags.
 
     It verifies that the connector can publish and receive values correctly.
-    
+
     It should be functionally equivalent to the HELICS connector test in shared_library/appTests.cpp
     """
     if not h.helicsAppEnabled():
         # Skip the test if HELICS app is not enabled
         return
-        
+
     fed_info = h.helicsCreateFederateInfo()
     h.helicsFederateInfoSetCoreType(fed_info, h.HELICS_CORE_TYPE_INPROC)
     h.helicsFederateInfoSetTimeProperty(fed_info, h.HELICS_PROPERTY_TIME_PERIOD, 1.0)
@@ -59,7 +60,7 @@ def test_connector_simple_tags():
     assert ret_time == 1.0
 
     val = h.helicsInputGetDouble(inp1)
-    assert val == -1e49 #TODO: HELICS_INVALID_DOUBLE not defined in pyhelics yet
+    assert val == -1e49  # TODO: HELICS_INVALID_DOUBLE not defined in pyhelics yet
 
     val = h.helicsInputGetDouble(inp2)
     assert val == test_value

@@ -21,7 +21,11 @@ HELICS_INSTALL = os.getenv(
 )
 PYHELICS_INSTALL = os.getenv("PYHELICS_INSTALL", HELICS_INSTALL)
 if not os.path.isdir(PYHELICS_INSTALL):
-    warnings.warn("PYHELICS_INSTALL ({}) is not a directory. Using DEFAULT_INSTALL ({})".format(PYHELICS_INSTALL, CURRENT_INSTALL))
+    warnings.warn(
+        "PYHELICS_INSTALL ({}) is not a directory. Using DEFAULT_INSTALL ({})".format(
+            PYHELICS_INSTALL, CURRENT_INSTALL
+        )
+    )
     PYHELICS_INSTALL = CURRENT_INSTALL
 
 files = [
@@ -76,7 +80,11 @@ def _load_library():
         for file in os.listdir(os.path.join(PYHELICS_INSTALL, "bin")):
             if "helics" in file and file.endswith(".dll"):
                 try:
-                    logger.debug("dlopen helics library in {}".format(os.path.join(PYHELICS_INSTALL, "bin", file)))
+                    logger.debug(
+                        "dlopen helics library in {}".format(
+                            os.path.join(PYHELICS_INSTALL, "bin", file)
+                        )
+                    )
                     lib = ffi.dlopen(os.path.join(PYHELICS_INSTALL, "bin", file))
                     break
                 except OSError as _:
@@ -112,7 +120,9 @@ def _load_library():
         else:
             for file in reversed(sorted(os.listdir(lib_folder), key=len)):
                 if "helicsSharedLibd." in file or "libhelicsd." in file and file.endswith(".dylib"):
-                    logger.debug("dlopen debug helics library in {}".format(os.path.join(lib_folder, file)))
+                    logger.debug(
+                        "dlopen debug helics library in {}".format(os.path.join(lib_folder, file))
+                    )
                     lib = ffi.dlopen(os.path.join(lib_folder, file))
                     break
             else:
@@ -141,7 +151,11 @@ def _load_library():
             for file in reversed(sorted(os.listdir(lib_folder), key=len)):
                 if "helicsSharedLibd." in file or "libhelicsd." in file and file.endswith(".so"):
                     try:
-                        logger.debug("dlopen debug helics library in {}".format(os.path.join(lib_folder, file)))
+                        logger.debug(
+                            "dlopen debug helics library in {}".format(
+                                os.path.join(lib_folder, file)
+                            )
+                        )
                         lib = ffi.dlopen(os.path.join(lib_folder, file))
                         break
                     except:

@@ -9,7 +9,6 @@ import re
 from collections import namedtuple
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 CAPI_PATH = ROOT / "helics" / "capi.py"
 
@@ -29,8 +28,20 @@ def helics_api_header_path():
     candidates.extend(
         [
             ROOT / "helics" / "install" / "include" / "helics" / "helics_api.h",
-            ROOT.parent / "HELICS" / "build" / "helics_generated_includes" / "helics" / "helics_api.h",
-            ROOT.parent / "HELICS" / "src" / "helics" / "shared_api_library" / "backup" / "helics" / "helics_api.h",
+            ROOT.parent
+            / "HELICS"
+            / "build"
+            / "helics_generated_includes"
+            / "helics"
+            / "helics_api.h",
+            ROOT.parent
+            / "HELICS"
+            / "src"
+            / "helics"
+            / "shared_api_library"
+            / "backup"
+            / "helics"
+            / "helics_api.h",
         ]
     )
 
@@ -38,7 +49,9 @@ def helics_api_header_path():
         if candidate.is_file():
             return candidate
 
-    raise FileNotFoundError("Could not find helics_api.h; set HELICS_API_HEADER to run C API consistency tests.")
+    raise FileNotFoundError(
+        "Could not find helics_api.h; set HELICS_API_HEADER to run C API consistency tests."
+    )
 
 
 def capi_module():
@@ -63,7 +76,9 @@ def c_api_prototypes(header_path):
     stripped = _strip_c_comments(text)
     stripped = stripped.replace("HELICS_DEPRECATED ", "")
     prototypes = {}
-    for match in re.finditer(r"([A-Za-z_][\w\s\*]+?)\s+(helics\w+)\s*\((.*?)\)\s*;", stripped, re.S):
+    for match in re.finditer(
+        r"([A-Za-z_][\w\s\*]+?)\s+(helics\w+)\s*\((.*?)\)\s*;", stripped, re.S
+    ):
         return_type, name, args = match.groups()
         line = stripped[: match.start()].count("\n") + 1
         prototypes[name] = CPrototype(_collapse_ws(return_type), _split_c_args(args), line)
@@ -172,7 +187,11 @@ def expr(node):
 def literal_value(node):
     if isinstance(node, ast.Constant):
         return node.value
-    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub) and isinstance(node.operand, ast.Constant):
+    if (
+        isinstance(node, ast.UnaryOp)
+        and isinstance(node.op, ast.USub)
+        and isinstance(node.operand, ast.Constant)
+    ):
         return -node.operand.value
     raise AssertionError("unsupported literal node {}".format(type(node).__name__))
 
@@ -192,7 +211,11 @@ def class_constant(class_name, constant_name):
 def class_constant_names(class_name):
     names = set()
     for node in class_node(class_name).body:
-        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+        if (
+            isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+        ):
             names.add(node.targets[0].id)
     return names
 
@@ -202,7 +225,11 @@ def class_values():
     for name, node in capi_classes().items():
         constants = {}
         for child in node.body:
-            if isinstance(child, ast.Assign) and len(child.targets) == 1 and isinstance(child.targets[0], ast.Name):
+            if (
+                isinstance(child, ast.Assign)
+                and len(child.targets) == 1
+                and isinstance(child.targets[0], ast.Name)
+            ):
                 try:
                     constants[child.targets[0].id] = literal_value(child.value)
                 except AssertionError:
@@ -240,7 +267,9 @@ def module_constant_values():
 def module_alias(name):
     assignments = module_assignments(name)
     if len(assignments) != 1:
-        raise AssertionError("expected one assignment for {}, got {}".format(name, len(assignments)))
+        raise AssertionError(
+            "expected one assignment for {}, got {}".format(name, len(assignments))
+        )
     return expr(assignments[0])
 
 

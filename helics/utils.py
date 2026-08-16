@@ -19,4 +19,9 @@ def error(msg, blink=False):
 
 
 def echo(msg, fg="yellow", level="warn", blink=True):
-    click.echo(click.style("[", fg=fg) + click.style(level, fg=fg, blink=blink) + click.style("] ", fg=fg) + click.style(msg, fg=fg))
+    click.echo(
+        click.style("[", fg=fg)
+        + click.style(level, fg=fg, blink=blink)
+        + click.style("] ", fg=fg)
+        + click.style(msg, fg=fg)
+    )

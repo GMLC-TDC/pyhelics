@@ -85,9 +85,7 @@ def test_python_api0():
     _ = mFed.register_endpoint("ep1")
     _ = mFed.register_global_endpoint("ep2")
 
-    pub = mFed.register_publication(
-        "publication", h.HELICS_DATA_TYPE_STRING, "custom-units"
-    )
+    pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
     assert_attributes(
         pub,
         {
@@ -151,9 +149,7 @@ def test_python_api1():
     _ = mFed.register_endpoint("ep1")
     _ = mFed.register_global_endpoint("ep2")
 
-    pub = mFed.register_publication(
-        "publication", h.HELICS_DATA_TYPE_STRING, "custom-units"
-    )
+    pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
     assert_attributes(
         pub,
         {
@@ -215,9 +211,7 @@ def test_python_api1():
         DEFAULT_PUB_OPTION_SETTINGS,
     )
     mFed.publications["TestFederate/publication"].option["CONNECTION_REQUIRED"] = 1
-    assert (
-        mFed.publications["TestFederate/publication"].option["CONNECTION_REQUIRED"] == 1
-    )
+    assert mFed.publications["TestFederate/publication"].option["CONNECTION_REQUIRED"] == 1
 
     mFed.enter_executing_mode()
 
@@ -520,9 +514,7 @@ def test_python_api3():
 
     assert core1.identifier == "core3"
 
-    source_filter1 = core1.register_filter(
-        h.HELICS_FILTER_TYPE_DELAY, "core3SourceFilter"
-    )
+    source_filter1 = core1.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core3SourceFilter")
 
     source_filter1.add_source_target("ep1")
 
@@ -621,10 +613,7 @@ def test_python_api7():
 
     _ = fed.register_filter(h.HELICS_FILTER_TYPE_DELAY, "core1SourceFilter")
 
-    assert (
-        fed.get_filter_by_name("core1SourceFilter").name
-        == fed.get_filter_by_index(0).name
-    )
+    assert fed.get_filter_by_name("core1SourceFilter").name == fed.get_filter_by_index(0).name
 
     fed.set_global("hello", "world")
 
@@ -652,9 +641,7 @@ def test_python_api7():
     try:
         assert fed.query("hello", "world") == "#disconnected"
     except AssertionError:
-        assert fed.query("hello", "world") == {
-            "error": {"code": 404, "message": "query not valid"}
-        }
+        assert fed.query("hello", "world") == {"error": {"code": 404, "message": "query not valid"}}
 
     fed.local_error(0, "local")
     fed.global_error(0, "global")

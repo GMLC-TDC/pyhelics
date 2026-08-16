@@ -30,7 +30,6 @@ from capi_api_test_utils import (
     raises_not_implemented,
 )
 
-
 DATA_BUFFER_WRAPPERS = [
     "helicsDataBufferFree",
     "helicsDataBufferIsValid",
@@ -168,7 +167,9 @@ def test_capi_constants_match_generated_header_with_documented_exceptions(c_enum
 
         assert name in pyhelics_constants, "{} from {} is not exposed".format(name, enum_type)
         actual_value, line = pyhelics_constants[name]
-        assert actual_value == expected_value, "{} at capi.py:{} differs from {}".format(name, line, enum_type)
+        assert actual_value == expected_value, "{} at capi.py:{} differs from {}".format(
+            name, line, enum_type
+        )
 
 
 def test_pyhelics_core_type_test_alias_is_documented_policy(c_enum_constants):
