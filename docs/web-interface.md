@@ -1,19 +1,60 @@
-# Web interface
+# Web server API
+
+The experimental HELICS web server is a FastAPI application that manages
+brokers in the current Python process.  It is the replacement path for the
+former Flask application and does not start `helics_broker_server --http`.
+
+Install the optional server dependencies and start the application:
 
 ```bash
+pip install "helics[server]"
 helics server
 ```
 
-![](https://user-images.githubusercontent.com/1813121/179692721-aed68b6e-229b-4bfe-b260-4e464357c91f.png)
+By default the server binds to `127.0.0.1:8000` and opens its interactive
+OpenAPI documentation at `http://127.0.0.1:8000/docs`.  Use `--host`, `--port`,
+and `--no-open` to configure the listener.
 
-![](https://user-images.githubusercontent.com/1813121/179425630-8136366d-2b09-4251-936f-1158a7b40c5b.png)
+## Broker API
 
-![](https://user-images.githubusercontent.com/1813121/179425632-9cc1f914-d5bc-44bf-848c-893733729fb6.png)
+All endpoints are under `/api/v1`.  The initial API exposes broker lifecycle
+and control operations:
 
-![](https://user-images.githubusercontent.com/1813121/179692080-b4dc172e-c73e-4982-8d97-17051dca8c26.png)
+| Operation | Endpoint |
+| --- | --- |
+| Service health | `GET /api/v1/health` |
+| List local brokers | `GET /api/v1/brokers` |
+| Create a broker | `POST /api/v1/brokers` |
+| Inspect/delete a broker | `GET`/`DELETE /api/v1/brokers/{name}` |
+| Inspect current broker state | `GET /api/v1/brokers/{name}/state` |
+| Inspect connection status | `GET /api/v1/brokers/{name}/connection` |
+| Execute a HELICS query | `POST /api/v1/brokers/{name}/query` |
+| Send a command | `POST /api/v1/brokers/{name}/commands` |
+| Set/clear a time barrier | `PUT`/`DELETE /api/v1/brokers/{name}/time-barrier` |
 
-Demo of web interface:
+For example, create a local ZMQ broker that expects two federates:
 
-[Link to demo](https://user-images.githubusercontent.com/1813121/179425246-9e12db06-a317-493c-88af-098fa460d3ec.mov)
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/brokers \
+  -H "Content-Type: application/json" \
+  -d '{"name":"example", "core_type":"zmq", "num_federates":2}'
+```
 
-![Demo](https://user-images.githubusercontent.com/1813121/179425246-9e12db06-a317-493c-88af-098fa460d3ec.mov)
+The server owns only brokers it creates.  It does not discover or control
+brokers started by another process.
+
+## Typed HELICS queries
+
+Standard HELICS queries progressively receive Pydantic response models in
+`helics.query_models`.  The first is `isconnected`, available as both the
+generic query request and the convenient `GET /brokers/{name}/connection`
+endpoint.  Its response is always:
+
+```json
+{"target": "root", "query": "isconnected", "value": true}
+```
+
+Queries without a registered model remain available through `POST .../query`
+with the common `{target, query, value}` envelope.  This lets the API expose
+custom and newer HELICS queries immediately while their stable Pydantic models
+are added independently.
