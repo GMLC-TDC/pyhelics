@@ -47,9 +47,7 @@ for t in range(5, 10):
     currenttime = h.helicsFederateRequestTime(vfed, t)
 
     h.helicsPublicationPublishDouble(pub, pi)
-    print(
-        "SENDER: Sending value pi = {} at time {} to RECEIVER".format(pi, currenttime)
-    )
+    print("SENDER: Sending value pi = {} at time {} to RECEIVER".format(pi, currenttime))
 
     time.sleep(1)
 
@@ -82,11 +80,7 @@ while currenttime <= 100:
     currenttime = h.helicsFederateRequestTime(vfed, 100)
 
     value = h.helicsInputGetString(sub)
-    print(
-        "RECEIVER: Received value = {} at time {} from SENDER".format(
-            value, currenttime
-        )
-    )
+    print("RECEIVER: Received value = {} at time {} from SENDER".format(value, currenttime))
 
 h.helicsFederateDisconnect(vfed)
 h.helicsFederateDestroy(vfed)

@@ -24,9 +24,7 @@ mFed.register_endpoint("ep1")
 mFed.register_global_endpoint("ep2")
 mFed.property[h.HELICS_PROPERTY_TIME_DELTA] = 1.0
 
-pub = mFed.register_publication(
-    "publication", h.HELICS_DATA_TYPE_STRING, "custom-units"
-)
+pub = mFed.register_publication("publication", h.HELICS_DATA_TYPE_STRING, "custom-units")
 
 sub = mFed.register_subscription("TestFederate/publication", "custom-units")
 sub.option["CONNECTION_REQUIRED"] = 1

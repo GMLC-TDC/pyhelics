@@ -26,6 +26,7 @@ def filter_callback(mess, userData):
     # Filter operation code here
     pass
 
+
 # Query callback
 @h.ffi.callback(
     "void query(const char *query, int querySize, HelicsQueryBuffer buffer, void *user_data)"
@@ -35,7 +36,6 @@ def query_callback(query_ptr, size: int, query_buffer_ptr, user_data):
     query_buffer = h.HelicsQueryBuffer(query_buffer_ptr)
     # Query operation code here
     pass
-
 ```
 
 In the case of the query callback, you can see there are two other bits that need to be added in.
@@ -65,7 +65,6 @@ def main():
     user_data = UserData(iteration_count=10)
     user_data_handle = h.ffi.new_handle(user_data)
     h.helicsFederateSetQueryCallback(fed, query_callback, user_data_handle)
-
 ```
 
 In both cases, the user data is defined, a "handle" to the user data is created, and the callback functions are registered using specific HELICS APIs.
@@ -76,12 +75,12 @@ Here are the full code for completeness sake. As of this writing, there is not a
 
 ### Filter Federate Code
 ``` python
-
 class UserData:
     def __init__(self, iteration_count=None):
         self.pi = 3.14
         self.e = 2.718
         self.interation_count = iteration_count
+
 
 @h.ffi.callback("void logger(HelicsMessage, void* userData)")
 def filter_callback(mess, userData):
