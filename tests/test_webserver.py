@@ -102,21 +102,30 @@ def test_broker_control_routes():
     client, created = make_client()
     with client:
         assert client.post("/api/v1/brokers", json={"name": "broker"}).status_code == 201
-        assert client.post(
-            "/api/v1/brokers/broker/query",
-            json={"target": "root", "query": "current_state"},
-        ).json()["value"]["state"] == "connected"
-        assert client.post(
-            "/api/v1/brokers/broker/query",
-            json={"target": "root", "query": "isconnected"},
-        ).json()["value"] is True
-        assert client.post(
-            "/api/v1/brokers/broker/commands",
-            json={"target": "fed", "command": "stop"},
-        ).status_code == 200
-        assert client.put(
-            "/api/v1/brokers/broker/time-barrier", json={"time": 2.5}
-        ).status_code == 200
+        assert (
+            client.post(
+                "/api/v1/brokers/broker/query",
+                json={"target": "root", "query": "current_state"},
+            ).json()["value"]["state"]
+            == "connected"
+        )
+        assert (
+            client.post(
+                "/api/v1/brokers/broker/query",
+                json={"target": "root", "query": "isconnected"},
+            ).json()["value"]
+            is True
+        )
+        assert (
+            client.post(
+                "/api/v1/brokers/broker/commands",
+                json={"target": "fed", "command": "stop"},
+            ).status_code
+            == 200
+        )
+        assert (
+            client.put("/api/v1/brokers/broker/time-barrier", json={"time": 2.5}).status_code == 200
+        )
         assert client.delete("/api/v1/brokers/broker/time-barrier").status_code == 200
 
     assert created["broker"].commands == [("fed", "stop")]

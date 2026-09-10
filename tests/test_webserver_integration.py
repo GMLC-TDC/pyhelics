@@ -90,10 +90,13 @@ def test_webserver_broker_lifecycle_and_query():
         assert response.status_code == 200, response.text
         assert response.json()["value"] is True
 
-        assert client.post(
-            "/api/v1/brokers",
-            json={"name": broker_name, "core_type": "inproc"},
-        ).status_code == 409
+        assert (
+            client.post(
+                "/api/v1/brokers",
+                json={"name": broker_name, "core_type": "inproc"},
+            ).status_code
+            == 409
+        )
         assert client.get("/api/v1/brokers/does-not-exist").status_code == 404
 
         assert client.delete(f"/api/v1/brokers/{broker_name}").status_code == 204
@@ -119,10 +122,13 @@ def test_webserver_time_barrier_controls_real_federate():
         federate, fedinfo = create_value_federate(broker_name, federate_name, 1)
 
         try:
-            assert client.put(
-                f"/api/v1/brokers/{broker_name}/time-barrier",
-                json={"time": 2.0},
-            ).status_code == 200
+            assert (
+                client.put(
+                    f"/api/v1/brokers/{broker_name}/time-barrier",
+                    json={"time": 2.0},
+                ).status_code
+                == 200
+            )
 
             h.helicsFederateEnterExecutingMode(federate)
             assert h.helicsFederateRequestTime(federate, 1.75) == 1.75
@@ -131,19 +137,20 @@ def test_webserver_time_barrier_controls_real_federate():
             time.sleep(0.05)
             assert h.helicsFederateIsAsyncOperationCompleted(federate) is False
 
-            assert client.put(
-                f"/api/v1/brokers/{broker_name}/time-barrier",
-                json={"time": 5.0},
-            ).status_code == 200
+            assert (
+                client.put(
+                    f"/api/v1/brokers/{broker_name}/time-barrier",
+                    json={"time": 5.0},
+                ).status_code
+                == 200
+            )
             assert h.helicsFederateRequestTimeComplete(federate) == 3.0
 
             h.helicsFederateRequestTimeAsync(federate, 6.0)
             time.sleep(0.05)
             assert h.helicsFederateIsAsyncOperationCompleted(federate) is False
 
-            assert client.delete(
-                f"/api/v1/brokers/{broker_name}/time-barrier"
-            ).status_code == 200
+            assert client.delete(f"/api/v1/brokers/{broker_name}/time-barrier").status_code == 200
             assert h.helicsFederateRequestTimeComplete(federate) == 6.0
         finally:
             h.helicsFederateDisconnect(federate)

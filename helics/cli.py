@@ -337,7 +337,11 @@ def run(path, silent, connect_server, server_url, no_log_files, no_kill_on_error
     if not silent:
         # ``name`` is optional in older runner files; use the config filename
         # as a stable display name instead of failing before any process starts.
-        info("Running federation: {name}".format(name=config.get("name", pathlib.Path(path_to_config).stem)))
+        info(
+            "Running federation: {name}".format(
+                name=config.get("name", pathlib.Path(path_to_config).stem)
+            )
+        )
 
     if "broker" in config.keys() and config["broker"] is not False:
         if not silent:
@@ -367,7 +371,9 @@ def run(path, silent, connect_server, server_url, no_log_files, no_kill_on_error
 
     if helics_server_available:
         fetch("/runner/file/name", {"name": os.path.basename(path_to_config)}, api_base=server_api)
-        fetch("/runner/file/folder", {"folder": os.path.dirname(path_to_config)}, api_base=server_api)
+        fetch(
+            "/runner/file/folder", {"folder": os.path.dirname(path_to_config)}, api_base=server_api
+        )
 
     # Default to logging in the same location as the config file; this is the
     # historical behavior of the cli. If there's a "logging_path" in the runner
@@ -422,7 +428,9 @@ def run(path, silent, connect_server, server_url, no_log_files, no_kill_on_error
         if o.file is not None:
             output_list.append(o)
 
-    t = CheckStatusThread(process_list, kill_on_error, helics_server_available, server_api=server_api)
+    t = CheckStatusThread(
+        process_list, kill_on_error, helics_server_available, server_api=server_api
+    )
 
     try:
         t.start()

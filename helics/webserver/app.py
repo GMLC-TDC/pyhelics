@@ -103,7 +103,9 @@ def create_app(
     templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "templates"))
 
     def not_found(error: BrokerNotFoundError) -> HTTPException:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Broker '{error}' not found")
+        return HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Broker '{error}' not found"
+        )
 
     @app.get("/api/v1/health", response_model=HealthResponse, tags=["system"])
     async def health() -> HealthResponse:
@@ -192,7 +194,9 @@ def create_app(
             return await broker_action_response(request, str(error))
         return await broker_action_response(request)
 
-    @app.post("/broker/actions/barrier/{name}", response_class=HTMLResponse, include_in_schema=False)
+    @app.post(
+        "/broker/actions/barrier/{name}", response_class=HTMLResponse, include_in_schema=False
+    )
     async def broker_page_barrier(
         request: Request,
         name: str,
@@ -207,7 +211,9 @@ def create_app(
             return await broker_action_response(request, str(error))
         return await broker_action_response(request)
 
-    @app.post("/broker/actions/barrier/{name}/clear", response_class=HTMLResponse, include_in_schema=False)
+    @app.post(
+        "/broker/actions/barrier/{name}/clear", response_class=HTMLResponse, include_in_schema=False
+    )
     async def broker_page_barrier_clear(request: Request, name: str) -> HTMLResponse:
         try:
             await run_in_threadpool(broker_service.clear_time_barrier, name)
@@ -234,7 +240,9 @@ def create_app(
                 detail=f"Broker '{error}' already exists",
             ) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)
+            ) from error
 
     @app.get("/api/v1/brokers/{name}", response_model=BrokerSummary, tags=["brokers"])
     async def get_broker(name: str) -> BrokerSummary:
@@ -262,7 +270,9 @@ def create_app(
         except BrokerNotFoundError as error:
             raise not_found(error) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)
+            ) from error
         return parse_query_response("root", "current_state", value)
 
     @app.get(
@@ -282,7 +292,9 @@ def create_app(
         except BrokerNotFoundError as error:
             raise not_found(error) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)
+            ) from error
         return parse_query_response("root", "counts", value)
 
     @app.get(
@@ -302,7 +314,9 @@ def create_app(
         except BrokerNotFoundError as error:
             raise not_found(error) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)
+            ) from error
         return parse_query_response("root", "version", value)
 
     @app.get(
@@ -323,7 +337,9 @@ def create_app(
         except BrokerNotFoundError as error:
             raise not_found(error) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY, detail=str(error)
+            ) from error
 
     @app.delete("/api/v1/brokers/{name}", status_code=status.HTTP_204_NO_CONTENT, tags=["brokers"])
     async def delete_broker(name: str) -> Response:
@@ -345,17 +361,23 @@ def create_app(
         except BrokerNotFoundError as error:
             raise not_found(error) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)
+            ) from error
         return parse_query_response(request.target, request.query, value)
 
     @app.post("/api/v1/brokers/{name}/commands", response_model=ActionResponse, tags=["control"])
     async def send_command(name: str, request: CommandRequest) -> ActionResponse:
         try:
-            await run_in_threadpool(broker_service.send_command, name, request.target, request.command)
+            await run_in_threadpool(
+                broker_service.send_command, name, request.target, request.command
+            )
         except BrokerNotFoundError as error:
             raise not_found(error) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)
+            ) from error
         return ActionResponse()
 
     @app.put("/api/v1/brokers/{name}/time-barrier", response_model=ActionResponse, tags=["control"])
@@ -365,17 +387,23 @@ def create_app(
         except BrokerNotFoundError as error:
             raise not_found(error) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)
+            ) from error
         return ActionResponse()
 
-    @app.delete("/api/v1/brokers/{name}/time-barrier", response_model=ActionResponse, tags=["control"])
+    @app.delete(
+        "/api/v1/brokers/{name}/time-barrier", response_model=ActionResponse, tags=["control"]
+    )
     async def clear_time_barrier(name: str) -> ActionResponse:
         try:
             await run_in_threadpool(broker_service.clear_time_barrier, name)
         except BrokerNotFoundError as error:
             raise not_found(error) from error
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)
+            ) from error
         return ActionResponse()
 
     # Runner API ---------------------------------------------------------
@@ -384,7 +412,9 @@ def create_app(
         try:
             value = await run_in_threadpool(runner.file)
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
         return value or {}
 
     @app.post("/api/v1/runner/file", response_model=RunnerFileResponse, tags=["runner"])
@@ -392,7 +422,9 @@ def create_app(
         try:
             value = await run_in_threadpool(runner.upload, await file.read(), file.filename)
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
         return value
 
     @app.post("/api/v1/runner/file/name", tags=["runner"])
@@ -400,42 +432,54 @@ def create_app(
         try:
             return await run_in_threadpool(runner.set_name, request.name) or {}
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
 
     @app.post("/api/v1/runner/file/folder", tags=["runner"])
     async def set_runner_folder(request: RunnerFolderRequest) -> object:
         try:
             return await run_in_threadpool(runner.set_folder, request.folder) or {}
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
 
     @app.post("/api/v1/runner/file/path", tags=["runner"])
     async def set_runner_path(request: RunnerPathRequest) -> object:
         try:
             return await run_in_threadpool(runner.set_path, request.path) or {}
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
 
     @app.post("/api/v1/runner/file/edit", response_model=RunnerFileResponse, tags=["runner"])
     async def add_runner_federate(request: RunnerFederateEdit) -> RunnerFileResponse:
         try:
             return await run_in_threadpool(runner.edit, request, "add")
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
 
     @app.put("/api/v1/runner/file/edit", response_model=RunnerFileResponse, tags=["runner"])
     async def update_runner_federate(request: RunnerFederateEdit) -> RunnerFileResponse:
         try:
             return await run_in_threadpool(runner.edit, request, "update")
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
 
     @app.delete("/api/v1/runner/file/edit", response_model=RunnerFileResponse, tags=["runner"])
     async def delete_runner_federate(request: RunnerFederateEdit) -> RunnerFileResponse:
         try:
             return await run_in_threadpool(runner.edit, request, "delete")
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
 
     @app.get("/api/v1/runner/log/{name}", response_model=LogResponse, tags=["runner"])
     async def get_runner_log(name: str) -> LogResponse:
@@ -466,7 +510,9 @@ def create_app(
         try:
             value = await run_in_threadpool(runner.run)
         except RunnerFileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
         return RunnerRunResponse(status=value, process=await run_in_threadpool(runner.process_info))
 
     @app.delete(
@@ -513,7 +559,9 @@ def create_app(
         try:
             value = await run_in_threadpool(observer.upload, await file.read())
         except ObserverDatabaseError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
         return DatabaseInfo(**value)
 
     @app.get("/api/v1/observer/systeminfo", tags=["observer"])
@@ -578,14 +626,18 @@ def create_app(
         try:
             return await run_in_threadpool(profiler.parse)
         except ProfileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
 
     @app.post("/api/v1/profile", response_model=UploadResponse, tags=["profile"])
     async def upload_profile(file: UploadFile = File(...)) -> UploadResponse:
         try:
             await run_in_threadpool(profiler.upload, await file.read())
         except ProfileError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
+            ) from error
         return UploadResponse(path=str(profiler.path))
 
     @app.delete("/api/v1/profile", response_model=UploadResponse, tags=["profile"])
@@ -600,6 +652,7 @@ def create_app(
     if static_dir is not None:
         app.mount("/", StaticFiles(directory=static_dir, html=True), name="web-ui")
     else:
+
         @app.get("/", include_in_schema=False, response_class=HTMLResponse)
         async def web_ui_unavailable() -> str:
             return "<h1>HELICS server</h1><p>Web UI assets are not installed. Use <a href='/docs'>/docs</a>.</p>"

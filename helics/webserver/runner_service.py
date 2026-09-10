@@ -129,7 +129,9 @@ class RunnerService:
         try:
             target.mkdir(parents=True, exist_ok=True)
         except OSError as error:
-            raise RunnerFileError(f"unable to create logging directory {target}: {error}") from error
+            raise RunnerFileError(
+                f"unable to create logging directory {target}: {error}"
+            ) from error
         if not target.is_dir():
             raise RunnerFileError(f"logging path is not a directory: {target}")
         return target
@@ -255,7 +257,9 @@ class RunnerService:
 
     def set_name(self, name: str) -> RunnerFileResponse:
         with self._lock:
-            safe_name = self._safe_upload_filename(name if name.lower().endswith(".json") else f"{name}.json")
+            safe_name = self._safe_upload_filename(
+                name if name.lower().endswith(".json") else f"{name}.json"
+            )
             self._runner_filename = safe_name
             self._runner_path = self.runner_folder / safe_name
             return self.file()  # type: ignore[return-value]
@@ -266,7 +270,9 @@ class RunnerService:
             try:
                 target.mkdir(parents=True, exist_ok=True)
             except OSError as error:
-                raise RunnerFileError(f"unable to create runner folder {target}: {error}") from error
+                raise RunnerFileError(
+                    f"unable to create runner folder {target}: {error}"
+                ) from error
             if not target.is_dir():
                 raise RunnerFileError(f"runner folder is not a directory: {target}")
             self._runner_path = target / self._runner_filename
@@ -303,7 +309,12 @@ class RunnerService:
                 if any(f.get("name") == item.name for f in federates):
                     raise RunnerFileError(f"name already exists: {item.name}")
                 federates.append(
-                    {"directory": item.directory, "exec": item.exec, "host": item.host, "name": item.name}
+                    {
+                        "directory": item.directory,
+                        "exec": item.exec,
+                        "host": item.host,
+                        "name": item.name,
+                    }
                 )
             elif mode == "delete":
                 for index, federate in enumerate(federates):
