@@ -1,0 +1,33 @@
+<section id="broker-list" hx-get="/broker/fragment" hx-trigger="every 5s" hx-swap="outerHTML">
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  {% if not brokers %}
+    <p class="muted">No service-managed brokers.</p>
+  {% else %}
+    <div class="broker-grid">
+      {% for broker in brokers %}
+        <article class="broker">
+          <h2>{{ broker.name }}</h2>
+          <dl>
+            <dt>Address</dt><dd>{{ broker.address }}</dd>
+            <dt>Connected</dt><dd>{{ broker.is_connected }}</dd>
+            <dt>Root</dt><dd>{{ broker.is_root }}</dd>
+            <dt>Open to federates</dt><dd>{{ broker.is_open_to_new_federates }}</dd>
+          </dl>
+          <div class="actions">
+            <form hx-post="/broker/actions/barrier/{{ broker.name }}" hx-target="#broker-list" hx-swap="outerHTML">
+              <label>Time barrier <input name="time" type="number" min="0" step="any" required /></label>
+              <button type="submit">Set</button>
+            </form>
+            <form hx-post="/broker/actions/barrier/{{ broker.name }}/clear" hx-target="#broker-list" hx-swap="outerHTML">
+              <button type="submit">Clear barrier</button>
+            </form>
+            <form hx-post="/broker/actions/delete/{{ broker.name }}" hx-target="#broker-list" hx-swap="outerHTML"
+                  hx-confirm="Delete broker {{ broker.name }}?">
+              <button type="submit">Delete</button>
+            </form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>

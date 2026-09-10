@@ -35,20 +35,22 @@ jobs:
           npm install
           npm run build
           cp -r build ../helics_cli_extras/static
+          mkdir -p ../../helics/webserver/static
+          cp -r build/. ../../helics/webserver/static/
       - name: Build the web interface first
         run: |
           cd helics_cli_extras
           pip install .
       - name: Download helics library and run pip install
         run: |
-          pip install ".[cli]"
+          pip install ".[cli,server]"
         env:
           DOWNLOAD_BINARIES: 1
       - name: Run Server
         run: |
-          helics server &
+          helics server --no-open --port 8000 &
           sleep 5
-          curl http://localhost:5000
+          curl http://localhost:8000/docs
           kill %+
       - name: Run Observer
         run: |

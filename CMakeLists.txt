@@ -93,8 +93,4 @@ FetchContent_Declare(
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/helics-src
 )
 
-# For making the sdist, only need to download the source code
-if(SKBUILD_STATE STREQUAL "wheel")
-    add_library(helicsCpp98_ide INTERFACE)
-endif()
 FetchContent_MakeAvailable(helics)
