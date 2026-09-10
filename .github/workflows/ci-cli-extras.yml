@@ -41,14 +41,14 @@ jobs:
           pip install .
       - name: Download helics library and run pip install
         run: |
-          pip install ".[cli]"
+          pip install ".[cli,server]"
         env:
           DOWNLOAD_BINARIES: 1
       - name: Run Server
         run: |
-          helics server &
+          helics server --no-open --port 8000 &
           sleep 5
-          curl http://localhost:5000
+          curl http://localhost:8000/docs
           kill %+
       - name: Run Observer
         run: |
