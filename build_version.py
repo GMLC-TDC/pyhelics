@@ -10,7 +10,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-
 _VERSION_PATTERN = re.compile(
     r"set\s*\(\s*HELICS_VERSION\s+(?P<version>[0-9]+\.[0-9]+\.[0-9]+)\s*\)",
     re.IGNORECASE,

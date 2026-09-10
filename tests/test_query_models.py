@@ -30,7 +30,13 @@ def test_standard_query_responses_are_typed():
         parse_query_response(
             "root",
             "counts",
-            {"attributes": {}, "brokers": 0, "countable_federates": 0, "federates": 0, "interfaces": 0},
+            {
+                "attributes": {},
+                "brokers": 0,
+                "countable_federates": 0,
+                "federates": 0,
+                "interfaces": 0,
+            },
         ),
         CountsQueryResponse,
     )

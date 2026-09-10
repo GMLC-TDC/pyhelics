@@ -86,7 +86,11 @@ class ObserverDatabaseService:
                     raise
                 values = [{key: self._decode(row[key]) for key in row.keys()} for row in rows]
                 if table == "cores":
-                    values = [row for row in values if not str(row.get("name", "")).startswith("__observer__")]
+                    values = [
+                        row
+                        for row in values
+                        if not str(row.get("name", "")).startswith("__observer__")
+                    ]
                 if table == "federates":
                     values = [row for row in values if row.get("name") != "__observer__"]
                 return values

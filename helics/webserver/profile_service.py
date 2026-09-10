@@ -45,7 +45,9 @@ class ProfileService:
                 return {}
             text = self._path.read_text(encoding="utf-8", errors="replace")
         entries: dict[str, list[dict[str, Any]]] = {}
-        for line_number, line in enumerate(text.replace("<PROFILING>", "").replace("</PROFILING>", "").splitlines(), 1):
+        for line_number, line in enumerate(
+            text.replace("<PROFILING>", "").replace("</PROFILING>", "").splitlines(), 1
+        ):
             match = self.PATTERN.fullmatch(line.strip())
             if match is None:
                 if line.strip():
@@ -77,7 +79,11 @@ class ProfileService:
             pending: Optional[dict[str, Any]] = None
             for event in events:
                 if "EXIT" in event["message"]:
-                    pending = {"name": name, "s_enter": event["simtime"], "r_enter": event["realtime"]}
+                    pending = {
+                        "name": name,
+                        "s_enter": event["simtime"],
+                        "r_enter": event["realtime"],
+                    }
                 elif "ENTRY" in event["message"] and pending is not None:
                     pending["s_end"] = event["simtime"]
                     pending["r_end"] = event["realtime"]
