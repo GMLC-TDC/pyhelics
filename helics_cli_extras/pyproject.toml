@@ -38,11 +38,6 @@ classifiers = [
     "Topic :: Software Development",
 ]
 dependencies = [
-    "flask>=2",
-    "requests",
-    "flask-restful",
-    "flask-cors",
-    "pandas",
     "SQLAlchemy",
 ]
 

@@ -19,6 +19,19 @@ def test_misc_functions_api():
         h.helicsCreateCore("something random", "here", "not an init string")
 
 
+@pytest.mark.parametrize(
+    ("alias", "expected"),
+    [
+        ("raw", h.HELICS_DATA_TYPE_RAW),
+        ("map", h.HELICS_DATA_TYPE_RAW),
+        ("custom", h.HELICS_DATA_TYPE_RAW),
+    ],
+)
+def test_helics_37_data_type_aliases(alias, expected):
+    """HELICS 3.7 recognizes the documented data-type aliases."""
+    assert h.helicsGetDataType(alias) == expected
+
+
 def test_broker_api():
     assert h.helicsIsCoreTypeAvailable("zmq") == 1
     broker1 = h.helicsCreateBroker("zmq", "broker1", "--federates 3 --loglevel=warning")

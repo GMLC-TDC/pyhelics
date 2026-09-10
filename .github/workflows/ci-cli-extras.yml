@@ -35,6 +35,8 @@ jobs:
           npm install
           npm run build
           cp -r build ../helics_cli_extras/static
+          mkdir -p ../../helics/webserver/static
+          cp -r build/. ../../helics/webserver/static/
       - name: Build the web interface first
         run: |
           cd helics_cli_extras

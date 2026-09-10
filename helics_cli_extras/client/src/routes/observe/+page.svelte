@@ -7,10 +7,15 @@
   import Dropzone from "svelte-file-dropzone";
   import { data, DEFAULT } from "$lib/stores";
   import Topology from "$lib/Topology.svelte";
-  const BASE = "http://127.0.0.1:5000/api/observer";
+  const BASE = "/api/v1/observer";
 
   function isEmpty(obj) {
     return Object.keys(obj).length === 0;
+  }
+
+  async function get(path, fallback) {
+    const response = await fetch(`${BASE}/${path}`);
+    return response.ok ? await response.json() : fallback;
   }
 
   function getCoreName(id) {
@@ -38,24 +43,24 @@
   }
 
   async function updateData() {
-    $data.systeminfo = await (await fetch(`${BASE}/systeminfo`)).json();
+    $data.systeminfo = await get("systeminfo", {});
 
-    $data.cores = await (await fetch(`${BASE}/cores`)).json();
+    $data.cores = await get("cores", []);
 
-    $data.federates = await (await fetch(`${BASE}/federates`)).json();
+    $data.federates = await get("federates", []);
     $data.federates.map((f) => (f.core_name = getCoreName(f.parent)));
     $data.federates = $data.federates;
 
-    $data.graphs = await (await fetch(`${BASE}/graphs`)).json();
+    $data.graphs = await get("graphs", {});
 
-    $data.publications = await (await fetch(`${BASE}/publications`)).json();
+    $data.publications = await get("publications", []);
     $data.publications.map((p) => {
       p.source_name = getFederateName(p.source);
       p.target_name = getFederateName(p.target);
     });
     $data.publications = $data.publications;
 
-    $data.inputs = await (await fetch(`${BASE}/inputs`)).json();
+    $data.inputs = await get("inputs", []);
     $data.inputs.map((i) => {
       i.source_name = getFederateName(i.source);
       i.target_name = getFederateName(i.target);
@@ -72,9 +77,9 @@
       }
     }
 
-    $data.table = await (await fetch(`${BASE}/data`)).json();
+    $data.table = await get("data", []);
     const table_columns = [];
-    for (const k of Object.keys($data.table[0])) {
+    for (const k of Object.keys($data.table[0] || {})) {
       if (k != "updated_at") {
         table_columns.push({
           field: k,

@@ -1,9 +1,8 @@
 <script lang="ts">
   import Fa from "svelte-fa";
-  import { faExclamationTriangle, faSync } from "@fortawesome/free-solid-svg-icons";
+  import { faSync } from "@fortawesome/free-solid-svg-icons";
 
   import BrokerLayout from "$lib/BrokerLayout.svelte";
-  import { data } from "$lib/stores";
   import { onMount, onDestroy, tick } from "svelte";
 
   let healthcheck = false;
@@ -16,12 +15,10 @@
   let broker_core_type = "zmq";
   let broker_log_level = "info";
 
-  const PYSERVER_BASE = "http://127.0.0.1:5000/api";
-  const HELICSSERVER_BASE = "http://127.0.0.1:8080";
+  const BASE = "/api/v1";
 
   async function refresh() {
     await fetchHealthCheck();
-    await fetchBrokerServerState();
     await fetchBrokers();
   }
 
@@ -44,16 +41,10 @@
 
   async function fetchHealthCheck() {
     try {
-      const response = await fetch(`${HELICSSERVER_BASE}/healthcheck`, {
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(`${BASE}/health`);
       const r = await response.json();
-      if (r) {
-        healthcheck = r.success;
-      }
+      healthcheck = response.ok && r.status === "ok";
+      status = healthcheck;
       if (healthcheck) {
         console.log("Healthy server");
       }
@@ -63,27 +54,9 @@
     }
   }
 
-  async function fetchBrokerServerState() {
-    if (healthcheck) {
-      const r = await (await fetch(`${PYSERVER_BASE}/broker-server`)).json();
-      if (r.status) {
-        status = true;
-      } else {
-        status = false;
-      }
-    } else {
-      status = false;
-    }
-  }
-
   async function fetchBrokers() {
     if (healthcheck) {
-      const response = await fetch(`${HELICSSERVER_BASE}/brokers`, {
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(`${BASE}/brokers`);
       const r = await response.json();
       if (r) {
         brokers = r.brokers;
@@ -91,37 +64,15 @@
     }
   }
 
-  async function handleBrokerServerStartStopClick() {
-    processingBrokerServer = true;
-    const r = await (
-      await fetch(`${PYSERVER_BASE}/broker-server`, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: !status }),
-      })
-    ).json();
-    await refresh();
-    processingBrokerServer = false;
-  }
-
   async function handleBrokerServerCreateClick(broker, port, core_type, log_level) {
     if (healthcheck) {
       if (port === "" || port === null) {
         port = 23404;
       }
-      var data;
-      if (log_level === "info") {
-        data = { broker, port, core_type };
-      } else {
-        data = { broker, port, log_level, core_type };
-      }
+      const data = { name: broker, port, log_level, core_type };
       console.log(JSON.stringify({ broker, port, log_level, core_type }));
       processingBrokerServer = true;
-      const r = await fetch(`${HELICSSERVER_BASE}/create`, {
+      const r = await fetch(`${BASE}/brokers`, {
         method: "POST",
         mode: "cors",
         headers: {
@@ -142,14 +93,7 @@
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
       <div class="flex justify-between">
         <div class="flex space-x-4 items-center">
-          <button
-            type="button"
-            data-mdb-ripple="true"
-            data-mdb-ripple-color="light"
-            class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-            on:click={async () => await handleBrokerServerStartStopClick()}
-            >{status ? "Stop" : "Start"} Broker Server</button
-          >
+          <span class="text-gray-700">FastAPI service: {status ? "online" : "offline"}</span>
           <Fa icon={faSync} spin={processingBrokerServer} />
         </div>
         {#if healthcheck}
@@ -167,7 +111,7 @@
       <div class="flex flex-col h-full">
         <div class="grow grid grid-areas-layout justify-items-stretch my-auto">
           {#if healthcheck}
-            <div class="py-2">Server is up and running with http interface.</div>
+            <div class="py-2">FastAPI server is up and running.</div>
           {/if}
         </div>
 
