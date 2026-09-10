@@ -67,6 +67,14 @@ def test_webserver_broker_lifecycle_and_query():
         assert result["query"] == "current_state"
         assert result["value"]["attributes"]["name"] == broker_name
 
+        response = client.get(f"/api/v1/brokers/{broker_name}/counts")
+        assert response.status_code == 200, response.text
+        assert response.json()["value"]["brokers"] == 0
+
+        response = client.get(f"/api/v1/brokers/{broker_name}/version")
+        assert response.status_code == 200, response.text
+        assert response.json()["value"].startswith("3.7.")
+
         response = client.get(f"/api/v1/brokers/{broker_name}/connection")
         assert response.status_code == 200, response.text
         assert response.json() == {

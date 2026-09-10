@@ -13,7 +13,7 @@ import traceback
 
 from enum import IntEnum, unique
 
-from typing import Any, TypeAlias, cast
+from typing import Any, List, TypeAlias, cast
 
 JSONType: TypeAlias = dict[str, Any] | list[dict[str, Any]]
 
@@ -47,12 +47,24 @@ if HELICS_VERSION < 3:
 HELICS_TIME_ZERO = 0.0  # definition of time zero-the beginning of simulation
 HELICS_TIME_EPSILON = 1.0e-9  # definition of the minimum time resolution
 HELICS_TIME_INVALID = -1.785e39  # definition of an invalid time that has no meaning
-HELICS_TIME_MAXTIME = 9223372036.854774
+# HELICS 3.7 distinguishes a large, practical time value from the maximum
+# representable simulation time and the threshold used to signal termination.
+# Keep these as Python constants because the C declarations are const globals,
+# not portable runtime symbols exposed by every shared-library build.
+HELICS_BIG_NUMBER = 9223372000.0
+HELICS_MAX_TIME_VALUE = 9223372036.854774
+HELICS_TERMINATION_TIME_VALUE = HELICS_MAX_TIME_VALUE / 2.0
+
+HELICS_TIME_BIGTIME = HELICS_BIG_NUMBER
+HELICS_TIME_MAXTIME = HELICS_MAX_TIME_VALUE
+HELICS_TIME_TERMINATION = HELICS_TERMINATION_TIME_VALUE
 
 helics_time_zero = HELICS_TIME_ZERO
 helics_time_epsilon = HELICS_TIME_EPSILON
 helics_time_invalid = HELICS_TIME_INVALID
+helics_time_bigtime = HELICS_TIME_BIGTIME
 helics_time_maxtime = HELICS_TIME_MAXTIME
+helics_time_termination = HELICS_TIME_TERMINATION
 
 HelicsTime = float
 pointer = int
@@ -569,6 +581,7 @@ class HelicsProperty(IntEnum):
     - **INT_CONSOLE_LOG_LEVEL**
     - **INT_LOG_BUFFER**
     - **INT_INDEX_GROUP**
+    - **INT_VALUE_BUFFER_WARNING**
     """
 
     TIME_DELTA = 137  # HelicsProperties

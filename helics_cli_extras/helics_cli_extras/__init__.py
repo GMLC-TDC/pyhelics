@@ -3,5 +3,6 @@
 # Innovation LLC. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 
-from .flask_app import run
 from .observer import HelicsObserverFederate
+
+__all__ = ["HelicsObserverFederate"]

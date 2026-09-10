@@ -7,7 +7,7 @@
   import { LayerCake } from "layercake";
   import Switch from "$lib/Switch.svelte";
   import Dropzone from "svelte-file-dropzone";
-  const BASE = "http://127.0.0.1:5000/api";
+  const BASE = "/api/v1";
 
   let files = {
     accepted: [],
@@ -15,7 +15,8 @@
   };
 
   async function updateData() {
-    $data.profile = await (await fetch(`${BASE}/profiler`)).json();
+    const response = await fetch(`${BASE}/profile`);
+    $data.profile = response.ok ? await response.json() : {};
   }
 
   async function handleFilesSelect(e) {
@@ -24,7 +25,7 @@
     files.rejected = [...files.rejected, ...fileRejections];
     var form = new FormData();
     form.append("file", files.accepted.at(-1));
-    const r = await fetch(`${BASE}/profiler`, {
+    const r = await fetch(`${BASE}/profile`, {
       method: "POST",
       body: form,
     });
@@ -32,7 +33,8 @@
   }
 
   async function handleClearClick(e) {
-    $data.profile = [];
+    $data.profile = {};
+    await fetch(`${BASE}/profile`, { method: "DELETE" });
   }
 </script>
 

@@ -42,6 +42,8 @@ server = [
   "pydantic>=2.6,<3; python_version >= '3.9'",
   "pydantic>=2.6,<2.11; python_version < '3.9'",
   "uvicorn[standard]>=0.30",
+  "python-multipart>=0.0.9",
+  "jinja2>=3.1",
 ]
 tests = [
   "pytest",
@@ -52,7 +54,9 @@ tests = [
   "fastapi>=0.115,<0.116; python_version < '3.9'",
   "pydantic>=2.6,<3; python_version >= '3.9'",
   "pydantic>=2.6,<2.11; python_version < '3.9'",
-  "httpx>=0.27",
+  "httpx2>=2.0",
+  "python-multipart>=0.0.9",
+  "jinja2>=3.1",
 ]
 dev = ["build", "pre-commit"]
 docs = [
@@ -89,16 +93,13 @@ linux.manylinux-aarch64-image = "manylinux_2_28"
 
 [tool.scikit-build]
 minimum-version = "0.8"
+experimental = true
 cmake.version = ">=3.15"
-sdist.include = ["helics-src", "helics/_version.py"]
+sdist.include = ["helics-src", "helics/_version.py", "helics_version.cmake", "build_version.py"]
 sdist.exclude = ["build", "dist", "client", ".github", "helics_cli_extras"]
 wheel.install-dir = "helics/install"
 wheel.py-api = "py3"
 wheel.expand-macos-universal-tags = true
-metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+metadata.version.provider = "build_version"
+metadata.version.provider-path = "."
 sdist.cmake = true
-
-[tool.setuptools_scm] # Section required
-version_scheme = "no-guess-dev"     # Works well with SKBUILD version having postN and devM tags dropped, good for getting current HELICS version to download
-root = "."
-version_file = "helics/_version.py"

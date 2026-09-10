@@ -1,9 +1,9 @@
 <script lang="ts">
   type Broker = {
     address: string;
-    isConnected: boolean;
-    isOpen: boolean;
-    isRoot: boolean;
+    is_connected: boolean;
+    is_open_to_new_federates: boolean;
+    is_root: boolean;
     name: string;
   };
   export let broker: Broker = {};
@@ -11,12 +11,11 @@
   export let broker_barrier_time = null;
   let is_broker_barrier_time_set = false;
 
-  const PYSERVER_BASE = "http://127.0.0.1:5000/api";
-  const HELICSSERVER_BASE = "http://127.0.0.1:8080";
+  const BASE = "/api/v1";
 
   async function handleBrokerDeleteClick() {
     if (broker) {
-      const r = await fetch(`${HELICSSERVER_BASE}/${broker.name}`, {
+      const r = await fetch(`${BASE}/brokers/${broker.name}`, {
         method: "DELETE",
         mode: "cors",
       });
@@ -25,8 +24,8 @@
   }
 
   async function handleBrokerBarrierSet(time) {
-    const r = await fetch(`${HELICSSERVER_BASE}/${broker.name}/barrier`, {
-      method: "POST",
+    const r = await fetch(`${BASE}/brokers/${broker.name}/time-barrier`, {
+      method: "PUT",
       mode: "cors",
       headers: {
         "Accept": "application/json",
@@ -43,7 +42,7 @@
   }
 
   async function handleBrokerBarrierClear() {
-    const r = await fetch(`${HELICSSERVER_BASE}/${broker.name}/barrier`, {
+    const r = await fetch(`${BASE}/brokers/${broker.name}/time-barrier`, {
       method: "DELETE",
       mode: "cors",
       headers: {
@@ -66,11 +65,11 @@
     <p class="text-gray-700 text-base mb-4">
       Address: {broker.address}
       <br />
-      Is Connected: {broker.isConnected}
+      Is Connected: {broker.is_connected}
       <br />
-      Is Open: {broker.isOpen}
+      Is Open: {broker.is_open_to_new_federates}
       <br />
-      Is Root: {broker.isRoot}
+      Is Root: {broker.is_root}
       <br />
       {#if is_broker_barrier_time_set && broker_barrier_time != null && broker_barrier_time != undefined}
         Barrier Time: {broker_barrier_time}

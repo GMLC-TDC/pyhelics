@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from helics.webserver.app import create_app
 from helics.webserver.broker_service import BrokerService
+from helics.webserver.models import BrokerCreateRequest
 
 
 class FakeBroker:
@@ -27,6 +28,25 @@ class FakeBroker:
     def query(self, target, query):
         if query == "isconnected":
             return True
+        if query == "counts":
+            return {
+                "attributes": {"name": self.identifier},
+                "brokers": 0,
+                "countable_federates": 0,
+                "federates": 0,
+                "interfaces": 0,
+            }
+        if query == "version":
+            return "3.7.0"
+        if query == "current_state":
+            return {
+                "attributes": {"name": self.identifier},
+                "brokers": [],
+                "cores": [],
+                "federates": [],
+                "state": "connected",
+                "status": True,
+            }
         return {"target": target, "query": query}
 
     def disconnect(self):
@@ -70,10 +90,9 @@ def test_broker_lifecycle():
 
         assert client.post("/api/v1/brokers", json={"name": "broker"}).status_code == 409
         assert client.get("/api/v1/brokers").json()["brokers"][0]["is_root"] is True
-        assert client.get("/api/v1/brokers/broker/state").json()["value"] == {
-            "target": "root",
-            "query": "current_state",
-        }
+        assert client.get("/api/v1/brokers/broker/state").json()["value"]["state"] == "connected"
+        assert client.get("/api/v1/brokers/broker/counts").json()["value"]["interfaces"] == 0
+        assert client.get("/api/v1/brokers/broker/version").json()["value"] == "3.7.0"
         assert client.get("/api/v1/brokers/broker/connection").json()["value"] is True
         assert client.delete("/api/v1/brokers/broker").status_code == 204
         assert client.get("/api/v1/brokers/broker").status_code == 404
@@ -86,7 +105,7 @@ def test_broker_control_routes():
         assert client.post(
             "/api/v1/brokers/broker/query",
             json={"target": "root", "query": "current_state"},
-        ).json()["value"] == {"target": "root", "query": "current_state"}
+        ).json()["value"]["state"] == "connected"
         assert client.post(
             "/api/v1/brokers/broker/query",
             json={"target": "root", "query": "isconnected"},
@@ -102,3 +121,37 @@ def test_broker_control_routes():
 
     assert created["broker"].commands == [("fed", "stop")]
     assert created["broker"].barrier is None
+
+
+def test_broker_37_startup_controls_are_typed():
+    request = BrokerCreateRequest(
+        name="broker",
+        local_federates=2,
+        local_subbrokers=1,
+        required_federates=["fed-a", "fed-b"],
+    )
+    assert request.broker_arguments() == [
+        "--local_federates=2",
+        "--local_subbrokers=1",
+        "--required_federates=fed-a,fed-b",
+    ]
+
+
+def test_broker_page_accepts_37_startup_controls():
+    client, created = make_client()
+    with client:
+        response = client.post(
+            "/broker/actions/create",
+            data={
+                "name": "broker",
+                "local_federates": "2",
+                "local_subbrokers": "1",
+                "required_federates": "fed-a, fed-b",
+            },
+        )
+        assert response.status_code == 200
+    assert created["broker"].arguments == [
+        "--local_federates=2",
+        "--local_subbrokers=1",
+        "--required_federates=fed-a,fed-b",
+    ]

@@ -12,7 +12,7 @@
   } from "@fortawesome/free-solid-svg-icons";
   import Dropzone from "svelte-file-dropzone";
   import { data, DEFAULT } from "$lib/stores";
-  const BASE = "http://127.0.0.1:5000/api/runner";
+  const BASE = "/api/v1/runner";
 
   let files = {
     accepted: [],
