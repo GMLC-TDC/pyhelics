@@ -82,11 +82,21 @@ class BrokerCreateRequest(BaseModel):
 
 
 class BrokerSummary(BaseModel):
+    """Public broker metadata exposed by the combined service.
+
+    The first replacement release intentionally exposes only service-managed
+    brokers.  Keeping ownership in the response makes that boundary explicit
+    for clients and leaves room for a future attached-broker mode without
+    changing the response shape again.
+    """
+
     name: str
     address: str
     is_connected: bool
     is_root: bool
     is_open_to_new_federates: bool
+    ownership: Literal["managed"] = "managed"
+    can_delete: bool = True
 
 
 class BrokerListResponse(BaseModel):
@@ -113,6 +123,12 @@ class ActionResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str = "ok"
+
+
+class ErrorResponse(BaseModel):
+    """Stable error envelope for service-level HTTP errors."""
+
+    detail: str
 
 
 RunnerStatus = Literal["pending", "running", "success", "failed", "terminated", "unknown"]

@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.11"]
+        python-version: ["3.11", "3.15"]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -32,11 +32,13 @@ jobs:
       - name: Build NPM
         run: |
           cd helics_cli_extras/client
-          npm install
+          npm ci --legacy-peer-deps
           npm run build
           cp -r build ../helics_cli_extras/static
           mkdir -p ../../helics/webserver/static
           cp -r build/. ../../helics/webserver/static/
+          npx playwright install --with-deps chromium
+          npm test -- --reporter=line
       - name: Build the web interface first
         run: |
           cd helics_cli_extras

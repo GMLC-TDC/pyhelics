@@ -13,7 +13,7 @@ pip install -e ".[cli,server]"
 In the `./client` folder, run the following:
 
 ```bash
-npm install
+npm ci --legacy-peer-deps
 ```
 
 Open two terminals:

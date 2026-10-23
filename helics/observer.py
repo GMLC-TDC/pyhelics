@@ -13,7 +13,7 @@ from datetime import datetime
 # HELICS is a runtime dependency here.
 import helics as h
 
-from . import database as db
+from . import observer_database as db
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 

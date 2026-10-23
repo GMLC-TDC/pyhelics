@@ -19,14 +19,30 @@ By default the server binds to `127.0.0.1:8000` and opens its interactive
 OpenAPI documentation at `http://127.0.0.1:8000/docs`.  Use `--host`, `--port`,
 `--server-url`, and `--no-open` to configure the listener and runner callback
 API base.  Without `--server-url`, the service derives the base from the
-listener port.  When the optional Svelte build is
-installed, the same process serves the dashboard at `/`; otherwise `/docs`
-remains available for API-only deployments.
+listener port.  The bundled Svelte build is served by the same process at `/`;
+`/docs` remains available for API clients.
 
 The broker page prototype at `/broker` is rendered with Jinja2 and updated
 with HTMX.  It is intentionally implemented alongside the Svelte build so the
 interaction and maintenance trade-offs can be evaluated before migrating the
 remaining pages.
+
+## Initial service contract
+
+The replacement service is deliberately local and ownership-oriented:
+
+- Brokers returned by the API have `ownership: "managed"` and
+  `can_delete: true`; they are created and cleaned up by this FastAPI process.
+- Brokers created in another process are not discovered or adopted.
+- Status changes are read through normal polling endpoints.  A streaming event
+  protocol is not required for the initial release.
+- The default listener is loopback-only and has no authentication layer.  A
+  deployment that binds to a non-loopback interface must provide its own
+  network protection or reverse-proxy authentication.
+- Uploads are validated by the runner and observer services and are stored
+  beneath their configured service directories.
+- Shutdown disconnects service-managed brokers and terminates runner-owned
+  process groups before the application exits.
 
 ## Broker API
 
@@ -93,8 +109,10 @@ federate names).  They map to the corresponding broker options and can be
 combined with `num_federates` when a hierarchy has both local and forwarded
 participants.
 
-The server owns only brokers it creates.  It does not discover or control
-brokers started by another process.
+The server owns only brokers it creates.  Discovery or adoption of brokers
+created outside the service is intentionally out of scope for the initial
+replacement.  In particular, `BrokerFactory` is process-local and cannot be
+used by a separate FastAPI process to discover brokers started elsewhere.
 
 The former Flask `/api/observer`, `/api/runner`, `/api/profiler`, and
 `/api/broker-server` endpoints are no longer provided.  Clients should use the

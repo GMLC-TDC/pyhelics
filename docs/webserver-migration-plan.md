@@ -37,14 +37,17 @@ The `webserver` branch already contains the first FastAPI vertical slice:
   `helics.query_models`.
 - Unit and real-broker integration tests cover the broker/control slice.
 - The service owns only brokers it creates; it does not discover arbitrary
-  externally started brokers.
+  externally started brokers.  Same-process `BrokerFactory` discovery and
+  broker adoption are intentionally deferred and are not required for the
+  native webserver replacement.
 
 The Flask application and its Flask dependencies have now been removed from
-`helics_cli_extras`.  Its Svelte client is being migrated and still needs a
-rebuilt asset bundle; the source previously called Flask on port 5000 and the
-native HELICS server on port 8080.  FastAPI now contains replacement runner,
-observer-database, profile, and broker routes, but the full UI and observer
-federate lifecycle still require integration testing.
+`helics_cli_extras`.  The maintained observer federate now lives in
+`helics.observer`; `helics_cli_extras` 0.0.3 remains only as a compatibility
+package that re-exports the observer and database models.  The Svelte client
+is built into the FastAPI package, and its source previously called Flask on
+port 5000 and the native HELICS server on port 8080.  FastAPI now contains
+replacement runner, observer-database, profile, and broker routes.
 
 The runner replacement now validates typed `RunnerConfig` and
 `RunnerFederateConfig` models, rejects unsafe upload/path inputs, passes a
@@ -52,8 +55,8 @@ structured argv to `helics run`, and propagates a configurable FastAPI API
 base.  Each run is started in an owned process group/session; stopping the run
 or shutting down the service cleans up its federates and any auto-created
 broker.  Runner status and log endpoints use typed response models.  Remaining
-runner work is cross-platform process-tree integration coverage and browser
-smoke coverage for the final bundled UI.
+runner work is cross-platform process-tree integration coverage; the bundled
+UI now has a Playwright smoke test in CI.
 
 A Jinja2/HTMX broker-page prototype is available at `/broker`.  It is served
 directly by FastAPI and is being evaluated as a lower-maintenance alternative
@@ -89,12 +92,16 @@ testing a linked HELICS checkout.
 - Keep all new endpoints under `/api/v1`.
 - Use consistent snake_case JSON fields, standard HTTP methods, and one typed
   error envelope.
-- Define broker ownership explicitly.  The initial supported mode may be
-  service-managed brokers only; external-broker attach/discovery must either be
-  implemented in HELICS/pyhelics or documented as unsupported.
-- Decide whether event updates use polling, Server-Sent Events, or WebSockets.
-- Define host, port, CORS, authentication, upload limits, and shutdown behavior
-  before exposing the service beyond localhost.
+- Define broker ownership explicitly.  The initial supported mode is
+  service-managed brokers only.  External-broker attach/discovery is
+  documented as unsupported and deferred; it is not a requirement for
+  removing the native management webserver.
+- Use polling for status updates in the initial release; streaming events are
+  deferred until a concrete UI requirement exists.
+- The default listener is loopback-only and has no built-in authentication;
+  non-loopback deployments must use a protected reverse proxy or equivalent.
+  CORS, upload validation, and shutdown cleanup are defined by the FastAPI
+  service and covered by its contract tests.
 
 ### 2. Complete the Python services
 
@@ -126,6 +133,8 @@ configurable FastAPI server URL and the new runner endpoints.
 - Remove the separate native broker-server start/stop controls; the combined
   service should own broker lifecycle through its broker API.
 - Build the client in CI and include its assets in the pyhelics distribution.
+  The checked-in bundle under `helics/webserver/static` is refreshed by the
+  same build step used for the compatibility wheel.
 - Add a development mode with narrowly scoped CORS; production should normally
   use same-origin requests.
 
@@ -141,8 +150,8 @@ Required tests include:
 - broker lifecycle, ownership, concurrency, errors, and shutdown;
 - real HELICS broker/federate query, command, and barrier behavior;
 - runner process cleanup, logs, status transitions, and invalid paths (the
-  service-level coverage is in `tests/test_webserver_services.py`; cross-platform
-  process-tree and browser smoke coverage remain);
+  service-level coverage is in `tests/test_webserver_services.py`; the
+  cross-platform process-group matrix remains a release validation task);
 - observer database upload, topology, and recorded-data reads;
 - profiler parsing and malformed-input handling;
 - UI build, static serving, SPA routing, and browser-level smoke tests;
@@ -152,18 +161,16 @@ Required tests include:
 ### 5. Deprecate and remove old Python layers
 
 The first part of this phase is complete: the Flask application has been
-removed and the UI is being switched to the versioned FastAPI routes.  Before
-publishing the combined service as the default, complete the remaining cleanup:
+removed and the UI is switched to the versioned FastAPI routes.  The observer
+writer has been folded into `helics`, while the separately published extras
+package remains a one-release compatibility shim.  Remaining cleanup is now
+limited to publishing the updated compatibility wheel and removing it after
+the compatibility window:
 
-- remove unused `requests` and `pandas` dependencies (after confirming no
-  public API relies on them);
-- retain SQLAlchemy only if it remains necessary for the observer writer, and
-  remove the Flask automap/read path;
-- decide whether the maintained observer/runner code should remain in
-  `helics_cli_extras` or be folded into `helics`;
-- publish an updated `helics-cli-extras` wheel before updating any release that
-  still installs that package, so PyPI users do not receive the old Flask
-  dependency;
+- `requests`, `pandas`, Flask, and the Flask automap/read path are no longer
+  dependencies; SQLAlchemy is retained only for the observer writer;
+- publish the updated `helics-cli-extras` 0.0.3 compatibility wheel before
+  updating any release that still imports that package;
 - update installation, CLI, examples, release notes, and a migration guide.
 
 ### 6. Remove the native HELICS webserver

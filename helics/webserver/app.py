@@ -33,6 +33,7 @@ from .models import (
     QueryResponse,
     TimeBarrierRequest,
     DatabaseInfo,
+    ErrorResponse,
     LogResponse,
     RunnerFederateEdit,
     RunnerFileResponse,
@@ -78,6 +79,12 @@ def create_app(
         title="HELICS Server API",
         version="1.0.0",
         description="Manage HELICS brokers, federations, runs, observer databases, and profiles.",
+        responses={
+            400: {"model": ErrorResponse},
+            404: {"model": ErrorResponse},
+            409: {"model": ErrorResponse},
+            502: {"model": ErrorResponse},
+        },
         lifespan=lifespan,
     )
     # Expose service instances for embedding applications and diagnostics;
@@ -645,9 +652,20 @@ def create_app(
         await run_in_threadpool(profiler.clear)
         return UploadResponse()
 
-    # Serve the optional Svelte build from the same origin.  CI and release
-    # builds place assets in either helics/webserver/static or the legacy
-    # extras package; the latter is supported while that package is retired.
+    # Keep the SPA fallback from turning removed legacy API paths into a
+    # successful HTML response.  API clients should receive a normal 404 for
+    # anything outside the versioned contract.
+    @app.api_route(
+        "/api/{legacy_path:path}",
+        methods=["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        include_in_schema=False,
+    )
+    async def unknown_api_path(legacy_path: str) -> None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API route not found")
+
+    # Serve the Svelte build from the same origin.  The primary distribution
+    # includes helics/webserver/static; the legacy extras location remains a
+    # compatibility fallback for older installations.
     static_dir = _find_static_dir()
     if static_dir is not None:
         app.mount("/", StaticFiles(directory=static_dir, html=True), name="web-ui")
@@ -661,7 +679,7 @@ def create_app(
 
 
 def _find_static_dir() -> Optional[str]:
-    """Find packaged Svelte assets without importing the legacy Flask app."""
+    """Find packaged Svelte assets without importing the retired Flask app."""
     configured = os.environ.get("HELICS_WEB_STATIC_DIR")
     candidates = []
     if configured:

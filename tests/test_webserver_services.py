@@ -205,6 +205,25 @@ def test_jinja_broker_page(tmp_path):
         assert "No service-managed brokers" in response.text
 
 
+def test_combined_ui_and_versioned_api_contract(tmp_path):
+    with make_client(tmp_path) as client:
+        response = client.get("/")
+        assert response.status_code == 200
+        assert "sveltekit" in response.text.lower()
+
+        schema = client.get("/openapi.json").json()
+        assert "/api/v1/brokers" in schema["paths"]
+        assert "/api/observer" not in schema["paths"]
+        broker_schema = schema["components"]["schemas"]["BrokerSummary"]["properties"]
+        assert broker_schema["ownership"]["default"] == "managed"
+        assert broker_schema["can_delete"]["default"] is True
+        assert "ErrorResponse" in schema["components"]["schemas"]
+
+        # The SPA fallback must not resurrect removed Flask routes as HTML.
+        for legacy_path in ("/api/observer", "/api/runner", "/api/profiler", "/api/broker-server"):
+            assert client.get(legacy_path).status_code == 404
+
+
 def test_observer_database_routes(tmp_path):
     source = tmp_path / "source.sqlite"
     connection = sqlite3.connect(source)

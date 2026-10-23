@@ -65,11 +65,6 @@ def _get_version():
     except ImportError:
         pass
 
-    try:
-        import helics_cli_extras
-    except ImportError:
-        echo('helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.')
-
     return """{}
 
 {}
@@ -135,12 +130,7 @@ def observer(db_folder: pathlib.Path):
     """
     Run helics observer and write data to sqlite file
     """
-    try:
-        from helics_cli_extras import HelicsObserverFederate
-    except ImportError:
-        error(
-            'helics-cli\'s observer functionality is not installed. You may want to run `pip install "helics[cli]"`.'
-        )
+    from .observer import HelicsObserverFederate
 
     o = HelicsObserverFederate(folder=db_folder)
     o.run()
