@@ -5,8 +5,6 @@ query parsing to the web server implementation.  Structured queries use
 flexible Pydantic objects until their nested HELICS schemas are stabilized.
 """
 
-from __future__ import annotations
-
 from typing import Any, Dict, List, Literal, Optional, Type
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError

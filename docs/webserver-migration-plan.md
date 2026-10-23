@@ -41,13 +41,14 @@ The `webserver` branch contains a working FastAPI service and bundled web UI:
   broker adoption are intentionally deferred and are not required for the
   native webserver replacement.
 
-The Flask application and its Flask dependencies have now been removed from
-`helics_cli_extras`.  The maintained observer federate now lives in
-`helics.observer`; `helics_cli_extras` 0.0.3 remains only as a compatibility
-package that re-exports the observer and database models.  The Svelte client
-is built into the FastAPI package, and its source previously called Flask on
-port 5000 and the native HELICS server on port 8080.  FastAPI now contains
-replacement runner, observer-database, profile, and broker routes.
+The Flask application and its Flask dependencies have been removed. The
+maintained observer federate lives in `helics.observer`. The separately
+installable `helics-cli-extras` distribution is retained only as a no-dependency
+deprecation shim; its Svelte source lives in the repository's `client/`
+directory, and the production build is bundled in `helics/webserver/static/`.
+The client previously called Flask on port 5000 and the native HELICS server
+on port 8080. FastAPI now contains replacement runner, observer-database,
+profile, and broker routes.
 
 The runner replacement validates typed `RunnerConfig` and
 `RunnerFederateConfig` models, rejects unsafe upload/path inputs, passes
@@ -167,15 +168,19 @@ Required tests include:
 ### 5. Deprecate and remove old Python layers
 
 The Flask application has been removed and the UI uses the versioned FastAPI
-routes. The observer writer has been folded into `helics`, while the separately
-published extras package remains a compatibility shim. Remaining cleanup is
-to publish the updated compatibility wheel and remove the shim after its
-compatibility window:
+routes. The observer writer has been folded into `helics`; the separate extras
+distribution is retained only as a deprecated compatibility shim:
 
 - `requests`, `pandas`, Flask, and the Flask automap/read path are no longer
   dependencies; SQLAlchemy is retained only for the observer writer;
-- publish the updated `helics-cli-extras` 0.0.3 compatibility wheel before
-  updating any release that still imports that package;
+- `pip install helics-cli-extras` and `import helics_cli_extras` continue to
+  succeed without installing or starting a separate web application; the
+  package has no observer or database API and warns on import;
+- no new pyhelics install extras are introduced; the existing `helics[cli]`
+  extra retains its current behavior;
+- code needing the observer should import `helics.observer` and install
+  `helics[cli]`;
+- build the UI from `client/` and ship its assets in the main pyhelics wheel;
 - keep installation, CLI, examples, and migration documentation aligned with
   the supported interface; add release notes when preparing the package
   release.
@@ -209,8 +214,8 @@ warning that currently refers to a missing native webserver.
    Flask/native management APIs.
 3. Make the combined FastAPI service the documented/default path and verify the
    UI and CLI against it in CI.
-4. Remove any remaining legacy Python compatibility code in a subsequent
-   pyhelics release.
+4. Publish the no-op `helics-cli-extras` compatibility release separately and
+   verify that the bundled UI works without installing it.
 5. Remove the native server in a HELICS release after the completed pyhelics
    release is available.
 

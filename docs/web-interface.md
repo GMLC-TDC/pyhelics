@@ -38,6 +38,12 @@ The `/broker` page is a separate Jinja2/HTMX broker-management prototype. It
 currently lives alongside the Svelte application so the simpler server-rendered
 approach can be evaluated before deciding whether to migrate the remaining UI.
 
+The Svelte source and browser tests live in the repository's `client/`
+directory. Its production build is bundled in `helics/webserver/static/` and
+served by FastAPI; no `helics-cli-extras` installation is needed. The separate
+extras distribution remains installable as a deprecated no-op compatibility
+shim for existing installation scripts.
+
 ## Configuration and deployment
 
 | Setting | Purpose |

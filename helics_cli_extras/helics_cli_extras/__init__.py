@@ -1,8 +1,11 @@
-# Copyright (c) 2017-2026,
-# Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance for Energy
-# Innovation LLC. All rights reserved.
-# SPDX-License-Identifier: BSD-3-Clause
+"""Deprecated compatibility namespace for the former CLI extras package."""
 
-from .observer import HelicsObserverFederate
+import warnings
 
-__all__ = ["HelicsObserverFederate"]
+warnings.warn(
+    "helics_cli_extras is deprecated and has no functionality; use helics[server] instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+__all__ = []

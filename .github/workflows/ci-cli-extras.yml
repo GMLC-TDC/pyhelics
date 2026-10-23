@@ -1,64 +1,26 @@
-name: CI - CLI
+name: CI - CLI extras compatibility
 
 on:
   push:
-    branches:
-    - main
+    branches: [main]
   pull_request:
-    branches:
-    - main
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ${{matrix.os}}
+  install-shim:
+    runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         python-version: ["3.11", "3.15"]
     steps:
       - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0 # ensure history is present for automatic versioning
-      - uses: actions/setup-node@v7
-        with:
-          node-version: "22.x"
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Install compatibility package without pyhelics
+        run: python -m pip install ./helics_cli_extras
+      - name: Import compatibility package
         run: |
-          python -m pip install -U pip wheel setuptools cffi
-      - name: Build NPM
-        run: |
-          cd helics_cli_extras/client
-          npm ci --legacy-peer-deps
-          npm run build
-          cp -r build ../helics_cli_extras/static
-          mkdir -p ../../helics/webserver/static
-          cp -r build/. ../../helics/webserver/static/
-          npx playwright install --with-deps chromium
-          npm test -- --reporter=line
-      - name: Build the web interface first
-        run: |
-          cd helics_cli_extras
-          pip install .
-      - name: Download helics library and run pip install
-        run: |
-          pip install ".[cli,server]"
-        env:
-          DOWNLOAD_BINARIES: 1
-      - name: Run Server
-        run: |
-          helics server --no-open --port 8000 &
-          sleep 5
-          curl http://localhost:8000/docs
-          kill %+
-      - name: Run Observer
-        run: |
-          mkdir db
-          helics observer &
-          sleep 5
-          kill %+
+          python -W default -c "import helics_cli_extras as e; assert not hasattr(e, 'HelicsObserverFederate')"
+          python -c "import importlib.metadata as m; d=m.distribution('helics-cli-extras'); assert not d.requires; assert not any(str(p).endswith(('observer.py', 'database.py')) for p in d.files)"
