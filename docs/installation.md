@@ -96,29 +96,29 @@ Let's say you've made modification to the HELICS library or compiled it with som
 Or you are interested in using a different supported version of HELICS.
 You can do that with this python package by changing the `PYHELICS_INSTALL` environment variable.
 
-As an example, if you want to use the Python package with HELICS v3.6.1, you can clone the git repository for HELICS, build from source and install it to any location.
-In this example, I chose to install it in `~/local/helics-v3.6.1`.
+As an example, if you want to use the Python package with HELICS v3.7.0, you can clone the git repository for HELICS, build from source and install it to any location.
+In this example, I chose to install it in `~/local/helics-v3.7.0`.
 
 ```bash
 $ git clone https://github.com/GMLC-TDC/HELICS
 $ cd HELICS
-$ git checkout v3.6.1
+$ git checkout v3.7.0
 $ mkdir -p build
-$ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-v3.6.1 ..
+$ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-v3.7.0 ..
 $ make -j8 && make install
 ```
 
 Now in bash, you can set the environment variable:
 
 ```bash
-$ export PYHELICS_INSTALL=~/local/helics-v3.6.1
+$ export PYHELICS_INSTALL=~/local/helics-v3.7.0
 ```
 
 Now when you `import helics` and print the version you'll get the HELICS version installed in that prefix.
 
 ```bash
 $ python -c "import helics; print(helics.helicsGetVersion())"
-3.6.1 (...)
+3.7.0 (...)
 ```
 
 If you want to build from source and use the `develop` branch:
@@ -183,6 +183,9 @@ helics_installation
 ├── helics
 └── man
 ```
+
+The shared-library filename in this illustrative tree includes the HELICS
+release version and may differ for newer releases.
 
 On Windows, follow instructions online to set a user environment variable to the path of the HELICS installation.
 You can also use `set PYHELICS_INSTALL="C:\path\to\helics_installation"` in a command line session.

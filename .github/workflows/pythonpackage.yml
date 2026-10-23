@@ -70,10 +70,10 @@ jobs:
         CIBW_BEFORE_ALL_LINUX: >
             mkdir /boost &&
             pushd /boost &&
-            curl -L -o boost_1_76_0.tar.bz2 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
-            tar xf boost_1_76_0.tar.bz2 &&
+            curl -L -o boost_1_83_0.tar.bz2 'https://sourceforge.net/projects/boost/files/boost/1.83.0/boost_1_83_0.tar.bz2' &&
+            tar xf boost_1_83_0.tar.bz2 &&
             popd
-        CIBW_ENVIRONMENT_LINUX: "${{ matrix.arch == 'aarch64' && 'BOOST_ROOT=/boost/boost_1_76_0 CMAKE_ARGS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5' || 'BOOST_ROOT=/boost/boost_1_76_0' }}"
+        CIBW_ENVIRONMENT_LINUX: "${{ matrix.arch == 'aarch64' && 'BOOST_ROOT=/boost/boost_1_83_0 CMAKE_ARGS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5' || 'BOOST_ROOT=/boost/boost_1_83_0' }}"
         CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET=10.15 CMAKE_ARGS=-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
     - uses: actions/upload-artifact@v7
       with:
@@ -91,11 +91,11 @@ jobs:
       run:
         mkdir /tmp/boost &&
         pushd /tmp/boost &&
-        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
-        tar xf boost_1_76_0.tar.bz2 &&
+        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.83.0/boost_1_83_0.tar.bz2' &&
+        tar xf boost_1_83_0.tar.bz2 &&
         popd
     - name: Build sdist
-      run: BOOST_ROOT="/tmp/boost/boost_1_76_0" pipx run build --sdist
+      run: BOOST_ROOT="/tmp/boost/boost_1_83_0" pipx run build --sdist
     - name: Upload artifacts
       uses: actions/upload-artifact@v7
       with:

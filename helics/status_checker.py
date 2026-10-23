@@ -8,6 +8,7 @@ import time
 import logging
 import json
 import urllib.request
+import os
 
 from .utils import error
 
@@ -18,16 +19,17 @@ class HELICSRuntimeError(RuntimeError):
 
 logger = logging.getLogger(__name__)
 
-API = "http://127.0.0.1:5000/api"
+API = os.environ.get("HELICS_CLI_SERVER_API", "http://127.0.0.1:8000/api/v1").rstrip("/")
 
 
 class CheckStatusThread(threading.Thread):
-    def __init__(self, process_list, should_kill, helics_server_available):
+    def __init__(self, process_list, should_kill, helics_server_available, server_api=None):
         threading.Thread.__init__(self)
         self.should_kill = should_kill
         self._process_list = process_list
         self._status = {}
         self._helics_server_available = helics_server_available
+        self._server_api = (server_api or API).rstrip("/")
 
     def run(self):
         logger.info("Starting checks logger")
@@ -67,7 +69,7 @@ class CheckStatusThread(threading.Thread):
                 status = "failed"
             else:
                 status = "unknown"
-            r = urllib.request.Request("{}/runner/status".format(API))
+            r = urllib.request.Request("{}/runner/status".format(self._server_api))
             r.add_header("Content-Type", "application/json; charset=utf-8")
             body = {"name": p.name, "status": status}
             bytes = json.dumps(body).encode("utf-8")
