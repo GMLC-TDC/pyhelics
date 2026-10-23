@@ -16,6 +16,10 @@ In the repository's `client` folder, run the following:
 npm ci --legacy-peer-deps
 ```
 
+Keep `package-lock.json` in Git: the UI CI job uses `npm ci` to install its
+locked dependency tree. Generated `node_modules/`, `.svelte-kit/`, and `build/`
+directories are ignored.
+
 Open two terminals:
 
 In one terminal run:
