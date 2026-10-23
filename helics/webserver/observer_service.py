@@ -36,12 +36,15 @@ class ObserverDatabaseService:
 
     @property
     def path(self) -> Path:
+        """Return the path of the observer database managed by this service."""
         return self._path
 
     def info(self) -> dict[str, Any]:
+        """Return the database path and whether the artifact exists."""
         return {"path": str(self._path), "exists": self._path.exists()}
 
     def upload(self, content: bytes) -> dict[str, Any]:
+        """Validate and replace the stored SQLite observer database."""
         if not content:
             raise ObserverDatabaseError("database upload is empty")
         self._root.mkdir(parents=True, exist_ok=True)
@@ -98,29 +101,37 @@ class ObserverDatabaseService:
                 connection.close()
 
     def system_info(self) -> Any:
+        """Return the recorded observer system information, if present."""
         rows = self._rows("systeminfo")
         return rows[0].get("data", {}) if rows else {}
 
     def cores(self) -> list[dict[str, Any]]:
+        """Return recorded cores, excluding the observer's own core."""
         return self._rows("cores")
 
     def federates(self) -> list[dict[str, Any]]:
+        """Return recorded federates, excluding the observer itself."""
         return self._rows("federates")
 
     def graphs(self) -> dict[str, Any]:
+        """Return the recorded federate and data graph payloads."""
         return {
             "federate": (self._rows("federategraph") or [{}])[0].get("data", {}),
             "data": (self._rows("datagraph") or [{}])[0].get("data", {}),
         }
 
     def subscriptions(self) -> list[dict[str, Any]]:
+        """Return recorded subscriptions."""
         return self._rows("subscriptions")
 
     def inputs(self) -> list[dict[str, Any]]:
+        """Return recorded inputs."""
         return self._rows("inputs")
 
     def publications(self) -> list[dict[str, Any]]:
+        """Return recorded publications."""
         return self._rows("publications")
 
     def data(self) -> list[dict[str, Any]]:
+        """Return recorded publication data rows."""
         return self._rows("datatable")

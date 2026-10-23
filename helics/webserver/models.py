@@ -100,28 +100,40 @@ class BrokerSummary(BaseModel):
 
 
 class BrokerListResponse(BaseModel):
+    """Collection of broker summaries owned by the service."""
+
     brokers: List[BrokerSummary]
 
 
 class QueryRequest(BaseModel):
+    """Target and query name for a HELICS broker query."""
+
     target: str = Field(default="root", min_length=1)
     query: str = Field(default="current_state", min_length=1)
 
 
 class CommandRequest(BaseModel):
+    """Command text and target forwarded to a HELICS broker."""
+
     target: str = Field(default="root", min_length=1)
     command: str = Field(min_length=1)
 
 
 class TimeBarrierRequest(BaseModel):
+    """Non-negative simulation time at which the broker should pause."""
+
     time: float = Field(ge=0)
 
 
 class ActionResponse(BaseModel):
+    """Acknowledgment returned by a broker control operation."""
+
     status: str = "ok"
 
 
 class HealthResponse(BaseModel):
+    """Basic health status for the web service."""
+
     status: str = "ok"
 
 
@@ -234,18 +246,26 @@ class RunnerFileResponse(BaseModel):
 
 
 class RunnerPathRequest(BaseModel):
+    """Path of an existing runner JSON file to select."""
+
     path: str = Field(min_length=1)
 
 
 class RunnerNameRequest(BaseModel):
+    """Safe JSON filename to use for the active runner configuration."""
+
     name: str = Field(min_length=1)
 
 
 class RunnerFolderRequest(BaseModel):
+    """Folder to use for the active runner configuration."""
+
     folder: str = Field(min_length=1)
 
 
 class RunnerFederateEdit(BaseModel):
+    """Federate fields used to add, update, or remove a runner entry."""
+
     name: str = Field(min_length=1)
     exec: str = Field(min_length=1)
     directory: str = "."
@@ -254,11 +274,15 @@ class RunnerFederateEdit(BaseModel):
 
 
 class RunnerStatusRequest(BaseModel):
+    """Federate name and lifecycle status reported by a runner process."""
+
     name: str = Field(min_length=1)
     status: RunnerStatus
 
 
 class RunnerStatusResponse(BaseModel):
+    """Most recently recorded lifecycle status for a federate."""
+
     status: Optional[RunnerStatus] = None
 
 
@@ -280,11 +304,15 @@ class RunnerProcessInfo(BaseModel):
 
 
 class RunnerRunResponse(BaseModel):
+    """Whether a runner is active and, when available, its process metadata."""
+
     status: bool
     process: Optional[RunnerProcessInfo] = None
 
 
 class LogResponse(BaseModel):
+    """Text content of a federate log file."""
+
     log: str
 
 
@@ -292,16 +320,22 @@ RunnerLogResponse = LogResponse
 
 
 class DatabaseInfo(BaseModel):
+    """Location and availability of the observer database artifact."""
+
     path: str
     exists: bool
 
 
 class UploadResponse(BaseModel):
+    """Acknowledgment for a profile upload or deletion."""
+
     status: str = "success"
     path: Optional[str] = None
 
 
 class ProfileInterval(BaseModel):
+    """A paired profiler entry and exit interval for one federate."""
+
     name: str
     s_enter: Optional[float] = None
     s_end: Optional[float] = None
@@ -310,6 +344,8 @@ class ProfileInterval(BaseModel):
 
 
 class ProfileResponse(BaseModel):
+    """Profile intervals grouped by federate name."""
+
     profiles: Dict[str, List[ProfileInterval]]
 
 

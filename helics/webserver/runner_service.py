@@ -81,14 +81,17 @@ class RunnerService:
 
     @property
     def runner_path(self) -> Path:
+        """Return the active runner configuration path."""
         return self._runner_path
 
     @property
     def runner_folder(self) -> Path:
+        """Return the directory containing the active runner configuration."""
         return self._runner_path.parent
 
     @property
     def server_url(self) -> str:
+        """Return the normalized API base used for runner callbacks."""
         return self._server_url
 
     def _resolve_path(self, value: str | Path, *, kind: str, must_exist: bool = False) -> Path:
@@ -185,6 +188,7 @@ class RunnerService:
         return self._parse_config(data)
 
     def file(self) -> Optional[RunnerFileResponse]:
+        """Return the active configuration with server-managed UI metadata."""
         with self._lock:
             data = self._read_raw()
             if data is None:
@@ -232,6 +236,7 @@ class RunnerService:
             return RunnerFileResponse.model_validate(data)
 
     def upload(self, content: bytes, filename: Optional[str] = None) -> RunnerFileResponse:
+        """Validate and save an uploaded runner JSON configuration."""
         with self._lock:
             if not content:
                 raise RunnerFileError("runner file is empty")
@@ -256,6 +261,7 @@ class RunnerService:
             return self.file()  # type: ignore[return-value]
 
     def set_name(self, name: str) -> RunnerFileResponse:
+        """Select a safe JSON filename in the current runner folder."""
         with self._lock:
             safe_name = self._safe_upload_filename(
                 name if name.lower().endswith(".json") else f"{name}.json"
@@ -265,6 +271,7 @@ class RunnerService:
             return self.file()  # type: ignore[return-value]
 
     def set_folder(self, folder: str) -> RunnerFileResponse:
+        """Select or create a folder for the active runner configuration."""
         with self._lock:
             target = self._resolve_path(folder, kind="runner folder")
             try:
@@ -279,6 +286,7 @@ class RunnerService:
             return self.file()  # type: ignore[return-value]
 
     def set_path(self, path: str) -> RunnerFileResponse:
+        """Select an existing JSON runner configuration by path."""
         with self._lock:
             target = self._resolve_path(path, kind="runner", must_exist=True)
             if target.suffix.lower() != ".json" or not target.is_file():
@@ -299,6 +307,7 @@ class RunnerService:
             raise RunnerFileError(f"unable to write runner file: {error}") from error
 
     def edit(self, item: RunnerFederateEdit, mode: str) -> RunnerFileResponse:
+        """Add, update, or delete one federate in the active configuration."""
         with self._lock:
             data = self._read_raw()
             if data is None:
@@ -342,6 +351,7 @@ class RunnerService:
             return self.file()  # type: ignore[return-value]
 
     def log(self, name: str) -> str:
+        """Return a named federate's log from the configured log directory."""
         with self._lock:
             if not name or Path(name).name != name or name in {".", ".."}:
                 raise RunnerFileError("invalid federate log name")
@@ -385,6 +395,7 @@ class RunnerService:
         return config
 
     def run(self) -> bool:
+        """Validate the configuration and start an owned HELICS run process."""
         with self._lock:
             if self._process is not None and self._process.poll() is None:
                 return True
@@ -422,6 +433,7 @@ class RunnerService:
             return True
 
     def process_info(self) -> Optional[RunnerProcessInfo]:
+        """Return metadata for the currently tracked runner process."""
         with self._lock:
             if self._process is None:
                 return None
@@ -435,6 +447,7 @@ class RunnerService:
             )
 
     def status(self) -> bool:
+        """Return whether the tracked runner process is currently running."""
         with self._lock:
             return self._process is not None and self._process.poll() is None
 
@@ -494,6 +507,7 @@ class RunnerService:
             process.wait(timeout=5)
 
     def stop(self) -> bool:
+        """Stop and forget the active runner process tree, if one exists."""
         with self._lock:
             if self._process is None:
                 self._statuses.clear()
@@ -524,13 +538,16 @@ class RunnerService:
             return self.stop()
 
     def set_status(self, name: str, status: RunnerStatus) -> RunnerStatusResponse:
+        """Record and return the current status for a federate name."""
         with self._lock:
             self._statuses[name] = status
             return RunnerStatusResponse(status=status)
 
     def get_status(self, name: str) -> RunnerStatusResponse:
+        """Return the most recently recorded status for a federate."""
         with self._lock:
             return RunnerStatusResponse(status=self._statuses.get(name))
 
     def shutdown(self) -> None:
+        """Stop the active run and clean up its owned process tree."""
         self.stop()

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 
 from fastapi.testclient import TestClient
@@ -222,6 +223,23 @@ def test_combined_ui_and_versioned_api_contract(tmp_path):
         # The SPA fallback must not resurrect removed Flask routes as HTML.
         for legacy_path in ("/api/observer", "/api/runner", "/api/profiler", "/api/broker-server"):
             assert client.get(legacy_path).status_code == 404
+
+
+def test_bundled_ui_references_existing_assets(tmp_path):
+    with make_client(tmp_path) as client:
+        index = client.get("/")
+        assert index.status_code == 200
+
+        references = re.findall(r'(?:src|href)="([^"]+)"', index.text)
+        asset_references = [
+            reference
+            for reference in references
+            if reference.startswith("/") and not reference.startswith("/api/")
+        ]
+        assert asset_references
+        for reference in asset_references:
+            response = client.get(reference)
+            assert response.status_code == 200, reference
 
 
 def test_observer_database_routes(tmp_path):

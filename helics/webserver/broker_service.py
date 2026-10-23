@@ -44,6 +44,7 @@ class BrokerService:
         )
 
     def create(self, request: BrokerCreateRequest) -> BrokerSummary:
+        """Create and register a broker owned by this service."""
         with self._lock:
             if request.name in self._brokers:
                 raise BrokerAlreadyExistsError(request.name)
@@ -60,14 +61,17 @@ class BrokerService:
             return self._summary(broker)
 
     def list(self) -> List[BrokerSummary]:
+        """Return summaries for all brokers owned by this service."""
         with self._lock:
             return [self._summary(broker) for broker in self._brokers.values()]
 
     def summary(self, name: str) -> BrokerSummary:
+        """Return the current summary for a managed broker."""
         with self._lock:
             return self._summary(self.get(name))
 
     def get(self, name: str) -> HelicsBroker:
+        """Return a managed broker handle or raise ``BrokerNotFoundError``."""
         with self._lock:
             try:
                 return self._brokers[name]
@@ -75,28 +79,34 @@ class BrokerService:
                 raise BrokerNotFoundError(name) from error
 
     def query(self, name: str, target: str, query: str):
+        """Run a HELICS query against a managed broker."""
         with self._lock:
             return self.get(name).query(target, query)
 
     def send_command(self, name: str, target: str, command: str) -> None:
+        """Send a command to a target on a managed broker."""
         with self._lock:
             self.get(name).send_command(target, command)
 
     def set_time_barrier(self, name: str, time: float) -> None:
+        """Set a time barrier on a managed broker."""
         with self._lock:
             self.get(name).set_time_barrier(time)
 
     def clear_time_barrier(self, name: str) -> None:
+        """Clear the time barrier on a managed broker."""
         with self._lock:
             self.get(name).clear_time_barrier()
 
     def delete(self, name: str) -> None:
+        """Disconnect and unregister a broker created by this service."""
         with self._lock:
             broker = self.get(name)
             broker.disconnect()
             del self._brokers[name]
 
     def shutdown(self) -> None:
+        """Disconnect and remove every broker owned by the service."""
         with self._lock:
             for broker in self._brokers.values():
                 broker.disconnect()

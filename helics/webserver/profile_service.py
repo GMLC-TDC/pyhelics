@@ -13,6 +13,14 @@ class ProfileError(ValueError):
 
 
 class ProfileService:
+    """Store and parse the profile artifact used by the web UI.
+
+    The service keeps one UTF-8 ``profile.txt`` file beneath ``root_dir``.
+    Uploading replaces the current artifact, parsing returns complete entry/
+    exit intervals, and :meth:`clear` removes the artifact without affecting
+    broker or runner state.
+    """
+
     PATTERN = re.compile(
         r"(?P<name>\w+)\[(\d+)\]\((?P<state>\w+)\)"
         r"(?P<message>[\w\s]+)<(?P<realtime>\d+(?:\|\d+)?)>"
@@ -27,9 +35,11 @@ class ProfileService:
 
     @property
     def path(self) -> Path:
+        """Return the path of the currently managed profile artifact."""
         return self._path
 
     def upload(self, content: bytes) -> None:
+        """Validate and replace the stored profile artifact."""
         if not content:
             raise ProfileError("profile upload is empty")
         try:
@@ -40,6 +50,7 @@ class ProfileService:
             self._path.write_bytes(content)
 
     def parse(self) -> dict[str, list[dict[str, Any]]]:
+        """Parse the stored profile into complete per-federate intervals."""
         with self._lock:
             if not self._path.exists():
                 return {}
@@ -92,5 +103,6 @@ class ProfileService:
         return profiles
 
     def clear(self) -> None:
+        """Remove the stored profile artifact if one exists."""
         with self._lock:
             self._path.unlink(missing_ok=True)

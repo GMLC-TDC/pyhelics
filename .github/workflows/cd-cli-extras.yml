@@ -27,6 +27,8 @@ jobs:
         with:
           fetch-depth: 0 # ensure history is present for automatic versioning
       - uses: actions/setup-node@v7
+        with:
+          node-version: "22.x"
 
       - name: Set up Python3
         uses: actions/setup-python@v7
