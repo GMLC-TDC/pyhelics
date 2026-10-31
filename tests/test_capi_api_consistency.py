@@ -172,6 +172,21 @@ def test_capi_constants_match_generated_header_with_documented_exceptions(c_enum
         )
 
 
+def test_helics_37_time_constants_preserve_distinct_semantics():
+    """HELICS 3.7 exposes separate big-time, max-time, and termination values."""
+    import helics as h
+
+    assert h.HELICS_BIG_NUMBER == 9223372000.0
+    assert h.HELICS_MAX_TIME_VALUE == 9223372036.854774
+    assert h.HELICS_TERMINATION_TIME_VALUE == h.HELICS_MAX_TIME_VALUE / 2.0
+    assert h.HELICS_TIME_BIGTIME == h.HELICS_BIG_NUMBER
+    assert h.HELICS_TIME_MAXTIME == h.HELICS_MAX_TIME_VALUE
+    assert h.HELICS_TIME_TERMINATION == h.HELICS_TERMINATION_TIME_VALUE
+    assert h.helics_time_bigtime == h.HELICS_TIME_BIGTIME
+    assert h.helics_time_maxtime == h.HELICS_TIME_MAXTIME
+    assert h.helics_time_termination == h.HELICS_TIME_TERMINATION
+
+
 def test_pyhelics_core_type_test_alias_is_documented_policy(c_enum_constants):
     assert c_enum_constants["HELICS_CORE_TYPE_TEST"][0] == 3
     assert class_constant("HelicsCoreType", "TEST") == 3

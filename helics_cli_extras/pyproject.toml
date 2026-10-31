@@ -4,60 +4,25 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "helics-cli-extras"
-version = "0.0.2"
-authors = [{ name = "Dheepak Krishnamurthy", email = "me@kdheepak.com" }]
-maintainers = [
-    { name = "Dheepak Krishnamurthy", email = "me@kdheepak.com" },
-    { name = "Ryan Mast", email = "mast9@llnl.gov" },
-]
-description = "Python HELICS bindings"
+version = "0.0.3"
+description = "Deprecated compatibility shim for the former HELICS CLI extras package"
 readme = "README.md"
 requires-python = ">=3.11"
-keywords = ["helics", "co-simulation", "webserver"]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "Operating System :: Unix",
-    "Operating System :: POSIX",
-    "Operating System :: POSIX :: Linux",
-    "Operating System :: MacOS",
-    "Operating System :: Microsoft :: Windows",
-    "Environment :: Console",
-    "Programming Language :: Python",
+    "Development Status :: 7 - Inactive",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
-    "Topic :: Utilities",
-    "Topic :: Software Development",
-]
-dependencies = [
-    "flask>=2",
-    "requests",
-    "flask-restful",
-    "flask-cors",
-    "pandas",
-    "SQLAlchemy",
+    "Programming Language :: Python :: 3.15",
 ]
 
 [project.urls]
 Homepage = "https://github.com/GMLC-TDC/pyhelics"
-Discussions = "https://github.com/GMLC-TDC/HELICS/discussions"
 Documentation = "https://python.helics.org/"
-"Issue Tracker" = "https://github.com/GMLC-TDC/pyhelics/issues"
-"Source Code" = "https://github.com/GMLC-TDC/pyhelics"
 
 [tool.setuptools.packages.find]
-include = ["helics_cli_extras", "helics_cli_extras.*"]
-
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.package-data]
-"*" = ["static/**"]
+include = ["helics_cli_extras"]

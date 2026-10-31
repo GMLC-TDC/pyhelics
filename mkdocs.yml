@@ -11,7 +11,8 @@ nav:
   - Pythonic API: pythonic-interface.md
   - Callbacks: callbacks.md
   - CLI Interface: cli-interface.md
-  - Web Interface (experimental): web-interface.md
+  - Web Server API (experimental): web-interface.md
+  - Webserver Migration Plan: webserver-migration-plan.md
   - Migration v2 -> v3: migration-helics2-helics3.md
 
 theme:

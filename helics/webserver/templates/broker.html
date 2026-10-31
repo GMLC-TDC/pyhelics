@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HELICS Brokers</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+      integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpRFeSfwBWDTKpkzPP8c+cLsK+V"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+      body { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+      form, .broker { border: 1px solid #8885; border-radius: .5rem; padding: 1rem; margin: 1rem 0; }
+      .fields { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
+      label { display: flex; flex-direction: column; gap: .25rem; }
+      input, select, button { font: inherit; padding: .4rem .6rem; }
+      button { cursor: pointer; }
+      .broker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1rem; }
+      .error { color: #b00020; margin: .75rem 0; }
+      .muted { opacity: .75; }
+      .actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>HELICS Brokers</h1>
+      <p class="muted">FastAPI + Jinja2 + HTMX prototype</p>
+    </header>
+
+    <form hx-post="/broker/actions/create" hx-target="#broker-list" hx-swap="outerHTML">
+      <h2>Create broker</h2>
+      <div class="fields">
+        <label>Name <input name="name" required maxlength="256" placeholder="broker-name" /></label>
+        <label>Core type
+          <select name="core_type">
+            <option value="zmq">ZMQ</option>
+            <option value="tcp">TCP</option>
+            <option value="udp">UDP</option>
+            <option value="inproc">In-process</option>
+          </select>
+        </label>
+        <label>Federates <input name="num_federates" type="number" min="1" placeholder="optional" /></label>
+        <label>Local federates <input name="local_federates" type="number" min="0" placeholder="optional" /></label>
+        <label>Local sub-brokers <input name="local_subbrokers" type="number" min="0" placeholder="optional" /></label>
+        <label>Required federates <input name="required_federates" placeholder="fed-a,fed-b" /></label>
+        <label>Port <input name="port" type="number" min="1" max="65535" placeholder="optional" /></label>
+        <label>Log level <input name="log_level" placeholder="optional" /></label>
+        <button type="submit">Create</button>
+      </div>
+    </form>
+
+    <div class="actions">
+      <button hx-get="/broker/fragment" hx-target="#broker-list" hx-swap="outerHTML">Refresh</button>
+      <a href="/docs">OpenAPI docs</a>
+    </div>
+
+    {% include "_broker_list.html" %}
+  </body>
+</html>
