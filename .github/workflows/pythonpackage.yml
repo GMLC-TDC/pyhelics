@@ -50,7 +50,7 @@ jobs:
             build: ""
             artifact_suffix: "windows_x86"
             use_qemu: false
-          - os: macos-14
+          - os: macos-26
             arch: "universal2"
             build: ""
             artifact_suffix: "macos"
