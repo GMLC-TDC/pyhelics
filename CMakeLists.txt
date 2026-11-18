@@ -97,4 +97,9 @@ FetchContent_Declare(
 if(SKBUILD_STATE STREQUAL "wheel")
     add_library(helicsCpp98_ide INTERFACE)
 endif()
+
+# HELICS 3.6.1 bundles a libzmq with a CMake policy version older than 3.5.
+if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
+    set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+endif()
 FetchContent_MakeAvailable(helics)

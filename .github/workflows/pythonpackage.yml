@@ -18,6 +18,9 @@ on:
     branches:
     - main
 
+env:
+  BOOST_ARCHIVE_URL: https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.bz2
+
 jobs:
   build-helics:
     # No container needed, since the package is version agnostic
@@ -68,12 +71,10 @@ jobs:
         CIBW_BUILD_VERBOSITY: 3
         CIBW_ENVIRONMENT: "CIBW_ARTIFACT_TYPE=${{ matrix.artifact_suffix }}"
         CIBW_BEFORE_ALL_LINUX: >
-            mkdir /boost &&
-            pushd /boost &&
-            curl -L -o boost_1_76_0.tar.bz2 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
-            tar xf boost_1_76_0.tar.bz2 &&
-            popd
-        CIBW_ENVIRONMENT_LINUX: "${{ matrix.arch == 'aarch64' && 'BOOST_ROOT=/boost/boost_1_76_0 CMAKE_ARGS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5' || 'BOOST_ROOT=/boost/boost_1_76_0' }}"
+            mkdir -p /boost &&
+            curl -fsSL "${{ env.BOOST_ARCHIVE_URL }}" -o /tmp/pyhelics-boost.tar.bz2 &&
+            tar -xjf /tmp/pyhelics-boost.tar.bz2 -C /boost --strip-components=1
+        CIBW_ENVIRONMENT_LINUX: "BOOST_ROOT=/boost"
         CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET=10.15 CMAKE_ARGS=-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
     - uses: actions/upload-artifact@v7
       with:
@@ -87,15 +88,13 @@ jobs:
       with:
         fetch-depth: 0  # for setuptools_scm to find tags
 
-    - name: Install boost
-      run:
-        mkdir /tmp/boost &&
-        pushd /tmp/boost &&
-        wget --no-check-certificate 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' &&
-        tar xf boost_1_76_0.tar.bz2 &&
-        popd
+    - name: Install Boost
+      run: |
+        mkdir -p "$RUNNER_TEMP/boost"
+        curl -fsSL "$BOOST_ARCHIVE_URL" -o "$RUNNER_TEMP/pyhelics-boost.tar.bz2"
+        tar -xjf "$RUNNER_TEMP/pyhelics-boost.tar.bz2" -C "$RUNNER_TEMP/boost" --strip-components=1
     - name: Build sdist
-      run: BOOST_ROOT="/tmp/boost/boost_1_76_0" pipx run build --sdist
+      run: BOOST_ROOT="$RUNNER_TEMP/boost" pipx run build --sdist
     - name: Upload artifacts
       uses: actions/upload-artifact@v7
       with:
