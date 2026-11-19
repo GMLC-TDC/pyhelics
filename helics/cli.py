@@ -19,6 +19,7 @@ import platform
 import urllib.request
 import logging
 import shutil
+from typing import Optional
 from ._version import __version__
 from .status_checker import CheckStatusThread
 
@@ -27,7 +28,9 @@ import pathlib
 
 from .utils import echo, info, warn, error
 
-HELICS_CLI_SERVER_API = "http://127.0.0.1:5000/api"
+HELICS_CLI_SERVER_API = os.environ.get(
+    "HELICS_CLI_SERVER_API", "http://127.0.0.1:8000/api/v1"
+).rstrip("/")
 
 logger = logging.getLogger(__name__)
 
@@ -62,11 +65,6 @@ def _get_version():
     except ImportError:
         pass
 
-    try:
-        import helics_cli_extras
-    except ImportError:
-        echo('helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.')
-
     return """{}
 
 {}
@@ -96,24 +94,30 @@ def cli(ctx, verbose):
     is_flag=True,
     default=True,
     show_default=True,
-    help="Open browser on startup",
+    help="Open the API documentation in a browser on startup",
 )
-def server(open: bool):
+@click.option("--host", default="127.0.0.1", show_default=True, help="Interface to bind")
+@click.option("--port", default=8000, show_default=True, type=click.IntRange(1, 65535))
+@click.option(
+    "--server-url",
+    default=None,
+    help="API base propagated to runner processes (defaults to this listener)",
+)
+def server(open: bool, host: str, port: int, server_url: Optional[str]):
     """
-    Run helics web server to access web interface
+    Run the HELICS FastAPI server.
     """
     import webbrowser
 
     try:
-        import helics_cli_extras
+        from .webserver import run
     except ImportError:
-        error(
-            'helics_cli_extras is not installed. You may want to run `pip install "helics[cli]"`.'
-        )
+        error('Server support is not installed. Run `pip install "helics[server]"`.')
+        return
 
     if open:
-        webbrowser.open("http://127.0.0.1:5000", 1)
-    helics_cli_extras.run()
+        webbrowser.open(f"http://{host}:{port}/docs", 1)
+    run(host=host, port=port, server_url=server_url)
 
 
 @cli.command()
@@ -126,12 +130,7 @@ def observer(db_folder: pathlib.Path):
     """
     Run helics observer and write data to sqlite file
     """
-    try:
-        from helics_cli_extras import HelicsObserverFederate
-    except ImportError:
-        error(
-            'helics-cli\'s observer functionality is not installed. You may want to run `pip install "helics[cli]"`.'
-        )
+    from .observer import HelicsObserverFederate
 
     o = HelicsObserverFederate(folder=db_folder)
     o.run()
@@ -180,8 +179,10 @@ class Output:
     file: io.TextIOWrapper | None
 
 
-def fetch(url, data={}, method="POST"):
-    r = urllib.request.Request("{}{}".format(HELICS_CLI_SERVER_API, url), method=method)
+def fetch(url, data=None, method="POST", api_base=HELICS_CLI_SERVER_API):
+    if data is None:
+        data = {}
+    r = urllib.request.Request("{}{}".format(api_base.rstrip("/"), url), method=method)
     r.add_header("Content-Type", "application/json; charset=utf-8")
     bytes = json.dumps(data).encode("utf-8")
     r.add_header("Content-Length", str(len(bytes)))
@@ -204,6 +205,11 @@ def fetch(url, data={}, method="POST"):
 @click.option("--silent", is_flag=True, help="Suppress informational output")
 @click.option("--connect-server", is_flag=True, help="Attempt to connect to helics-cli server")
 @click.option(
+    "--server-url",
+    default=None,
+    help="FastAPI server base URL (defaults to HELICS_CLI_SERVER_API or 127.0.0.1:8000)",
+)
+@click.option(
     "--no-log-files",
     is_flag=True,
     default=False,
@@ -215,7 +221,7 @@ def fetch(url, data={}, method="POST"):
     default=False,
     help="Do not kill all federates on error",
 )
-def run(path, silent, connect_server, no_log_files, no_kill_on_error):
+def run(path, silent, connect_server, server_url, no_log_files, no_kill_on_error):
     """
     Run HELICS federation defined by a JSON configuration file.
 
@@ -287,18 +293,17 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
     1 on failure.
     """
 
-    r = urllib.request.Request("{}/health".format(HELICS_CLI_SERVER_API))
+    server_api = (server_url or HELICS_CLI_SERVER_API).rstrip("/")
+    r = urllib.request.Request("{}/health".format(server_api))
 
     helics_server_available = False
     try:
         if connect_server:
             with urllib.request.urlopen(r) as response:
-                helics_server_available = (
-                    json.loads(
-                        response.read().decode(response.info().get_param("charset") or "utf-8")
-                    ).get("status", None)
-                    == 200
+                health = json.loads(
+                    response.read().decode(response.info().get_param("charset") or "utf-8")
                 )
+                helics_server_available = health.get("status") in (200, "ok")
     except Exception:
         warn("Unable to connect to helics-cli web server")
         helics_server_available = False
@@ -320,7 +325,13 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
         config = json.loads(f.read())
 
     if not silent:
-        info("Running federation: {name}".format(name=config["name"]))
+        # ``name`` is optional in older runner files; use the config filename
+        # as a stable display name instead of failing before any process starts.
+        info(
+            "Running federation: {name}".format(
+                name=config.get("name", pathlib.Path(path_to_config).stem)
+            )
+        )
 
     if "broker" in config.keys() and config["broker"] is not False:
         if not silent:
@@ -349,8 +360,10 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
         return -1
 
     if helics_server_available:
-        fetch("/runner/file/name", {"name": os.path.basename(path_to_config)})
-        fetch("/runner/file/folder", {"folder": os.path.dirname(path_to_config)})
+        fetch("/runner/file/name", {"name": os.path.basename(path_to_config)}, api_base=server_api)
+        fetch(
+            "/runner/file/folder", {"folder": os.path.dirname(path_to_config)}, api_base=server_api
+        )
 
     # Default to logging in the same location as the config file; this is the
     # historical behavior of the cli. If there's a "logging_path" in the runner
@@ -405,7 +418,9 @@ def run(path, silent, connect_server, no_log_files, no_kill_on_error):
         if o.file is not None:
             output_list.append(o)
 
-    t = CheckStatusThread(process_list, kill_on_error, helics_server_available)
+    t = CheckStatusThread(
+        process_list, kill_on_error, helics_server_available, server_api=server_api
+    )
 
     try:
         t.start()

@@ -84,6 +84,11 @@ set(HELICS_BUILD_APP_EXECUTABLES ON)
 if (NOT SKBUILD_STATE STREQUAL "sdist" AND
     EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/helics-src/CMakeLists.txt")
     message(STATUS "Using existing HELICS source directory")
+    # FetchContent override variables use the upper-cased dependency name.
+    # Keep the legacy spelling as well for older CMake releases, but ensure
+    # current CMake versions select the checked-in source tree instead of
+    # attempting to download the matching HELICS release.
+    set(FETCHCONTENT_SOURCE_DIR_HELICS "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
     set(FETCHCONTENT_SOURCE_DIR_helics "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
     set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 endif()
@@ -93,12 +98,7 @@ FetchContent_Declare(
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/helics-src
 )
 
-# For making the sdist, only need to download the source code
-if(SKBUILD_STATE STREQUAL "wheel")
-    add_library(helicsCpp98_ide INTERFACE)
-endif()
-
-# HELICS 3.6.1 bundles a libzmq with a CMake policy version older than 3.5.
+# Allow older bundled CMake projects to configure with CMake 4.
 if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
     set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 endif()
