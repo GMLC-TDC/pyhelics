@@ -98,4 +98,8 @@ FetchContent_Declare(
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/helics-src
 )
 
+# Allow older bundled CMake projects to configure with CMake 4.
+if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
+    set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+endif()
 FetchContent_MakeAvailable(helics)

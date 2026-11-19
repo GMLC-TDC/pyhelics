@@ -8,6 +8,10 @@ docs/api
 _source
 *.db
 
+# Generated files left by the former CLI extras web client
+/helics_cli_extras/client/.svelte-kit/
+/helics_cli_extras/client/node_modules/
+
 # Created by https://www.toptal.com/developers/gitignore/api/python,c,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,c,c++
 

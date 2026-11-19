@@ -13,7 +13,7 @@ pip install -e ".[cli,server]"
 In the repository's `client` folder, run the following:
 
 ```bash
-npm ci --legacy-peer-deps
+npm ci
 ```
 
 Keep `package-lock.json` in Git: the UI CI job uses `npm ci` to install its
