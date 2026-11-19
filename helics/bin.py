@@ -13,7 +13,11 @@ BIN_DIR = os.path.join(PYHELICS_INSTALL, "bin")
 
 
 def _program(name, args):
-    return subprocess.call([os.path.join(BIN_DIR, name)] + args)
+    path = os.path.join(BIN_DIR, name)
+    if sys.platform == "win32":
+        return subprocess.call([path] + args)
+    # Replace this process so signals (e.g. kill from `helics run`) reach the binary directly
+    os.execv(path, [path] + args)
 
 
 def helics_app():
