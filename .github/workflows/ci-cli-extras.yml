@@ -22,6 +22,8 @@ jobs:
         with:
           fetch-depth: 0 # ensure history is present for automatic versioning
       - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
@@ -32,7 +34,7 @@ jobs:
       - name: Build NPM
         run: |
           cd helics_cli_extras/client
-          npm install
+          npm ci
           npm run build
           cp -r build ../helics_cli_extras/static
       - name: Build the web interface first
