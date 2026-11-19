@@ -1,0 +1,77 @@
+{
+  "federates": [
+    {
+      "directory": ".",
+      "exec": "python -u pisender.py 1",
+      "host": "localhost",
+      "name": "pisender1"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 1",
+      "host": "localhost",
+      "name": "pireceiver1"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 2",
+      "host": "localhost",
+      "name": "pireceiver2"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 3",
+      "host": "localhost",
+      "name": "pireceiver3"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 4",
+      "host": "localhost",
+      "name": "pireceiver4"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 5",
+      "host": "localhost",
+      "name": "pireceiver5"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 6",
+      "host": "localhost",
+      "name": "pireceiver6"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 7",
+      "host": "localhost",
+      "name": "pireceiver7"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 8",
+      "host": "localhost",
+      "name": "pireceiver8"
+    },
+    {
+      "directory": ".",
+      "exec": "python -u pireceiver.py 9",
+      "host": "localhost",
+      "name": "pireceiver9"
+    },
+    {
+      "directory": ".",
+      "exec": "helics_broker -f11 --profiler=profile.txt",
+      "host": "localhost",
+      "name": "profiler-broker"
+    },
+    {
+      "directory": ".",
+      "exec": "helics observer --db-folder=./",
+      "host": "localhost",
+      "name": "observer"
+    }
+  ],
+  "name": "pi-exchange2"
+}
