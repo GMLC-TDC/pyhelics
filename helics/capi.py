@@ -4269,6 +4269,9 @@ def helicsFederateInfoFree(fedInfo: HelicsFederateInfo):
     """
     f = loadSym("helicsFederateInfoFree")
     f(fedInfo.handle)
+    finalizer = getattr(fedInfo, "_finalizer", None)
+    if finalizer is not None:
+        finalizer.detach()
 
 
 def helicsFederateIsValid(fed: HelicsFederate) -> bool:
@@ -4781,6 +4784,9 @@ def helicsFederateFree(fed: HelicsFederate):
     """
     f = loadSym("helicsFederateFree")
     f(fed.handle)
+    finalizer = getattr(fed, "_finalizer", None)
+    if finalizer is not None:
+        finalizer.detach()
 
 
 def helicsAppFree(app: HelicsApp):
@@ -7223,6 +7229,9 @@ def helicsMessageFree(message: HelicsMessage):
     """
     f = loadSym("helicsMessageFree")
     f(message.handle)
+    finalizer = getattr(message, "_finalizer", None)
+    if finalizer is not None:
+        finalizer.detach()
 
 
 def helicsFederateRegisterFilter(

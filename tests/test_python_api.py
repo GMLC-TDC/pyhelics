@@ -3,7 +3,9 @@
 # Innovation LLC. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 
+import gc
 import os
+import weakref
 import pytest as pt
 import helics as h
 import logging
@@ -11,6 +13,32 @@ import logging
 from .utils import assert_attributes
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+
+
+@pt.mark.parametrize(
+    "handle_type, free_function",
+    [
+        (h.HelicsFederateInfo, h.helicsFederateInfoFree),
+        (h.HelicsFederate, h.helicsFederateFree),
+        (h.HelicsMessage, h.helicsMessageFree),
+    ],
+)
+def test_explicit_free_disables_automatic_cleanup(monkeypatch, handle_type, free_function):
+    freed_handles = []
+    monkeypatch.setattr(h.capi, "loadSym", lambda name: freed_handles.append)
+    monkeypatch.setattr(h.capi, "PYHELICS_FREE_ON_DESTRUCTION", True)
+    monkeypatch.setattr(h.capi, "PYHELICS_CLEANUP_ON_DESTRUCTION", False)
+    handle = h.ffi.cast("void *", 1)
+    obj = handle_type(handle)
+    reference = weakref.ref(obj)
+
+    free_function(obj)
+    assert not obj._finalizer.alive
+    del obj
+    gc.collect()
+
+    assert reference() is None
+    assert freed_handles == [handle]
 
 
 DEFAULT_SUB_OPTION_SETTINGS = {

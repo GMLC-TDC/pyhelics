@@ -81,21 +81,25 @@ set(HELICS_DISABLE_BOOST OFF) # TODO: headers are just needed to compile, maybe 
 set(HELICS_BUILD_APP_LIBRARY ON)
 set(HELICS_BUILD_APP_EXECUTABLES ON)
 
-if (NOT SKBUILD_STATE STREQUAL "sdist" AND
-    EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/helics-src/CMakeLists.txt")
-    message(STATUS "Using existing HELICS source directory")
-    # FetchContent override variables use the upper-cased dependency name.
-    # Keep the legacy spelling as well for older CMake releases, but ensure
-    # current CMake versions select the checked-in source tree instead of
-    # attempting to download the matching HELICS release.
-    set(FETCHCONTENT_SOURCE_DIR_HELICS "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
-    set(FETCHCONTENT_SOURCE_DIR_helics "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
-    set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+set(helics_source_dir "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
+if(NOT SKBUILD_STATE STREQUAL "sdist" AND NOT FETCHCONTENT_SOURCE_DIR_HELICS AND
+   EXISTS "${helics_source_dir}/CMakeLists.txt")
+    file(STRINGS "${helics_source_dir}/CMakeLists.txt" helics_project
+         REGEX "^project\\(HELICS VERSION [0-9.]+\\)" LIMIT_COUNT 1)
+    if(helics_project MATCHES "VERSION ([0-9.]+)" AND CMAKE_MATCH_1 VERSION_EQUAL HELICS_VERSION)
+        message(STATUS "Using existing HELICS ${HELICS_VERSION} source directory")
+        set(FETCHCONTENT_SOURCE_DIR_HELICS "${helics_source_dir}")
+        set(FETCHCONTENT_SOURCE_DIR_helics "${helics_source_dir}")
+        set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+    else()
+        # Fetch the pinned release without replacing the local source tree.
+        set(helics_source_dir "${CMAKE_CURRENT_BINARY_DIR}/helics-src")
+    endif()
 endif()
 FetchContent_Declare(
     helics
     URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-v${HELICS_VERSION}-source.tar.gz
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/helics-src
+    SOURCE_DIR "${helics_source_dir}"
 )
 
 # Allow older bundled CMake projects to configure with CMake 4.

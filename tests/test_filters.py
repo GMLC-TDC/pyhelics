@@ -18,11 +18,6 @@ from .utils import (
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
-pytestmark = pt.mark.skipif(
-    os.name == "nt",
-    reason="Access violations during probably shut down in way too many of these tests",
-)
-
 
 def test_filter_type_tests_registration():
     broker = create_broker(2)
@@ -681,27 +676,34 @@ def test_filter_test_types_clone_test_broker_connections():
     destroy_broker(broker)
 
 
-@pt.mark.skip(reason="Fails to run on Windows")
-def test_filter_test_types_clone_test_dest_connections():
+@pt.mark.parametrize(
+    "check_query",
+    [
+        False,
+        pt.param(
+            True,
+            marks=pt.mark.xfail(
+                reason="HELICS filtered_endpoints omits remote destination cloning filters",
+                strict=True,
+            ),
+        ),
+    ],
+    ids=["message_delivery", "filtered_endpoints_query"],
+)
+def test_filter_test_types_clone_test_dest_connections(check_query):
     broker = create_broker(3)
     sFed, fedinfo1 = create_message_federate(1, "source", 1.0)
     dFed, fedinfo2 = create_message_federate(1, "dest", 1.0)
     dcFed, fedinfo3 = create_message_federate(1, "dest_clone", 2.0)
 
     p1 = h.helicsFederateRegisterGlobalEndpoint(sFed, "src", "")
-    _ = h.helicsFederateRegisterGlobalEndpoint(dFed, "dest", "")
-    _ = h.helicsFederateRegisterGlobalEndpoint(dcFed, "cm", "")
+    p2 = h.helicsFederateRegisterGlobalEndpoint(dFed, "dest", "")
+    p3 = h.helicsFederateRegisterGlobalEndpoint(dcFed, "cm", "")
 
     f1 = h.helicsFederateRegisterGlobalCloningFilter(dcFed, "filt1")
     h.helicsFilterAddDeliveryEndpoint(f1, "cm")
-
     cr = h.helicsFederateGetCore(sFed)
-
     h.helicsCoreAddDestinationFilterToEndpoint(cr, "filt1", "dest")
-
-    h.helicsCoreAddDestinationFilterToEndpoint(cr, "", "dest")
-
-    # h.helicsCoreFree(cr)
 
     h.helicsFederateEnterExecutingModeAsync(sFed)
     h.helicsFederateEnterExecutingModeAsync(dcFed)
@@ -709,69 +711,55 @@ def test_filter_test_types_clone_test_dest_connections():
     h.helicsFederateEnterExecutingModeComplete(sFed)
     h.helicsFederateEnterExecutingModeComplete(dcFed)
 
-    q = h.helicsCreateQuery("", "filtered_endpoints")
-    filteredEndpoints = h.helicsQueryExecute(q, dFed)
-    assert "cloningdestFilter" in str(filteredEndpoints)
-    # h.helicsQueryFree(q)
+    query = h.helicsCreateQuery("", "filtered_endpoints")
+    filtered_endpoints = h.helicsQueryExecute(query, dFed)
+    del query
 
-    state = h.helicsFederateGetState(sFed)
-    assert state == h.HELICS_STATE_EXECUTION
-    data = "".join(["a" for _ in range(0, 500)]).encode()
+    data = b"a" * 500
     h.helicsEndpointSendBytesTo(p1, data, "dest")
-
     h.helicsFederateDisconnect(sFed)
 
-    # TODO: implement threading
+    h.helicsFederateRequestTimeAsync(dFed, 1.0)
+    h.helicsFederateRequestTimeAsync(dcFed, 2.0)
+    h.helicsFederateRequestTimeComplete(dFed)
+    h.helicsFederateDisconnectAsync(dFed)
+    h.helicsFederateRequestTimeComplete(dcFed)
 
-    # auto dFedExec = [&]() {
-    #     h.helicsFederateRequestTime(dFed, 1.0)
-    #     m2 = h.helicsEndpointGetMessage(p2)
-    #     h.helicsFederateDisconnect(dFed, "")
-    # }
+    original = h.helicsEndpointGetMessage(p2)
+    clone = h.helicsEndpointGetMessage(p3)
+    assert original.source == "src"
+    assert original.original_source == "src"
+    assert original.destination == "dest"
+    assert h.helicsMessageGetBytes(original) == data
+    assert clone.source == "src"
+    assert clone.original_source == "src"
+    assert clone.destination == "cm"
+    assert clone.original_destination == "dest"
+    assert h.helicsMessageGetBytes(clone) == data
+    # The receiving federates own the native message storage.
+    h.helicsMessageFree(original)
+    h.helicsMessageFree(clone)
 
-    # h.helics_message m3
-    # auto dcFedExec = [&]() {
-    #     h.helicsFederateRequestTime(dcFed, 2.0)
-    #     auto res = h.helicsFederateHasMessage(dcFed)
-    #     if (res == h.helics_False) {
-    #         std::this_thread::sleep_for(std::chrono::milliseconds(50))
-    #         h.helicsFederateRequestTime(dcFed, 4.0)
-    #     }
-    #     m3 = h.helicsEndpointGetMessage(p3)
-    #     h.helicsFederateDisconnect(dcFed)
-    # }
-
-    # auto threaddFed = std::thread(dFedExec)
-    # auto threaddcFed = std::thread(dcFedExec)
-
-    # threaddFed.join()
-    # (m2.source, "src")
-    # (m2.original_source, "src")
-    # (m2.dest, "dest")
-    # (m2.length, static_cast<int64_t>(data.size()))
-
-    # threaddcFed.join()
-
-    # (m3.source, "src")
-    # (m3.original_source, "src")
-    # (m3.dest, "cm")
-    # (m3.original_dest, "dest")
-    # (m3.length, static_cast<int64_t>(data.size()))
-
-    # (state = h.helicsFederateGetState(sFed))
-    # (state == h.helics_state_finalize)
+    h.helicsFederateDisconnect(dcFed)
+    h.helicsFederateDisconnectComplete(dFed)
+    assert h.helicsFederateGetState(sFed) == h.HELICS_STATE_FINALIZE
 
     destroy_federate(sFed, fedinfo1)
     destroy_federate(dFed, fedinfo2)
     destroy_federate(dcFed, fedinfo3)
     destroy_broker(broker)
 
+    if check_query:
+        assert "cloningdestFilter" in str(filtered_endpoints)
 
-@h.ffi.callback("void logger(HelicsMessage, void* userData)")
+
+@h.ffi.callback("HelicsMessage(HelicsMessage, void*)")
 def filterFunc1(mess, userData):
-    m = h.HelicsMessage(mess)
+    m = h.HelicsMessage(mess, cleanup=False)
     time = h.helicsMessageGetTime(m)
-    h.helicsMessageSetTime(m, time + 2.5)
+    userdata = h.ffi.from_handle(userData)
+    h.helicsMessageSetTime(m, time + userdata.x / 2)
+    return mess
 
 
 class UserData:
@@ -779,7 +767,6 @@ class UserData:
         self.x = x
 
 
-@pt.mark.skip(reason="Fails to pass on CI")
 def test_filter_callback_test():
     broker = create_broker(2)
     assert isinstance(broker, h.HelicsBroker)
@@ -795,13 +782,14 @@ def test_filter_callback_test():
 
     assert isinstance(p1, h.HelicsEndpoint)
     assert isinstance(p2, h.HelicsEndpoint)
+    assert p1.is_valid()
+    assert p2.is_valid()
     assert_attributes(
         p1,
         {
             "name": "port1",
             "type": "",
             "info": "",
-            "is_valid": True,
             "default_destination": "",
             "n_pending_messages": 0,
         },
@@ -812,7 +800,6 @@ def test_filter_callback_test():
             "name": "port2",
             "type": "",
             "info": "",
-            "is_valid": True,
             "default_destination": "",
             "n_pending_messages": 0,
         },
@@ -838,7 +825,7 @@ def test_filter_callback_test():
         "state": h.HelicsFederateState.STARTUP,
         "current_time": -9223372036.854776,
         "n_publications": 0,
-        "n_subscriptions": 0,
+        "n_inputs": 0,
         "n_endpoints": 0,
         "n_filters": 0,
         "n_pending_messages": 0,
@@ -899,6 +886,8 @@ def test_filter_callback_test():
     assert h.helicsMessageGetByteCount(m2) == len(data)
     assert h.helicsMessageGetTime(m2) == 2.5
 
+    h.helicsMessageFree(m2)
+
     h.helicsFederateRequestTime(mFed, 3.0)
     h.helicsFederateRequestTimeComplete(fFed)
     h.helicsFederateDisconnectAsync(mFed)
@@ -912,7 +901,6 @@ def test_filter_callback_test():
     destroy_broker(broker)
 
 
-@pt.mark.skip(reason="Fails to pass on CI")
 def test_filter_test_types_clone_test_broker_dest_connections():
     broker = create_broker(3)
     sFed, fedinfo1 = create_message_federate(1, "source", 1.0)
@@ -926,8 +914,6 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     f1 = h.helicsFederateRegisterGlobalCloningFilter(dcFed, "filt1")
     h.helicsFilterAddDeliveryEndpoint(f1, "cm")
     h.helicsBrokerAddDestinationFilterToEndpoint(broker, "filt1", "dest")
-
-    h.helicsBrokerAddDestinationFilterToEndpoint(broker, "", "dest")
 
     h.helicsFederateEnterExecutingModeAsync(sFed)
     h.helicsFederateEnterExecutingModeAsync(dcFed)
@@ -958,22 +944,17 @@ def test_filter_test_types_clone_test_broker_dest_connections():
     h.helicsFederateDisconnectAsync(sFed)
     h.helicsFederateDisconnectAsync(dFed)
 
-    # TODO: figure out why this test fails on CI
-    # @test_broken False
-    # assert h.helicsFederateHasMessage(dcFed) is False
-
-    # h.helicsFederateRequestTime(dcFed, 2.0)
-
-    # assert h.helicsFederateHasMessage(dcFed) is True
-
-    # m2 = h.helicsEndpointGetMessage(p3)
-    # assert h.helicsMessageGetSource(m2) == "src"
-    # assert h.helicsMessageGetOriginalSource(m2) == "src"
-    # assert h.helicsMessageGetDestination(m2) == "cm"
-    # assert h.helicsMessageGetOriginalDestination(m2) == "dest"
-    # assert h.helicsMessageGetByteCount(m2) == len(data)
-
-    # _ = h.helicsFederateHasMessage(dcFed)
+    if not h.helicsFederateHasMessage(dcFed):
+        h.helicsFederateRequestTime(dcFed, 2.0)
+    assert h.helicsFederateHasMessage(dcFed)
+    clone = h.helicsEndpointGetMessage(p3)
+    assert clone.source == "src"
+    assert clone.original_source == "src"
+    assert clone.destination == "cm"
+    assert clone.original_destination == "dest"
+    assert h.helicsMessageGetBytes(clone) == data
+    h.helicsMessageFree(m2)
+    h.helicsMessageFree(clone)
 
     h.helicsFederateDisconnect(dcFed)
     h.helicsFederateDisconnectComplete(sFed)
