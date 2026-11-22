@@ -1,6 +1,7 @@
 graft docs
 graft helics
 graft tests
+recursive-include helics/webserver/static *
 
 include LICENSE
 include README.md

@@ -16,12 +16,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        python-version: ["3.11"]
+        python-version: ["3.11", "3.15"]
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # ensure history is present for automatic versioning
       - uses: actions/setup-node@v7
+        with:
+          node-version: "22.x"
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
@@ -39,7 +41,7 @@ jobs:
           pip install pytest pytest-ordering pytest-cov pytest-runner
       - name: Generate coverage report
         run: |
-          pytest --import-mode importlib -vvv --cov=./ --cov-report=xml:unit.coverage.xml
+          pytest tests --import-mode importlib -vvv --cov=./ --cov-report=xml:unit.coverage.xml
       - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@v7
         with:

@@ -81,24 +81,28 @@ set(HELICS_DISABLE_BOOST OFF) # TODO: headers are just needed to compile, maybe 
 set(HELICS_BUILD_APP_LIBRARY ON)
 set(HELICS_BUILD_APP_EXECUTABLES ON)
 
-if (NOT SKBUILD_STATE STREQUAL "sdist" AND
-    EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/helics-src/CMakeLists.txt")
-    message(STATUS "Using existing HELICS source directory")
-    set(FETCHCONTENT_SOURCE_DIR_helics "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
-    set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+set(helics_source_dir "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
+if(NOT SKBUILD_STATE STREQUAL "sdist" AND NOT FETCHCONTENT_SOURCE_DIR_HELICS AND
+   EXISTS "${helics_source_dir}/CMakeLists.txt")
+    file(STRINGS "${helics_source_dir}/CMakeLists.txt" helics_project
+         REGEX "^project\\(HELICS VERSION [0-9.]+\\)" LIMIT_COUNT 1)
+    if(helics_project MATCHES "VERSION ([0-9.]+)" AND CMAKE_MATCH_1 VERSION_EQUAL HELICS_VERSION)
+        message(STATUS "Using existing HELICS ${HELICS_VERSION} source directory")
+        set(FETCHCONTENT_SOURCE_DIR_HELICS "${helics_source_dir}")
+        set(FETCHCONTENT_SOURCE_DIR_helics "${helics_source_dir}")
+        set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+    else()
+        # Fetch the pinned release without replacing the local source tree.
+        set(helics_source_dir "${CMAKE_CURRENT_BINARY_DIR}/helics-src")
+    endif()
 endif()
 FetchContent_Declare(
     helics
     URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-v${HELICS_VERSION}-source.tar.gz
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/helics-src
+    SOURCE_DIR "${helics_source_dir}"
 )
 
-# For making the sdist, only need to download the source code
-if(SKBUILD_STATE STREQUAL "wheel")
-    add_library(helicsCpp98_ide INTERFACE)
-endif()
-
-# HELICS 3.6.1 bundles a libzmq with a CMake policy version older than 3.5.
+# Allow older bundled CMake projects to configure with CMake 4.
 if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
     set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 endif()
