@@ -49,6 +49,6 @@
         "d3": "^7.9.0",
         "layercake": "^11.0.0",
         "svelte-file-dropzone": "^1.0.0-dev.1",
-        "tw-elements": "^1.0.0-alpha11"
+        "tw-elements": "^2.0.0"
     }
 }
