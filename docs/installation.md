@@ -3,7 +3,7 @@
 This package uses `cffi` to interface with the HELICS library.
 The source for this package contains only pure python code.
 
-Current Python helics packages require Python 3 and HELICS 3 or newer at runtime.
+pyHELICS 3.7.1 requires Python 3.11 or newer and bundles HELICS 3.7.1. Building HELICS from source requires CMake 3.22 or newer and a C++20 compiler.
 Python helics packages with version numbers greater than `v2.6.0` use the cffi interface.
 Versions equal to and prior to `v2.6.0` used swig to generate the Python API.
 
@@ -34,7 +34,7 @@ $ pip install helics --upgrade
 You can install a specific version by using the following:
 
 ```bash
-$ pip install helics
+$ pip install helics==3.7.1
 ```
 
 By default, when you install from PyPI, the version number of the package will match the version of HELICS that is installed.
@@ -45,7 +45,7 @@ $ pip install helics
 ```
 
 You will also get precompiled binaries of [HELICS](https://github.com/GMLC-TDC/HELICS/releases/latest) for your platform if they exist.
-If they don't exist, a source distribution will be installed in which case the user must provide the location of the binaries.
+On other platforms, pip builds the native library from the source distribution.
 See the next section for more information about how to do that.
 
 ### Custom version of HELICS
@@ -96,29 +96,30 @@ Let's say you've made modification to the HELICS library or compiled it with som
 Or you are interested in using a different supported version of HELICS.
 You can do that with this python package by changing the `PYHELICS_INSTALL` environment variable.
 
-As an example, if you want to use the Python package with HELICS v3.7.0, you can clone the git repository for HELICS, build from source and install it to any location.
-In this example, I chose to install it in `~/local/helics-v3.7.0`.
+As an example, if you want to use the Python package with HELICS v3.7.1, you can clone the git repository for HELICS, build from source and install it to any location.
+In this example, I chose to install it in `~/local/helics-v3.7.1`.
 
 ```bash
 $ git clone https://github.com/GMLC-TDC/HELICS
 $ cd HELICS
-$ git checkout v3.7.0
+$ git checkout v3.7.1
 $ mkdir -p build
-$ cmake -DCMAKE_INSTALL_PREFIX=~/local/helics-v3.7.0 ..
-$ make -j8 && make install
+$ cmake -S . -B build -DCMAKE_INSTALL_PREFIX=~/local/helics-v3.7.1
+$ cmake --build build --parallel
+$ cmake --install build
 ```
 
 Now in bash, you can set the environment variable:
 
 ```bash
-$ export PYHELICS_INSTALL=~/local/helics-v3.7.0
+$ export PYHELICS_INSTALL=~/local/helics-v3.7.1
 ```
 
 Now when you `import helics` and print the version you'll get the HELICS version installed in that prefix.
 
 ```bash
 $ python -c "import helics; print(helics.helicsGetVersion())"
-3.7.0 (...)
+3.7.1 (...)
 ```
 
 If you want to build from source and use the `develop` branch:
@@ -139,17 +140,12 @@ If you find any issues with supported HELICS versions, please report them on <ht
 
 ## From Source
 
-### Download
+### Native source and binaries
 
-In order to run this package, you will need to download HELICS.
-
-You can use this package to download HELICS.
-
-```bash
-$ git clone https://github.com/GMLC-TDC/pyhelics
-$ cd pyhelics
-$ python setup.py download
-```
+The source distribution includes the checksum-verified HELICS release archive.
+A build from a Git checkout downloads that archive when it needs the native
+source. To use an official binary archive on a supported platform, set
+`DOWNLOAD_BINARIES=1` when building a wheel.
 
 Alternatively, you can install HELICS in any way you like and point this package to the correct installation.
 You can do this by setting the `PYHELICS_INSTALL` environment variable, as described in the previous section.

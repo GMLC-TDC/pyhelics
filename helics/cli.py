@@ -388,7 +388,7 @@ def run(path, silent, connect_server, server_url, no_log_files, no_kill_on_error
             o = Output(fname, None)
 
         try:
-            directory = os.path.join(path, f["directory"])
+            directory = os.path.join(path, f.get("directory", "."))
 
             env = dict(os.environ)
             if "env" in f:

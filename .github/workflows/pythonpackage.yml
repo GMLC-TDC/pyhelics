@@ -8,7 +8,7 @@ on:
         required: false
         default: 'false'
   workflow_run:
-    workflows: ["HELICS Version Update"]
+    workflows: ["Update HELICS Version"]
     branches: [main]
     types:
       - completed
@@ -17,9 +17,6 @@ on:
   pull_request:
     branches:
     - main
-
-env:
-  BOOST_ARCHIVE_URL: https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.bz2
 
 jobs:
   build-helics:
@@ -70,11 +67,6 @@ jobs:
         CIBW_BUILD: "cp311-${{ matrix.build }}*"
         CIBW_BUILD_VERBOSITY: 3
         CIBW_ENVIRONMENT: "CIBW_ARTIFACT_TYPE=${{ matrix.artifact_suffix }}"
-        CIBW_BEFORE_ALL_LINUX: >
-            mkdir -p /boost &&
-            curl -fsSL "${{ env.BOOST_ARCHIVE_URL }}" -o /tmp/pyhelics-boost.tar.bz2 &&
-            tar -xjf /tmp/pyhelics-boost.tar.bz2 -C /boost --strip-components=1
-        CIBW_ENVIRONMENT_LINUX: "BOOST_ROOT=/boost"
         CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET=10.15 CMAKE_ARGS=-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
     - uses: actions/upload-artifact@v7
       with:
@@ -88,13 +80,18 @@ jobs:
       with:
         fetch-depth: 0  # for setuptools_scm to find tags
 
-    - name: Install Boost
-      run: |
-        mkdir -p "$RUNNER_TEMP/boost"
-        curl -fsSL "$BOOST_ARCHIVE_URL" -o "$RUNNER_TEMP/pyhelics-boost.tar.bz2"
-        tar -xjf "$RUNNER_TEMP/pyhelics-boost.tar.bz2" -C "$RUNNER_TEMP/boost" --strip-components=1
     - name: Build sdist
-      run: BOOST_ROOT="$RUNNER_TEMP/boost" pipx run build --sdist
+      run: pipx run build --sdist
+    - name: Test the Python management API with the native webserver disabled
+      env:
+        CMAKE_ARGS: -DHELICS_DISABLE_WEBSERVER=ON -DHELICS_DISABLE_BOOST=ON
+      run: |
+        python -m venv "$RUNNER_TEMP/source-test"
+        source "$RUNNER_TEMP/source-test/bin/activate"
+        sdist=$(realpath dist/*.tar.gz)
+        pip install "helics[tests] @ file://$sdist"
+        cd "$RUNNER_TEMP"
+        python -m pytest --import-mode=importlib "$GITHUB_WORKSPACE/tests/test_webserver_integration.py" -q
     - name: Upload artifacts
       uses: actions/upload-artifact@v7
       with:
@@ -116,7 +113,7 @@ jobs:
   publish-helics:
     needs: [build-helics, build-helics-sdist, check_helics-dist]
     runs-on: ubuntu-latest
-    if: github.event.action == 'published' || endsWith(github.ref, 'main')
+    if: github.event.action == 'published' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
     environment:
       name: pypi
       url: https://pypi.org/p/helics

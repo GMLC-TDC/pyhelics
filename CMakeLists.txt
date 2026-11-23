@@ -1,13 +1,23 @@
-cmake_minimum_required(VERSION 3.15...3.26)
+cmake_minimum_required(VERSION 3.22...4.5)
 project(HELICS LANGUAGES CXX) # Must be "HELICS" due to its CMake files requiring CMAKE_PROJECT_NAME == PROJECT_NAME in order to build app executables
 include(FetchContent)
 
 include(helics_version.cmake)
 
+set(helics_source_url "https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-v${HELICS_VERSION}-source.tar.gz")
+set(helics_source_archive "${CMAKE_CURRENT_SOURCE_DIR}/helics-source.tar.gz")
+if(SKBUILD_STATE STREQUAL "sdist")
+    # Preserve the upstream permissions and symlinks on every build host.
+    # CMake reuses the archive when it already matches the pinned digest.
+    file(DOWNLOAD "${helics_source_url}" "${helics_source_archive}"
+         EXPECTED_HASH SHA256=${HELICS_SOURCE_SHA256} TLS_VERIFY ON)
+    return()
+endif()
+
 # Note: Linux requires a hint for whether this wheel should be for manylinux (glibc) or musllinux
 # -- The CIBW_ARTIFACT_TYPE environment variable is only expected to be set during official release builds using cibuildwheel on GHA CI systems
-if(LINUX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-    set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-${HELICS_VERSION}-Linux-x86_64.tar.gz)
+if(LINUX AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|aarch64)$" AND NOT "$ENV{CIBW_ARTIFACT_TYPE}" MATCHES "musllinux")
+    set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-${HELICS_VERSION}-Linux-${CMAKE_SYSTEM_PROCESSOR}.tar.gz)
 elseif(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(HELICS_DOWNLOAD_URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-${HELICS_VERSION}-macOS-universal2.zip)
 elseif(WIN32)
@@ -69,7 +79,7 @@ endif()
 
 # No pre-built HELICS binaries being used, warn about limitations of building wheels or installing from an sdist
 if(SKBUILD_STATE STREQUAL "wheel")
-    message(WARNING "Building HELICS from source (some features including ZeroMQ Core, IPC Core, and web server won't be available)")
+    message(STATUS "Building HELICS from source")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
@@ -77,12 +87,11 @@ set(HELICS_DISABLE_GIT_OPERATIONS ON)
 set(HELICS_ZMQ_SUBPROJECT ON)
 set(HELICS_ZMQ_FORCE_SUBPROJECT ON)
 set(HELICS_ENABLE_ZMQ_CORE ON) # TODO: vendor libzmq similar to other 3rd party libraries
-set(HELICS_DISABLE_BOOST OFF) # TODO: headers are just needed to compile, maybe tell users to have it installed as prereq for building from source?
 set(HELICS_BUILD_APP_LIBRARY ON)
 set(HELICS_BUILD_APP_EXECUTABLES ON)
 
 set(helics_source_dir "${CMAKE_CURRENT_SOURCE_DIR}/helics-src")
-if(NOT SKBUILD_STATE STREQUAL "sdist" AND NOT FETCHCONTENT_SOURCE_DIR_HELICS AND
+if(NOT FETCHCONTENT_SOURCE_DIR_HELICS AND
    EXISTS "${helics_source_dir}/CMakeLists.txt")
     file(STRINGS "${helics_source_dir}/CMakeLists.txt" helics_project
          REGEX "^project\\(HELICS VERSION [0-9.]+\\)" LIMIT_COUNT 1)
@@ -96,9 +105,16 @@ if(NOT SKBUILD_STATE STREQUAL "sdist" AND NOT FETCHCONTENT_SOURCE_DIR_HELICS AND
         set(helics_source_dir "${CMAKE_CURRENT_BINARY_DIR}/helics-src")
     endif()
 endif()
+if(EXISTS "${helics_source_archive}")
+    file(SHA256 "${helics_source_archive}" archive_hash)
+    if(archive_hash STREQUAL HELICS_SOURCE_SHA256)
+        set(helics_source_url "${helics_source_archive}")
+    endif()
+endif()
 FetchContent_Declare(
     helics
-    URL https://github.com/GMLC-TDC/HELICS/releases/download/v${HELICS_VERSION}/Helics-v${HELICS_VERSION}-source.tar.gz
+    URL "${helics_source_url}"
+    URL_HASH SHA256=${HELICS_SOURCE_SHA256}
     SOURCE_DIR "${helics_source_dir}"
 )
 

@@ -185,8 +185,11 @@ and version queries have typed values. Custom queries and structured query
 values without a stable nested model remain flexible JSON so newer HELICS
 queries can still be used.
 
+Profile reads return an object keyed by federate name. Each interval contains
+`name`, `s_enter`, `s_end`, `r_enter`, and `r_end`.
+
 Observer records are also flexible JSON because database fields vary. Some
-runner file, observer read, and profile read routes expose inferred JSON
+runner file and observer read routes expose inferred JSON
 structures instead of complete named response models. Complete nested
 Pydantic coverage for every HELICS query and every API response remains
 planned work; the API schema should be checked when relying on a specific

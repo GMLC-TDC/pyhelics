@@ -1,12 +1,11 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { base } from "$app/paths";
   import { onMount } from "svelte";
   import Fa from "svelte-fa";
-  import Table from "$lib/Table.svelte";
+  import Table from "#lib/Table.svelte";
   import Dropzone from "svelte-file-dropzone";
-  import { data, DEFAULT } from "$lib/stores";
-  import Topology from "$lib/Topology.svelte";
+  import { data, DEFAULT } from "#lib/stores";
+  import Topology from "#lib/Topology.svelte";
   const BASE = "/api/v1/observer";
 
   function isEmpty(obj) {
@@ -125,7 +124,7 @@
   <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
       <div class="flex space-x-4">
-        <Dropzone on:drop={handleFilesSelect} multiple="false">
+        <Dropzone on:drop={handleFilesSelect} multiple={false}>
           <p>
             Drag 'n' drop a observer generated "helics-cli.sqlite" file here, or click to select a
             "helics-cli.sqlite" file

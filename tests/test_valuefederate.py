@@ -39,6 +39,19 @@ def test_valuefederate_state():
     destroy_broker(broker)
 
 
+def test_value_buffer_warning_threshold():
+    broker = create_broker()
+    federate, info = create_value_federate()
+    try:
+        threshold = h.HELICS_PROPERTY_INT_VALUE_BUFFER_WARNING
+        assert h.helicsFederateGetIntegerProperty(federate, threshold) == 50
+        h.helicsFederateSetIntegerProperty(federate, threshold, 0)
+        assert h.helicsFederateGetIntegerProperty(federate, threshold) == 0
+    finally:
+        destroy_federate(federate, info)
+        destroy_broker(broker)
+
+
 def test_valuefederate_publication_registration():
     broker = create_broker()
     vFed, fedinfo = create_value_federate()

@@ -24,12 +24,15 @@ jobs:
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
     - name: Update HELICS version number
+      env:
+        HELICS_RELEASE: ${{ inputs.version }}
       run: |
-        version_line="set(HELICS_VERSION ${{ inputs.version }})"
-        echo "::group::set_version line"
-        echo "$version_line"
-        echo "::endgroup::"
-        echo $version_line > helics_version.cmake
+        [[ "$HELICS_RELEASE" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+        release_url="https://github.com/GMLC-TDC/HELICS/releases/download/v$HELICS_RELEASE"
+        curl -fsSL "$release_url/Helics-v$HELICS_RELEASE-SHA-256.txt" -o "$RUNNER_TEMP/helics-sha256.txt"
+        hash=$(awk -v file="Helics-v$HELICS_RELEASE-source.tar.gz" '$2 == file {print $1}' "$RUNNER_TEMP/helics-sha256.txt")
+        [[ "$hash" =~ ^[0-9a-f]{64}$ ]]
+        printf 'set(HELICS_VERSION %s)\nset(HELICS_SOURCE_SHA256 %s)\n' "$HELICS_RELEASE" "$hash" > helics_version.cmake
 
         git add helics_version.cmake
 
@@ -37,7 +40,7 @@ jobs:
         git diff --staged
         echo "::endgroup::"
 
-        git commit -m "build(release): Bump to v${{ inputs.version }}"
+        git commit -m "build(release): Bump to v$HELICS_RELEASE"
 
         echo "::group::git show"
         git show

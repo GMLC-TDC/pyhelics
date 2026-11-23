@@ -44,6 +44,14 @@ def test_broker_test_make_broker_connections(broker):
         h.helicsBrokerMakeConnections(broker, "invalidfile.json")
 
 
+@pt.mark.parametrize("prefix", [[], ["helics_broker"]])
+def test_broker_from_args_applies_first_option(prefix):
+    with pt.raises(h.HelicsException):
+        h.helicsCreateBrokerFromArgs("inproc", "bad_args", prefix + ["--loglevel=invalid"])
+    broker = h.helicsCreateBrokerFromArgs("inproc", "no_options", prefix)
+    h.helicsBrokerDisconnect(broker)
+
+
 def test_broker_test_make_core_connections(broker):
     cr = h.helicsCreateCoreFromArgs("zmq", "gcore", ["--broker=gbrokertest"])
 

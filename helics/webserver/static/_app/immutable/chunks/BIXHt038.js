@@ -1,0 +1,1 @@
+import{t as e}from"./uBIymjUX.js";function t(){e(async()=>{let{Modal:e,initTWE:t}=await import(`./BiEo42zc.js`);return{Modal:e,initTWE:t}},[],import.meta.url).then(({Modal:e,initTWE:t})=>t({Modal:e}))}export{t};

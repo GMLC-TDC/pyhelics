@@ -17,7 +17,7 @@
         "@fortawesome/free-regular-svg-icons": "^7.3.1",
         "@fortawesome/free-solid-svg-icons": "^7.3.1",
         "@playwright/test": "^1.65.1",
-        "@sveltejs/adapter-static": "^3.0.1",
+        "@sveltejs/adapter-static": "^4.0.1",
         "@sveltejs/kit": "^3.4.0",
         "@sveltejs/vite-plugin-svelte": "^7.3.1",
         "@tailwindcss/forms": "^0.5.0",
@@ -41,10 +41,13 @@
         "svelte-preprocess": "^6.0.5",
         "tailwindcss": "^4.3.3",
         "tslib": "^2.3.1",
-        "typescript": "~5.9.3",
+        "typescript": "~6.0.3",
         "vite": "^8.3.1"
     },
     "type": "module",
+    "imports": {
+        "#lib/*": "./src/lib/*"
+    },
     "dependencies": {
         "d3": "^7.9.2",
         "layercake": "^11.0.0",
