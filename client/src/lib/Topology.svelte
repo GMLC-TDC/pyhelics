@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { data } from "$lib/stores";
-  import DataFlowGraph from "$lib/DataFlowGraph.svelte";
+  import { data } from "#lib/stores";
+  import DataFlowGraph from "#lib/DataFlowGraph.svelte";
   import { onMount } from "svelte";
 
   import { LayerCake } from "layercake";

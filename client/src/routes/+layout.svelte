@@ -1,13 +1,6 @@
 <script>
   import '../app.css'
-  import { browser } from '$app/environment'
-  import { onMount } from 'svelte'
-  import Navbar from '$lib/Navbar.svelte'
-  onMount(async () => {
-    if (browser) {
-      await import('tw-elements')
-    }
-  })
+  import Navbar from '#lib/Navbar.svelte'
 </script>
 
 <svelte:head>

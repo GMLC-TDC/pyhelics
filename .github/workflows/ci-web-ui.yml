@@ -31,26 +31,21 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip wheel setuptools cffi
-      - name: Build and test web UI
+      - name: Build web UI
         run: |
           cd client
           npm ci
           npm run build
-          mkdir -p ../helics/webserver/static
-          cp -r build/. ../helics/webserver/static/
-          npx playwright install --with-deps chromium
-          npm test -- --reporter=line
       - name: Install pyhelics with server dependencies
         run: |
           pip install ".[cli,server]"
         env:
           DOWNLOAD_BINARIES: 1
-      - name: Run Server
+      - name: Test the installed web UI
+        working-directory: client
         run: |
-          helics server --no-open --port 8000 &
-          sleep 5
-          curl http://localhost:8000/docs
-          kill %+
+          npx playwright install --with-deps chromium
+          npm test -- --reporter=line
       - name: Run Observer
         run: |
           mkdir db

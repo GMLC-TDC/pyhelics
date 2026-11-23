@@ -474,7 +474,7 @@ class RunnerService:
         else:
             try:
                 if pid:
-                    os.killpg(os.getpgid(pid), signal.SIGTERM)
+                    os.killpg(pid, signal.SIGTERM)
                 else:
                     process.terminate()
             except (OSError, ProcessLookupError):
@@ -497,7 +497,7 @@ class RunnerService:
             )
         elif pid:
             try:
-                os.killpg(os.getpgid(pid), signal.SIGKILL)
+                os.killpg(pid, signal.SIGKILL)
             except (OSError, ProcessLookupError):
                 if active and process.poll() is None:
                     process.kill()

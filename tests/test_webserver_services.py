@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import socket
 import sqlite3
 
 from fastapi.testclient import TestClient
@@ -53,6 +54,33 @@ def test_runner_file_and_edit_routes(tmp_path):
         assert client.get("/api/v1/runner/status", params={"name": "fed2"}).json() == {
             "status": "running"
         }
+
+
+def test_runner_stop_closes_federate_child(tmp_path):
+    with socket.create_server(("127.0.0.1", 0)) as listener:
+        listener.settimeout(15)
+        port = listener.getsockname()[1]
+        (tmp_path / "child.py").write_text(
+            "import socket\n"
+            f"with socket.create_connection(('127.0.0.1', {port})) as connection:\n"
+            "    connection.recv(1)\n",
+            encoding="utf-8",
+        )
+        # This test runs the real CLI and uses its default federate directory.
+        runner = RunnerService(tmp_path, server_url="http://127.0.0.1:0/api/v1")
+        config = {"federates": [{"name": "child", "exec": "python child.py"}]}
+        runner.upload(json.dumps(config).encode(), "runner.json")
+        with TestClient(create_app(runner_service=runner)) as client:
+            assert client.post("/api/v1/runner/run").json()["status"]
+            child, _ = listener.accept()
+            with child:
+                child.settimeout(10)
+                assert client.delete("/api/v1/runner/run").json()["status"] is False
+                try:
+                    assert child.recv(1) == b""
+                except ConnectionResetError:
+                    # A force-stopped Windows process can reset the socket.
+                    pass
 
 
 def test_runner_configuration_validation_rejects_duplicate_names():
@@ -211,6 +239,11 @@ def test_combined_ui_and_versioned_api_contract(tmp_path):
         response = client.get("/")
         assert response.status_code == 200
         assert "sveltekit" in response.text.lower()
+        for route in ("/run", "/observe", "/profile"):
+            page = client.get(route)
+            assert page.status_code == 200
+            assert page.content == response.content
+        assert client.get("/_app/missing.js").status_code == 404
 
         schema = client.get("/openapi.json").json()
         assert "/api/v1/brokers" in schema["paths"]

@@ -21,6 +21,27 @@ If you wish to get additional functionality in the CLI (_experimental_), you can
 pip install 'helics[cli]'
 ```
 
+## Release 3.7.1
+
+pyHELICS 3.7.1 bundles the matching HELICS runtime. Queued value updates
+now apply backpressure using the existing `HELICS_PROPERTY_INT_VALUE_BUFFER_WARNING`
+property. Its default is 50 MiB. A value of zero disables warnings and
+backpressure. The runtime also includes broker initialization, timeout, and
+time-grant fixes. [HELICS 3.7.1 release notes](https://github.com/GMLC-TDC/HELICS/releases/tag/v3.7.1)
+
+Install the optional management server with Python 3.11 or newer:
+
+```sh
+python -m pip install "helics[server]==3.7.1"
+helics server
+```
+
+The dashboard at `http://127.0.0.1:8000/` manages service-owned brokers,
+runs federations, and displays observer databases and profiles. Broker
+queries, commands, and time barriers use the Python HTTP API. Clients of
+the native management server can migrate using the
+[web API guide](https://python.helics.org/web-interface/).
+
 # Documentation
 
 To use the project:

@@ -1,6 +1,11 @@
 <script lang="ts">
-  import { getContext } from "svelte";
-  const { data, width, height } = getContext("LayerCake");
+  import { getLayerCakeContext } from "layercake";
+  import { toStore } from "svelte/store";
+
+  const chart = getLayerCakeContext();
+  const data = toStore(() => chart.data);
+  const width = toStore(() => chart.width);
+  const height = toStore(() => chart.height);
   import { onMount, onDestroy, tick } from "svelte";
   import { fade, draw, crossfade } from "svelte/transition";
   import { scaleLinear, scaleOrdinal } from "d3-scale";

@@ -581,7 +581,8 @@ class HelicsProperty(IntEnum):
     - **INT_CONSOLE_LOG_LEVEL**
     - **INT_LOG_BUFFER**
     - **INT_INDEX_GROUP**
-    - **INT_VALUE_BUFFER_WARNING**
+    - **INT_VALUE_BUFFER_WARNING**: queued value warning and backpressure threshold in MiB.
+      Defaults to 50 in HELICS 3.7.1. Set to 0 to disable both.
     """
 
     TIME_DELTA = 137  # HelicsProperties
@@ -3195,6 +3196,15 @@ def cstring_array(strings: List[str]):
     return argv, buffers
 
 
+def _command_line_argv(arguments: list[str]):
+    # HELICS skips argv[0]. Accept both Python option lists and full command
+    # lines (including an explicit program name or an empty placeholder).
+    if not arguments or arguments[0].startswith("-"):
+        arguments = ["helics", *arguments]
+    argv, buffers = cstring_array(arguments)
+    return len(arguments), argv, buffers
+
+
 def cdouble(d: float) -> float:
     # Convert python float to cfloat
     return d
@@ -3313,8 +3323,7 @@ def helicsCreateCoreFromArgs(type: str, name: str, arguments: list[str]) -> Heli
     **Returns**: `helics.HelicsCore`.
     """
     f = loadSym("helicsCreateCoreFromArgs")
-    argc = len(arguments)
-    argv, argument_buffers = cstring_array(arguments)
+    argc, argv, argument_buffers = _command_line_argv(arguments)
     err = helicsErrorInitialize()
     result = f(cstring(type), cstring(name), argc, argv, err)
     if err.error_code != 0:
@@ -3393,8 +3402,7 @@ def helicsCreateBrokerFromArgs(type: str, name: str, arguments: list[str]) -> He
     **Returns**: `helics.HelicsBroker`.
     """
     f = loadSym("helicsCreateBrokerFromArgs")
-    argc = len(arguments)
-    argv, argument_buffers = cstring_array(arguments)
+    argc, argv, argument_buffers = _command_line_argv(arguments)
     err = helicsErrorInitialize()
     result = f(cstring(type), cstring(name), argc, argv, err)
     if err.error_code != 0:
@@ -4240,8 +4248,7 @@ def helicsFederateInfoLoadFromArgs(fedInfo: HelicsFederateInfo, arguments: list[
     """
     f = loadSym("helicsFederateInfoLoadFromArgs")
     err = helicsErrorInitialize()
-    argc = len(arguments)
-    argv, argument_buffers = cstring_array(arguments)
+    argc, argv, argument_buffers = _command_line_argv(arguments)
     f(fedInfo.handle, argc, argv, err)
     if err.error_code != 0:
         raise HelicsException("[" + str(err.error_code) + "] " + ffi.string(err.message).decode())

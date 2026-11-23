@@ -9,6 +9,8 @@ import re
 from collections import namedtuple
 from pathlib import Path
 
+from helics._build import PYHELICS_INSTALL
+
 ROOT = Path(__file__).resolve().parents[1]
 CAPI_PATH = ROOT / "helics" / "capi.py"
 
@@ -21,9 +23,7 @@ def helics_api_header_path():
     if env_path:
         candidates.append(Path(env_path))
 
-    pyhelics_install = os.environ.get("PYHELICS_INSTALL")
-    if pyhelics_install:
-        candidates.append(Path(pyhelics_install) / "include" / "helics" / "helics_api.h")
+    candidates.append(Path(PYHELICS_INSTALL) / "include" / "helics" / "helics_api.h")
 
     candidates.extend(
         [

@@ -9,7 +9,7 @@ from typing import List, Optional, Union
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, Response, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
@@ -35,6 +35,7 @@ from .models import (
     DatabaseInfo,
     ErrorResponse,
     LogResponse,
+    ProfileResponse,
     RunnerFederateEdit,
     RunnerFileResponse,
     RunnerFolderRequest,
@@ -602,7 +603,7 @@ def create_app(
             raise observer_error(error) from error
 
     # Profiler API -------------------------------------------------------
-    @app.get("/api/v1/profile", tags=["profile"])
+    @app.get("/api/v1/profile", response_model=ProfileResponse, tags=["profile"])
     def get_profile() -> dict:
         try:
             return profiler.parse()
@@ -640,6 +641,13 @@ def create_app(
     # Serve the bundled Svelte build from the same origin.
     static_dir = _find_static_dir()
     if static_dir is not None:
+
+        @app.get("/run", include_in_schema=False)
+        @app.get("/observe", include_in_schema=False)
+        @app.get("/profile", include_in_schema=False)
+        def web_ui_page() -> FileResponse:
+            return FileResponse(Path(static_dir) / "index.html")
+
         app.mount("/", StaticFiles(directory=static_dir, html=True), name="web-ui")
     else:
 

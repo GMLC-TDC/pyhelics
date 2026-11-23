@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { data } from "$lib/stores";
-  import ProfilePlot from "$lib/ProfilePlot.svelte";
-  import DataFlowGraph from "$lib/DataFlowGraph.svelte";
+  import { data } from "#lib/stores";
+  import ProfilePlot from "#lib/ProfilePlot.svelte";
+  import DataFlowGraph from "#lib/DataFlowGraph.svelte";
   import { onMount } from "svelte";
 
   import { LayerCake } from "layercake";
@@ -17,6 +17,8 @@
     const response = await fetch(`${BASE}/profile`);
     $data.profile = response.ok ? await response.json() : {};
   }
+
+  onMount(updateData);
 
   async function handleFilesSelect(e) {
     const { acceptedFiles, fileRejections } = e.detail;
@@ -41,7 +43,7 @@
   <div class="overflow-x-auto">
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
       <div class="flex space-x-4">
-        <Dropzone on:drop={handleFilesSelect} multiple="false">
+        <Dropzone on:drop={handleFilesSelect} multiple={false}>
           <p>Drag 'n' drop a "profile.txt" file here, or click to select a "profile.txt" file</p>
         </Dropzone>
         <button
@@ -54,9 +56,11 @@
   </div>
 
   <div class="flex flex-grow my-4 w-full place-items-center">
-    <LayerCake bind:data={$data.profile}>
+    {#if Object.values($data.profile).some(intervals => intervals.length)}
+    <LayerCake data={$data.profile}>
       <ProfilePlot />
     </LayerCake>
+    {/if}
   </div>
 </div>
 

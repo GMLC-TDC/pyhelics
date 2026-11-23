@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, RootModel, field_validator, model_validator
 
 from ..query_models import QueryResponse
 
@@ -337,16 +337,14 @@ class ProfileInterval(BaseModel):
     """A paired profiler entry and exit interval for one federate."""
 
     name: str
-    s_enter: Optional[float] = None
-    s_end: Optional[float] = None
-    r_enter: Optional[float] = None
-    r_end: Optional[float] = None
+    s_enter: float
+    s_end: float
+    r_enter: float
+    r_end: float
 
 
-class ProfileResponse(BaseModel):
+class ProfileResponse(RootModel[Dict[str, List[ProfileInterval]]]):
     """Profile intervals grouped by federate name."""
-
-    profiles: Dict[str, List[ProfileInterval]]
 
 
 class ObserverRow(BaseModel):

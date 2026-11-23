@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { enableModal } from "#lib/modal";
   import { browser } from "$app/environment";
-  import { base } from "$app/paths";
   import { onMount, onDestroy, tick } from "svelte";
   import Fa from "svelte-fa";
   import {
@@ -11,7 +11,7 @@
     faTimesCircle,
   } from "@fortawesome/free-solid-svg-icons";
   import Dropzone from "svelte-file-dropzone";
-  import { data, DEFAULT } from "$lib/stores";
+  import { data, DEFAULT } from "#lib/stores";
   const BASE = "/api/v1/runner";
 
   let files = {
@@ -175,7 +175,7 @@
   <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
       {#if Object.keys($data.runner).length == 0}
-        <Dropzone on:drop={handleFilesSelect} multiple="false">
+        <Dropzone on:drop={handleFilesSelect} multiple={false}>
           <p>Drag 'n' drop a "runner.json" file here, or click to select a "runner.json" file</p>
         </Dropzone>
       {:else}
@@ -202,13 +202,13 @@
               {#if !processing}
                 <button
                   class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-                  data-bs-toggle="modal"
-                  data-bs-target="#edit-path-model">Edit</button
+                  use:enableModal data-twe-toggle="modal"
+                  data-twe-target="#edit-path-model">Edit</button
                 >
                 <button
                   class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-                  data-bs-toggle="modal"
-                  data-bs-target="#add-model">Add</button
+                  use:enableModal data-twe-toggle="modal"
+                  data-twe-target="#add-model">Add</button
                 >
                 <button
                   class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -269,8 +269,8 @@
                         current_federate = federate;
                         await handleLog();
                       }}
-                      data-bs-toggle="modal"
-                      data-bs-target="#show-log-model">Show Log</button
+                      use:enableModal data-twe-toggle="modal"
+                      data-twe-target="#show-log-model">Show Log</button
                     >
                   {/if}
                   {#if federate.status == "failed"}
@@ -283,8 +283,8 @@
                         current_federate = federate;
                         await handleLog();
                       }}
-                      data-bs-toggle="modal"
-                      data-bs-target="#show-log-model">Show Log</button
+                      use:enableModal data-twe-toggle="modal"
+                      data-twe-target="#show-log-model">Show Log</button
                     >
                   {/if}
                   {#if federate.status == "terminated"}
@@ -297,8 +297,8 @@
                         current_federate = federate;
                         await handleLog();
                       }}
-                      data-bs-toggle="modal"
-                      data-bs-target="#show-log-model">Show Log</button
+                      use:enableModal data-twe-toggle="modal"
+                      data-twe-target="#show-log-model">Show Log</button
                     >
                   {/if}
                   {#if federate.status == "unknown"}
@@ -314,8 +314,8 @@
                     <button
                       class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
                       on:click={() => (current_federate = federate)}
-                      data-bs-toggle="modal"
-                      data-bs-target="#edit-model">Edit</button
+                      use:enableModal data-twe-toggle="modal"
+                      data-twe-target="#edit-model">Edit</button
                     >
                     <button
                       class="inline-block px-6 py-2.5 w-24 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -323,8 +323,8 @@
                         current_federate = federate;
                         await handleLog();
                       }}
-                      data-bs-toggle="modal"
-                      data-bs-target="#show-log-model">Logs</button
+                      use:enableModal data-twe-toggle="modal"
+                      data-twe-target="#show-log-model">Logs</button
                     >
                   {/if}
                 </div>
@@ -338,14 +338,14 @@
 </div>
 
 <div
-  class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+  class="modal fade fixed z-[1050] top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
   id="edit-model"
   tabindex="-1"
   aria-labelledby="edit-model-title"
   aria-modal="true"
   role="dialog"
 >
-  <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+  <div data-twe-modal-dialog-ref class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
     <div
       class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current"
     >
@@ -358,11 +358,11 @@
         <button
           type="button"
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           aria-label="Close"
         ></button>
       </div>
-      <div class="modal-body relative p-4">
+      <div data-twe-modal-body-ref class="modal-body relative p-4">
         <h5
           class="text-xl font-medium mb-2 text-blue-600 hover:text-blue-700 transition duration-300 ease-in-out"
         >
@@ -454,14 +454,14 @@
         <button
           type="button"
           class="inline-block px-6 py-2.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
         >
           Close
         </button>
         <button
           type="button"
           class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out ml-1"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           on:click={handleEditSaveChanges}
         >
           Save changes
@@ -472,14 +472,14 @@
 </div>
 
 <div
-  class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+  class="modal fade fixed z-[1050] top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
   id="edit-path-model"
   tabindex="-1"
   aria-labelledby="edit-path-model-title"
   aria-modal="true"
   role="dialog"
 >
-  <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+  <div data-twe-modal-dialog-ref class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
     <div
       class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current"
     >
@@ -492,11 +492,11 @@
         <button
           type="button"
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           aria-label="Close"
         ></button>
       </div>
-      <div class="modal-body relative p-4">
+      <div data-twe-modal-body-ref class="modal-body relative p-4">
         <p>
           <label for="runner-json-input">runner.json:</label>
           <span class="text-gray-700">
@@ -532,14 +532,14 @@
         <button
           type="button"
           class="inline-block px-6 py-2.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
         >
           Close
         </button>
         <button
           type="button"
           class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out ml-1"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           on:click={handleLoad}
         >
           Save changes
@@ -550,14 +550,14 @@
 </div>
 
 <div
-  class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+  class="modal fade fixed z-[1050] top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
   id="add-model"
   tabindex="-1"
   aria-labelledby="add-model-title"
   aria-modal="true"
   role="dialog"
 >
-  <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+  <div data-twe-modal-dialog-ref class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
     <div
       class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current"
     >
@@ -570,11 +570,11 @@
         <button
           type="button"
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           aria-label="Close"
         ></button>
       </div>
-      <div class="modal-body relative p-4">
+      <div data-twe-modal-body-ref class="modal-body relative p-4">
         <h5
           class="text-xl font-medium mb-2 text-blue-600 hover:text-blue-700 transition duration-300 ease-in-out"
         >
@@ -666,14 +666,14 @@
         <button
           type="button"
           class="inline-block px-6 py-2.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
         >
           Close
         </button>
         <button
           type="button"
           class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out ml-1"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           on:click={handleAdd}
         >
           Save changes
@@ -684,14 +684,14 @@
 </div>
 
 <div
-  class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+  class="modal fade fixed z-[1050] top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
   id="show-log-model"
   tabindex="-1"
   aria-labelledby="show-log-model-title"
   aria-modal="true"
   role="dialog"
 >
-  <div class="modal-dialog modal-xl modal-dialog-scrollable relative w-auto pointer-events-none">
+  <div data-twe-modal-dialog-ref class="modal-dialog modal-xl modal-dialog-scrollable relative w-auto pointer-events-none">
     <div
       class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current"
     >
@@ -704,7 +704,7 @@
         <button
           type="button"
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           aria-label="Close"
         ></button>
       </div>

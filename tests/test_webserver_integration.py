@@ -73,7 +73,7 @@ def test_webserver_broker_lifecycle_and_query():
 
         response = client.get(f"/api/v1/brokers/{broker_name}/version")
         assert response.status_code == 200, response.text
-        assert response.json()["value"].startswith("3.7.")
+        assert response.json()["value"].split()[0] == h.helicsGetVersion().split()[0]
 
         response = client.get(f"/api/v1/brokers/{broker_name}/connection")
         assert response.status_code == 200, response.text

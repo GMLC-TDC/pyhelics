@@ -26,7 +26,7 @@ removed unless a separate compatibility decision is made.
 
 ## Current baseline
 
-The `webserver` branch contains a working FastAPI service and bundled web UI:
+pyHELICS 3.7.1 contains a working FastAPI service and bundled web UI:
 
 - `helics.webserver.create_app()` and `helics server` start a Uvicorn service.
 - Brokers created by the service can be listed, inspected, queried, commanded,
@@ -56,8 +56,9 @@ structured arguments to `helics run`, and propagates a configurable FastAPI
 API base. Each run is started in an owned process group/session; stopping the
 run or shutting down the service cleans up its federates and any automatic
 broker. Runner status and log endpoints use typed response models. Service
-tests cover process ownership and cleanup; cross-platform process-tree
-integration coverage remains a release validation item. The bundled UI has a
+tests cover process ownership and stop a real CLI-launched child. Cleanup
+after an unexpected runner exit and automatic broker cleanup still need
+cross-platform validation. The bundled UI has a
 Playwright smoke test in CI.
 
 A Jinja2/HTMX broker-page prototype is available at `/broker`.  It is served
@@ -80,12 +81,26 @@ The public C API delta from HELICS 3.6.1 to 3.7.0 is now covered in pyhelics:
   `required_federates`) are typed by the FastAPI broker request and the
   Jinja2 form.
 
-The remaining 3.7 work is verification rather than a new binding surface:
-test the `raw`/`map`/`custom` data-type aliases and the timing/iteration fixes
-against a released 3.7 runtime, and keep the build dependencies at C++20 and
-Boost 1.83 or newer.  A locally present, ignored `helics-src` directory can
-override the release download; it must be refreshed to 3.7.0 (or removed) when
-testing a linked HELICS checkout.
+### HELICS 3.7.1
+
+The 3.7.1 C headers retain the 3.7.0 function signatures and enum values.
+The native library implements value-update backpressure. The existing
+`HELICS_PROPERTY_INT_VALUE_BUFFER_WARNING` property defaults to 50 MiB;
+setting it to zero disables warnings and backpressure. The acceptance suite
+checks the default and the override on a live federate.
+
+| Native management operation | Python replacement | Acceptance coverage |
+| --- | --- | --- |
+| Create, enumerate, inspect, and remove brokers | `/api/v1/brokers` and its per-broker resource | Real in-process broker lifecycle and metadata |
+| Query a broker or named federation participant | Per-broker `query`, `state`, `counts`, `version`, and `connection` routes | Live broker and federate query results |
+| Send a command | Per-broker `commands` route | Recipient reads the command and identifies its sender |
+| Set, move, and clear a time barrier | Per-broker `time-barrier` resource | An asynchronous federate request stays blocked until the API moves or clears the barrier |
+
+The Python API uses HTTP and polling for these operations. Native management
+WebSocket clients and the broker remote terminal require migration to the
+versioned HTTP API. Broker discovery is limited to service-owned brokers.
+The macOS 3.7.1 installer already omits the embedded server. See the
+[upstream release notes](https://github.com/GMLC-TDC/HELICS/releases/tag/v3.7.1).
 
 ## Migration phases
 
@@ -111,17 +126,16 @@ Implementations and remaining contract work:
 
 - **Runner (implemented):** configuration upload/editing, run lifecycle, logs,
   status, path validation, structured subprocess arguments, and owned
-  process-group cleanup are available. Add cross-platform integration tests
-  that verify child processes and automatic brokers are stopped reliably.
+  process-group cleanup are available. The stop endpoint is exercised with a
+  real child process. Automatic brokers and unexpected parent exit remain
+  cross-platform validation items.
 - **Observer database (implemented):** SQLite upload and read routes expose
   system information, cores, federates, graphs, subscriptions, inputs,
   publications, and recorded data. The API reads observer output; starting and
   controlling the observer remains the `helics observer` CLI workflow. Rows
   retain flexible fields because database schemas vary.
-- **Profile (implemented with typed-model follow-up):** upload, parse, and
-  clear operations are available. Align the declared profile model with the
-  current unwrapped per-federate JSON response before adding it to the route
-  contract, and keep malformed-input behavior covered.
+- **Profile (implemented):** the API supports upload, parse, and clear.
+  Its response schema maps federate names directly to lists of intervals.
 - **Queries (partially implemented):** a common Pydantic envelope and typed
   models cover common scalar, list, state, count, status, and version queries.
   Add nested models for the remaining structured queries where their schemas
@@ -203,8 +217,7 @@ In HELICS, remove or replace:
 
 Keep the independent HELICS HTTP/WEBSOCKET core transports.  Update the HELICS
 release notes and pyhelics `helics_version.cmake` to the first release in which
-the native management server has been removed.  Remove the pyhelics build
-warning that currently refers to a missing native webserver.
+the native management server has been removed.
 
 ## Release and rollback strategy
 

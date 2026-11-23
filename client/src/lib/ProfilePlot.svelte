@@ -1,14 +1,20 @@
 <script lang="ts">
   import { spring, tweened } from "svelte/motion";
   import { cubicOut } from "svelte/easing";
-  import { afterUpdate, beforeUpdate, getContext, onMount } from "svelte";
+  import { afterUpdate, beforeUpdate, onMount } from "svelte";
   import { get, writable } from "svelte/store";
   import { Svg } from "layercake";
-  import { data as store_data } from "$lib/stores";
+  import { data as store_data } from "#lib/stores";
 
   import * as d3 from "d3";
 
-  const { data, width, height } = getContext("LayerCake");
+  import { getLayerCakeContext } from "layercake";
+  import { toStore } from "svelte/store";
+
+  const chart = getLayerCakeContext();
+  const data = toStore(() => chart.data);
+  const width = toStore(() => chart.width);
+  const height = toStore(() => chart.height);
 
   $: start_index = $store_data.profile_toggle_value == "real_time" ? "r_enter" : "s_enter";
   $: end_index = $store_data.profile_toggle_value == "real_time" ? "r_end" : "s_end";

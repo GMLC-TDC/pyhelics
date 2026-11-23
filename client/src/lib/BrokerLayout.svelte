@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enableModal } from "#lib/modal";
   type Broker = {
     address: string;
     is_connected: boolean;
@@ -9,6 +10,7 @@
   export let broker: Broker = {};
   export let callback = async () => {};
   export let broker_barrier_time = null;
+  export let barrierDialogId: string;
   let is_broker_barrier_time_set = false;
 
   const BASE = "/api/v1";
@@ -86,8 +88,8 @@
       <button
         type="button"
         class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-        data-bs-toggle="modal"
-        data-bs-target="#broker-set-barrier-model"
+        use:enableModal data-twe-toggle="modal"
+        data-twe-target={'#' + barrierDialogId}
       >
         Set Barrier
       </button>
@@ -105,14 +107,14 @@
 </div>
 
 <div
-  class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
-  id="broker-set-barrier-model"
+  class="modal fade fixed z-[1050] top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+  id={barrierDialogId}
   tabindex="-1"
   aria-labelledby="broker-set-barrier-model-title"
   aria-modal="true"
   role="dialog"
 >
-  <div class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+  <div data-twe-modal-dialog-ref class="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
     <div
       class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current"
     >
@@ -128,11 +130,11 @@
         <button
           type="button"
           class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           aria-label="Close"
         ></button>
       </div>
-      <div class="modal-body relative p-4">
+      <div data-twe-modal-body-ref class="modal-body relative p-4">
         <label for="broker-barrier-time-input" class="form-label inline-block mb-2 text-gray-700"
           >Broker Barrier Time:</label
         >
@@ -166,7 +168,7 @@
         <button
           type="button"
           class="inline-block px-6 py-2.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
         >
           Close
         </button>
@@ -176,7 +178,7 @@
           {broker_barrier_time != null
             ? 'hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 active:bg-blue-800 active:shadow-lg focus:shadow-lg'
             : 'pointer-events-none opacity-60'}"
-          data-bs-dismiss="modal"
+          data-twe-modal-dismiss
           disabled={broker_barrier_time == null}
           on:click={() => handleBrokerBarrierSet(broker_barrier_time)}
         >
