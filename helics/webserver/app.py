@@ -641,6 +641,7 @@ def create_app(
     # Serve the bundled Svelte build from the same origin.
     static_dir = _find_static_dir()
     if static_dir is not None:
+
         @app.get("/run", include_in_schema=False)
         @app.get("/observe", include_in_schema=False)
         @app.get("/profile", include_in_schema=False)
